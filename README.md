@@ -5,9 +5,9 @@ What is it?
 -----------
 
 A simple Cocoa application for reading Wavefront obj files and rendering them in OpenGL. This project is
-a hobby project that will be in a perpetual flux/WIP as its primary purpose is to expand my knowledge of
-Objective-C and Cocoa more than anything else. Work will be slow going given that I am a family and have
-other hobby projects as well.
+a hobby project that will be a perpetual WIP as its primary purpose is to expand my knowledge of
+Objective-C and Cocoa more than anything else. Work will be slow going given that I am a family man and
+have other hobby projects as well.
 
 Beware of hardcoded paths.
 
