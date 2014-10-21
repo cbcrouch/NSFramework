@@ -76,33 +76,9 @@
 
             // loop through all values and convert them into NFLightingModel objects
             NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];
-            for (NSValue *value in [wavefrontObj materialsArray]) {
-                PhongMaterial_t mat;
-                [value getValue:&mat];
-
-                NFSurfaceModel *surface = [[[NFSurfaceModel alloc] init] autorelease];
-
-                surface.name = mat.name;
-                surface.Ns = mat.Ns;
-                surface.Ni = mat.Ni;
-                surface.Tr = mat.Tr;
-                surface.Tf = convertCfloatArrayToNS(mat.Tf);
-                surface.illum = mat.illum;
-                surface.Ka = convertCfloatArrayToNS(mat.Ka);
-                surface.Kd = convertCfloatArrayToNS(mat.Kd);
-                surface.Ks = convertCfloatArrayToNS(mat.Ks);
-                surface.Ke = convertCfloatArrayToNS(mat.Ke);
-                surface.map_Ka = mat.map_Ka;
-                surface.map_Kd = mat.map_Kd;
-                surface.map_Ks = mat.map_Ks;
-                surface.map_Ns = mat.map_Ns;
-
-                // not yet implemented
-                //surface.map_Tr = mat.map_Tr;
-                //surface.map_bump = mat.map_bump;
-                //surface.map_disp = mat.map_disp;
-                //surface.map_decalT = mat.map_decalT;
-
+            for (NFSurfaceModel *surface in [wavefrontObj materialsArray]) {
+                // would convert the asset surface model to the internal framework
+                // representation here if they were different
                 [surfaceModels addObject:surface];
             }
 

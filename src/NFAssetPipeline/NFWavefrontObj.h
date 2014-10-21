@@ -8,8 +8,8 @@
 #import <Foundation/Foundation.h>
 
 #import "NFAssetData.h"
+#import "NFSurfaceModel.h"
 
-//#import "NFSurfaceModel.h"
 
 //
 // TODO: should remove use of these enums and the PhongMaterial_t struct and use the surface
@@ -46,44 +46,6 @@ typedef struct xyz3f_t {
     float y;
     float z;
 } Vertex3f_t, Vector3f_t;
-
-typedef struct PhongMaterial_t {
-    NSString *name;
-
-    float Ns; // specular coefficient
-    float Ni; // optical density (also known as index of refraction)
-
-    // dissolve factor e.g. d -halo 0.0 or d 0.0
-    float d;
-    BOOL dHalo;
-
-    float Tr; // transparency
-
-    float Tf[3]; // transmission filter
-
-    NSInteger illum; // illumination model
-
-    float Ka[3]; // ambient color
-    float Kd[3]; // diffuse color
-    float Ks[3]; // specular color
-
-    float Ke[3]; // emissive color
-
-
-    //
-    // TODO: record as an NSImage and then parse to an NFDataMap in the category that way
-    //       can remove the dependency on renderer internals from the Wavefront obj parsing
-    //
-    NFDataMap *map_Ka; // ambient color texture map (will be same as diffuse most of the time)
-    NFDataMap *map_Kd; // diffuse color texture map
-    NFDataMap *map_Ks; // specular color texture map
-    NFDataMap *map_Ns; // specular highlight component
-
-    //NFDataMap *map_Tr; // transparency map ??
-
-    //NFDataMap *map_bump; // or broken out into: bump, disp, decalT
-    
-} PhongMaterial_t;
 
 
 // container for Wavefront object

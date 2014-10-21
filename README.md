@@ -14,15 +14,15 @@ Beware of hardcoded paths.
 Dependencies
 ------------
 
-OS X 10.9
-OpenGL 4.1 compatible GPU
+OS X 10.10
+OpenGL 4.1 compatible GPUe
 
 Building
 --------
 
 ### Prerequisites
 
-XCode 5
+XCode 6.1
 (XCode Command Line Tools optional but recommended)
 
 ### Getting source

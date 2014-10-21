@@ -29,12 +29,12 @@ static const char *g_texType = @encode(MapCoord3f_t);
 static const char *g_normType = @encode(Vector3f_t);
 // g_paramType
 
-void (^wfParseTriplet)(NSString *, NSString *, float[3]) = ^ void (NSString *line, NSString *prefix, float triplet[3]) {
+void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *line, NSString *prefix, NSArray *triplet) {
     NSString *truncLine = [line substringFromIndex:[prefix length]];
     NSArray *words = [truncLine componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    for (int i=0; i<3; i++) {
-        triplet[i] = [[words objectAtIndex:i] floatValue];
-    }
+    [triplet initWithObjects:[NSNumber numberWithFloat:[[words objectAtIndex:0] floatValue]],
+     [NSNumber numberWithFloat:[[words objectAtIndex:1] floatValue]],
+     [NSNumber numberWithFloat:[[words objectAtIndex:2] floatValue]], nil];
 };
 
 //
@@ -426,7 +426,6 @@ void (^wfParseTriplet)(NSString *, NSString *, float[3]) = ^ void (NSString *lin
 
     NSArray *lines = [self.mtlSource componentsSeparatedByString:@"\n"];
 
-    static const char *g_matType = @encode(PhongMaterial_t);
     BOOL matValid = NO;
 
     static NSString *g_newMatPrefix = @"newmtl "; // create a new struct of the given name
@@ -445,7 +444,8 @@ void (^wfParseTriplet)(NSString *, NSString *, float[3]) = ^ void (NSString *lin
 
     static NSString *g_mapKdPrefix = @"map_Kd "; // diffuse color texture map=
 
-    PhongMaterial_t mat;
+    NFSurfaceModel *mat = [[[NFSurfaceModel alloc] init] autorelease];
+
     for (NSString *line in lines) {
         // TODO: may have to handle leading whitespace in obj file as well unless the spec
         //       officially forbids it
@@ -537,9 +537,12 @@ void (^wfParseTriplet)(NSString *, NSString *, float[3]) = ^ void (NSString *lin
     }
 
     if (matValid == YES) {
+
         // finished parsing material add it to the object's materials array
-        NSValue *value = [NSValue value:&mat withObjCType:g_matType];
-        [self.materialsArray addObject:value];
+        //NSValue *value = [NSValue value:&mat withObjCType:g_matType];
+        //[self.materialsArray addObject:value];
+
+        [[self materialsArray] addObject:mat];
     }
 }
 
