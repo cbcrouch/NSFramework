@@ -146,12 +146,13 @@
                 [subset setDrawMode:kDrawLines];
             }
 
-            //
-            // TODO: the loadAxisSurface requires a default model, need to ensure that it
-            //       only gets a default model or implement this in a less hack-y manner
-            //
             NFSurfaceModel *surface = [NFSurfaceModel defaultModel];
+
             [asset loadAxisSurface:surface];
+
+            //
+            // TODO: need to modify the texture coordinates
+            //
 
             NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];
             [surfaceModels addObject:surface];

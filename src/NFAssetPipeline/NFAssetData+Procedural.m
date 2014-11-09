@@ -208,26 +208,17 @@
     // y - green
     // z - blue
     static unsigned char texture2d[] = {
-        255,  0,  0,255,    0,255,  0,255,
-          0,  0,255,255,  255,255,255,255
-    };
-
-/*
-    static unsigned char texture2d_ex[] = {
         255,  0,  0,255,   128,  0,  0,255,  // red and light red
         0,255,  0,255,     0,128,  0,255,    // green and light green
         0,  0,255,255,     0,  0,128,255,    // blue and light blue
         255,255,255,255,   255,255,255,255   // padding to make texture 2x4
     };
-*/
 
-    //
-    // TODO: expand texture size so that negative axis are lighter colored
-    //
+    [[surface map_Kd] setWidth:2];
+    [[surface map_Kd] setHeight:4];
 
     CGRect size = CGRectMake(0.0, 0.0, surface.map_Kd.width, surface.map_Kd.height);
     [surface.map_Kd loadWithData:texture2d ofSize:size ofType:surface.map_Kd.type withFormat:surface.map_Kd.format];
-
 }
 
 - (void) createPlaneOfSize:(NSInteger)size {
