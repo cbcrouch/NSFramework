@@ -85,9 +85,3 @@ DerivedData
 # http://guides.cocoapods.org/using/using-cocoapods.html#should-i-ignore-the-pods-directory-in-source-control
 #
 # Pods/
-
-NOTES.txt
-
-src/NSGLFramework.xcodeproj/project.xcworkspace/xcuserdata/cayce.xcuserdatad/UserInterfaceState.xcuserstate
-
-src/NSGLFramework.xcodeproj/project.xcworkspace/xcuserdata/cayce.xcuserdatad/UserInterfaceState.xcuserstate
