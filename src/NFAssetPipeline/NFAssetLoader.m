@@ -150,10 +150,6 @@
 
             [asset loadAxisSurface:surface];
 
-            //
-            // TODO: need to modify the texture coordinates
-            //
-
             NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];
             [surfaceModels addObject:surface];
 

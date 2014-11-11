@@ -162,7 +162,7 @@
 
     // setup OpenGL state that will never change
     //glClearColor(1.0f, 0.0f, 1.0f, 1.0f); // hot pink for hot debugging
-    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+    glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -215,15 +215,14 @@
     prevVideoTime = outputTime->videoTime;
 }
 
-
 //
 // TODO: renderFrame should take a camera, scene/PVS, and pipeline object as params
 //       (viewport will be set ahead of time for the renderer instance)
 //
 - (void) renderFrame {
 
-/*
     // frame drop test (should see solid yellow background)
+/*
     static bool flip = true;
     if (flip) {
         glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
@@ -236,6 +235,7 @@
 */
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
     glUseProgram(m_hProgram);
 
     //

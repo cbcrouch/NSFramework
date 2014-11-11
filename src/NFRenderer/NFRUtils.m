@@ -130,7 +130,7 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
     //
 
     // for every possible attribute set in the VAO
-    for (GLuint i=0; i < 16; i++) {
+    for (GLuint i=0; i < 16; ++i) {
         // get the VBO set for that attribute
         glGetVertexAttribiv(i, GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING, (GLint *)&hBuffer);
 
@@ -337,7 +337,7 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
 
     GLint *matStride = (GLint *)malloc(active * sizeof(GLint));
     glGetActiveUniformsiv(m_hProgram, active, indices, GL_UNIFORM_MATRIX_STRIDE, matStride);
-    for (int i=0; i<2; i++) {
+    for (int i=0; i<2; ++i) {
         NSLog(@"matStride: %d", matStride[i]);
     }
 

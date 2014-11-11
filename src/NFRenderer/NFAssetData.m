@@ -145,7 +145,7 @@ typedef struct NFVertState_t {
     min_y = max_y = self.vertices->pos[1];
     min_z = max_z = self.vertices->pos[2];
 
-    for (NSInteger i = 0; i < self.numVertices; i++) {
+    for (NSInteger i = 0; i < self.numVertices; ++i) {
         if (self.vertices[i].pos[0] < min_x) { min_x = self.vertices[i].pos[0]; }
         if (self.vertices[i].pos[0] > max_x) { max_x = self.vertices[i].pos[0]; }
         if (self.vertices[i].pos[1] < min_y) { min_y = self.vertices[i].pos[1]; }

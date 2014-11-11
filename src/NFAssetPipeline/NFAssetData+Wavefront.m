@@ -20,7 +20,7 @@ typedef NS_ENUM(NSUInteger, FaceGroupType) {
     NSMutableArray *tempArray = [[[NSMutableArray alloc] initWithCapacity:numSubsets] autorelease];
 
     NFSubset *subset;
-    for (int i=0; i<numSubsets; i++) {
+    for (int i=0; i<numSubsets; ++i) {
         subset = [[[NFSubset alloc] init] autorelease];
         [tempArray addObject:subset];
     }
@@ -120,7 +120,7 @@ typedef NS_ENUM(NSUInteger, FaceGroupType) {
 
         NSUInteger count = [groupParts count];
         NSInteger intValue;
-        for (NSUInteger i=0; i<count; i++) {
+        for (NSUInteger i=0; i<count; ++i) {
             // NOTE: will have an empty string i.e. "" at the texture coordinate position when
             //       there is no texture coordinate given and this will return an intValue of 0
             intValue = [[groupParts objectAtIndex:i] intValue];

@@ -89,7 +89,7 @@
         [value getValue:&encodedFace];
 
         if (encodedFace.indices[0] == index || encodedFace.indices[1] == index || encodedFace.indices[2] == index) {
-            for (int i=0; i<4; i++) {
+            for (int i=0; i<4; ++i) {
                 normal.v[i] = encodedFace.normal[i];
             }
             normal = GLKVector4MultiplyScalar(normal, encodedFace.area);

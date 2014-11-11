@@ -168,7 +168,7 @@ void main (void)
     vec3 N = normalize(vN);
     vec4 finalColor = vec4(0.0, 0.0, 0.0, 0.0);
 
-    for (int i=0;i<MAX_LIGHTS;i++)
+    for (int i=0; i<MAX_LIGHTS; ++i)
     {
         vec3 L = normalize(gl_LightSource[i].position.xyz - v);
         vec3 E = normalize(-v); // we are in Eye Coordinates, so EyePos is (0,0,0)
