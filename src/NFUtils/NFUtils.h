@@ -46,6 +46,6 @@ static NSArray * (^convertCfloatArrayToNS)(float[3]) = ^ NSArray * (float triple
 + (NFFace_t) calculateFaceWithPoints:(NFVertex_t *)vertices withIndices:(GLushort *)indices;
 
 + (GLKVector4) calculateAreaWeightedNormalOfIndex:(GLushort)index withFaces:(NSArray *)faceArray;
-+ (GLKVector4) calculateAngleWeightedNormalOfVertex:(GLfloat[4])vertex withFaces:(NSArray *)faceArray;;
++ (GLKVector4) calculateAngleWeightedNormalOfVertex:(GLfloat[4])vertex withFaces:(NSArray *)faceArray;
 
 @end

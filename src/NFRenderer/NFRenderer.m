@@ -118,22 +118,27 @@
     [self loadShaders];
     [self updateUBO];
 
+    NSString *fileNamePath;
 
-    //NSString *fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
-    NSString *fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
+    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
+    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
+    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
 
     //
-    // TODO: calculate normals for the teapot so that it can be lit
+    // TODO: calculate normals for the teapot so that it can be lit, and import RGB based textures
     //
-    //NSString *fileNamePath = @"/Users/cayce/Developer/NSGL/Models/teapot/teapot.obj";
+    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/teapot/teapot.obj";
 
     //
     // TODO: the following models have no textures applied to them (the suzanne model also has no normals) and
     //       should have a lighting model applied to them in order to verify they are being correctly imported
     //
-    //NSString *fileNamePath = @"/Users/cayce/Developer/NSGL/Models/suzanne.obj";
-    //NSString *fileNamePath = @"/Users/cayce/Developer/NSGL/Models/buddha.obj";
-    //NSString *fileNamePath = @"/Users/cayce/Developer/NSGL/Models/dragon.obj";
+    //       also the buddha and dragon models do not get drawn correctly, it looks like they might have a
+    //       different primitive mode
+    //
+    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/suzanne.obj";
+    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/buddha.obj";
+    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/dragon.obj";
 
 
     //

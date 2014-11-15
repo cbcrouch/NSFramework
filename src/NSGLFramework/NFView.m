@@ -48,8 +48,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 @property (nonatomic, retain) NSOpenGLPixelFormat *pixelFormat;
 @property (nonatomic, retain) NFRenderer *glRenderer;
 
-// TODO: organize methods and add pragmas to define regions
-
 // instance methods
 - (void) setupTiming;
 - (void) setupOpenGL;
@@ -65,8 +63,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 @synthesize pixelFormat = _pixelFormat;
 @synthesize glRenderer = _glRenderer;
 
+//
 // TODO: shouldn't be performing error checking beyond debug asserts but rather have the platform
 //       detection/analysis code determine whether the application will run or not
+//
 
 static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp* now,
                                     const CVTimeStamp* outputTime, CVOptionFlags flagsIn,
@@ -76,8 +76,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     return result;
 }
 
+//
 // TODO: add some NOTEs explaining why initWithFrame won't get called and initWithCoder will
 //       plus include some text on why both are implemented
+//
 - (id) initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self == nil) {
@@ -195,11 +197,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //m_minHostDelta = CVGetHostClockMinimumTimeDelta();
 }
 
-
-//
-// TODO: parse events and update the renderer's camera object
-//
-
 - (BOOL) acceptsFirstResponder {
     return YES;
 }
@@ -208,14 +205,21 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 //    return YES;
 //}
 
-
-//
-// TODO: need to determine how to set the key repeat delay
-//
 - (void) keyDown:(NSEvent *)theEvent {
     unichar key = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
     switch (key) {
         case 'w':
+            //
+            // TODO: camera should have a get/set motionVector, on key down get the motion vector
+            //       and then update the correct component and set it, on key up get the motion vector
+            //       and zero out the correct component
+            //
+
+            //
+            // TODO: rather than call the camera methods to update the motion vector / position
+            //       directly the keyDown/Up events should merely set camera state and return immediately
+            //
+
             [self.glRenderer translateCameraZ:0.1f];
             break;
 
@@ -237,8 +241,26 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 }
 
 - (void) keyUp:(NSEvent *)theEvent {
-    //NSLog(@"NFView received a keyUp event");
-    [super keyUp:theEvent];
+
+    //[super keyUp:theEvent];
+
+    unichar key = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
+    switch (key) {
+        case 'w':
+            break;
+
+        case 's':
+            break;
+
+        case 'a':
+            break;
+
+        case 'd':
+            break;
+
+        default:
+            break;
+    }
 }
 
 - (void) mouseDown:(NSEvent *)theEvent {

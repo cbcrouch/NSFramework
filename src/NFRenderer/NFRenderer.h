@@ -26,6 +26,54 @@
 - (void) resizeToRect:(CGRect) rect;
 
 
+
+//
+// TODO: start to break out shims currently located in the renderer into roughly the
+//       following subsystems:
+//
+
+// NFMechanics
+// - entity management system
+// - entity state machine parent class
+// - cameras
+
+
+// NFArtificalIntelligence
+// - goals and decision making
+// - actions (engine interface)
+// - path finding
+// - sight tracing / perception
+
+
+// NFPhysicsModel
+// - collisions
+// - soft bodies
+// - etc.
+
+// contact manifolds need to be output to the renderer for deforming meshes
+
+
+// NFAudio
+// - continous output
+// - play effect
+// - etc.
+
+
+// should probably break out the scene concept into a high level container
+// and a lower level renderer interface that performs occlusion culling etc.
+
+// could be broken into NFResourceCache and NFDisplaySet
+
+// NFScene
+// - level
+// - display set
+// - PVS
+
+
+
+//
+// TODO: replace these methods with the NFCamera implementation
+//
 - (void) translateCameraX:(float) value;
 - (void) translateCameraY:(float) value;
 - (void) translateCameraZ:(float) value;

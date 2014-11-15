@@ -82,8 +82,16 @@ typedef struct xyz3f_t {
 - (instancetype) init;
 - (void) dealloc;
 
+//
+// TODO: load and write methods should return an error of some kind if they fail
+//
 - (void) loadFileWithPath:(NSString *)filePath;
 - (void) loadFile:(NSString *)fileName; // inBundle:(NSBundle)bundle
+
+//
+// TODO: add ability to write Wavefront object files
+//
+//- (void) writeAsset:(NFAssetData *)assetData toFile:(NSString *)filePath;
 
 - (void) parseFile;
 

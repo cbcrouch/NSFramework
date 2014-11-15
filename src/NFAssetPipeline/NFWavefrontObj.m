@@ -576,6 +576,8 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
     CGColorSpaceRef colorSpace = CGImageGetColorSpace(cgImage);
     CGColorSpaceModel colorModel = CGColorSpaceGetModel(colorSpace);
 
+    CGBitmapInfo bitmapInfo = (CGBitmapInfo)kCGImageAlphaNone;
+
     //
     // TODO: remove all OpenGL dependencies from asset parsing/processing by defining common data types
     //       (this will help keep the framework portable should the Metal API come to OS X)
@@ -583,6 +585,12 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
     if (colorModel == kCGColorSpaceModelRGB) {
         if ([imageClass hasAlpha]) {
             format = GL_RGBA;
+
+            //
+            // TODO: add alpha support to texture loading and rendering
+            //
+            //bitmapInfo = (CGBitmapInfo)kCGImageAlphaLast;
+            bitmapInfo = (CGBitmapInfo)kCGImageAlphaNoneSkipLast;
         }
         else {
             NSLog(@"WARNING: RGB image format has not been tested");
@@ -606,11 +614,29 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 
     BOOL flipVertical = YES;
 
+
+    //
+    // TODO: CGBitmapContextCreate is failing when loading the RGB teapot texture
+    //
+
+    NSLog(@"size of texture: (%f, %f)", CGRectGetWidth(mapSize), CGRectGetHeight(mapSize));
+    NSLog(@"rowByteSize: %ld", rowByteSize);
+    NSLog(@"bitsPerComponent: %ld", bitsPerComponent);
+
+
+    //
+    //<Error>: CGBitmapContextCreate: unsupported parameter combination: 8 integer bits/component;
+    //    24 bits/pixel; 3-component color space; kCGImageAlphaNone; 384 bytes/row.
+    //
+
     // NOTE: as stated by the Apple developer docs
     // "The constants for specifying the alpha channel information are declared with the CGImageAlphaInfo type but can be passed to this parameter safely."
     CGContextRef context = CGBitmapContextCreate(pData, CGRectGetWidth(mapSize), CGRectGetHeight(mapSize),
                                                  bitsPerComponent, rowByteSize, CGImageGetColorSpace(cgImage),
-                                                 (CGBitmapInfo)kCGImageAlphaNoneSkipLast);
+                                                 bitmapInfo);
+
+
+
     CGContextSetBlendMode(context, kCGBlendModeCopy);
     if (flipVertical) {
         CGContextTranslateCTM(context, 0.0, CGRectGetHeight(mapSize));
@@ -628,7 +654,8 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
     // NSTexturedBackgroundWindowMask
     // NSBorderlessWindowMask // use to make it a splash screen
 
-    CGRect imageRect = CGMakeRect(0, 0, [nsimage size].width, [nsimage size].height);
+    CGRect imageRect = CGRectMake(0, 0, [nsimage size].width, [nsimage size].height);
+
     NSWindow *imageWindow = [[NSWindow alloc] initWithContentRect:imageRect
                                                         styleMask:winStyleMask
                                                           backing:NSBackingStoreBuffered

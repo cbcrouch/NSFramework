@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2306F40B1886116E008031BD /* NFView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2306F40A1886116E008031BD /* NFView.m */; };
+		232BDD981A15A17500BB8A6C /* NFUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 232BDD971A15A17500BB8A6C /* NFUtils.m */; };
 		233214D81901F9FD0006EFA3 /* NFAssetLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 233214D71901F9FD0006EFA3 /* NFAssetLoader.m */; };
 		233797EE1885E1CA00399EBA /* NFWavefrontObj.m in Sources */ = {isa = PBXBuildFile; fileRef = 233797EC1885E1CA00399EBA /* NFWavefrontObj.m */; };
 		233797F31885E1DF00399EBA /* NFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 233797F01885E1DF00399EBA /* NFRenderer.m */; };
@@ -30,7 +31,8 @@
 		234E2CE2188382CC00AF8F23 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 234E2CC1188382CC00AF8F23 /* Cocoa.framework */; };
 		234E2CEA188382CC00AF8F23 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 234E2CE8188382CC00AF8F23 /* InfoPlist.strings */; };
 		234E2CEC188382CC00AF8F23 /* NSGLFrameworkTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 234E2CEB188382CC00AF8F23 /* NSGLFrameworkTests.m */; };
-		237672341890681200AE8A5C /* NFUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 237672331890681200AE8A5C /* NFUtils.m */; };
+		238156211A16A1460018ECF3 /* NFSimulation.m in Sources */ = {isa = PBXBuildFile; fileRef = 238156201A16A1460018ECF3 /* NFSimulation.m */; };
+		238156241A16A1A10018ECF3 /* NFCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 238156231A16A1A10018ECF3 /* NFCamera.m */; };
 		2389D3B219A1909100DD6908 /* NFLightSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2389D3B119A1909100DD6908 /* NFLightSource.m */; };
 		23A8095B1901B8730062445D /* NFViewVolume.m in Sources */ = {isa = PBXBuildFile; fileRef = 23A8095A1901B8730062445D /* NFViewVolume.m */; };
 		23A8095E1901BF340062445D /* NFAssetData+Procedural.m in Sources */ = {isa = PBXBuildFile; fileRef = 23A8095D1901BF340062445D /* NFAssetData+Procedural.m */; };
@@ -52,6 +54,8 @@
 /* Begin PBXFileReference section */
 		2306F4091886116E008031BD /* NFView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NFView.h; sourceTree = "<group>"; };
 		2306F40A1886116E008031BD /* NFView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NFView.m; sourceTree = "<group>"; };
+		232BDD961A15A17500BB8A6C /* NFUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFUtils.h; path = NFUtils/NFUtils.h; sourceTree = "<group>"; };
+		232BDD971A15A17500BB8A6C /* NFUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFUtils.m; path = NFUtils/NFUtils.m; sourceTree = "<group>"; };
 		233214D61901F9FD0006EFA3 /* NFAssetLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFAssetLoader.h; path = NFAssetPipeline/NFAssetLoader.h; sourceTree = "<group>"; };
 		233214D71901F9FD0006EFA3 /* NFAssetLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFAssetLoader.m; path = NFAssetPipeline/NFAssetLoader.m; sourceTree = "<group>"; };
 		233797EB1885E1CA00399EBA /* NFWavefrontObj.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFWavefrontObj.h; path = NFAssetPipeline/NFWavefrontObj.h; sourceTree = "<group>"; };
@@ -83,8 +87,10 @@
 		234E2CE7188382CC00AF8F23 /* NSGLFrameworkTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NSGLFrameworkTests-Info.plist"; sourceTree = "<group>"; };
 		234E2CE9188382CC00AF8F23 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		234E2CEB188382CC00AF8F23 /* NSGLFrameworkTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSGLFrameworkTests.m; sourceTree = "<group>"; };
-		237672321890681200AE8A5C /* NFUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFUtils.h; path = NSUtils/NFUtils.h; sourceTree = "<group>"; };
-		237672331890681200AE8A5C /* NFUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFUtils.m; path = NSUtils/NFUtils.m; sourceTree = "<group>"; };
+		2381561F1A16A1460018ECF3 /* NFSimulation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFSimulation.h; path = NFSimulation/NFSimulation.h; sourceTree = "<group>"; };
+		238156201A16A1460018ECF3 /* NFSimulation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFSimulation.m; path = NFSimulation/NFSimulation.m; sourceTree = "<group>"; };
+		238156221A16A1A10018ECF3 /* NFCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFCamera.h; path = NFMechanics/NFCamera.h; sourceTree = "<group>"; };
+		238156231A16A1A10018ECF3 /* NFCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFCamera.m; path = NFMechanics/NFCamera.m; sourceTree = "<group>"; };
 		2389D3B019A1909100DD6908 /* NFLightSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFLightSource.h; path = NFRenderer/NFLightSource.h; sourceTree = "<group>"; };
 		2389D3B119A1909100DD6908 /* NFLightSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFLightSource.m; path = NFRenderer/NFLightSource.m; sourceTree = "<group>"; };
 		23A809591901B8730062445D /* NFViewVolume.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFViewVolume.h; path = NFRenderer/NFViewVolume.h; sourceTree = "<group>"; };
@@ -180,7 +186,9 @@
 			isa = PBXGroup;
 			children = (
 				233797E71885E05100399EBA /* NFAssetPipeline */,
+				2381561D1A16A1030018ECF3 /* NFMechanics */,
 				233797E81885E06C00399EBA /* NFRenderer */,
+				2381561E1A16A10E0018ECF3 /* NFSimulation */,
 				234E2CC7188382CC00AF8F23 /* NSGLFramework */,
 				23767231189067F700AE8A5C /* NFUtils */,
 				233797F51885E21600399EBA /* Shaders */,
@@ -266,10 +274,28 @@
 		23767231189067F700AE8A5C /* NFUtils */ = {
 			isa = PBXGroup;
 			children = (
-				237672321890681200AE8A5C /* NFUtils.h */,
-				237672331890681200AE8A5C /* NFUtils.m */,
+				232BDD961A15A17500BB8A6C /* NFUtils.h */,
+				232BDD971A15A17500BB8A6C /* NFUtils.m */,
 			);
 			name = NFUtils;
+			sourceTree = "<group>";
+		};
+		2381561D1A16A1030018ECF3 /* NFMechanics */ = {
+			isa = PBXGroup;
+			children = (
+				238156221A16A1A10018ECF3 /* NFCamera.h */,
+				238156231A16A1A10018ECF3 /* NFCamera.m */,
+			);
+			name = NFMechanics;
+			sourceTree = "<group>";
+		};
+		2381561E1A16A10E0018ECF3 /* NFSimulation */ = {
+			isa = PBXGroup;
+			children = (
+				2381561F1A16A1460018ECF3 /* NFSimulation.h */,
+				238156201A16A1460018ECF3 /* NFSimulation.m */,
+			);
+			name = NFSimulation;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -375,16 +401,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				233797F31885E1DF00399EBA /* NFRenderer.m in Sources */,
+				232BDD981A15A17500BB8A6C /* NFUtils.m in Sources */,
+				238156241A16A1A10018ECF3 /* NFCamera.m in Sources */,
 				234E2CD5188382CC00AF8F23 /* AppDelegate.m in Sources */,
 				234E2CCE188382CC00AF8F23 /* main.m in Sources */,
 				233797EE1885E1CA00399EBA /* NFWavefrontObj.m in Sources */,
 				23A8095B1901B8730062445D /* NFViewVolume.m in Sources */,
+				238156211A16A1460018ECF3 /* NFSimulation.m in Sources */,
 				2389D3B219A1909100DD6908 /* NFLightSource.m in Sources */,
 				233214D81901F9FD0006EFA3 /* NFAssetLoader.m in Sources */,
 				23E9874018DCAC7000F76B1A /* NFAssetData+Wavefront.m in Sources */,
 				2306F40B1886116E008031BD /* NFView.m in Sources */,
 				23A8095E1901BF340062445D /* NFAssetData+Procedural.m in Sources */,
-				237672341890681200AE8A5C /* NFUtils.m in Sources */,
 				23E9873A18DCA71300F76B1A /* NFAssetData.m in Sources */,
 				233797F41885E1DF00399EBA /* NFRUtils.m in Sources */,
 				23D86B2119192C4A00BCC83B /* NFSurfaceModel.m in Sources */,
