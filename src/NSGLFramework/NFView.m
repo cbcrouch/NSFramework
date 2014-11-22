@@ -8,6 +8,7 @@
 // application headers
 #import "NFView.h"
 #import "NFRenderer.h"
+#import "NFCamera.h"
 
 // Cocoa headers
 #import <QuartzCore/CVDisplayLink.h>
@@ -46,7 +47,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 // NOTE: only public parts of CGL API are for full screen contexts, using NSGL
 @property (nonatomic, retain) NSOpenGLContext *glContext;
 @property (nonatomic, retain) NSOpenGLPixelFormat *pixelFormat;
+
 @property (nonatomic, retain) NFRenderer *glRenderer;
+@property (nonatomic, retain) NFCamera *camera;
+
 
 // instance methods
 - (void) setupTiming;
@@ -61,7 +65,9 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 @synthesize displayLink = _displayLink;
 @synthesize glContext = _glContext;
 @synthesize pixelFormat = _pixelFormat;
+
 @synthesize glRenderer = _glRenderer;
+@synthesize camera = _camera;
 
 //
 // TODO: shouldn't be performing error checking beyond debug asserts but rather have the platform
@@ -209,30 +215,44 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     unichar key = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
     switch (key) {
         case 'w':
-            //
-            // TODO: camera should have a get/set motionVector, on key down get the motion vector
-            //       and then update the correct component and set it, on key up get the motion vector
-            //       and zero out the correct component
-            //
+
+            [self.glRenderer translateCameraZ:0.1f];
 
             //
             // TODO: rather than call the camera methods to update the motion vector / position
-            //       directly the keyDown/Up events should merely set camera state and return immediately
+            //       directly the keyDown/Up events should merely set a camera event and return immediately
+            //       so as not to block the UI thread
             //
 
-            [self.glRenderer translateCameraZ:0.1f];
+            [self.camera setState:kCameraStateActFwd]; // camera will need to be thread safe
+
+            // values to be applied will be determined by a configuration and/or modified
+            // by the game code itself (e.g. camera can be jumping while moving forward)
+
+            // camera should be updated in the getFrameForTime method for the time being, in a future
+            // update the render frame update/pacing and simulation update should be processed separately
+
             break;
 
         case 's':
             [self.glRenderer translateCameraZ:-0.1f];
+
+            [self.camera setState:kCameraStateActBack];
+
             break;
 
         case 'a':
             [self.glRenderer translateCameraX:0.1f];
+
+            //[self.camera setState:kCameraStateActRight];
+
             break;
 
         case 'd':
             [self.glRenderer translateCameraX:-0.1f];
+
+            //[self.camera setState:kCameraStateActLeft];
+
             break;
 
         default:
@@ -241,21 +261,22 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 }
 
 - (void) keyUp:(NSEvent *)theEvent {
-
-    //[super keyUp:theEvent];
-
     unichar key = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
     switch (key) {
         case 'w':
+            [self.camera setState:kCameraStateNilFwd];
             break;
 
         case 's':
+            [self.camera setState:kCameraStateNilBack];
             break;
 
         case 'a':
+            //[self.camera setState:kCameraStateNilRight];
             break;
 
         case 'd':
+            //[self.camera setState:kCameraStateNilLeft];
             break;
 
         default:
@@ -335,6 +356,11 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     [self.glContext makeCurrentContext];
     self.glRenderer = [[[NFRenderer alloc] init] autorelease];
     NSAssert(self.glRenderer != nil, @"Failed to initialize and create NSGLRenderer");
+
+    //
+    // TODO: should move the camera ownership into NFSimulation (or where ever the main update loop will be)
+    //
+    self.camera = [[[NFCamera alloc] init] autorelease];
 }
 
 - (void) setupDisplayLink {
@@ -402,6 +428,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     // "step scene" with lastest time delta
     [self.glRenderer updateFrameWithTime:outputTime];
 
+
+    //
+    // TODO: rendering should be performed on a scene with a camera and assigned to a viewport
+    //
 
     // perform drawing code
     [self.glRenderer renderFrame];

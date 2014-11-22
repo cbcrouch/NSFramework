@@ -14,8 +14,6 @@
 
 @interface NFView : NSView
 
-// TODO: organize by overridden methods and new class/instance methods
-
 - (id) initWithFrame:(CGRect)frame;
 - (id) initWithCoder:(NSCoder *)aDecoder;
 - (void) dealloc;
