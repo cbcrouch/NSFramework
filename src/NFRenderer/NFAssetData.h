@@ -12,12 +12,13 @@
 
 
 //
-// TODO: use ALIGN macro
+// TODO: use ALIGN macro on structures to ensure cache friendliness
 //
 
 #define NFLOATS_POS 4
 #define NFLOATS_NORM 4
 #define NFLOATS_TEX 3
+
 typedef struct NFVertex_t {
     // NOTE: w component of norm should be 0.0, and 1.0 for position (according to GLSL documentation
     //       for vectors w = 0 and for points w = 1)
@@ -25,7 +26,6 @@ typedef struct NFVertex_t {
     GLfloat norm[4];
     GLfloat texCoord[3];
 } NFVertex_t;
-
 
 typedef struct NFFace_t {
     GLushort indices[3];
@@ -41,7 +41,6 @@ typedef struct NFFace_t {
     GLfloat area;
 } NFFace_t;
 
-static const char *g_faceType = @encode(NFFace_t);
 
 
 //

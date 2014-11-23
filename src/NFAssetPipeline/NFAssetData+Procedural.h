@@ -22,6 +22,10 @@
 - (void) createPlaneOfSize:(NSInteger)size;
 
 
++ (NFFace_t) calculateFaceWithPoints:(NFVertex_t *)vertices withIndices:(GLushort *)indices;
++ (GLKVector4) calculateAreaWeightedNormalOfIndex:(GLushort)index withFaces:(NSArray *)faceArray;
++ (GLKVector4) calculateAngleWeightedNormalOfVertex:(GLfloat[4])vertex withFaces:(NSArray *)faceArray;
+
 
 //
 // TODO: use the following geometries to visualize lights

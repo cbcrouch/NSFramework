@@ -56,6 +56,10 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 
 //- (void) pushMotionVector(NFMotionVector) motionVec;
 
+//
+// TODO: define NFMotionVector in NFUtils ??
+//
+
 
 @property (nonatomic, readonly, assign) GLKVector4 motionVector;
 @property (nonatomic, readonly, assign) GLKVector4 position;

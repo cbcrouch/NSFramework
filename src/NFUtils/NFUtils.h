@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "NFAssetData.h"
-
 // NOTE: "the abstime unit is equal to the length of one bus cycle" according to Mach documentation
 
 typedef uint64_t MACH_TIME;
@@ -38,14 +36,16 @@ static NSArray * (^convertCfloatArrayToNS)(float[3]) = ^ NSArray * (float triple
 };
 
 
+//
+// TODO: NFMotionVector implementation should be moved to the animation module
+//
+
+//@interface NFMotionVector : NSObject
+//@property(nonatomic, assign) GLKVector4 vector;
+//@property(nonatomic, assign) NSInteger rate;
+//@end
+
+
 @interface NFUtils : NSObject
-
-//
-// NOTE: this method will use the first three values from indices to access the vertices memory
-//
-+ (NFFace_t) calculateFaceWithPoints:(NFVertex_t *)vertices withIndices:(GLushort *)indices;
-
-+ (GLKVector4) calculateAreaWeightedNormalOfIndex:(GLushort)index withFaces:(NSArray *)faceArray;
-+ (GLKVector4) calculateAngleWeightedNormalOfVertex:(GLfloat[4])vertex withFaces:(NSArray *)faceArray;
 
 @end

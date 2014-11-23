@@ -17,6 +17,9 @@ typedef NS_ENUM(NSUInteger, SHADER_TYPE) {
     kProgram
 };
 
+//
+// TODO: move NFUtils methods here
+//
 
 // NFRUBO_t
 // - blockIndex

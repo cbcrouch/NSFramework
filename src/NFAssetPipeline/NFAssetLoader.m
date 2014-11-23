@@ -10,8 +10,6 @@
 #import "NFAssetData+Procedural.h"
 #import "NFAssetData+Wavefront.h"
 
-#import "NFUtils.h"
-
 
 @implementation NFAssetLoader
 

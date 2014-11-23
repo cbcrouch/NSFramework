@@ -10,11 +10,11 @@
 
 #import "NFAssetLoader.h"
 #import "NFViewVolume.h"
-#import "NFUtils.h"
 
-
+//
 // TODO: find out who is including gl.h into the project (might be the display link...), one way around all this
 //       might be to skip the provided OpenGL header file and use a custom loader
+//
 
 // NOTE: because both gl.h and gl3.h are included will get symbols for deprecated GL functions
 //       and they should absolutely not be used
