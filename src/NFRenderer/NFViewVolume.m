@@ -149,4 +149,10 @@ static const char *g_matrixType = @encode(GLKMatrix4);
     [NFViewVolume updateTransform:[self projTransform]];
 }
 
+- (void) notify {
+    //
+    // TODO: either pull the needed values from NFViewVolume or set a flag to pull later
+    //
+}
+
 @end

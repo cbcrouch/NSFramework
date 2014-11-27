@@ -12,9 +12,23 @@
 #define LEFT_BIT    0x04
 #define RIGHT_BIT   0x08
 
+
+@implementation NFMotionVector
+
+@synthesize currentValue = _currentValue;
+@synthesize modifier = _modifier;
+@synthesize updateRate = _updateRate;
+
+@end
+
+
 @interface NFCamera()
 
-@property (nonatomic, assign) GLKVector4 motionVector;
+//
+//
+//
+//@property (nonatomic, assign) GLKVector4 motionVector;
+
 @property (nonatomic, assign) GLKVector4 position;
 
 @property (nonatomic, assign) NSUInteger currentState;
@@ -24,15 +38,20 @@
 
 @implementation NFCamera
 
-@synthesize motionVector = _motionVector;
+//@synthesize motionVector = _motionVector;
 @synthesize position = _position;
 
+//@synthesize hFOV = _hFOV;
+@synthesize vFOV = _vFOV;
+
 @synthesize currentState = _currentState;
+
+@synthesize observer = _observer;
 
 - (instancetype) init {
     self = [super init];
     if (self != nil) {
-        [self setMotionVector:GLKVector4Make(0.0f, 0.0f, 0.0f, 0.0f)];
+        //[self setMotionVector:GLKVector4Make(0.0f, 0.0f, 0.0f, 0.0f)];
         [self setPosition:GLKVector4Make(0.0f, 0.0f, 0.0f, 0.0f)];
         [self setCurrentState:0x00];
     }
@@ -45,7 +64,11 @@
     //
 }
 
-- (void) setState:(CAMERA_STATE) state {
+- (void) pushMotionVector:(NFMotionVector *)motionVector {
+    //
+}
+
+- (void) setState:(CAMERA_STATE)state {
     // check if current state is set and exit if it is
     if (self.currentState & state) {
         return;
@@ -97,6 +120,10 @@
             self.currentState = self.currentState & ~RIGHT_BIT;
             break;
     }
+}
+
+- (void) addObserver:(id)obj {
+    self.observer = obj;
 }
 
 @end

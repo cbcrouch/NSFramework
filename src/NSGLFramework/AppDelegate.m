@@ -10,7 +10,19 @@
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    // Insert code here to initialize your application
+    //
+    // TODO: insert code here to initialize your application
+    //
+}
+
+//
+// TODO: allow for configuring whether in "game" or "editor" mode, when in editor
+//       mode this should return NO and disable the renderer when no window is open,
+//       and in game mode should return YES so the application can't run without a
+//       window open
+//
+-(BOOL) applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)app {
+    return YES;
 }
 
 @end
