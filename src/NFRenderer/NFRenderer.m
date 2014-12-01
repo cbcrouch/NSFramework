@@ -8,8 +8,15 @@
 #import "NFRenderer.h"
 #import "NFRUtils.h"
 
-#import "NFAssetLoader.h"
 #import "NFViewVolume.h"
+
+//
+// TODO: these headers and modules shouldn't be used in the renderer and are
+//       only being used temporarily
+//
+#import "NFAssetLoader.h"
+#import "NFCamera.h"
+
 
 //
 // TODO: find out who is including gl.h into the project (might be the display link...), one way around all this
@@ -29,7 +36,7 @@
 {
     //
     // TODO: need to replace these with properties as they should always be used in place
-    //       of "naked" instance variables
+    //       of "naked" instance variables according to ObjC conventions
     //
 
     NFAssetData *m_pAsset;
@@ -43,18 +50,9 @@
     GLsizei m_viewportWidth;
     GLsizei m_viewportHeight;
 
-    //
-    // TODO: should have another file that is considered the game object/code which owns the
-    //       scene and camera and updates/draws them
-    //
-    //       NFGame // needs a better name
-    //       NFApplication
-    //
-    //
-
-    // add some basic camera control methods to the NFRenderer to get something started
-
     GLuint m_hUBO;
+
+    NFCamera *camera;
     NFViewVolume *viewVolume;
 }
 
@@ -113,6 +111,7 @@
     //
 
     viewVolume = [[NFViewVolume alloc] init];
+    camera = [[NFCamera alloc] init];
 
     [self createViewVolume];
     [self loadShaders];
@@ -187,6 +186,7 @@
     [m_planeData release];
 
     [viewVolume release];
+    [camera release];
 
     // NOTE: helper method will take care of cleaning up all shaders attached to program
     [NFRUtils destroyProgramWithHandle:m_hProgram];
@@ -336,11 +336,36 @@
                                            look.v[0], look.v[1], look.v[2],
                                            up.v[0], up.v[1], up.v[2]);
 
+    [viewVolume pushViewMatrix:view];
+
+
+
+    //
+    // TODO: projection matrix should be calculated by the NFViewVolume
+    //
+
     GLKMatrix4 projection = GLKMatrix4MakePerspective(M_PI_4, m_viewportWidth/(float)m_viewportHeight, 1.0f, 100.0f);
 
-
-    [viewVolume pushViewMatrix:view];
     [viewVolume pushProjectionMatrix:projection];
+
+
+
+    viewVolume.nearPlane = 1.0f;
+    viewVolume.farPlane = 100.0f;
+
+
+    //
+    // TODO: should be set right after initialization
+    //
+    //camera.observer = viewVolume;
+
+    camera.vFOV = (float) M_PI_4;
+    camera.width = (NSUInteger) m_viewportWidth;
+    camera.height = (NSUInteger) m_viewportHeight;
+
+    //camera.position = eye;
+
+
 }
 
 - (void) loadShaders {

@@ -71,17 +71,22 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 @property (nonatomic, assign) float vFOV; // fov Y in radians
 
 // width and height of the camera (i.e. the camera's target resolution)
+@property (nonatomic, assign) NSUInteger width;
+@property (nonatomic, assign) NSUInteger height;
 
-// keep readonly property for aspectRatio
-
-
-// to create the perspective matrix will need to provide the fovY and aspect ratio to the view volume
-// while the near and far Z will be provided by the rendering subsystem
-
-//GLK_INLINE GLKMatrix4 GLKMatrix4MakePerspective(float fovyRadians, float aspect, float nearZ, float farZ)
+@property (nonatomic, readonly, assign) float aspectRatio;
 
 
-@property (nonatomic, readonly, assign) GLKVector4 position;
+
+//
+// TODO: will need look and up vectors for the camera
+//
+@property (nonatomic, assign) GLKVector4 position;
+
+//@property (nonatomic, assign) GLKVector4 look;
+//@property (nonatomic, assign) GLKVector4 up;
+
+
 
 //
 // TODO: make sure that assign doesn't increment retain count on observer, very important
@@ -97,6 +102,8 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 - (void) step;
 
 - (void) pushMotionVector:(NFMotionVector *)motionVector;
+- (void) clearMotionVectors;
+
 - (void) setState:(CAMERA_STATE)state;
 
 // for NFDataSourceProtocol

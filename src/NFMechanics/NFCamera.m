@@ -25,13 +25,13 @@
 @interface NFCamera()
 
 //
+// TODO: make a stack of motionVectors
 //
-//
-//@property (nonatomic, assign) GLKVector4 motionVector;
-
-@property (nonatomic, assign) GLKVector4 position;
+//@property (nonatomic, assign) NFMotionVector motionVector;
 
 @property (nonatomic, assign) NSUInteger currentState;
+
+@property (nonatomic, assign) float aspectRatio;
 
 @end
 
@@ -43,10 +43,23 @@
 
 //@synthesize hFOV = _hFOV;
 @synthesize vFOV = _vFOV;
+@synthesize width = _width;
+@synthesize height = _height;
+@synthesize aspectRatio = _aspectRatio;
 
 @synthesize currentState = _currentState;
 
 @synthesize observer = _observer;
+
+- (void) setWidth:(NSUInteger)width {
+    _width = width;
+    self.aspectRatio = width / (float) self.height;
+}
+
+- (void) setHeight:(NSUInteger)height {
+    _height = height;
+    self.aspectRatio = self.width / (float) height;
+}
 
 - (instancetype) init {
     self = [super init];
@@ -65,6 +78,10 @@
 }
 
 - (void) pushMotionVector:(NFMotionVector *)motionVector {
+    //
+}
+
+- (void) clearMotionVectors {
     //
 }
 

@@ -11,6 +11,10 @@ have other hobby projects as well.
 
 Beware of hardcoded paths.
 
+The project is configured to use strict ANSI C11 (no GNU extension) and ARC has been disabled. These
+decisions were made to avoid being dependent on non-standard language/compiler features and because
+memory allocations will be managed manually.
+
 Dependencies
 ------------
 

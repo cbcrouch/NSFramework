@@ -49,6 +49,15 @@ static const char *g_matrixType = @encode(GLKMatrix4);
 
 @implementation NFViewVolume
 
+
+
+@synthesize nearPlane = _nearPlane;
+@synthesize farPlane = _farPlane;
+
+@synthesize activeCamera = _activeCamera;
+
+
+
 @synthesize view = _view;
 @synthesize projection = _projection;
 
