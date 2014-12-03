@@ -15,7 +15,6 @@
 //       only being used temporarily
 //
 #import "NFAssetLoader.h"
-#import "NFCamera.h"
 
 
 //
@@ -52,7 +51,6 @@
 
     GLuint m_hUBO;
 
-    NFCamera *camera;
     NFViewVolume *viewVolume;
 }
 
@@ -111,7 +109,6 @@
     //
 
     viewVolume = [[NFViewVolume alloc] init];
-    camera = [[NFCamera alloc] init];
 
     [self createViewVolume];
     [self loadShaders];
@@ -186,7 +183,6 @@
     [m_planeData release];
 
     [viewVolume release];
-    [camera release];
 
     // NOTE: helper method will take care of cleaning up all shaders attached to program
     [NFRUtils destroyProgramWithHandle:m_hProgram];
@@ -221,8 +217,8 @@
 }
 
 //
-// TODO: renderFrame should take a camera, scene/PVS, and pipeline object as params
-//       (viewport will be set ahead of time for the renderer instance)
+// TODO: renderFrame should take an NFViewVolume, scene/PVS, and pipeline object as params
+//       (viewport will be set/bound ahead of time for the renderer instance)
 //
 - (void) renderFrame {
 
@@ -315,18 +311,24 @@
 }
 
 - (void) createViewVolume {
+
     //
     // TODO: explicitly define a coordinate system (left or right-handed) though should note that the
     //       Wavefront obj file format specifies vertices in a right-handed coordinate system
     //
 
+    // eye is a point so w == 1
+    GLKVector4 eye = {0.0f, 2.0f, 4.0f, 1.0f};
+
+    // look and up are vectors so w == 0
+    GLKVector4 look = {0.0f, 0.0f, 0.0f, 0.0f};
+    GLKVector4 up = {0.0f, 1.0f, 0.0f, 0.0f};
+
+
+
     //
-    // TODO: add some comment(s) explaining why using C11 i.e. strict ANSI C (moving away from GNU extensions and
-    //       will also notice that Apple source code is exercising C11 compliance)
+    // TODO: view matrix should be created in the view volume
     //
-    GLKVector4 eye = {0.0f, 2.0f, 4.0f, 1.0f}; // x, y, z, w
-    GLKVector4 look = {0.0f, 0.0f, 0.0f, 1.0f};
-    GLKVector4 up = {0.0f, 1.0f, 0.0f, 1.0f};
 
     // GNU99 version
     //GLKMatrix4 view = GLKMatrix4MakeLookAt(eye.x, eye.y, eye.z, look.x, look.y, look.z, up.x, up.y, up.z);
@@ -337,6 +339,7 @@
                                            up.v[0], up.v[1], up.v[2]);
 
     [viewVolume pushViewMatrix:view];
+
 
 
 
@@ -352,20 +355,18 @@
 
     viewVolume.nearPlane = 1.0f;
     viewVolume.farPlane = 100.0f;
+}
 
+- (id<NFObserverProtocol>) getCameraObserver {
+    return viewVolume;
+}
 
-    //
-    // TODO: should be set right after initialization
-    //
-    //camera.observer = viewVolume;
+- (CGRect) getViewportRect {
+    return CGRectMake(0, 0, (CGFloat)m_viewportWidth, (CGFloat)m_viewportHeight);
+}
 
-    camera.vFOV = (float) M_PI_4;
-    camera.width = (NSUInteger) m_viewportWidth;
-    camera.height = (NSUInteger) m_viewportHeight;
-
-    //camera.position = eye;
-
-
+- (void) bindCamera:(NFCamera *)camera {
+    viewVolume.activeCamera = camera;
 }
 
 - (void) loadShaders {

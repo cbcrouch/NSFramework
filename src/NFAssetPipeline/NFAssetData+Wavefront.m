@@ -108,9 +108,10 @@ typedef NS_ENUM(NSUInteger, FaceGroupType) {
         // Nz = UxVy - UyVx
 
 
-
+        //
         // TODO: should see if vertices themselves are optional i.e. if a file only has NURBS data
         //       does it need to contain faces for the indexes or are they generated from the NURBS
+        //
 
         // NOTE: indices in file start at 1, need to make zero based and if you ever see a negative face index
         //       it means go back that many vertices i.e. -8 means go back 8 vertices from the last one read

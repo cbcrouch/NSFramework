@@ -115,7 +115,9 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 }
 
 - (void) dealloc {
+    //
     // TODO: make sure dealloc is cleaning everything up (i.e. do events need to be unregisterd etc.)
+    //
 
     // stop the display link BEFORE releasing anything in the view
     // otherwise the display link thread may call into the view and crash
@@ -216,8 +218,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     switch (key) {
         case 'w':
 
-            [self.glRenderer translateCameraZ:0.1f];
-
             //
             // TODO: rather than call the camera methods to update the motion vector / position
             //       directly the keyDown/Up events should merely set a camera event and return immediately
@@ -235,10 +235,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             break;
 
         case 's':
-            [self.glRenderer translateCameraZ:-0.1f];
-
             [self.camera setState:kCameraStateActBack];
-
             break;
 
         case 'a':
@@ -305,8 +302,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     [super mouseDragged:theEvent];
 }
 
-
-
 - (void) setupOpenGL {
     //
     // NOTE: requesting an NSOpenGLProfileVersion3_2Core will create an OpenGL 4.1 context
@@ -357,10 +352,28 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     self.glRenderer = [[[NFRenderer alloc] init] autorelease];
     NSAssert(self.glRenderer != nil, @"Failed to initialize and create NSGLRenderer");
 
+
     //
     // TODO: should move the camera ownership into NFSimulation (or where ever the main update loop will be)
     //
     self.camera = [[[NFCamera alloc] init] autorelease];
+
+    self.camera.observer = [self.glRenderer getCameraObserver];
+
+    CGRect viewportRect = [self.glRenderer getViewportRect];
+    self.camera.width = (NSUInteger) viewportRect.size.width;
+    self.camera.height = (NSUInteger) viewportRect.size.height;
+
+    self.camera.vFOV = (float) M_PI_4;
+
+    self.camera.position = GLKVector4Make(0.0f, 2.0f, 4.0f, 1.0f);
+    self.camera.target = GLKVector4Make(0.0f, 0.0f, 0.0f, 1.0f);
+    self.camera.up = GLKVector4Make(0.0f, 1.0f, 0.0f, 1.0f);
+
+    [self.glRenderer bindCamera:self.camera];
+    //
+    //
+    //
 }
 
 - (void) setupDisplayLink {

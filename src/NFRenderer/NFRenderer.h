@@ -9,6 +9,13 @@
 #import <Foundation/Foundation.h>
 
 
+//
+// TODO: won't need these headers anymore after temporary methods have been removed
+//
+#import "NFProtocols.h"
+#import "NFCamera.h"
+
+
 @interface NFRenderer : NSObject
 
 // instance methods
@@ -25,6 +32,14 @@
 //
 - (void) resizeToRect:(CGRect) rect;
 
+
+//
+// TODO: this is a temporary helper method, once the NFViewVolume has been moved
+//       out of NFRenderer it won't be needed anymore
+//
+- (id<NFObserverProtocol>) getCameraObserver;
+- (CGRect) getViewportRect;
+- (void) bindCamera:(NFCamera *)camera;
 
 
 //

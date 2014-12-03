@@ -83,7 +83,7 @@
 
 
 // for NFObserverProtocol
-- (void) notify;
+- (void) notifyOfStateChange;
 
 
 @end

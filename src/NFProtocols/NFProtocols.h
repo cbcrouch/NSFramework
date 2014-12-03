@@ -8,9 +8,16 @@
 #import <Foundation/Foundation.h>
 
 
+// could use NSNotificationCenter to implement observer pattern
+// https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSNotificationCenter_Class/
+
+// or could use key-value observing
+// https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueObserving/KeyValueObserving.html
+
+
 @protocol NFObserverProtocol <NSObject>
 
-- (void) notify;
+- (void) notifyOfStateChange;
 
 @end
 

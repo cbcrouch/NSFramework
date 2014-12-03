@@ -51,14 +51,6 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 
 
 
-// could use NSNotificationCenter to implement observer pattern
-// https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSNotificationCenter_Class/
-
-// or could use key-value observing
-// https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueObserving/KeyValueObserving.html
-
-
-
 
 @interface NFCamera : NSObject <NFDataSourceProtocol>
 
@@ -79,12 +71,27 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 
 
 //
-// TODO: will need look and up vectors for the camera
+// TODO: use quaternions to perform rotations for arcball implementation
 //
-@property (nonatomic, assign) GLKVector4 position;
 
-//@property (nonatomic, assign) GLKVector4 look;
-//@property (nonatomic, assign) GLKVector4 up;
+@property (nonatomic, assign) GLKVector4 position;
+@property (nonatomic, assign) GLKVector4 target;
+@property (nonatomic, assign) GLKVector4 up;
+
+
+//
+// TODO: need methods for moving/operating the camera
+//
+
+
+
+//
+// TODO: these will be the default values that are used to translate the camera
+//       based on the cameras current state
+//
+
+// component values is what will be applied as a translation based on the camera state
+@property (nonatomic, assign) GLKVector4 translationSpeed;
 
 
 
