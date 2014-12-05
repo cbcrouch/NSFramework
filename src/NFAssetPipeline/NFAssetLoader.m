@@ -69,7 +69,7 @@
             NSUInteger index = 0;
             for (WFGroup *group in [[wavefrontObj object] groups]) {
                 [asset addSubsetWithIndices:[group faceStrArray] ofObject:[wavefrontObj object] atIndex:index];
-                index++;
+                ++index;
             }
 
             // loop through all values and convert them into NFLightingModel objects
@@ -97,7 +97,7 @@
                 //       when support for multiple objects is added
                 NFSubset *subset = [[asset subsetArray] objectAtIndex:subsetIndex];
                 subset.surfaceModel = findSurfaceModel([group materialName]);
-                subsetIndex++;
+                ++subsetIndex;
             }
         }
         break;

@@ -332,10 +332,10 @@ static const char *g_faceType = @encode(NFFace_t);
     NSInteger p1, p2, p3;
 
     p1 = (NSInteger)*indices;
-    indices++;
+    ++indices;
 
     p2 = (NSInteger)*indices;
-    indices++;
+    ++indices;
 
     p3 = (NSInteger)*indices;
 

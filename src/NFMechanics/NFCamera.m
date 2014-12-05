@@ -34,7 +34,7 @@
 //
 //@property (nonatomic, assign) NFMotionVector motionVector;
 
-@property (nonatomic, assign) NSUInteger currentState;
+@property (nonatomic, assign) NSUInteger currentFlags;
 
 @property (nonatomic, assign) float aspectRatio;
 
@@ -61,14 +61,14 @@
 @synthesize height = _height;
 @synthesize aspectRatio = _aspectRatio;
 
-@synthesize currentState = _currentState;
+@synthesize currentFlags = _currentFlags;
 
 @synthesize observer = _observer;
 
 - (void) setPosition:(GLKVector4)position {
     _position = position;
 
-    NSLog(@"setPosition: (%f, %f, %f)", _position.v[0], _position.v[1], _position.v[2]);
+    //NSLog(@"setPosition: (%f, %f, %f)", _position.v[0], _position.v[1], _position.v[2]);
 
     if (self.observer != nil) {
         [self.observer notifyOfStateChange];
@@ -78,14 +78,14 @@
 - (void) setTarget:(GLKVector4)target {
     _target = target;
     if (self.observer != nil) {
-        [self.observer notifyOfStateChange];
+        //[self.observer notifyOfStateChange];
     }
 }
 
 - (void) setUp:(GLKVector4)up {
     _up = up;
     if (self.observer != nil) {
-        [self.observer notifyOfStateChange];
+        //[self.observer notifyOfStateChange];
     }
 }
 
@@ -109,19 +109,51 @@
         [self setTarget:GLKVector4Make(1.0f, 0.0f, 1.0f, 0.0f)];
         [self setUp:GLKVector4Make(0.0f, 1.0f, 0.0f, 0.0f)];
 
-        [self setCurrentState:0x00];
+        [self setCurrentFlags:0x00];
 
         //[self setMotionVector:GLKVector4Make(0.0f, 0.0f, 0.0f, 0.0f)];
 
-        [self setTranslationSpeed:GLKVector4Make(0.1f, 0.0f, 0.1f, 0.0f)];
+        [self setTranslationSpeed:GLKVector4Make(0.025f, 0.0f, 0.025f, 0.0f)];
     }
     return self;
 }
 
-- (void) step {
+- (void) step:(NSUInteger)delta {
     //
     // TODO: update camera position based on motion vector
     //
+
+    BOOL positionChanged = NO;
+    GLKVector4 newPosition = self.position;
+
+    // NOTE: delta is measured in microseconds
+
+    if (self.currentFlags & FORWARD_BIT) {
+        //
+        // TODO: increment position by multiple of time delta
+        //
+        newPosition.v[Z_POS] += self.translationSpeed.v[Z_POS];
+        positionChanged = YES;
+    }
+
+    if (self.currentFlags & BACK_BIT) {
+        newPosition.v[Z_POS] -= self.translationSpeed.v[Z_POS];
+        positionChanged = YES;
+    }
+
+
+    // LEFT_BIT
+    //newPosition.v[X_POS] -= self.translationSpeed.v[X_POS];
+    //positionChanged = YES;
+
+    // RIGHT_BIT
+    //newPosition.v[X_POS] += self.translationSpeed.v[X_POS];
+    //positionChanged = YES;
+
+
+    if (positionChanged) {
+        self.position = newPosition;
+    }
 }
 
 - (void) pushMotionVector:(NFMotionVector *)motionVector {
@@ -134,80 +166,55 @@
 
 - (void) setState:(CAMERA_STATE)state {
 
-
-
     //
     // TODO: this should be checking against the bit flags
     //       not the enum state
     //
 
-    if (state == kCameraStateActFwd && self.currentState & FORWARD_BIT) {
+    if (state == kCameraStateActFwd && self.currentFlags & FORWARD_BIT) {
         return;
     }
-    else if (state == kCameraStateActBack && self.currentState & BACK_BIT) {
+    else if (state == kCameraStateActBack && self.currentFlags & BACK_BIT) {
         return;
     }
 
-
-
-    BOOL positionChanged = NO;
-    GLKVector4 newPosition = self.position;
     switch (state) {
 
         // set direction bit and update position
 
         case kCameraStateActFwd:
-            self.currentState = self.currentState | FORWARD_BIT;
-
-
-            //
-            // TODO: update the position in the step method
-            //
-            newPosition.v[Z_POS] += self.translationSpeed.v[Z_POS];
-            positionChanged = YES;
-
-
+            self.currentFlags = self.currentFlags | FORWARD_BIT;
             break;
 
         case kCameraStateActBack:
-            self.currentState = self.currentState | BACK_BIT;
-            newPosition.v[Z_POS] -= self.translationSpeed.v[Z_POS];
-            positionChanged = YES;
+            self.currentFlags = self.currentFlags | BACK_BIT;
             break;
 
         case kCameraStateActLeft:
-            self.currentState = self.currentState | LEFT_BIT;
-            newPosition.v[X_POS] -= self.translationSpeed.v[X_POS];
-            positionChanged = YES;
+            self.currentFlags = self.currentFlags | LEFT_BIT;
             break;
 
         case kCameraStateActRight:
-            self.currentState = self.currentState | RIGHT_BIT;
-            newPosition.v[X_POS] += self.translationSpeed.v[X_POS];
-            positionChanged = YES;
+            self.currentFlags = self.currentFlags | RIGHT_BIT;
             break;
 
         // unset direction bit
 
         case kCameraStateNilFwd:
-            self.currentState = self.currentState & ~FORWARD_BIT;
+            self.currentFlags = self.currentFlags & ~FORWARD_BIT;
             break;
 
         case kCameraStateNilBack:
-            self.currentState = self.currentState & ~BACK_BIT;
+            self.currentFlags = self.currentFlags & ~BACK_BIT;
             break;
 
         case kCameraStateNilLeft:
-            self.currentState = self.currentState & ~LEFT_BIT;
+            self.currentFlags = self.currentFlags & ~LEFT_BIT;
             break;
 
         case kCameraStateNilRight:
-            self.currentState = self.currentState & ~RIGHT_BIT;
+            self.currentFlags = self.currentFlags & ~RIGHT_BIT;
             break;
-    }
-
-    if (positionChanged) {
-        self.position = newPosition;
     }
 }
 

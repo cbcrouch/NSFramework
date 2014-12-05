@@ -175,7 +175,7 @@ typedef NS_ENUM(NSUInteger, FaceGroupType) {
         // record data index to be associated with specific Wavefront obj face value
         NSNumber *num = [NSNumber numberWithInt:dataIndex];
         [indexArray addObject:num];
-        dataIndex++;
+        ++dataIndex;
     }
 
     // build a dictionary of which face string corresponds with which vertex using the uniqueArray
@@ -187,7 +187,7 @@ typedef NS_ENUM(NSUInteger, FaceGroupType) {
     for (NSString *faceStr in indices) {
         NSNumber *indexNum = [indexDict objectForKey:faceStr];
         pIndices[dataIndex] = (GLushort)[indexNum intValue];
-        dataIndex++;
+        ++dataIndex;
     }
 
     // allocate and load vertex/index data into the subset

@@ -103,7 +103,7 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
     // delete the shaders attached to the program
     GLsizei shaderNum;
     GLuint *pItr;
-    for (shaderNum = 0, pItr = pShaders; shaderNum < shaderCount; shaderNum++, pItr++) {
+    for (shaderNum = 0, pItr = pShaders; shaderNum < shaderCount; ++shaderNum, ++pItr) {
         if (pItr != NULL) {
             glDeleteShader(*pItr);
         }

@@ -102,11 +102,10 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 //
 @property (nonatomic, assign) id <NFObserverProtocol> observer;
 
-
 //
-// TODO: provide a time delta which will be used as a motion vector scalar
+// TODO: pass in microsecond step
 //
-- (void) step;
+- (void) step:(NSUInteger)delta;
 
 - (void) pushMotionVector:(NFMotionVector *)motionVector;
 - (void) clearMotionVectors;

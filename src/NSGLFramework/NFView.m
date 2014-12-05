@@ -439,6 +439,15 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //
 
     // "step scene" with lastest time delta
+    //
+    // TODO: currently passing a hard value of 16 ms
+    //
+    [self.camera step:16000];
+
+    //
+    // TODO: need to get the UBO updated if the camera changed, should render
+    //       with the view volume
+    //
     [self.glRenderer updateFrameWithTime:outputTime];
 
 
