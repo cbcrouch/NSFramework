@@ -19,6 +19,8 @@
 
 @interface NFViewVolume : NSObject <NFObserverProtocol>
 
+@property (nonatomic, assign) BOOL dirty;
+
 //
 // TODO: properties with overridden setters for setting the vertical FOV, aspect ratio,
 //       near Z, and far Z

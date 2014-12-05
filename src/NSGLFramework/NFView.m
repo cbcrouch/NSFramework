@@ -8,6 +8,7 @@
 // application headers
 #import "NFView.h"
 #import "NFRenderer.h"
+#import "NFViewVolume.h"
 #import "NFCamera.h"
 
 // Cocoa headers
@@ -49,6 +50,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 @property (nonatomic, retain) NSOpenGLPixelFormat *pixelFormat;
 
 @property (nonatomic, retain) NFRenderer *glRenderer;
+@property (nonatomic, retain) NFViewVolume *viewVolume;
 @property (nonatomic, retain) NFCamera *camera;
 
 
@@ -67,6 +69,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 @synthesize pixelFormat = _pixelFormat;
 
 @synthesize glRenderer = _glRenderer;
+@synthesize viewVolume = _viewVolume;
 @synthesize camera = _camera;
 
 //
@@ -353,16 +356,41 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     NSAssert(self.glRenderer != nil, @"Failed to initialize and create NSGLRenderer");
 
 
+
+    self.viewVolume = [[[NFViewVolume alloc] init] autorelease];
+
+    float nearPlane = 1.0f;
+    float farPlane = 100.0f;
+
+    CGFloat width = self.frame.size.width;
+    CGFloat height = self.frame.size.height;
+
+    GLKMatrix4 projection = GLKMatrix4MakePerspective(M_PI_4, width / height, nearPlane, farPlane);
+    [self.viewVolume pushProjectionMatrix:projection];
+
+    self.viewVolume.nearPlane = 1.0f;
+    self.viewVolume.farPlane = 100.0f;
+
+
     //
     // TODO: should move the camera ownership into NFSimulation (or where ever the main update loop will be)
     //
     self.camera = [[[NFCamera alloc] init] autorelease];
 
+
+    //
+    // TODO: bing correct view volume to camera observer
+    //
     self.camera.observer = [self.glRenderer getCameraObserver];
 
-    CGRect viewportRect = [self.glRenderer getViewportRect];
-    self.camera.width = (NSUInteger) viewportRect.size.width;
-    self.camera.height = (NSUInteger) viewportRect.size.height;
+
+    //[self.viewVolume setActiveCamera:self.camera];
+    //self.camera.observer = self.viewVolume;
+
+
+
+    self.camera.width = (NSUInteger)width;
+    self.camera.height = (NSUInteger)height;
 
     self.camera.vFOV = (float) M_PI_4;
 
@@ -444,11 +472,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //
     [self.camera step:16000];
 
-    //
-    // TODO: need to get the UBO updated if the camera changed, should render
-    //       with the view volume
-    //
-    [self.glRenderer updateFrameWithTime:outputTime];
+    [self.glRenderer updateFrameWithTime:outputTime withViewVolume:self.viewVolume];
 
 
     //

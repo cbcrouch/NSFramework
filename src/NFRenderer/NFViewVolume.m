@@ -49,12 +49,12 @@ static const char *g_matrixType = @encode(GLKMatrix4);
 
 @implementation NFViewVolume
 
-
 @synthesize nearPlane = _nearPlane;
 @synthesize farPlane = _farPlane;
 
 @synthesize activeCamera = _activeCamera;
 
+@synthesize dirty = _dirty;
 
 @synthesize view = _view;
 @synthesize projection = _projection;
@@ -94,6 +94,7 @@ static const char *g_matrixType = @encode(GLKMatrix4);
 
 - (instancetype) init {
     self = [super init];
+    [self setDirty:NO];
     return self;
 }
 
@@ -175,6 +176,8 @@ static const char *g_matrixType = @encode(GLKMatrix4);
                                            look.v[0], look.v[1], look.v[2],
                                            up.v[0], up.v[1], up.v[2]);
 
+
+    self.dirty = YES;
 
     //
     // TODO: need to trigger a UBO update in the renderer in order for the camera to get updated

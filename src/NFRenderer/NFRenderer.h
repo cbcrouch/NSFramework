@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "NFViewVolume.h"
 
 //
 // TODO: won't need these headers anymore after temporary methods have been removed
@@ -22,7 +23,8 @@
 - (instancetype) init;
 - (void) dealloc;
 
-- (void) updateFrameWithTime:(const CVTimeStamp*)outputTime;
+- (void) updateFrameWithTime:(const CVTimeStamp*)outputTime withViewVolume:(NFViewVolume *)viewVolume;
+
 - (void) renderFrame;
 
 
@@ -38,7 +40,6 @@
 //       out of NFRenderer it won't be needed anymore
 //
 - (id<NFObserverProtocol>) getCameraObserver;
-- (CGRect) getViewportRect;
 - (void) bindCamera:(NFCamera *)camera;
 
 

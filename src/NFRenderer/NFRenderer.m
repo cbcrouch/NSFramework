@@ -190,7 +190,7 @@
     [super dealloc];
 }
 
-- (void) updateFrameWithTime:(const CVTimeStamp*)outputTime {
+- (void) updateFrameWithTime:(const CVTimeStamp*)outputTime withViewVolume:(NFViewVolume *)viewVolume {
     //static float secs = 0.0; // elapsed time
     static uint64_t prevVideoTime = 0;
 
@@ -214,52 +214,45 @@
     }
 
     prevVideoTime = outputTime->videoTime;
-}
 
-//
-// TODO: renderFrame should take an NFViewVolume, scene/PVS, and pipeline object as params
-//       (viewport will be set/bound ahead of time for the renderer instance)
-//
-- (void) renderFrame {
 
-    // frame drop test (should see solid yellow background)
 /*
-    static bool flip = true;
-    if (flip) {
-        glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-        flip = false;
-    }
-    else {
-        glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
-        flip = true;
+    if (viewVolume.dirty) {
+        [self updateUBO];
+        viewVolume.dirty = NO;
     }
 */
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    //
+    // TODO: this should only be updated if the view volume is dirty
+    //
+    [self updateUBO];
+}
 
+//
+// TODO: renderFrame should take a scene/PVS, and pipeline object as params
+//       (viewport will be set/bound ahead of time for the renderer instance)
+//
+- (void) renderFrame {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glUseProgram(m_hProgram);
 
     //
     // TODO: need to decouple the drawing methods from the NFAssetData class
     //
 
-
     GLuint normTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "NormalizedTexexlFetch");
     GLuint expTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "ExplicitTexelFetch");
-
 
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &normTexFuncIdx);
     [m_pAsset drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
 
-
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &expTexFuncIdx);
     [m_axisData drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
-
 
     //[m_gridData drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
 
     //[m_planeData drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
-
 
     glUseProgram(0);
     CHECK_GL_ERROR();
@@ -342,7 +335,6 @@
 
 
 
-
     //
     // TODO: projection matrix should be calculated by the NFViewVolume
     //
@@ -351,18 +343,12 @@
 
     [viewVolume pushProjectionMatrix:projection];
 
-
-
     viewVolume.nearPlane = 1.0f;
     viewVolume.farPlane = 100.0f;
 }
 
 - (id<NFObserverProtocol>) getCameraObserver {
     return viewVolume;
-}
-
-- (CGRect) getViewportRect {
-    return CGRectMake(0, 0, (CGFloat)m_viewportWidth, (CGFloat)m_viewportHeight);
 }
 
 - (void) bindCamera:(NFCamera *)camera {
