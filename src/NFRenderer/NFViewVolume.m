@@ -169,8 +169,7 @@ static const char *g_matrixType = @encode(GLKMatrix4);
     GLKVector4 look = self.activeCamera.target;
     GLKVector4 up = self.activeCamera.up;
 
-    NSLog(@"eye: (%f, %f, %f)", eye.v[0], eye.v[1], eye.v[2]);
-
+    //NSLog(@"eye: (%f, %f, %f)", eye.v[0], eye.v[1], eye.v[2]);
     //NSLog(@"look: (%f, %f, %f)", look.v[0], look.v[1], look.v[2]);
     //NSLog(@"up: (%f, %f, %f)", up.v[0], up.v[1], up.v[2]);
 
@@ -179,14 +178,8 @@ static const char *g_matrixType = @encode(GLKMatrix4);
                                            look.v[0], look.v[1], look.v[2],
                                            up.v[0], up.v[1], up.v[2]);
 
-
-    self.dirty = YES;
-
-    //
-    // TODO: need to trigger a UBO update in the renderer in order for the camera to get updated
-    //
     [self overrideViewTransformWithMatrix:view];
-
+    self.dirty = YES;
 }
 
 @end

@@ -67,9 +67,6 @@
 
 - (void) setPosition:(GLKVector4)position {
     _position = position;
-
-    //NSLog(@"setPosition: (%f, %f, %f)", _position.v[0], _position.v[1], _position.v[2]);
-
     if (self.observer != nil) {
         [self.observer notifyOfStateChange];
     }
@@ -125,14 +122,17 @@
 
     BOOL positionChanged = NO;
     GLKVector4 newPosition = self.position;
+    GLKVector4 newTarget = self.target;
 
     // NOTE: delta is measured in microseconds
 
+    //
+    // TODO: increment position by multiple of time delta
+    //
+
     if (self.currentFlags & FORWARD_BIT) {
-        //
-        // TODO: increment position by multiple of time delta
-        //
         newPosition.v[Z_POS] += self.translationSpeed.v[Z_POS];
+        newTarget.v[Z_POS] += self.translationSpeed.v[Z_POS];
         positionChanged = YES;
     }
 
@@ -142,21 +142,25 @@
 
     if (self.currentFlags & BACK_BIT) {
         newPosition.v[Z_POS] -= self.translationSpeed.v[Z_POS];
+        newTarget.v[Z_POS] -= self.translationSpeed.v[Z_POS];
         positionChanged = YES;
     }
 
+    if (self.currentFlags & LEFT_BIT) {
+        newPosition.v[X_POS] -= self.translationSpeed.v[X_POS];
+        newTarget.v[X_POS] -= self.translationSpeed.v[X_POS];
+        positionChanged = YES;
+    }
 
-    // LEFT_BIT
-    //newPosition.v[X_POS] -= self.translationSpeed.v[X_POS];
-    //positionChanged = YES;
-
-    // RIGHT_BIT
-    //newPosition.v[X_POS] += self.translationSpeed.v[X_POS];
-    //positionChanged = YES;
-
+    if (self.currentFlags & RIGHT_BIT) {
+        newPosition.v[X_POS] += self.translationSpeed.v[X_POS];
+        newTarget.v[X_POS] += self.translationSpeed.v[X_POS];
+        positionChanged = YES;
+    }
 
     if (positionChanged) {
         self.position = newPosition;
+        self.target = newTarget;
     }
 }
 

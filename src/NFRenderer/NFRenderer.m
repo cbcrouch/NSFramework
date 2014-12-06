@@ -47,6 +47,9 @@
     GLsizei m_viewportWidth;
     GLsizei m_viewportHeight;
 
+    GLuint m_normTexFuncIdx;
+    GLuint m_expTexFuncIdx;
+
     GLuint m_hUBO;
 }
 
@@ -81,6 +84,9 @@
 
 
     [self loadShaders];
+
+    m_normTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "NormalizedTexexlFetch");
+    m_expTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "ExplicitTexelFetch");
 
     NSString *fileNamePath;
 
@@ -197,20 +203,13 @@
 
     //
     // TODO: need to decouple the drawing methods from the NFAssetData class
+    //       (this will require at least stubbing out the entity control system)
     //
 
-
-    //
-    // TODO: only perform these getters once
-    //
-    GLuint normTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "NormalizedTexexlFetch");
-    GLuint expTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "ExplicitTexelFetch");
-
-
-    glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &normTexFuncIdx);
+    glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_normTexFuncIdx);
     [m_pAsset drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
 
-    glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &expTexFuncIdx);
+    glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_expTexFuncIdx);
     [m_axisData drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
 
     //[m_gridData drawWithProgram:m_hProgram withModelUniform:m_modelLoc];

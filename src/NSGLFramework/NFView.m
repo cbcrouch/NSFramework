@@ -224,21 +224,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     unichar key = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
     switch (key) {
         case 'w':
-
-            //
-            // TODO: rather than call the camera methods to update the motion vector / position
-            //       directly the keyDown/Up events should merely set a camera event and return immediately
-            //       so as not to block the UI thread
-            //
-
-            [self.camera setState:kCameraStateActFwd]; // camera will need to be thread safe
-
-            // values to be applied will be determined by a configuration and/or modified
-            // by the game code itself (e.g. camera can be jumping while moving forward)
-
-            // camera should be updated in the getFrameForTime method for the time being, in a future
-            // update the render frame update/pacing and simulation update should be processed separately
-
+            [self.camera setState:kCameraStateActFwd];
             break;
 
         case 's':
@@ -246,11 +232,11 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             break;
 
         case 'a':
-            //[self.camera setState:kCameraStateActRight];
+            [self.camera setState:kCameraStateActRight];
             break;
 
         case 'd':
-            //[self.camera setState:kCameraStateActLeft];
+            [self.camera setState:kCameraStateActLeft];
             break;
 
         default:
@@ -270,11 +256,11 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             break;
 
         case 'a':
-            //[self.camera setState:kCameraStateNilRight];
+            [self.camera setState:kCameraStateNilRight];
             break;
 
         case 'd':
-            //[self.camera setState:kCameraStateNilLeft];
+            [self.camera setState:kCameraStateNilLeft];
             break;
 
         default:
