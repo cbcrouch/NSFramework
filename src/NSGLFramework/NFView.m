@@ -195,6 +195,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //       occurs on the main thread hence the context lock to keep the threads in sync
     CGLLockContext([self.glContext CGLContextObj]);
 
+    //
+    // TODO: make sure that any relevant NFCamera objects get updated
+    //
+
     // NOTE: not using dirtyRect since it will only contain the portion of the view that needs updating
     CGRect rect = [self bounds];
     [self.glRenderer resizeToRect:rect];
@@ -242,17 +246,11 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             break;
 
         case 'a':
-            [self.glRenderer translateCameraX:0.1f];
-
             //[self.camera setState:kCameraStateActRight];
-
             break;
 
         case 'd':
-            [self.glRenderer translateCameraX:-0.1f];
-
             //[self.camera setState:kCameraStateActLeft];
-
             break;
 
         default:
@@ -372,22 +370,14 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     self.viewVolume.farPlane = 100.0f;
 
 
+
     //
     // TODO: should move the camera ownership into NFSimulation (or where ever the main update loop will be)
     //
     self.camera = [[[NFCamera alloc] init] autorelease];
 
-
-    //
-    // TODO: bing correct view volume to camera observer
-    //
-    self.camera.observer = [self.glRenderer getCameraObserver];
-
-
-    //[self.viewVolume setActiveCamera:self.camera];
-    //self.camera.observer = self.viewVolume;
-
-
+    [self.viewVolume setActiveCamera:self.camera];
+    self.camera.observer = self.viewVolume;
 
     self.camera.width = (NSUInteger)width;
     self.camera.height = (NSUInteger)height;
@@ -397,8 +387,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     self.camera.position = GLKVector4Make(0.0f, 2.0f, 4.0f, 1.0f);
     self.camera.target = GLKVector4Make(0.0f, 0.0f, 0.0f, 1.0f);
     self.camera.up = GLKVector4Make(0.0f, 1.0f, 0.0f, 1.0f);
-
-    [self.glRenderer bindCamera:self.camera];
     //
     //
     //

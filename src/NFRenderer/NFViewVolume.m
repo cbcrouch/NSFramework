@@ -128,6 +128,9 @@ static const char *g_matrixType = @encode(GLKMatrix4);
     return _projTransform;
 }
 
+//
+// TODO: need to get the matrix stack calculation working correctly
+//
 - (void) pushViewMatrix:(GLKMatrix4)mat {
     NSValue *value = [NSValue value:&mat withObjCType:g_matrixType];
     [self.viewTransform.matrixStack addObject:value];

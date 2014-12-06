@@ -8,8 +8,6 @@
 #import "NFRenderer.h"
 #import "NFRUtils.h"
 
-#import "NFViewVolume.h"
-
 //
 // TODO: these headers and modules shouldn't be used in the renderer and are
 //       only being used temporarily
@@ -50,14 +48,11 @@
     GLsizei m_viewportHeight;
 
     GLuint m_hUBO;
-
-    NFViewVolume *viewVolume;
 }
 
-- (void) createViewVolume;
 - (void) loadShaders;
 
-- (void) updateUBO;
+- (void) updateUboWithViewVolume:(NFViewVolume *)viewVolume;
 
 @end
 
@@ -85,34 +80,7 @@
     m_viewportHeight = 720;
 
 
-    //
-    // load a sphere, torus, and teapot in addition to the cube for lighting testing
-    // also generate a menger sponge and sierpinskit gasket as well as their inverses
-    // (possible generate a 3D koch snowflake)
-    //
-
-    //
-    // use a C block for callbacks triggered by keyboard/mouse input
-    //
-
-    //
-    // use NSPredicate to parse OpenGEX/OpenDDL files, maybe also shaders as well for
-    // automatically setting up uniforms and attributes
-    //
-
-    //
-    // store light bounces in 3d textures and read back as new normals, multiple passes
-    // over the frame which will accumulate in g buffer similiar to deferred rendering approach
-    // - look at simplified unprojected code in 3d texture array with tile deferred lighting accumulation
-    // - could potentially use portal based rendering to collect static light at LOD determined locations
-    // - may need to encode accumulated lighting values, direction, color, etc., in the tex array and use lookup functions
-    //
-
-    viewVolume = [[NFViewVolume alloc] init];
-
-    [self createViewVolume];
     [self loadShaders];
-    [self updateUBO];
 
     NSString *fileNamePath;
 
@@ -182,8 +150,6 @@
     [m_gridData release];
     [m_planeData release];
 
-    [viewVolume release];
-
     // NOTE: helper method will take care of cleaning up all shaders attached to program
     [NFRUtils destroyProgramWithHandle:m_hProgram];
 
@@ -215,18 +181,10 @@
 
     prevVideoTime = outputTime->videoTime;
 
-
-/*
     if (viewVolume.dirty) {
-        [self updateUBO];
+        [self updateUboWithViewVolume:viewVolume];
         viewVolume.dirty = NO;
     }
-*/
-
-    //
-    // TODO: this should only be updated if the view volume is dirty
-    //
-    [self updateUBO];
 }
 
 //
@@ -241,8 +199,13 @@
     // TODO: need to decouple the drawing methods from the NFAssetData class
     //
 
+
+    //
+    // TODO: only perform these getters once
+    //
     GLuint normTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "NormalizedTexexlFetch");
     GLuint expTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "ExplicitTexelFetch");
+
 
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &normTexFuncIdx);
     [m_pAsset drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
@@ -266,93 +229,7 @@
         m_viewportWidth = width;
         m_viewportHeight = height;
         glViewport((GLint)0, (GLint)0, m_viewportWidth, m_viewportHeight);
-
-        //
-        // TODO: need to update the NFCamera perspective projection matrix
-        //
     }
-}
-
-- (void) translateCameraX:(float) value {
-    GLKVector4 vector = GLKVector4Make(value, 0.0f, 0.0f, 0.0f);
-
-    //GLKMatrix4 translate = GLKMatrix4TranslateWithVector4(GLKMatrix4Identity, vector);
-    GLKMatrix4 translate = GLKMatrix4TranslateWithVector4([viewVolume view], vector);
-
-    //
-    // TODO: need to get the correct calculations for the matrix stack
-    //
-
-    //[viewVolume pushViewMatrix:translate];
-    [viewVolume overrideViewTransformWithMatrix:translate];
-
-    [self updateUBO];
-}
-
-- (void) translateCameraY:(float) value {
-    GLKVector4 vector = GLKVector4Make(0.0f, value, 0.0f, 0.0f);
-    GLKMatrix4 translate = GLKMatrix4TranslateWithVector4([viewVolume view], vector);
-    [viewVolume overrideViewTransformWithMatrix:translate];
-    [self updateUBO];
-}
-
-- (void) translateCameraZ:(float) value {
-    GLKVector4 vector = GLKVector4Make(0.0f, 0.0f, value, 0.0f);
-    GLKMatrix4 translate = GLKMatrix4TranslateWithVector4([viewVolume view], vector);
-    [viewVolume overrideViewTransformWithMatrix:translate];
-    [self updateUBO];
-}
-
-- (void) createViewVolume {
-
-    //
-    // TODO: explicitly define a coordinate system (left or right-handed) though should note that the
-    //       Wavefront obj file format specifies vertices in a right-handed coordinate system
-    //
-
-    // eye is a point so w == 1
-    GLKVector4 eye = {0.0f, 2.0f, 4.0f, 1.0f};
-
-    // look and up are vectors so w == 0
-    GLKVector4 look = {0.0f, 0.0f, 0.0f, 0.0f};
-    GLKVector4 up = {0.0f, 1.0f, 0.0f, 0.0f};
-
-
-
-    //
-    // TODO: view matrix should be created in the view volume
-    //
-
-    // GNU99 version
-    //GLKMatrix4 view = GLKMatrix4MakeLookAt(eye.x, eye.y, eye.z, look.x, look.y, look.z, up.x, up.y, up.z);
-
-    // C11 version
-    GLKMatrix4 view = GLKMatrix4MakeLookAt(eye.v[0], eye.v[1], eye.v[2],
-                                           look.v[0], look.v[1], look.v[2],
-                                           up.v[0], up.v[1], up.v[2]);
-
-    [viewVolume pushViewMatrix:view];
-
-
-
-    //
-    // TODO: projection matrix should be calculated by the NFViewVolume
-    //
-
-    GLKMatrix4 projection = GLKMatrix4MakePerspective(M_PI_4, m_viewportWidth/(float)m_viewportHeight, 1.0f, 100.0f);
-
-    [viewVolume pushProjectionMatrix:projection];
-
-    viewVolume.nearPlane = 1.0f;
-    viewVolume.farPlane = 100.0f;
-}
-
-- (id<NFObserverProtocol>) getCameraObserver {
-    return viewVolume;
-}
-
-- (void) bindCamera:(NFCamera *)camera {
-    viewVolume.activeCamera = camera;
 }
 
 - (void) loadShaders {
@@ -371,7 +248,6 @@
 
 
 
-
     // NOTE: helper method will take care of cleaning up all shaders attached to program
     [NFRUtils destroyProgramWithHandle:tempProgram];
 
@@ -385,7 +261,11 @@
     m_hUBO = [NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:m_hProgram];
 }
 
-- (void) updateUBO {
+//
+// TODO: explicitly define a coordinate system (left or right-handed) though should note that the
+//       Wavefront obj file format specifies vertices in a right-handed coordinate system
+//
+- (void) updateUboWithViewVolume:(NFViewVolume *)viewVolume {
     //
     // TODO: while not yet implemented should consider using some additional utility
     //       methods for simplfying UBOs assuming they can be made worth while

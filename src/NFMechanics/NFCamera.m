@@ -78,14 +78,14 @@
 - (void) setTarget:(GLKVector4)target {
     _target = target;
     if (self.observer != nil) {
-        //[self.observer notifyOfStateChange];
+        [self.observer notifyOfStateChange];
     }
 }
 
 - (void) setUp:(GLKVector4)up {
     _up = up;
     if (self.observer != nil) {
-        //[self.observer notifyOfStateChange];
+        [self.observer notifyOfStateChange];
     }
 }
 
@@ -135,6 +135,10 @@
         newPosition.v[Z_POS] += self.translationSpeed.v[Z_POS];
         positionChanged = YES;
     }
+
+    //
+    // TODO: could possibly use GLKMatrix4TranslateWithVector4
+    //
 
     if (self.currentFlags & BACK_BIT) {
         newPosition.v[Z_POS] -= self.translationSpeed.v[Z_POS];
