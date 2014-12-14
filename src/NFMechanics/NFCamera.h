@@ -50,10 +50,7 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 // is still TBD at this point
 
 
-
-
 @interface NFCamera : NSObject <NFDataSourceProtocol>
-
 
 //
 // TODO: allow user control to set the horizontal FOV which will modify the aspect ratio or camera resolution ??
@@ -68,31 +65,13 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 
 @property (nonatomic, readonly, assign) float aspectRatio;
 
-
-
-//
-// TODO: use quaternions to perform rotations for arcball implementation
-//
-
 @property (nonatomic, assign) GLKVector4 position;
 @property (nonatomic, assign) GLKVector4 target;
 @property (nonatomic, assign) GLKVector4 up;
 
 
-//
-// TODO: need methods for moving/operating the camera
-//
-
-
-
-//
-// TODO: these will be the default values that are used to translate the camera
-//       based on the cameras current state
-//
-
 // component values is what will be applied as a translation based on the camera state
 @property (nonatomic, assign) GLKVector4 translationSpeed;
-
 
 
 //
@@ -101,6 +80,8 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 //       call on NFCamera object
 //
 @property (nonatomic, assign) id <NFObserverProtocol> observer;
+
+- (instancetype) initWithPosition:(GLKVector4)position withTarget:(GLKVector4)target withUp:(GLKVector4)up;
 
 //
 // TODO: pass in microsecond step
@@ -111,6 +92,9 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 - (void) clearMotionVectors;
 
 - (void) setState:(CAMERA_STATE)state;
+
+- (void) resetTarget;
+- (void) resetPosition;
 
 // for NFDataSourceProtocol
 - (void) addObserver:(id)obj;

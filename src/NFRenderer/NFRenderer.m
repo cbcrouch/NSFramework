@@ -198,6 +198,13 @@
 //       (viewport will be set/bound ahead of time for the renderer instance)
 //
 - (void) renderFrame {
+
+    //
+    // TODO: when in DEBUG mode check to verify that the frame buffer is valid, under some
+    //       circumstances when first starting up the application the renderer can attempt
+    //       to draw into a frame buffer before it is ready
+    //
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glUseProgram(m_hProgram);
 

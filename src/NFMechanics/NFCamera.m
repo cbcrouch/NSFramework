@@ -29,6 +29,11 @@
 
 @interface NFCamera()
 
+@property (nonatomic, assign) GLKVector4 initialTarget;
+@property (nonatomic, assign) GLKVector4 initialPosition;
+@property (nonatomic, assign) GLKVector4 initialUp;
+
+
 //
 // TODO: make a stack of motionVectors
 //
@@ -42,6 +47,11 @@
 
 
 @implementation NFCamera
+
+@synthesize initialTarget = _initialTarget;
+@synthesize initialPosition = _initialPosition;
+@synthesize initialUp = _initialUp;
+
 
 //@synthesize motionVector = _motionVector;
 
@@ -73,14 +83,14 @@
 }
 
 - (void) setTarget:(GLKVector4)target {
-    _target = target;
+    _target = GLKVector4Normalize(target);
     if (self.observer != nil) {
         [self.observer notifyOfStateChange];
     }
 }
 
 - (void) setUp:(GLKVector4)up {
-    _up = up;
+    _up = GLKVector4Normalize(up);
     if (self.observer != nil) {
         [self.observer notifyOfStateChange];
     }
@@ -100,11 +110,41 @@
     self = [super init];
     if (self != nil) {
         //
-        // TODO: allow default values to be configured
+        // TODO: allow default values to be configured or set them to same defaults
+        //       as either Maya, Blender, 3DS Max, Unreal, etc. based on whichever
+        //       makes the most sense (try Maya first, would be a nice nod towards
+        //       Alias Wavefront which also where the obj file format comes from)
         //
-        [self setPosition:GLKVector4Make(0.0f, 0.0f, 0.0f, 0.0f)];
-        [self setTarget:GLKVector4Make(1.0f, 0.0f, 1.0f, 0.0f)];
-        [self setUp:GLKVector4Make(0.0f, 1.0f, 0.0f, 0.0f)];
+
+        [self setPosition:GLKVector4Make(0.0f, 2.0f, 4.0f, 1.0f)];
+        [self setTarget:GLKVector4Make(0.0f, 0.0f, 0.0f, 1.0f)];
+        [self setUp:GLKVector4Make(0.0f, 1.0f, 0.0f, 1.0f)];
+
+        // set initial vectors so that the camera can be reset if the user becomes lost
+        [self setInitialPosition:[self position]];
+        [self setInitialTarget:[self target]];
+        [self setInitialUp:[self up]];
+
+        [self setCurrentFlags:0x00];
+
+        //[self setMotionVector:GLKVector4Make(0.0f, 0.0f, 0.0f, 0.0f)];
+
+        [self setTranslationSpeed:GLKVector4Make(0.025f, 0.0f, 0.025f, 0.0f)];
+    }
+    return self;
+}
+
+- (instancetype) initWithPosition:(GLKVector4)position withTarget:(GLKVector4)target withUp:(GLKVector4)up {
+    self = [super init];
+    if (self != nil) {
+        [self setPosition:position];
+        [self setTarget:target];
+        [self setUp:up];
+
+        // set initial vectors so that the camera can be reset if the user becomes lost
+        [self setInitialPosition:position];
+        [self setInitialTarget:target];
+        [self setInitialUp:up];
 
         [self setCurrentFlags:0x00];
 
@@ -131,8 +171,8 @@
     //
 
     if (self.currentFlags & FORWARD_BIT) {
-        newPosition.v[Z_POS] += self.translationSpeed.v[Z_POS];
-        newTarget.v[Z_POS] += self.translationSpeed.v[Z_POS];
+        newPosition.v[Z_POS] -= self.translationSpeed.v[Z_POS];
+        newTarget.v[Z_POS] -= self.translationSpeed.v[Z_POS];
         positionChanged = YES;
     }
 
@@ -140,21 +180,25 @@
     // TODO: could possibly use GLKMatrix4TranslateWithVector4
     //
 
+    //
+    // TODO: calculate translation vector based on the current position and look vector
+    //
+
     if (self.currentFlags & BACK_BIT) {
-        newPosition.v[Z_POS] -= self.translationSpeed.v[Z_POS];
-        newTarget.v[Z_POS] -= self.translationSpeed.v[Z_POS];
+        newPosition.v[Z_POS] += self.translationSpeed.v[Z_POS];
+        newTarget.v[Z_POS] += self.translationSpeed.v[Z_POS];
         positionChanged = YES;
     }
 
     if (self.currentFlags & LEFT_BIT) {
-        newPosition.v[X_POS] -= self.translationSpeed.v[X_POS];
-        newTarget.v[X_POS] -= self.translationSpeed.v[X_POS];
+        newPosition.v[X_POS] += self.translationSpeed.v[X_POS];
+        newTarget.v[X_POS] += self.translationSpeed.v[X_POS];
         positionChanged = YES;
     }
 
     if (self.currentFlags & RIGHT_BIT) {
-        newPosition.v[X_POS] += self.translationSpeed.v[X_POS];
-        newTarget.v[X_POS] += self.translationSpeed.v[X_POS];
+        newPosition.v[X_POS] -= self.translationSpeed.v[X_POS];
+        newTarget.v[X_POS] -= self.translationSpeed.v[X_POS];
         positionChanged = YES;
     }
 
@@ -224,6 +268,16 @@
             self.currentFlags = self.currentFlags & ~RIGHT_BIT;
             break;
     }
+}
+
+- (void) resetTarget {
+    self.target = self.initialTarget;
+}
+
+- (void) resetPosition {
+    self.up = self.initialUp;
+    self.position = self.initialPosition;
+
 }
 
 - (void) addObserver:(id)obj {

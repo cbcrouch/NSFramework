@@ -9,10 +9,146 @@
 #import "NFView.h"
 #import "NFRenderer.h"
 #import "NFViewVolume.h"
-#import "NFCamera.h"
 
 // Cocoa headers
 #import <QuartzCore/CVDisplayLink.h>
+
+
+//
+// TODO: NFCamera should only temporarily be used by NFView, should be moved
+//       to the simulation/application module
+//
+#import "NFCamera.h"
+
+/*
+@interface NFArcBall : NSObject
+
+@property (nonatomic, assign) NSInteger lastX;
+@property (nonatomic, assign) NSInteger lastY;
+@property (nonatomic, assign) NSInteger currentX;
+@property (nonatomic, assign) NSInteger currentY;
+
+@property (nonatomic, assign) CGSize viewportSize;
+@property (nonatomic, assign) BOOL active;
+
+//
+// TODO: need to lock the arc ball while computing the rotation matrix
+//       (i.e. this will need to be made thread safe)
+//
+- (GLKMatrix4) getRotationMatrix;
+
+@end
+
+@interface NFArcBall()
+
+- (GLKVector4) getVectorWithX:(NSInteger)x withY:(NSInteger)y;
+
+@end
+
+@implementation NFArcBall
+
+@synthesize currentX = _currentX;
+@synthesize currentY = _currentY;
+
+@synthesize viewportSize = _viewportSize;
+@synthesize active = _active;
+
+- (instancetype) init {
+    self = [super init];
+    if (self != nil) {
+        [self setLastX:0];
+        [self setLastY:0];
+        [self setCurrentX:0];
+        [self setCurrentY:0];
+        [self setViewportSize:CGSizeMake(0.0f, 0.0f)];
+        [self setActive:NO];
+    }
+    return self;
+}
+
+- (GLKVector4) getVectorWithX:(NSInteger)x withY:(NSInteger)y {
+
+    //
+    // TODO: this method has not yet been tested and can drop usage
+    //       of the multiplicative identity
+    //
+
+    GLKVector4 P = GLKVector4Make(1.0f * (x / self.viewportSize.width) * 2.0f - 1.0f,
+                                  1.0f * (y / self.viewportSize.height) * 2.0f -1.0f,
+                                  0.0f, 0.0f);
+    P.v[1] = -P.v[1];
+
+    float opSquare = (P.v[0] * P.v[0]) + (P.v[1] * P.v[1]);
+    if (opSquare <= 1.0f) {
+        P.v[2] = sqrtf(1.0f - opSquare);
+    }
+    else {
+        P = GLKVector4Normalize(P);
+    }
+
+    return P;
+}
+
+//
+// TODO: this arc ball calculation is to rotate an object, not the camera, will need to modify
+//       to work with the NFCamera class (but will still want the ability to generate a rotation
+//       matrix in order to manipulate various geometry in the scene)
+//
+
+- (GLKMatrix4) getRotationMatrix {
+
+    //
+    // TODO: convert snippet from wikibook to ObjC
+    //
+
+
+    GLKVector4 va = [self getVectorWithX:self.lastX withY:self.lastY];
+    GLKVector4 vb = [self getVectorWithX:self.currentX withY:self.currentY];
+
+    float angle = acosf(min(1.0f, GLKVector4DotProduct(va, vb)));
+    GLKVector4 axisCameraCoord = GLKVector4CrossProduct(va, vb);
+ 
+ 
+ //
+ // TODO: what is transforms[MODE_CAMERA] and objectToWorld set as ??
+ //
+
+    //GLKMatrix4 cameraToObject = GLKMatrix4Invert(transfroms[MODE_CAMERA] * objectToWorld, NO);
+    //GLKVector4 axisObjectCoord = cameraToObject * axisCameraCoord;
+
+    //GLKMatrix4 = GLKMatrix4Rotate(originalMatrix, angle, axisObjectCoord.v[0], axisObjectCoord.v[1], axisObjectCoord.v[2]);
+
+
+    self.lastX = self.currentX;
+    self.lastY = self.currentY;
+
+#if 0
+    glm::vec3 va = get_arcball_vector(last_mx, last_my);
+    glm::vec3 vb = get_arcball_vector( cur_mx,  cur_my);
+
+    float angle = acos(min(1.0f, glm::dot(va, vb)));
+
+    glm::vec3 axis_in_camera_coord = glm::cross(va, vb);
+
+    glm::mat3 camera2object = glm::inverse(glm::mat3(transforms[MODE_CAMERA]) * glm::mat3(mesh.object2world));
+    glm::vec3 axis_in_object_coord = camera2object * axis_in_camera_coord;
+
+    mesh.object2world = glm::rotate(mesh.object2world, glm::degrees(angle), axis_in_object_coord);
+
+    last_mx = cur_mx;
+    last_my = cur_my;
+#endif
+
+    return GLKMatrix4Make(0.0f, 0.0f, 0.0f, 0.0f,
+                          0.0f, 0.0f, 0.0f, 0.0f,
+                          0.0f, 0.0f, 0.0f, 0.0f,
+                          0.0f, 0.0f, 0.0f, 0.0f);
+
+}
+
+@end
+*/
+
 
 //
 // TODO: when ultimatly making cross platform window configuration consider passing
@@ -33,25 +169,38 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     //double m_currHostFreq; // ticks per second
     //uint32_t m_minHostDelta; // number of ticks accuracy
-
-    //
-    // TODO: make display link a private member versus property (should really do this
-    //       for any/all non-objects to avoid the issue of having to pass something by
-    //       reference since the getter will only return by value) <- verify last statement
-    //
-    //CVDisplayLinkRef m_displayLink;
 }
 
-// non-object ivars
 @property (nonatomic, assign) CVDisplayLinkRef displayLink;
 
-// NOTE: only public parts of CGL API are for full screen contexts, using NSGL
+//
+// TODO: support full display rendering with CGL for "game" mode
+//       and add support for OS X fullscreen mode
+//
 @property (nonatomic, retain) NSOpenGLContext *glContext;
 @property (nonatomic, retain) NSOpenGLPixelFormat *pixelFormat;
 
 @property (nonatomic, retain) NFRenderer *glRenderer;
 @property (nonatomic, retain) NFViewVolume *viewVolume;
 @property (nonatomic, retain) NFCamera *camera;
+
+
+
+
+//
+// TODO: these properties will need a better home ??
+//
+
+// NFCursorController ??
+
+@property (nonatomic, assign) NSPoint mouseLocation;
+
+@property (nonatomic, assign) BOOL onLeftEdge;
+@property (nonatomic, assign) BOOL onRightEdge;
+@property (nonatomic, assign) BOOL onUpperEdge;
+@property (nonatomic, assign) BOOL onLowerEdge;
+
+
 
 
 // instance methods
@@ -89,7 +238,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 // TODO: add some NOTEs explaining why initWithFrame won't get called and initWithCoder will
 //       plus include some text on why both are implemented
 //
-- (id) initWithFrame:(CGRect)frame {
+- (instancetype) initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self == nil) {
         NSLog(@"failed initWithFrame");
@@ -103,7 +252,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     return self;
 }
 
-- (id) initWithCoder:(NSCoder *)aDecoder {
+- (instancetype) initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
     if (self == nil) {
         NSLog(@"failed initWithCode");
@@ -195,9 +344,11 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //       occurs on the main thread hence the context lock to keep the threads in sync
     CGLLockContext([self.glContext CGLContextObj]);
 
+
     //
     // TODO: make sure that any relevant NFCamera objects get updated
     //
+
 
     // NOTE: not using dirtyRect since it will only contain the portion of the view that needs updating
     CGRect rect = [self bounds];
@@ -263,30 +414,143 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             [self.camera setState:kCameraStateNilLeft];
             break;
 
+        case 'o':
+            [self.camera resetTarget];
+            break;
+
+        case 'p':
+
+            //
+            // TODO: resetPosition doesn't appear to work properly, could
+            //       also be misconfigured
+            //
+            [self.camera resetPosition];
+
+            [self.camera resetTarget];
+            break;
+
         default:
             break;
     }
 }
 
 - (void) mouseDown:(NSEvent *)theEvent {
-    //NSLog(@"NFView received a mouseDown event");
-    [super mouseDown:theEvent];
+
+    NSPoint location = [self convertPointFromBacking:[theEvent locationInWindow]];
+    NSLog(@"NFView mouse down at (%f, %f)", location.x, location.y);
+
+    //
+    // TODO: use this code when there is more than one view for the window
+    //
+    //NSPoint mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+    //BOOL isInside = [self mouse:mouseLoc inRect:[self bounds]];
+    //NSLog(@"inside = %d, mouse location (%f, %f)", isInside, mouseLoc.x, mouseLoc.y);
+
+    //
+    // TODO: currently the cursor movement is based off of the full display (and assuming
+    //       only one display), it should be updated to handle movement within a window/view
+    //
+
+    self.onLeftEdge = NO;
+    self.onRightEdge = NO;
+    self.onUpperEdge = NO;
+    self.onLowerEdge = NO;
+
+    //
+    // TODO: will want to better handle the CG display i.e should get the display
+    //       that the window is currently occupying (and account for a window that
+    //       spans multiple displays)
+    //
+    //CGDirectDisplayID nullDisplay = kCGNullDirectDisplay;
+
+    CGDirectDisplayID displayId = CGMainDisplayID();
+
+    //
+    // TODO: cache the current mouse cursor location and then on mouse up warp
+    //       the mouse position to the cached location
+    //
+
+    NSPoint centerPoint;
+    centerPoint.x = CGDisplayPixelsWide(displayId) / 2;
+    centerPoint.y = CGDisplayPixelsHigh(displayId) / 2;
+    self.mouseLocation = centerPoint;
+
+    CGWarpMouseCursorPosition(centerPoint);
+    CGDisplayHideCursor(displayId);
+
+    //
+    //
+    //
 }
 
 - (void) mouseUp:(NSEvent *)theEvent {
-    //NSLog(@"NFView received a mouseUp event");
-    [super mouseUp:theEvent];
+
+    //NSPoint location = [self convertPointFromBacking:[theEvent locationInWindow]];
+    //NSLog(@"NFView received a mouseUp event at location (%f, %f)", location.x, location.y);
+
+    NSLog(@"NFView received a mouseUp event");
+
+    CGDisplayShowCursor(CGMainDisplayID());
+
 }
 
 - (void) mouseDragged:(NSEvent *)theEvent {
-
-    //NSLog(@"NFView received a mouseDragged event");
+    //NSPoint location = [theEvent locationInWindow];
+    //NSLog(@"NFView received a mouseDragged event at location (%f, %f)", location.x, location.y);
 
     //
-    // TODO: implement arc ball
+    // TODO: check if location is at edge of screen and if true then increment angle by fixed amount
+    //       (should most likely increment by the last angular increment
     //
 
-    [super mouseDragged:theEvent];
+    CGPoint point = CGEventGetLocation([theEvent CGEvent]);
+    //NSLog(@"CG event point (%f, %f)", point.x, point.y);
+
+    CGDirectDisplayID displayId = CGMainDisplayID();
+
+    NSPoint centerPoint;
+    centerPoint.x = CGDisplayPixelsWide(displayId) / 2;
+    centerPoint.y = CGDisplayPixelsHigh(displayId) / 2;
+
+    // these values will be normalized to [-0.5f, 0.5f] i.e. -45.0 to 45.0
+
+    float normalizedX0 = (self.mouseLocation.x - centerPoint.x) / CGDisplayPixelsWide(displayId);
+    float normalizedY0 = (self.mouseLocation.y - centerPoint.y) / CGDisplayPixelsHigh(displayId);
+
+    float normalizedX1 = (point.x - centerPoint.x) / CGDisplayPixelsWide(displayId);
+    float normalizedY1 = (point.y - centerPoint.y) / CGDisplayPixelsHigh(displayId);
+
+    //
+    // TODO: would it make sense to map the normalized values into the NFCamera's vertical and
+    //       horizontal field of view
+    //
+
+    float angleX0 = asin(normalizedX0);
+    float angleY0 = asin(normalizedY0);
+
+    float angleX1 = asin(normalizedX1);
+    float angleY1 = asin(normalizedY1);
+
+    float angularDeltaX = angleX1 - angleX0;
+    float angularDeltaY = angleY1 - angleY0;
+
+    //NSLog(@"new point angles (%f, %f) old point angles (%f, %f)", angleX0 * 180.0f/M_PI, angleY0 * 180.0f/M_PI,
+    //      angleX1 * 180.0f/M_PI, angleY1 * 180.0f/M_PI);
+
+    NSLog(@"angular delta values (%f, %f)", angularDeltaX, angularDeltaY);
+
+    //
+    // TODO: need to determine best and most accurate way of converting the angular distance
+    //       into a rotation to apply to the camera's target vector
+    //
+    //GLKMatrix4 rotationMatX = GLKMatrix4RotateX(GLKMatrix4Identity, angularDeltaX);
+    //GLKMatrix4 rotationMatY = GLKMatrix4RotateY(GLKMatrix4Identity, angularDeltaY);
+
+    //GLKQuaternion quatRotationX = GLKQuaternionMakeWithAngleAndVector3Axis(angularDeltaX, GLKVector3Make(1.0f, 0.0f, 0.0f));
+    //GLKQuaternion quatRotationY = GLKQuaternionMakeWithAngleAndVector3Axis(angularDeltaY, GLKVector3Make(0.0f, 1.0f, 0.0f));
+
+    // NOTE: NSPoint is a typedef of CGPoint so this is a safe cast to make
+    self.mouseLocation = (NSPoint)point;
 }
 
 - (void) setupOpenGL {

@@ -14,14 +14,4 @@
 
 @interface NFView : NSView
 
-- (id) initWithFrame:(CGRect)frame;
-- (id) initWithCoder:(NSCoder *)aDecoder;
-- (void) dealloc;
-
-- (void) awakeFromNib;
-- (BOOL) isOpaque;
-- (void) lockFocus;
-- (void) drawRect:(CGRect)dirtyRect;
-- (void) surfaceNeedsUpdate:(NSNotification *)notification;
-
 @end
