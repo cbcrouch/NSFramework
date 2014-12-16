@@ -354,6 +354,19 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     CGRect rect = [self bounds];
     [self.glRenderer resizeToRect:rect];
 
+    // use CGSize if not supporting multiple viewports per renderer
+
+    // if supporting multiple viewports per renderer then the renderer should own the viewport
+    // and not the NFViewVolume class
+
+    // allowing multiple viewports per renderer will most likely keep overhead lower
+    // by eliminating the need for multiple NSView objects
+
+    // would need ability to bind a NFViewVolume to a viewport
+
+    // would need ability to resize a specified viewport
+
+
     CGLUnlockContext([self.glContext CGLContextObj]);
 }
 

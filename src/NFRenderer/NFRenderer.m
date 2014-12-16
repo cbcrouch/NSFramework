@@ -28,6 +28,23 @@
 #import <GLKit/GLKit.h>
 
 
+
+@interface NFViewport : NSObject
+@property (nonatomic, assign) NFViewportId uniqueId;
+//
+// TODO: define and use an NFRect that uses GLsizei params to avoid
+//       numerous casts to-and-from floats/ints
+//
+@property (nonatomic, assign) CGRect viewRect;
+@end
+
+@implementation NFViewport
+@synthesize uniqueId = _uniqueId;
+@synthesize viewRect = _viewRect;
+@end
+
+
+
 #pragma mark - NSGLRenderer Interface
 @interface NFRenderer()
 {
@@ -36,31 +53,42 @@
     //       of "naked" instance variables according to ObjC conventions
     //
 
+    // asset data should be stored in a scene container of some sorts
     NFAssetData *m_pAsset;
     NFAssetData *m_axisData;
     NFAssetData *m_gridData;
     NFAssetData *m_planeData;
 
-    GLuint m_hProgram;
+    //
+    // TODO: this information should be stored in some kind of NFRendererProgram object
+    //       (could also use something like an NFEffects object, need to determine the
+    //       easiest and simplist way to encapsulate shaders)
+    //
     GLint m_modelLoc;
-
-    GLsizei m_viewportWidth;
-    GLsizei m_viewportHeight;
-
     GLuint m_normTexFuncIdx;
     GLuint m_expTexFuncIdx;
-
     GLuint m_hUBO;
+    GLuint m_hProgram;
+
+
+    //
+    // TODO: replace with NFViewport object
+    //
+    //GLsizei m_viewportWidth;
+    //GLsizei m_viewportHeight;
 }
 
-- (void) loadShaders;
+@property (nonatomic, retain) NSArray* viewports;
 
+- (void) loadShaders;
 - (void) updateUboWithViewVolume:(NFViewVolume *)viewVolume;
 
 @end
 
 #pragma mark - NSGLRenderer Implementation
 @implementation NFRenderer
+
+@synthesize viewports = _viewports;
 
 - (instancetype) init {
     self = [super init];
@@ -73,15 +101,24 @@
     NSLog(@"GL_VERSION:   %s", glGetString(GL_VERSION));
     NSLog(@"GLSL_VERSION: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
-
     //
     // TODO: ideally should be able to init the renderer without requiring the viewport size
     //       and rely on the resizeToRect method for setting the viewport size (if that is not
     //       possible than should at least use a constant as the default/starting viewport size)
     //
-    m_viewportWidth = 1280;
-    m_viewportHeight = 720;
 
+    NFViewport* viewportArray[MAX_NUM_VIEWPORTS];
+    for (int i=0; i<MAX_NUM_VIEWPORTS; ++i) {
+        viewportArray[i] = [[[NFViewport alloc] init] autorelease];
+        viewportArray[i].uniqueId = -1;
+        viewportArray[i].viewRect = CGRectMake(0.0f, 0.0f, 0.0f, 0.0f);
+    }
+
+    viewportArray[0].uniqueId = 1;
+    viewportArray[0].viewRect = CGRectMake(0.0f, 0.0f,
+        (CGFloat)DEFAULT_VIEWPORT_WIDTH, (CGFloat)DEFAULT_VIEWPORT_HEIGHT);
+
+    [self setViewports:[NSArray arrayWithObjects:viewportArray count:MAX_NUM_VIEWPORTS]];
 
     [self loadShaders];
 
@@ -228,13 +265,13 @@
 }
 
 - (void) resizeToRect:(CGRect)rect {
-    GLsizei width = (GLsizei)CGRectGetWidth(rect);
-    GLsizei height = (GLsizei)CGRectGetHeight(rect);
 
-    if ((m_viewportWidth != width) || (m_viewportHeight != height)) {
-        m_viewportWidth = width;
-        m_viewportHeight = height;
-        glViewport((GLint)0, (GLint)0, m_viewportWidth, m_viewportHeight);
+    NFViewport *viewport = [self.viewports objectAtIndex:0];
+
+    if (viewport.viewRect.size.width != CGRectGetWidth(rect) ||
+        viewport.viewRect.size.height != CGRectGetHeight(rect)) {
+        viewport.viewRect = rect;
+        glViewport((GLint)0, (GLint)0, (GLsizei)CGRectGetWidth(rect), (GLsizei)CGRectGetHeight(rect));
     }
 }
 
