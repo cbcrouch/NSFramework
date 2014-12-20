@@ -349,8 +349,4 @@
 
 }
 
-- (void) addObserver:(id)obj {
-    //self.observer = obj;
-}
-
 @end

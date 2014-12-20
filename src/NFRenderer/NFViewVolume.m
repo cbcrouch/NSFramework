@@ -5,10 +5,15 @@
 //  Copyright (c) 2014 Casey Crouch. All rights reserved.
 //
 
-/*
 #import "NFViewVolume.h"
 
-static const char *g_matrixType = @encode(GLKMatrix4);
+//
+// TODO: NFTransform should be a generic matrix stack that will can be used
+//       almost identically to the OpenGL 1.x/2.x matrix stack
+//       (move class into NFUtils)
+//
+
+//static const char *g_matrixType = @encode(GLKMatrix4);
 
 @interface NFTransform : NSObject
 @property (nonatomic, assign) GLKMatrix4 computedMatrix;
@@ -42,27 +47,7 @@ static const char *g_matrixType = @encode(GLKMatrix4);
 @end
 
 
-@interface NFViewVolume()
-+ (void) updateTransform:(NFTransform *)transform;
-@property (nonatomic, retain) NFTransform* viewTransform;
-@property (nonatomic, retain) NFTransform* projTransform;
-@end
-
-@implementation NFViewVolume
-
-@synthesize nearPlane = _nearPlane;
-@synthesize farPlane = _farPlane;
-
-@synthesize activeCamera = _activeCamera;
-
-@synthesize dirty = _dirty;
-
-@synthesize view = _view;
-@synthesize projection = _projection;
-
-@synthesize viewTransform = _viewTransform;
-@synthesize projTransform = _projTransform;
-
+/*
 + (void) updateTransform:(NFTransform *)transform {
     if ([transform dirty] == YES) {
         // should compute in reverse order for left handed coordinate systems e.g.
@@ -93,55 +78,10 @@ static const char *g_matrixType = @encode(GLKMatrix4);
     }
 }
 
-- (instancetype) init {
-    self = [super init];
-    [self setDirty:NO];
-    return self;
-}
-
-- (void) dealloc {
-    [self.viewTransform release];
-    [self.projTransform release];
-    [super dealloc];
-}
-
-- (GLKMatrix4)view {
-    [NFViewVolume updateTransform:self.viewTransform];
-    return self.viewTransform.computedMatrix;
-}
-
-- (GLKMatrix4)projection {
-    [NFViewVolume updateTransform:[self projTransform]];
-    return self.projTransform.computedMatrix;
-}
-
-- (NFTransform *) viewTransform {
-    if (_viewTransform == nil) {
-        _viewTransform = [[NFTransform alloc] init];
-    }
-    return _viewTransform;
-}
-
-- (NFTransform *) projTransform {
-    if (_projTransform == nil) {
-        _projTransform = [[NFTransform alloc] init];
-    }
-    return _projTransform;
-}
-
-//
-// TODO: need to get the matrix stack calculation working correctly
-//
 - (void) pushViewMatrix:(GLKMatrix4)mat {
     NSValue *value = [NSValue value:&mat withObjCType:g_matrixType];
     [self.viewTransform.matrixStack addObject:value];
     [self.viewTransform setDirty:YES];
-}
-
-- (void) pushProjectionMatrix:(GLKMatrix4)mat {
-    NSValue *value = [NSValue value:&mat withObjCType:g_matrixType];
-    [self.projTransform.matrixStack addObject:value];
-    [self.projTransform setDirty:YES];
 }
 
 - (void) overrideViewTransformWithMatrix:(GLKMatrix4)mat {
@@ -149,30 +89,4 @@ static const char *g_matrixType = @encode(GLKMatrix4);
     [self.viewTransform setComputedMatrix:mat];
     [self.viewTransform setDirty:NO];
 }
-
-- (void) overrideProjectionTransformWithMatrix:(GLKMatrix4)mat {
-    [self.projTransform.matrixStack removeAllObjects];
-    [self.projTransform setComputedMatrix:mat];
-    [self.projTransform setDirty:NO];
-}
-
-- (void) updateAllTransforms {
-    [NFViewVolume updateTransform:[self viewTransform]];
-    [NFViewVolume updateTransform:[self projTransform]];
-}
-
-- (void) notifyOfStateChange {
-    GLKVector4 eye = self.activeCamera.position;
-    GLKVector4 look = self.activeCamera.target;
-    GLKVector4 up = self.activeCamera.up;
-
-    GLKMatrix4 view = GLKMatrix4MakeLookAt(eye.v[0], eye.v[1], eye.v[2],
-                                           look.v[0], look.v[1], look.v[2],
-                                           up.v[0], up.v[1], up.v[2]);
-
-    [self overrideViewTransformWithMatrix:view];
-    self.dirty = YES;
-}
-
-@end
 */

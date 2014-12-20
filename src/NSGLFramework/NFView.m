@@ -665,9 +665,9 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     NSAssert(self.glRenderer != nil, @"Failed to initialize and create NSGLRenderer");
 
 
-
-    //self.viewVolume = [[[NFViewVolume alloc] init] autorelease];
-
+    //
+    // TODO: should move the camera ownership into NFSimulation (or where ever the main update loop will be)
+    //
     float nearPlane = 1.0f;
     float farPlane = 100.0f;
 
@@ -676,21 +676,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     GLKMatrix4 projection = GLKMatrix4MakePerspective(M_PI_4, width / height, nearPlane, farPlane);
 
-    //[self.viewVolume pushProjectionMatrix:projection];
-
-    //self.viewVolume.nearPlane = 1.0f;
-    //self.viewVolume.farPlane = 100.0f;
-
-
-
-
-    //
-    // TODO: should move the camera ownership into NFSimulation (or where ever the main update loop will be)
-    //
     self.camera = [[[NFCamera alloc] init] autorelease];
-
-    //[self.viewVolume setActiveCamera:self.camera];
-    //self.camera.observer = self.viewVolume;
 
     self.camera.width = (NSUInteger)width;
     self.camera.height = (NSUInteger)height;
@@ -703,7 +689,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
 
     [self.camera setProjectionMatrix:projection];
-
     //
     //
     //
@@ -773,18 +758,12 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     // "step scene" with lastest time delta
     //
-    // TODO: currently passing a hard value of 16 ms
+    // TODO: get ride of hardcoded value of 16 ms
     //
     [self.camera step:16000];
 
-
     [self.glRenderer updateFrameWithTime:outputTime withViewMatrix:[self.camera getViewMatrix]
                           withProjection:[self.camera getProjectionMatrix]];
-
-
-    //
-    // TODO: rendering should be performed on a scene with a camera and assigned to a viewport
-    //
 
     // perform drawing code
     [self.glRenderer renderFrame];

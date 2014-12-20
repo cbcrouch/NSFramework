@@ -32,7 +32,7 @@
 @interface NFViewport : NSObject
 @property (nonatomic, assign) NFViewportId uniqueId;
 //
-// TODO: define and use an NFRect that uses GLsizei params to avoid
+// TODO: define and use an NFRect style type but with GLsizei params to avoid
 //       numerous casts to-and-from floats/ints
 //
 @property (nonatomic, assign) CGRect viewRect;
@@ -61,8 +61,7 @@
 
     //
     // TODO: this information should be stored in some kind of NFRendererProgram object
-    //       (could also use something like an NFEffects object, need to determine the
-    //       easiest and simplist way to encapsulate shaders)
+    //       or an NFPipeline object (need to determine the easiest and simplist way to encapsulate shaders)
     //
     GLint m_modelLoc;
     GLuint m_normTexFuncIdx;
@@ -74,9 +73,6 @@
 @property (nonatomic, retain) NSArray* viewports;
 
 - (void) loadShaders;
-
-//- (void) updateUboWithViewVolume:(NFViewVolume *)viewVolume;
-
 - (void) updateUboWithViewMatrix:(GLKMatrix4)viewMatrix withProjection:(GLKMatrix4)projection;
 
 @end

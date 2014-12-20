@@ -25,7 +25,10 @@ typedef NSInteger NFViewportId;
 - (instancetype) init;
 
 //
-// TODO: should the renderer own the viewport dimensions or the view volume ??
+// TODO: the renderer should have viewport origin and width/height which can be
+//       different than the width/height of the camera i.e. the viewport is the
+//       area of screen being rendered into and the camera width/heigh is the
+//       pixel resolution of the rendered image
 //
 //- (instancetype) initWithWidth:(NSInteger)width withHeight(NSInteger)height;
 //- (instancetype) initWithViewport:(NSRect)viewportRect;

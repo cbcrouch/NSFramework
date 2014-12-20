@@ -9,7 +9,6 @@
 #import <GLKit/GLKit.h>
 
 #import "NFUtils.h"
-#import "NFProtocols.h"
 
 
 typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
@@ -51,7 +50,7 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 
 
 
-@interface NFCamera : NSObject <NFDataSourceProtocol>
+@interface NFCamera : NSObject
 
 //
 // TODO: allow user control to set the horizontal FOV which will modify the aspect ratio or camera resolution ??
@@ -108,10 +107,6 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 //
 // TODO: add override view/projection matrices and an apply matrix to view method
 //
-
-
-// for NFDataSourceProtocol
-- (void) addObserver:(id)obj;
 
 
 

@@ -69,7 +69,6 @@
 		233797FE1885E25F00399EBA /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		233798001885E26700399EBA /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		233798021885E26F00399EBA /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		233EFCC11A26CC490060C356 /* NFProtocols.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFProtocols.h; path = NFProtocols/NFProtocols.h; sourceTree = "<group>"; };
 		23469D101976F6C100C965F1 /* WavefrontModel.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = WavefrontModel.fsh; path = ../shaders/WavefrontModel.fsh; sourceTree = "<group>"; };
 		23469D111976F6C100C965F1 /* WavefrontModel.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = WavefrontModel.vsh; path = ../shaders/WavefrontModel.vsh; sourceTree = "<group>"; };
 		234E2CBE188382CC00AF8F23 /* NSGLFramework.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NSGLFramework.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -183,20 +182,11 @@
 			name = Shaders;
 			sourceTree = "<group>";
 		};
-		233EFCC01A26CC0F0060C356 /* NFProtocols */ = {
-			isa = PBXGroup;
-			children = (
-				233EFCC11A26CC490060C356 /* NFProtocols.h */,
-			);
-			name = NFProtocols;
-			sourceTree = "<group>";
-		};
 		234E2CB5188382CC00AF8F23 = {
 			isa = PBXGroup;
 			children = (
 				233797E71885E05100399EBA /* NFAssetPipeline */,
 				2381561D1A16A1030018ECF3 /* NFMechanics */,
-				233EFCC01A26CC0F0060C356 /* NFProtocols */,
 				233797E81885E06C00399EBA /* NFRenderer */,
 				2381561E1A16A10E0018ECF3 /* NFSimulation */,
 				234E2CC7188382CC00AF8F23 /* NSGLFramework */,
