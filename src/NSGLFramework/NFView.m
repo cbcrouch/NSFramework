@@ -181,7 +181,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 @property (nonatomic, retain) NSOpenGLPixelFormat *pixelFormat;
 
 @property (nonatomic, retain) NFRenderer *glRenderer;
-@property (nonatomic, retain) NFViewVolume *viewVolume;
 @property (nonatomic, retain) NFCamera *camera;
 
 
@@ -218,7 +217,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 @synthesize pixelFormat = _pixelFormat;
 
 @synthesize glRenderer = _glRenderer;
-@synthesize viewVolume = _viewVolume;
 @synthesize camera = _camera;
 
 //
@@ -403,6 +401,62 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             [self.camera setState:kCameraStateActLeft];
             break;
 
+            // angular delta values in radians (0.004998, -0.004009)
+
+        case 'j': {
+
+            static float angularDelta = 0.0f;
+            angularDelta += 0.05f;
+
+
+            // NOTE: left/right rotation is around the z axis
+            //       up/down rotation is around the x axis
+
+
+            //GLKQuaternion quatRotation = GLKQuaternionMakeWithAngleAndAxis(angularDelta, 0.0f, 0.0f, 1.0f);
+
+            //float quatAngle = GLKQuaternionAngle(quatRotation);
+            //NSLog(@"quaternion angle in radians: %f", quatAngle);
+
+
+
+            //GLKVector4 temp = GLKVector4Add(self.camera.position, self.camera.target);
+
+            //GLKVector4 temp = GLKVector4Subtract(self.camera.position, self.camera.target);
+            GLKVector4 temp = GLKVector4Subtract(self.camera.target, self.camera.position);
+
+
+
+            //self.camera.target = GLKQuaternionRotateVector4(quatRotation, temp);
+
+
+
+            //
+            // TODO: need to collapse the view volume into the camera class, there is nothing to gain
+            //       from trying to make them two separate modules and only increases complexity of use
+            //
+
+            
+
+            //
+            // TODO: translate camera to origin, then rotate, and finally translate back
+            //
+
+            GLKMatrix4 rotationMat = GLKMatrix4MakeRotation(angularDelta, 0.0f, 0.0f, 1.0f);
+            self.camera.target = GLKMatrix4MultiplyVector4(rotationMat, temp);
+
+
+            NSLog(@"modified camera target (%f, %f, %f)", self.camera.target.v[0], self.camera.target.v[1], self.camera.target.v[2]);
+
+        } break;
+
+
+        case 'k':
+            //
+            // TODO: rotate camera target vector by -0.005
+            //
+            break;
+
         default:
             break;
     }
@@ -432,13 +486,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             break;
 
         case 'p':
-
-            //
-            // TODO: resetPosition doesn't appear to work properly, could
-            //       also be misconfigured
-            //
             [self.camera resetPosition];
-
             [self.camera resetTarget];
             break;
 
@@ -618,7 +666,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
 
 
-    self.viewVolume = [[[NFViewVolume alloc] init] autorelease];
+    //self.viewVolume = [[[NFViewVolume alloc] init] autorelease];
 
     float nearPlane = 1.0f;
     float farPlane = 100.0f;
@@ -627,10 +675,12 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     CGFloat height = self.frame.size.height;
 
     GLKMatrix4 projection = GLKMatrix4MakePerspective(M_PI_4, width / height, nearPlane, farPlane);
-    [self.viewVolume pushProjectionMatrix:projection];
 
-    self.viewVolume.nearPlane = 1.0f;
-    self.viewVolume.farPlane = 100.0f;
+    //[self.viewVolume pushProjectionMatrix:projection];
+
+    //self.viewVolume.nearPlane = 1.0f;
+    //self.viewVolume.farPlane = 100.0f;
+
 
 
 
@@ -639,8 +689,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //
     self.camera = [[[NFCamera alloc] init] autorelease];
 
-    [self.viewVolume setActiveCamera:self.camera];
-    self.camera.observer = self.viewVolume;
+    //[self.viewVolume setActiveCamera:self.camera];
+    //self.camera.observer = self.viewVolume;
 
     self.camera.width = (NSUInteger)width;
     self.camera.height = (NSUInteger)height;
@@ -650,6 +700,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     self.camera.position = GLKVector4Make(0.0f, 2.0f, 4.0f, 1.0f);
     self.camera.target = GLKVector4Make(0.0f, 0.0f, 0.0f, 1.0f);
     self.camera.up = GLKVector4Make(0.0f, 1.0f, 0.0f, 1.0f);
+
+
+    [self.camera setProjectionMatrix:projection];
+
     //
     //
     //
@@ -723,7 +777,9 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //
     [self.camera step:16000];
 
-    [self.glRenderer updateFrameWithTime:outputTime withViewVolume:self.viewVolume];
+
+    [self.glRenderer updateFrameWithTime:outputTime withViewMatrix:[self.camera getViewMatrix]
+                          withProjection:[self.camera getProjectionMatrix]];
 
 
     //

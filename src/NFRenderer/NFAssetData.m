@@ -409,7 +409,6 @@ typedef struct NFVertState_t {
     self.textureUniform = glGetUniformLocation(hProgram, (const GLchar *)"texSampler\0");
     NSAssert(self.textureUniform != -1, @"Failed to get texture uniform location");
 
-
     // create VAO
     GLuint vao;
     glGenVertexArrays(1, &(vao));
@@ -451,6 +450,11 @@ typedef struct NFVertState_t {
         GLuint texId;
         glGenTextures(1, &texId);
         self.textureId = texId;
+
+        //
+        // TODO: use glTextureStorage2D specify texture storage requirements
+        //       since for most cases they should be known
+        //
 
         glBindTexture(GL_TEXTURE_2D, self.textureId);
 

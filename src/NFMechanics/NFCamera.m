@@ -19,11 +19,20 @@
 
 
 @implementation NFMotionVector
-
 @synthesize currentValue = _currentValue;
 @synthesize modifier = _modifier;
 @synthesize updateRate = _updateRate;
+@end
 
+
+@implementation NFViewVolume
+@synthesize view = _view;
+@synthesize projection = _projection;
+
+@synthesize farPlane = _farPlane;
+@synthesize nearPlane = _nearPlane;
+
+@synthesize viewportSize = _viewportSize;
 @end
 
 
@@ -32,6 +41,8 @@
 @property (nonatomic, assign) GLKVector4 initialTarget;
 @property (nonatomic, assign) GLKVector4 initialPosition;
 @property (nonatomic, assign) GLKVector4 initialUp;
+
+@property (nonatomic, retain) NFViewVolume* viewVolume;
 
 
 //
@@ -42,6 +53,9 @@
 @property (nonatomic, assign) NSUInteger currentFlags;
 
 @property (nonatomic, assign) float aspectRatio;
+
+
+- (void) updateViewVolume;
 
 @end
 
@@ -63,6 +77,8 @@
 @synthesize target = _target;
 @synthesize up = _up;
 
+@synthesize viewVolume = _viewVolume;
+
 @synthesize translationSpeed = _translationSpeed;
 
 //@synthesize hFOV = _hFOV;
@@ -73,27 +89,19 @@
 
 @synthesize currentFlags = _currentFlags;
 
-@synthesize observer = _observer;
-
 - (void) setPosition:(GLKVector4)position {
     _position = position;
-    if (self.observer != nil) {
-        [self.observer notifyOfStateChange];
-    }
+    [self updateViewVolume];
 }
 
 - (void) setTarget:(GLKVector4)target {
     _target = GLKVector4Normalize(target);
-    if (self.observer != nil) {
-        [self.observer notifyOfStateChange];
-    }
+    [self updateViewVolume];
 }
 
 - (void) setUp:(GLKVector4)up {
     _up = GLKVector4Normalize(up);
-    if (self.observer != nil) {
-        [self.observer notifyOfStateChange];
-    }
+    [self updateViewVolume];
 }
 
 - (void) setWidth:(NSUInteger)width {
@@ -106,6 +114,33 @@
     self.aspectRatio = self.width / (float) height;
 }
 
+
+- (GLKMatrix4) getViewMatrix {
+    return self.viewVolume.view;
+}
+- (GLKMatrix4) getProjectionMatrix {
+    return self.viewVolume.projection;
+}
+
+
+//
+// TODO: build out camera class enough so that these methods can be replaced
+//
+- (void) setViewMatrix:(GLKMatrix4)view {
+    self.viewVolume.view = view;
+}
+
+- (void) setProjectionMatrix:(GLKMatrix4)projection {
+    self.viewVolume.projection = projection;
+}
+
+
+- (void) updateViewVolume {
+    self.viewVolume.view = GLKMatrix4MakeLookAt(self.position.v[0], self.position.v[1], self.position.v[2],
+                                                self.target.v[0], self.target.v[1], self.target.v[2],
+                                                self.up.v[0], self.up.v[1], self.up.v[2]);
+}
+
 - (instancetype) init {
     self = [super init];
     if (self != nil) {
@@ -116,14 +151,48 @@
         //       Alias Wavefront which also where the obj file format comes from)
         //
 
-        [self setPosition:GLKVector4Make(0.0f, 2.0f, 4.0f, 1.0f)];
-        [self setTarget:GLKVector4Make(0.0f, 0.0f, 0.0f, 1.0f)];
-        [self setUp:GLKVector4Make(0.0f, 1.0f, 0.0f, 1.0f)];
+
+        GLKVector4 position = GLKVector4Make(0.0f, 2.0f, 4.0f, 1.0f);
+        GLKVector4 target = GLKVector4Make(0.0f, 0.0f, 0.0f, 1.0f);
+        GLKVector4 up = GLKVector4Make(0.0f, 1.0f, 0.0f, 1.0f);
+
+
+        [self setPosition:position];
+        [self setTarget:target];
+        [self setUp:up];
 
         // set initial vectors so that the camera can be reset if the user becomes lost
         [self setInitialPosition:[self position]];
         [self setInitialTarget:[self target]];
         [self setInitialUp:[self up]];
+
+        NFViewVolume *viewVolume = [[[NFViewVolume alloc] init] autorelease];
+
+
+        viewVolume.view = GLKMatrix4MakeLookAt(position.v[0], position.v[1], position.v[2],
+                                               target.v[0], target.v[1], target.v[2],
+                                               up.v[0], up.v[1], up.v[2]);
+
+        //
+        // TODO: need to set the projection matrix
+        //
+/*
+        float nearPlane = 1.0f;
+        float farPlane = 100.0f;
+
+        CGFloat width = self.frame.size.width;
+        CGFloat height = self.frame.size.height;
+
+        GLKMatrix4 projection = GLKMatrix4MakePerspective(M_PI_4, width / height, nearPlane, farPlane);
+        [self.viewVolume pushProjectionMatrix:projection];
+
+        self.viewVolume.nearPlane = 1.0f;
+        self.viewVolume.farPlane = 100.0f;
+*/
+
+
+        [self setViewVolume:viewVolume];
+
 
         [self setCurrentFlags:0x00];
 
@@ -281,7 +350,7 @@
 }
 
 - (void) addObserver:(id)obj {
-    self.observer = obj;
+    //self.observer = obj;
 }
 
 @end

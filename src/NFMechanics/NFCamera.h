@@ -29,25 +29,26 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 //
 
 @interface NFMotionVector : NSObject
-
 @property (nonatomic, assign) GLKVector4 currentValue;
 @property (nonatomic, assign) GLKVector4 modifier;
 @property (nonatomic, assign) MACH_TIME updateRate;
-
 @end
 
 
 //
-// TODO: will need to convert an NFCamera into an NFViewVolume
+// TODO: move this back to the NFViewVolume.h/.m after refactoring
 //
+@interface NFViewVolume : NSObject
+@property (nonatomic, assign) GLKMatrix4 view;
+@property (nonatomic, assign) GLKMatrix4 projection;
 
-// NFViewVolume and NFCamera will contain weak references to each other which are set with
-// a "bind" method, will then still need to determine which one polls for the others information
-// or which one becomes an observer of the other
+@property (nonatomic, assign) CGFloat farPlane;
+@property (nonatomic, assign) CGFloat nearPlane;
 
-// NFCamera should not know about the implemenation of the NFViewVolume, will only have an id
-// which it knows certain changes will need to be forwarded to, how that forward mechanism works
-// is still TBD at this point
+@property (nonatomic, assign) CGSize viewportSize;
+@end
+
+
 
 
 @interface NFCamera : NSObject <NFDataSourceProtocol>
@@ -74,13 +75,6 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 @property (nonatomic, assign) GLKVector4 translationSpeed;
 
 
-//
-// TODO: make sure that assign doesn't increment retain count on observer, very important
-//       to avoid cyclic strong references since the NFViewVolume will make a retain
-//       call on NFCamera object
-//
-@property (nonatomic, assign) id <NFObserverProtocol> observer;
-
 - (instancetype) initWithPosition:(GLKVector4)position withTarget:(GLKVector4)target withUp:(GLKVector4)up;
 
 //
@@ -96,7 +90,29 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 - (void) resetTarget;
 - (void) resetPosition;
 
+
+- (GLKMatrix4) getViewMatrix;
+- (GLKMatrix4) getProjectionMatrix;
+
+
+//
+// TODO: methods for setting view volume projection properties
+//
+
+//
+// TODO: these are temporary setters
+//
+- (void) setViewMatrix:(GLKMatrix4)view;
+- (void) setProjectionMatrix:(GLKMatrix4)projection;
+
+//
+// TODO: add override view/projection matrices and an apply matrix to view method
+//
+
+
 // for NFDataSourceProtocol
 - (void) addObserver:(id)obj;
+
+
 
 @end

@@ -69,19 +69,15 @@
     GLuint m_expTexFuncIdx;
     GLuint m_hUBO;
     GLuint m_hProgram;
-
-
-    //
-    // TODO: replace with NFViewport object
-    //
-    //GLsizei m_viewportWidth;
-    //GLsizei m_viewportHeight;
 }
 
 @property (nonatomic, retain) NSArray* viewports;
 
 - (void) loadShaders;
-- (void) updateUboWithViewVolume:(NFViewVolume *)viewVolume;
+
+//- (void) updateUboWithViewVolume:(NFViewVolume *)viewVolume;
+
+- (void) updateUboWithViewMatrix:(GLKMatrix4)viewMatrix withProjection:(GLKMatrix4)projection;
 
 @end
 
@@ -199,7 +195,8 @@
     [super dealloc];
 }
 
-- (void) updateFrameWithTime:(const CVTimeStamp*)outputTime withViewVolume:(NFViewVolume *)viewVolume {
+- (void) updateFrameWithTime:(const CVTimeStamp*)outputTime withViewMatrix:(GLKMatrix4)viewMatrix
+              withProjection:(GLKMatrix4)projection {
     //static float secs = 0.0; // elapsed time
     static uint64_t prevVideoTime = 0;
 
@@ -224,10 +221,13 @@
 
     prevVideoTime = outputTime->videoTime;
 
-    if (viewVolume.dirty) {
-        [self updateUboWithViewVolume:viewVolume];
-        viewVolume.dirty = NO;
-    }
+
+    //
+    // TODO: need to either send in a dirty flag or cache the values and compare so that the
+    //       renderer is not updating the UBO every frame
+    //
+    [self updateUboWithViewMatrix:viewMatrix withProjection:projection];
+
 }
 
 //
@@ -308,7 +308,7 @@
 // TODO: explicitly define a coordinate system (left or right-handed) though should note that the
 //       Wavefront obj file format specifies vertices in a right-handed coordinate system
 //
-- (void) updateUboWithViewVolume:(NFViewVolume *)viewVolume {
+- (void) updateUboWithViewMatrix:(GLKMatrix4)viewMatrix withProjection:(GLKMatrix4)projection {
     //
     // TODO: while not yet implemented should consider using some additional utility
     //       methods for simplfying UBOs assuming they can be made worth while
@@ -325,8 +325,8 @@
     glBufferData(GL_UNIFORM_BUFFER, 2 * matrixSize, NULL, GL_STATIC_READ);
 
     // transfer view and projection matrix data to uniform buffer
-    glBufferSubData(GL_UNIFORM_BUFFER, (GLintptr)0, matrixSize, [viewVolume view].m);
-    glBufferSubData(GL_UNIFORM_BUFFER, offset, matrixSize, [viewVolume projection].m);
+    glBufferSubData(GL_UNIFORM_BUFFER, (GLintptr)0, matrixSize, viewMatrix.m);
+    glBufferSubData(GL_UNIFORM_BUFFER, offset, matrixSize, projection.m);
 
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
     CHECK_GL_ERROR();

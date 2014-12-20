@@ -5,6 +5,7 @@
 //  Copyright (c) 2014 Casey Crouch. All rights reserved.
 //
 
+/*
 #import "NFViewVolume.h"
 
 static const char *g_matrixType = @encode(GLKMatrix4);
@@ -161,19 +162,10 @@ static const char *g_matrixType = @encode(GLKMatrix4);
 }
 
 - (void) notifyOfStateChange {
-    //
-    // TODO: either pull the needed values from NFViewVolume or set a flag to pull later
-    //
-
     GLKVector4 eye = self.activeCamera.position;
     GLKVector4 look = self.activeCamera.target;
     GLKVector4 up = self.activeCamera.up;
 
-    //NSLog(@"eye: (%f, %f, %f)", eye.v[0], eye.v[1], eye.v[2]);
-    //NSLog(@"look: (%f, %f, %f)", look.v[0], look.v[1], look.v[2]);
-    //NSLog(@"up: (%f, %f, %f)", up.v[0], up.v[1], up.v[2]);
-
-    
     GLKMatrix4 view = GLKMatrix4MakeLookAt(eye.v[0], eye.v[1], eye.v[2],
                                            look.v[0], look.v[1], look.v[2],
                                            up.v[0], up.v[1], up.v[2]);
@@ -183,3 +175,4 @@ static const char *g_matrixType = @encode(GLKMatrix4);
 }
 
 @end
+*/

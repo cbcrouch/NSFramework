@@ -7,14 +7,13 @@
 
 
 #import <Foundation/Foundation.h>
+#import <GLKit/GLKit.h>
 
-#import "NFViewVolume.h"
 
 //
 // TODO: allow configuring a default viewport via external config
 //
-
-#define MAX_NUM_VIEWPORTS 6
+#define MAX_NUM_VIEWPORTS 8
 #define DEFAULT_VIEWPORT_WIDTH 1280
 #define DEFAULT_VIEWPORT_HEIGHT 720
 
@@ -33,7 +32,8 @@ typedef NSInteger NFViewportId;
 
 - (void) dealloc;
 
-- (void) updateFrameWithTime:(const CVTimeStamp*)outputTime withViewVolume:(NFViewVolume *)viewVolume;
+- (void) updateFrameWithTime:(const CVTimeStamp*)outputTime withViewMatrix:(GLKMatrix4)viewMatrix
+              withProjection:(GLKMatrix4)projection;
 
 - (void) renderFrame;
 

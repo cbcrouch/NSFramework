@@ -446,6 +446,10 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 
     NFSurfaceModel *mat = [[[NFSurfaceModel alloc] init] autorelease];
 
+    //
+    // TODO: try and simplify some of this functionality using the NSScanner class
+    //
+
     for (NSString *line in lines) {
         // TODO: may have to handle leading whitespace in obj file as well unless the spec
         //       officially forbids it
