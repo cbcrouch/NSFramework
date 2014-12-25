@@ -47,6 +47,19 @@
 @end
 
 
+
+@implementation NFViewVolume
+@synthesize view = _view;
+@synthesize projection = _projection;
+
+@synthesize farPlane = _farPlane;
+@synthesize nearPlane = _nearPlane;
+
+@synthesize viewportSize = _viewportSize;
+@end
+
+
+
 /*
 + (void) updateTransform:(NFTransform *)transform {
     if ([transform dirty] == YES) {

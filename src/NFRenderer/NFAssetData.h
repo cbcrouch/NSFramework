@@ -80,20 +80,14 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
 };
 
 
-//
-// TODO: abstract classes are something very uncommon in Objective-C, use
-//       composition (sometimes through delegation) instead
-// http://stackoverflow.com/questions/1034373/creating-an-abstract-class-in-objective-c
-//
-
 
 @interface NFSubset : NSObject
 
 @property (nonatomic, assign) DRAWING_MODE drawMode;
 @property (nonatomic, assign) GLKMatrix4 modelMat;
 
-// assign is similiar to weak, weak releases and sets the object to nil after
-// no more objects are pointing to it
+// assign is similar to weak, weak releases and sets the object to nil after
+// no more objects are pointing to it while assign will not
 @property (nonatomic, assign) NFSurfaceModel* surfaceModel;
 
 - (void) allocateVerticesWithNumElts:(NSUInteger)num;

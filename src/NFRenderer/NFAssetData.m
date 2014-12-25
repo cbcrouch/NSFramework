@@ -216,6 +216,7 @@ typedef struct NFVertState_t {
     NSAssert(size > 0, @"loadVertexData failed, size <= 0");
     memcpy(self.vertices, pVertexData, size);
 
+
     //
     // TODO: build the transform hierarchy independent of the low level (OpenGL) subset
     //       and asset data class, though will want to build the bounding box here
@@ -365,8 +366,37 @@ typedef struct NFVertState_t {
     //       for getting/setting a transform heirarchy and providing step/update functionality
     //
 
+
+    //
+    // TODO: perform rotation with quaternions if GLK documentation doesn't prevent
+    //       gimbal lock with GLKMatrix4Rotate
+    //
+
     float angle = step * M_PI_4;
     GLKMatrix4 model = [[self.subsetArray objectAtIndex:0] modelMat];
+
+
+    //
+    // rotate around model Y axis
+    //
+/*
+    bool isInvertable;
+    GLKMatrix4 invertedModel = GLKMatrix4Invert(model, &isInvertable);
+    if (isInvertable) {
+        GLKVector4 posVec = GLKMatrix4GetColumn(invertedModel, 3);
+        NSLog(@"position vector (%f, %f, %f, %f)", posVec.v[0], posVec.v[1], posVec.v[2], posVec.v[3]);
+
+        model = GLKMatrix4Translate(model, -posVec.v[0], -posVec.v[1], -posVec.v[2]);
+        model = GLKMatrix4Rotate(model, angle, 0.0f, 1.0f, 0.0f);
+        model = GLKMatrix4Translate(model, posVec.v[0], posVec.v[1], posVec.v[2]);
+
+        [[self.subsetArray objectAtIndex:0] setModelMat:model];
+    }
+*/
+
+    //
+    // rotate around origin
+    //
     [[self.subsetArray objectAtIndex:0] setModelMat:GLKMatrix4RotateY(model, angle)];
 }
 
@@ -467,6 +497,20 @@ typedef struct NFVertState_t {
                      [diffuseMap format], [diffuseMap type], [diffuseMap data]);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
+
+
+
+    //
+    // TODO: need to expose transform heirarchy operations so individual assets
+    //       can be manipulated
+    //
+
+    //GLKMatrix4 model = [[self.subsetArray objectAtIndex:0] modelMat];
+    //model = GLKMatrix4Translate(model, 2.0f, 2.0f, 2.0f);
+    //[[self.subsetArray objectAtIndex:0] setModelMat:model];
+
+
+
 
     // unbind the VAO and check for errors
     glBindVertexArray(0);

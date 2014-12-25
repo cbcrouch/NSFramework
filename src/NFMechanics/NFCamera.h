@@ -8,9 +8,13 @@
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
 
+#import "NFViewVolume.h"
 #import "NFUtils.h"
 
 
+//
+// TODO: rename enum NF_CAMERA_TRANSLATION_STATE or something similar
+//
 typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
     kCameraStateActFwd,
     kCameraStateNilFwd,
@@ -34,22 +38,6 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 @end
 
 
-//
-// TODO: move this back to the NFViewVolume.h/.m after refactoring
-//
-@interface NFViewVolume : NSObject
-@property (nonatomic, assign) GLKMatrix4 view;
-@property (nonatomic, assign) GLKMatrix4 projection;
-
-@property (nonatomic, assign) CGFloat farPlane;
-@property (nonatomic, assign) CGFloat nearPlane;
-
-@property (nonatomic, assign) CGSize viewportSize;
-@end
-
-
-
-
 @interface NFCamera : NSObject
 
 //
@@ -65,16 +53,24 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 
 @property (nonatomic, readonly, assign) float aspectRatio;
 
-@property (nonatomic, assign) GLKVector4 position;
-@property (nonatomic, assign) GLKVector4 target;
-@property (nonatomic, assign) GLKVector4 up;
+
+
+//
+// TODO: make these read only properties (they will be updated through
+//       setting the translation state or using the roll/pitch/yaw methods)
+//
+@property (nonatomic, assign) GLKVector3 position;
+@property (nonatomic, assign) GLKVector3 target;
+@property (nonatomic, assign) GLKVector3 up;
+
 
 
 // component values is what will be applied as a translation based on the camera state
 @property (nonatomic, assign) GLKVector4 translationSpeed;
 
 
-- (instancetype) initWithPosition:(GLKVector4)position withTarget:(GLKVector4)target withUp:(GLKVector4)up;
+- (instancetype) initWithPosition:(GLKVector3)position withTarget:(GLKVector3)target withUp:(GLKVector3)up;
+
 
 //
 // TODO: pass in microsecond step
@@ -84,14 +80,40 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 - (void) pushMotionVector:(NFMotionVector *)motionVector;
 - (void) clearMotionVectors;
 
+
+//
+// TODO: should rename this to something like setTranslationState
+//
 - (void) setState:(CAMERA_STATE)state;
 
-- (void) resetTarget;
-- (void) resetPosition;
 
+- (void) resetTarget;
+- (void) resetPosition; // TODO: needs a better name resetToInitialValues ??
+
+
+- (void) setPosition:(GLKVector3)position withTarget:(GLKVector3)target withUp:(GLKVector3)up;
+
+- (void) roll:(float)angle;
+- (void) pitch:(float)angle;
+- (void) yaw:(float)angle;
+
+//
+// TODO: while the spare documentation online does claim that the UVN camera system will
+//       prevent gimbal lock, should really prove it mathematically
+//
+
+// UVN camera coordinate system is left handed
+
+// use VUN for right handed coordinate sysetm
+
+// http://stackoverflow.com/questions/25933581/how-u-v-n-camera-coordinate-system-explained-with-opengl
+// https://www.siggraph.org/education/materials/HyperGraph/viewing/view3d/3dview1.htm
+// http://ogldev.atspace.co.uk/www/tutorial13/tutorial13.html
 
 - (GLKMatrix4) getViewMatrix;
 - (GLKMatrix4) getProjectionMatrix;
+
+
 
 
 //
@@ -103,10 +125,6 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 //
 - (void) setViewMatrix:(GLKMatrix4)view;
 - (void) setProjectionMatrix:(GLKMatrix4)projection;
-
-//
-// TODO: add override view/projection matrices and an apply matrix to view method
-//
 
 
 

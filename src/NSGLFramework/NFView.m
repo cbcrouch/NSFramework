@@ -406,7 +406,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
         case 'j': {
 
             static float angularDelta = 0.0f;
-            angularDelta += 0.05f;
+            //angularDelta += 0.05f;
 
 
             // NOTE: left/right rotation is around the z axis
@@ -423,7 +423,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             //GLKVector4 temp = GLKVector4Add(self.camera.position, self.camera.target);
 
             //GLKVector4 temp = GLKVector4Subtract(self.camera.position, self.camera.target);
-            GLKVector4 temp = GLKVector4Subtract(self.camera.target, self.camera.position);
+            //GLKVector4 temp = GLKVector4Subtract(self.camera.target, self.camera.position);
 
 
 
@@ -431,19 +431,38 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
 
 
-            //
-            // TODO: need to collapse the view volume into the camera class, there is nothing to gain
-            //       from trying to make them two separate modules and only increases complexity of use
-            //
+            angularDelta += 0.0025f;
 
-            
+            bool isInvertable;
+            GLKMatrix4 viewMat = GLKMatrix4Invert([self.camera getViewMatrix], &isInvertable);
+            if (isInvertable) {
+                GLKVector4 posVec = GLKMatrix4GetColumn(viewMat, 3);
+                NSLog(@"position vector (%f, %f, %f, %f)", posVec.v[0], posVec.v[1], posVec.v[2], posVec.v[3]);
 
-            //
-            // TODO: translate camera to origin, then rotate, and finally translate back
-            //
+                // viewMat will translate the camera to the origin where its rotations will be
+                // preserved and can be updated
+                viewMat = GLKMatrix4Translate([self.camera getViewMatrix], -posVec.v[0], -posVec.v[1], -posVec.v[2]);
+                viewMat = GLKMatrix4Rotate(viewMat, angularDelta, 0.0f, 1.0f, 0.0f);
+                viewMat = GLKMatrix4Translate(viewMat, posVec.v[0], posVec.v[1], posVec.v[2]);
 
-            GLKMatrix4 rotationMat = GLKMatrix4MakeRotation(angularDelta, 0.0f, 0.0f, 1.0f);
-            self.camera.target = GLKMatrix4MultiplyVector4(rotationMat, temp);
+                [self.camera setViewMatrix:viewMat];
+            }
+
+            // another way of extracting the position from a view matrix
+            /*
+            vec3 ExtractCameraPos_NoScale(const mat4 & a_modelView)
+            {
+                mat3 rotMat(a_modelView);
+                vec3 d(a_modelView[3]);
+
+                vec3 retVec = -d * rotMat;
+                return retVec;
+            }
+            */
+
+
+            //GLKMatrix4 rotationMat = GLKMatrix4MakeRotation(angularDelta, 0.0f, 0.0f, 1.0f);
+            //self.camera.target = GLKMatrix4MultiplyVector4(rotationMat, temp);
 
 
             NSLog(@"modified camera target (%f, %f, %f)", self.camera.target.v[0], self.camera.target.v[1], self.camera.target.v[2]);
@@ -453,7 +472,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
         case 'k':
             //
-            // TODO: rotate camera target vector by -0.005
+            //
             //
             break;
 
@@ -565,13 +584,73 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //
 
     CGPoint point = CGEventGetLocation([theEvent CGEvent]);
-    //NSLog(@"CG event point (%f, %f)", point.x, point.y);
 
+    CGPoint centerPoint;
     CGDirectDisplayID displayId = CGMainDisplayID();
+    centerPoint.x = CGDisplayPixelsWide(displayId) / 2.0f;
+    centerPoint.y = CGDisplayPixelsHigh(displayId) / 2.0f;
 
-    NSPoint centerPoint;
-    centerPoint.x = CGDisplayPixelsWide(displayId) / 2;
-    centerPoint.y = CGDisplayPixelsHigh(displayId) / 2;
+
+/*
+    static float horizontalAngle = M_PI;    // Initial horizontal angle : toward -Z
+    static float verticalAngle = 0.0f;      // Initial vertical angle : none
+    static const float mouseSpeed = 0.005f;
+
+    // compute new orientation
+    horizontalAngle += mouseSpeed * (centerPoint.x - point.x);
+    verticalAngle += mouseSpeed * (centerPoint.y - point.y);
+
+    NSLog(@"horizontal angular delta: %f", mouseSpeed * (centerPoint.x - point.x));
+    NSLog(@"vertical angular delta: %f", mouseSpeed * (centerPoint.y - point.y));
+
+    // direction vector - spherical coordinates to Cartesian coordinates conversion
+    GLKVector3 direction = GLKVector3Make(cosf(verticalAngle) * sinf(horizontalAngle),
+                                          sinf(verticalAngle),
+                                          cosf(verticalAngle) * cosf(horizontalAngle));
+
+    // right vector
+    GLKVector3 right = GLKVector3Make(sinf(horizontalAngle) - M_PI_2,
+                                      0.0f,
+                                      cosf(horizontalAngle) - M_PI_2);
+
+    // up vector
+    GLKVector3 up = GLKVector3CrossProduct(right, direction);
+
+    // view matrix
+    GLKVector4 position = self.camera.position;
+    GLKVector4 target = GLKVector4Add(position, GLKVector4MakeWithVector3(direction, 1.0f));
+    GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(position.v[0], position.v[1], position.v[2],
+                                                target.v[0], target.v[1], target.v[2],
+                                                up.v[0], up.v[1], up.v[2]);
+
+    //self.camera.target = target;
+    //self.camera.up = GLKVector4MakeWithVector3(up, 1.0f);
+
+    [self.camera setViewMatrix:viewMatrix];
+*/
+
+
+    // x - red
+    // y - green
+    // z - blue
+
+    //
+    // TODO: currently right handed, should switch to left
+    //
+
+    // x = ro * sin phi * sin theta
+    // y = ro * cos phi
+    // z = ro * sin phi * cos theta
+
+    // ro = distance from origin
+    // phi = angle from y ro x around z axis
+    // theta = angle from z to x around y axis
+
+
+    //
+    // TODO: use calculation below to convert angular deltas (spherical coordinates) to cartesian
+    //       coordinates i.e. the direction vector
+    //
 
     // these values will be normalized to [-0.5f, 0.5f] i.e. -45.0 to 45.0
 
@@ -683,10 +762,9 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     self.camera.vFOV = (float) M_PI_4;
 
-    self.camera.position = GLKVector4Make(0.0f, 2.0f, 4.0f, 1.0f);
-    self.camera.target = GLKVector4Make(0.0f, 0.0f, 0.0f, 1.0f);
-    self.camera.up = GLKVector4Make(0.0f, 1.0f, 0.0f, 1.0f);
-
+    self.camera.position = GLKVector3Make(0.0f, 2.0f, 4.0f);
+    self.camera.target = GLKVector3Make(0.0f, 0.0f, 0.0f);
+    self.camera.up = GLKVector3Make(0.0f, 1.0f, 0.0f);
 
     [self.camera setProjectionMatrix:projection];
     //

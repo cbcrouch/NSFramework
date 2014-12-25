@@ -12,10 +12,9 @@
 #define LEFT_BIT    0x04
 #define RIGHT_BIT   0x08
 
-
-#define X_POS 0
-#define Y_POS 1
-#define Z_POS 2
+#define X_IDX 0
+#define Y_IDX 1
+#define Z_IDX 2
 
 
 @implementation NFMotionVector
@@ -25,22 +24,17 @@
 @end
 
 
-@implementation NFViewVolume
-@synthesize view = _view;
-@synthesize projection = _projection;
-
-@synthesize farPlane = _farPlane;
-@synthesize nearPlane = _nearPlane;
-
-@synthesize viewportSize = _viewportSize;
-@end
-
-
 @interface NFCamera()
 
-@property (nonatomic, assign) GLKVector4 initialTarget;
-@property (nonatomic, assign) GLKVector4 initialPosition;
-@property (nonatomic, assign) GLKVector4 initialUp;
+@property (nonatomic, assign) GLKVector3 initialPosition;
+@property (nonatomic, assign) GLKVector3 initialTarget;
+@property (nonatomic, assign) GLKVector3 initialUp;
+
+
+@property (nonatomic, assign) GLKVector3 U;
+@property (nonatomic, assign) GLKVector3 V;
+@property (nonatomic, assign) GLKVector3 N;
+
 
 @property (nonatomic, retain) NFViewVolume* viewVolume;
 
@@ -57,6 +51,10 @@
 
 - (void) updateViewVolume;
 
+
+- (void) calculatePositionTargetUp;
+- (void) updateModelViewMatrix;
+
 @end
 
 
@@ -65,6 +63,11 @@
 @synthesize initialTarget = _initialTarget;
 @synthesize initialPosition = _initialPosition;
 @synthesize initialUp = _initialUp;
+
+
+@synthesize U = _U;
+@synthesize V = _V;
+@synthesize N = _N;
 
 
 //@synthesize motionVector = _motionVector;
@@ -89,18 +92,18 @@
 
 @synthesize currentFlags = _currentFlags;
 
-- (void) setPosition:(GLKVector4)position {
+- (void) setPosition:(GLKVector3)position {
     _position = position;
     [self updateViewVolume];
 }
 
-- (void) setTarget:(GLKVector4)target {
-    _target = GLKVector4Normalize(target);
+- (void) setTarget:(GLKVector3)target {
+    _target = target;
     [self updateViewVolume];
 }
 
-- (void) setUp:(GLKVector4)up {
-    _up = GLKVector4Normalize(up);
+- (void) setUp:(GLKVector3)up {
+    _up = GLKVector3Normalize(up);
     [self updateViewVolume];
 }
 
@@ -150,11 +153,14 @@
         //       makes the most sense (try Maya first, would be a nice nod towards
         //       Alias Wavefront which also where the obj file format comes from)
         //
+        GLKVector3 position = GLKVector3Make(0.0f, 2.0f, 4.0f);
+        GLKVector3 target = GLKVector3Make(0.0f, 0.0f, 0.0f);
+        GLKVector3 up = GLKVector3Make(0.0f, 1.0f, 0.0f);
 
 
-        GLKVector4 position = GLKVector4Make(0.0f, 2.0f, 4.0f, 1.0f);
-        GLKVector4 target = GLKVector4Make(0.0f, 0.0f, 0.0f, 1.0f);
-        GLKVector4 up = GLKVector4Make(0.0f, 1.0f, 0.0f, 1.0f);
+        //
+        // TODO: transition to UVN camera implementation
+        //
 
 
         [self setPosition:position];
@@ -167,7 +173,6 @@
         [self setInitialUp:[self up]];
 
         NFViewVolume *viewVolume = [[[NFViewVolume alloc] init] autorelease];
-
 
         viewVolume.view = GLKMatrix4MakeLookAt(position.v[0], position.v[1], position.v[2],
                                                target.v[0], target.v[1], target.v[2],
@@ -203,7 +208,7 @@
     return self;
 }
 
-- (instancetype) initWithPosition:(GLKVector4)position withTarget:(GLKVector4)target withUp:(GLKVector4)up {
+- (instancetype) initWithPosition:(GLKVector3)position withTarget:(GLKVector3)target withUp:(GLKVector3)up {
     self = [super init];
     if (self != nil) {
         [self setPosition:position];
@@ -230,44 +235,55 @@
     //
 
     BOOL positionChanged = NO;
-    GLKVector4 newPosition = self.position;
-    GLKVector4 newTarget = self.target;
+
+    GLKVector3 newPosition = self.position;
+    GLKVector3 newTarget = self.target;
 
     // NOTE: delta is measured in microseconds
 
     //
-    // TODO: increment position by multiple of time delta
+    // TODO: increment position by multiple of time delta and use
+    //       slide based logic to update UVN based camera
     //
 
+/*
+    void Camera::slide(float delU, float delV, float delN)
+    {
+        eye.x += delU * u.x + delV * v.x + delN * n.x;
+        eye.y += delU * u.y + delV * v.y + delN * n.y;
+        eye.z += delU * u.z + delV * v.z + delN * n.z;
+        setModelViewMatrix();
+    }
+
+    void Camera::slideXZ(float delU, float delN)
+    {
+        eye.x += delU * u.x + delN * n.x;
+        eye.z += delU * u.z + delN * n.z;
+        setModelViewMatrix();
+    }
+*/
+
     if (self.currentFlags & FORWARD_BIT) {
-        newPosition.v[Z_POS] -= self.translationSpeed.v[Z_POS];
-        newTarget.v[Z_POS] -= self.translationSpeed.v[Z_POS];
+        newPosition.v[Z_IDX] -= self.translationSpeed.v[Z_IDX];
+        newTarget.v[Z_IDX] -= self.translationSpeed.v[Z_IDX];
         positionChanged = YES;
     }
 
-    //
-    // TODO: could possibly use GLKMatrix4TranslateWithVector4
-    //
-
-    //
-    // TODO: calculate translation vector based on the current position and look vector
-    //
-
     if (self.currentFlags & BACK_BIT) {
-        newPosition.v[Z_POS] += self.translationSpeed.v[Z_POS];
-        newTarget.v[Z_POS] += self.translationSpeed.v[Z_POS];
+        newPosition.v[Z_IDX] += self.translationSpeed.v[Z_IDX];
+        newTarget.v[Z_IDX] += self.translationSpeed.v[Z_IDX];
         positionChanged = YES;
     }
 
     if (self.currentFlags & LEFT_BIT) {
-        newPosition.v[X_POS] += self.translationSpeed.v[X_POS];
-        newTarget.v[X_POS] += self.translationSpeed.v[X_POS];
+        newPosition.v[X_IDX] += self.translationSpeed.v[X_IDX];
+        newTarget.v[X_IDX] += self.translationSpeed.v[X_IDX];
         positionChanged = YES;
     }
 
     if (self.currentFlags & RIGHT_BIT) {
-        newPosition.v[X_POS] -= self.translationSpeed.v[X_POS];
-        newTarget.v[X_POS] -= self.translationSpeed.v[X_POS];
+        newPosition.v[X_IDX] -= self.translationSpeed.v[X_IDX];
+        newTarget.v[X_IDX] -= self.translationSpeed.v[X_IDX];
         positionChanged = YES;
     }
 
@@ -346,7 +362,109 @@
 - (void) resetPosition {
     self.up = self.initialUp;
     self.position = self.initialPosition;
+}
 
+- (void) setPosition:(GLKVector3)position withTarget:(GLKVector3)target withUp:(GLKVector3)up {
+    self.position = position;
+    self.target = target;
+    self.up = up;
+
+    self.N = GLKVector3Subtract(position, target);
+    self.U = GLKVector3CrossProduct(up, self.N);
+
+    self.N = GLKVector3Normalize(self.N);
+    self.U = GLKVector3Normalize(self.U);
+
+    self.V = GLKVector3CrossProduct(self.N, self.U);
+
+    [self updateModelViewMatrix];
+}
+
+- (void) roll:(float)angle {
+    float cs = cosf(angle);
+    float sn = cosf(angle);
+
+    GLKVector3 t = self.U;
+
+    //
+    // TODO: use X_IDX, Y_IDX, Z_IDX
+    //
+
+    self.U.v[0] = cs * t.v[0] - sn * self.V.v[0];
+    self.U.v[1] = cs * t.v[1] - sn * self.V.v[1];
+    self.U.v[2] = cs * t.v[2] - sn * self.V.v[2];
+
+    self.V.v[0] = sn * t.v[0] + cs * self.V.v[0];
+    self.V.v[1] = sn * t.v[1] + cs * self.V.v[1];
+    self.V.v[2] = sn * t.v[2] + cs * self.V.v[2];
+
+    [self updateModelViewMatrix];
+}
+
+- (void) pitch:(float)angle {
+    float cs = cosf(angle);
+    float sn = sinf(angle);
+
+    GLKVector3 t = self.N;
+
+    self.N.v[0] = cs * t.v[0] - sn * self.V.v[0];
+    self.N.v[1] = cs * t.v[1] - sn * self.V.v[1];
+    self.N.v[2] = cs * t.v[2] - sn * self.V.v[2];
+
+    self.V.v[0] = sn * t.v[0] + cs * self.V.v[0];
+    self.V.v[1] = sn * t.v[1] + cs * self.V.v[1];
+    self.V.v[2] = sn * t.v[2] + cs * self.V.v[2];
+
+    [self updateModelViewMatrix];
+}
+
+- (void) yaw:(float)angle {
+    float cs = cosf(angle);
+    float sn = sinf(angle);
+
+    GLKVector3 t = self.U;
+
+    self.U.v[0] = cs * t.v[0] - sn * self.N.v[0];
+    self.U.v[1] = cs * t.v[1] - sn * self.N.v[1];
+    self.U.v[2] = cs * t.v[2] - sn * self.N.v[2];
+
+    self.N.v[0] = sn * t.v[0] + cs * self.N.v[0];
+    self.N.v[1] = sn * t.v[1] + cs * self.N.v[1];
+    self.N.v[2] = sn * t.v[2] + cs * self.N.v[2];
+
+    [self updateModelViewMatrix];
+}
+
+- (void) calculatePositionTargetUp {
+    //
+    // TODO: calculate position, target, and up vectors from UVN
+    //
+}
+
+- (void) updateModelViewMatrix {
+    GLKMatrix4 viewMat;
+
+    viewMat.m[0] = self.U.v[0];
+    viewMat.m[1] = self.V.v[0];
+    viewMat.m[2] = self.N.v[0];
+    viewMat.m[3] = 0.0f;
+
+    viewMat.m[4] = self.U.v[1];
+    viewMat.m[5] = self.V.v[1];
+    viewMat.m[6] = self.N.v[1];
+    viewMat.m[7] = 0.0f;
+
+    viewMat.m[8]  = self.U.v[2];
+    viewMat.m[9]  = self.V.v[2];
+    viewMat.m[10] = self.N.v[2];
+    viewMat.m[11] = 0.0f;
+
+    viewMat.m[12] = -1.0f * GLKVector3DotProduct(self.position, self.U);
+    viewMat.m[13] = -1.0f * GLKVector3DotProduct(self.position, self.V);
+    viewMat.m[14] = -1.0f * GLKVector3DotProduct(self.position, self.N);
+    viewMat.m[15] = 1.0f;
+
+    self.viewVolume.view = viewMat;
 }
 
 @end

@@ -119,9 +119,9 @@
 
     NSString *fileNamePath;
 
-    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
+    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
-    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
+    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
 
     //
     // TODO: calculate normals for the teapot so that it can be lit, and import RGB based textures
