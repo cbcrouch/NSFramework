@@ -242,26 +242,8 @@
     // NOTE: delta is measured in microseconds
 
     //
-    // TODO: increment position by multiple of time delta and use
-    //       slide based logic to update UVN based camera
+    // TODO: increment position by multiple of time delta and use the UVN based camera
     //
-
-/*
-    void Camera::slide(float delU, float delV, float delN)
-    {
-        eye.x += delU * u.x + delV * v.x + delN * n.x;
-        eye.y += delU * u.y + delV * v.y + delN * n.y;
-        eye.z += delU * u.z + delV * v.z + delN * n.z;
-        setModelViewMatrix();
-    }
-
-    void Camera::slideXZ(float delU, float delN)
-    {
-        eye.x += delU * u.x + delN * n.x;
-        eye.z += delU * u.z + delN * n.z;
-        setModelViewMatrix();
-    }
-*/
 
     if (self.currentFlags & FORWARD_BIT) {
         newPosition.v[Z_IDX] -= self.translationSpeed.v[Z_IDX];
@@ -380,9 +362,37 @@
     [self updateModelViewMatrix];
 }
 
+- (void) translateWithVector3:(GLKVector3)vec {
+    self.position.v[0] += vec.v[0] * self.U.v[0] + vec.v[0] * self.V.v[0] + vec.v[0] * self.N.v[0];
+    self.position.v[1] += vec.v[1] * self.U.v[1] + vec.v[1] * self.V.v[1] + vec.v[1] * self.N.v[1];
+    self.position.v[2] += vec.v[2] * self.U.v[2] + vec.v[2] * self.V.v[2] + vec.v[2] * self.N.v[2];
+
+    [self updateModelViewMatrix];
+}
+
+- (void) translateWithDeltaX:(float)delX withDeltaY:(float)delY withDeltaZ:(float)delZ {
+    //
+    // NOTE: cannot assign directly to property struct members since getter will
+    //       return the current value, need to capture as a temp, modify, and then
+    //       reassign the changed value(s)
+    //
+    GLKVector3 temp = self.position;
+
+    temp.v[0] += delX * self.U.v[0] + delY * self.V.v[0] + delZ * self.N.v[0];
+    temp.v[1] += delX * self.U.v[1] + delY * self.V.v[1] + delZ * self.N.v[1];
+    temp.v[2] += delX * self.U.v[2] + delY * self.V.v[2] + delZ * self.N.v[2];
+
+    self.position = temp;
+
+    [self updateModelViewMatrix];
+}
+
 - (void) roll:(float)angle {
     float cs = cosf(angle);
-    float sn = cosf(angle);
+    float sn = sinf(angle);
+
+    GLKVector3 tempU = self.U;
+    GLKVector3 tempV = self.V;
 
     GLKVector3 t = self.U;
 
@@ -390,13 +400,16 @@
     // TODO: use X_IDX, Y_IDX, Z_IDX
     //
 
-    self.U.v[0] = cs * t.v[0] - sn * self.V.v[0];
-    self.U.v[1] = cs * t.v[1] - sn * self.V.v[1];
-    self.U.v[2] = cs * t.v[2] - sn * self.V.v[2];
+    tempU.v[0] = cs * t.v[0] - sn * self.V.v[0];
+    tempU.v[1] = cs * t.v[1] - sn * self.V.v[1];
+    tempU.v[2] = cs * t.v[2] - sn * self.V.v[2];
 
-    self.V.v[0] = sn * t.v[0] + cs * self.V.v[0];
-    self.V.v[1] = sn * t.v[1] + cs * self.V.v[1];
-    self.V.v[2] = sn * t.v[2] + cs * self.V.v[2];
+    tempV.v[0] = sn * t.v[0] + cs * self.V.v[0];
+    tempV.v[1] = sn * t.v[1] + cs * self.V.v[1];
+    tempV.v[2] = sn * t.v[2] + cs * self.V.v[2];
+
+    self.U = tempU;
+    self.V = tempV;
 
     [self updateModelViewMatrix];
 }
@@ -405,15 +418,21 @@
     float cs = cosf(angle);
     float sn = sinf(angle);
 
+    GLKVector3 tempN = self.N;
+    GLKVector3 tempV = self.V;
+
     GLKVector3 t = self.N;
 
-    self.N.v[0] = cs * t.v[0] - sn * self.V.v[0];
-    self.N.v[1] = cs * t.v[1] - sn * self.V.v[1];
-    self.N.v[2] = cs * t.v[2] - sn * self.V.v[2];
+    tempN.v[0] = cs * t.v[0] - sn * self.V.v[0];
+    tempN.v[1] = cs * t.v[1] - sn * self.V.v[1];
+    tempN.v[2] = cs * t.v[2] - sn * self.V.v[2];
 
-    self.V.v[0] = sn * t.v[0] + cs * self.V.v[0];
-    self.V.v[1] = sn * t.v[1] + cs * self.V.v[1];
-    self.V.v[2] = sn * t.v[2] + cs * self.V.v[2];
+    tempV.v[0] = sn * t.v[0] + cs * self.V.v[0];
+    tempV.v[1] = sn * t.v[1] + cs * self.V.v[1];
+    tempV.v[2] = sn * t.v[2] + cs * self.V.v[2];
+
+    self.N = tempN;
+    self.V = tempV;
 
     [self updateModelViewMatrix];
 }
@@ -422,15 +441,21 @@
     float cs = cosf(angle);
     float sn = sinf(angle);
 
+    GLKVector3 tempU = self.U;
+    GLKVector3 tempN = self.N;
+
     GLKVector3 t = self.U;
 
-    self.U.v[0] = cs * t.v[0] - sn * self.N.v[0];
-    self.U.v[1] = cs * t.v[1] - sn * self.N.v[1];
-    self.U.v[2] = cs * t.v[2] - sn * self.N.v[2];
+    tempU.v[0] = cs * t.v[0] - sn * self.N.v[0];
+    tempU.v[1] = cs * t.v[1] - sn * self.N.v[1];
+    tempU.v[2] = cs * t.v[2] - sn * self.N.v[2];
 
-    self.N.v[0] = sn * t.v[0] + cs * self.N.v[0];
-    self.N.v[1] = sn * t.v[1] + cs * self.N.v[1];
-    self.N.v[2] = sn * t.v[2] + cs * self.N.v[2];
+    tempN.v[0] = sn * t.v[0] + cs * self.N.v[0];
+    tempN.v[1] = sn * t.v[1] + cs * self.N.v[1];
+    tempN.v[2] = sn * t.v[2] + cs * self.N.v[2];
+
+    self.U = tempU;
+    self.N = tempN;
 
     [self updateModelViewMatrix];
 }

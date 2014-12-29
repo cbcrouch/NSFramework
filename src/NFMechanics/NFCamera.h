@@ -93,12 +93,16 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 
 - (void) setPosition:(GLKVector3)position withTarget:(GLKVector3)target withUp:(GLKVector3)up;
 
+// NOTE: translations are relative movements to the camera's current position
+- (void) translateWithVector3:(GLKVector3)vec;
+- (void) translateWithDeltaX:(float)delX withDeltaY:(float)delY withDeltaZ:(float)delZ;
+
 - (void) roll:(float)angle;
 - (void) pitch:(float)angle;
 - (void) yaw:(float)angle;
 
 //
-// TODO: while the spare documentation online does claim that the UVN camera system will
+// TODO: while the sparse documentation online does claim that the UVN camera system will
 //       prevent gimbal lock, should really prove it mathematically
 //
 

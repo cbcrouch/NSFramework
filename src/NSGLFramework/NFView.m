@@ -470,11 +470,41 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
         } break;
 
 
-        case 'k':
+        case 'k': {
             //
             //
             //
-            break;
+
+            static BOOL doOnce = YES;
+            if (doOnce) {
+
+                GLKVector3 position = GLKVector3Make(0.0f, 2.0f, 4.0f);
+                GLKVector3 target = GLKVector3Make(0.0f, 0.0f, 0.0f);
+                GLKVector3 up = GLKVector3Make(0.0f, 1.0f, 0.0f);
+
+
+                //
+                // TODO: this UVN based set call works but translate and roll does not
+                //       appear to work correctly
+                //
+                [self.camera setPosition:position withTarget:target withUp:up];
+
+
+                doOnce = NO;
+            }
+
+            //[self.camera translateWithDeltaX:0.0125f withDeltaY:0.0f withDeltaZ:0.0f];
+
+            [self.camera roll:0.0125f];
+
+            //[self.camera pitch:0.0125f];
+
+            //[self.camera yaw:0.0125f];
+
+            //
+            //
+            //
+        } break;
 
         default:
             break;
