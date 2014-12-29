@@ -401,51 +401,20 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             [self.camera setState:kCameraStateActLeft];
             break;
 
-            // angular delta values in radians (0.004998, -0.004009)
+
 
         case 'j': {
 
-            static float angularDelta = 0.0f;
-            //angularDelta += 0.05f;
-
-
-            // NOTE: left/right rotation is around the z axis
-            //       up/down rotation is around the x axis
-
-
-            //GLKQuaternion quatRotation = GLKQuaternionMakeWithAngleAndAxis(angularDelta, 0.0f, 0.0f, 1.0f);
-
-            //float quatAngle = GLKQuaternionAngle(quatRotation);
-            //NSLog(@"quaternion angle in radians: %f", quatAngle);
-
-
-
-            //GLKVector4 temp = GLKVector4Add(self.camera.position, self.camera.target);
-
-            //GLKVector4 temp = GLKVector4Subtract(self.camera.position, self.camera.target);
-            //GLKVector4 temp = GLKVector4Subtract(self.camera.target, self.camera.position);
-
-
-
-            //self.camera.target = GLKQuaternionRotateVector4(quatRotation, temp);
-
-
-
-            angularDelta += 0.0025f;
+            //
+            // TODO: move this interal to the NFCamera class for extracting postion/target/up
+            //       from modelview matrix (if not extracting from UVN)
+            //
 
             bool isInvertable;
             GLKMatrix4 viewMat = GLKMatrix4Invert([self.camera getViewMatrix], &isInvertable);
             if (isInvertable) {
                 GLKVector4 posVec = GLKMatrix4GetColumn(viewMat, 3);
                 NSLog(@"position vector (%f, %f, %f, %f)", posVec.v[0], posVec.v[1], posVec.v[2], posVec.v[3]);
-
-                // viewMat will translate the camera to the origin where its rotations will be
-                // preserved and can be updated
-                viewMat = GLKMatrix4Translate([self.camera getViewMatrix], -posVec.v[0], -posVec.v[1], -posVec.v[2]);
-                viewMat = GLKMatrix4Rotate(viewMat, angularDelta, 0.0f, 1.0f, 0.0f);
-                viewMat = GLKMatrix4Translate(viewMat, posVec.v[0], posVec.v[1], posVec.v[2]);
-
-                [self.camera setViewMatrix:viewMat];
             }
 
             // another way of extracting the position from a view matrix
@@ -461,49 +430,19 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             */
 
 
-            //GLKMatrix4 rotationMat = GLKMatrix4MakeRotation(angularDelta, 0.0f, 0.0f, 1.0f);
-            //self.camera.target = GLKMatrix4MultiplyVector4(rotationMat, temp);
-
-
-            NSLog(@"modified camera target (%f, %f, %f)", self.camera.target.v[0], self.camera.target.v[1], self.camera.target.v[2]);
-
         } break;
 
 
         case 'k': {
-            //
-            //
-            //
 
-            static BOOL doOnce = YES;
-            if (doOnce) {
+            // angular delta values in radians (0.004998, -0.004009)
 
-                GLKVector3 position = GLKVector3Make(0.0f, 2.0f, 4.0f);
-                GLKVector3 target = GLKVector3Make(0.0f, 0.0f, 0.0f);
-                GLKVector3 up = GLKVector3Make(0.0f, 1.0f, 0.0f);
+            //[self.camera roll:0.005f];
 
+            [self.camera pitch:0.005f];
 
-                //
-                // TODO: this UVN based set call works but translate and roll does not
-                //       appear to work correctly
-                //
-                [self.camera setPosition:position withTarget:target withUp:up];
+            //[self.camera yaw:0.005f];
 
-
-                doOnce = NO;
-            }
-
-            //[self.camera translateWithDeltaX:0.0125f withDeltaY:0.0f withDeltaZ:0.0f];
-
-            [self.camera roll:0.0125f];
-
-            //[self.camera pitch:0.0125f];
-
-            //[self.camera yaw:0.0125f];
-
-            //
-            //
-            //
         } break;
 
         default:
@@ -785,16 +724,19 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     GLKMatrix4 projection = GLKMatrix4MakePerspective(M_PI_4, width / height, nearPlane, farPlane);
 
+    //
+    // TODO: explicitly init camera's postion/target/up
+    //
+    //self.camera.position = GLKVector3Make(0.0f, 2.0f, 4.0f);
+    //self.camera.target = GLKVector3Make(0.0f, 0.0f, 0.0f);
+    //self.camera.up = GLKVector3Make(0.0f, 1.0f, 0.0f);
+
     self.camera = [[[NFCamera alloc] init] autorelease];
 
     self.camera.width = (NSUInteger)width;
     self.camera.height = (NSUInteger)height;
 
     self.camera.vFOV = (float) M_PI_4;
-
-    self.camera.position = GLKVector3Make(0.0f, 2.0f, 4.0f);
-    self.camera.target = GLKVector3Make(0.0f, 0.0f, 0.0f);
-    self.camera.up = GLKVector3Make(0.0f, 1.0f, 0.0f);
 
     [self.camera setProjectionMatrix:projection];
     //

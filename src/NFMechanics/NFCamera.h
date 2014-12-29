@@ -51,17 +51,16 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 @property (nonatomic, assign) NSUInteger width;
 @property (nonatomic, assign) NSUInteger height;
 
-@property (nonatomic, readonly, assign) float aspectRatio;
-
+@property (nonatomic, assign, readonly) float aspectRatio;
 
 
 //
-// TODO: make these read only properties (they will be updated through
-//       setting the translation state or using the roll/pitch/yaw methods)
+// TODO: extract these values from either the UVN coordinates or the modelview matrix
+//       (benchmark to determine fastest method)
 //
-@property (nonatomic, assign) GLKVector3 position;
-@property (nonatomic, assign) GLKVector3 target;
-@property (nonatomic, assign) GLKVector3 up;
+@property (nonatomic, assign, readonly) GLKVector3 position;
+@property (nonatomic, assign, readonly) GLKVector3 target;
+@property (nonatomic, assign, readonly) GLKVector3 up;
 
 
 
@@ -108,8 +107,6 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 
 // UVN camera coordinate system is left handed
 
-// use VUN for right handed coordinate sysetm
-
 // http://stackoverflow.com/questions/25933581/how-u-v-n-camera-coordinate-system-explained-with-opengl
 // https://www.siggraph.org/education/materials/HyperGraph/viewing/view3d/3dview1.htm
 // http://ogldev.atspace.co.uk/www/tutorial13/tutorial13.html
@@ -127,7 +124,7 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 //
 // TODO: these are temporary setters
 //
-- (void) setViewMatrix:(GLKMatrix4)view;
+//- (void) setViewMatrix:(GLKMatrix4)view;
 - (void) setProjectionMatrix:(GLKMatrix4)projection;
 
 

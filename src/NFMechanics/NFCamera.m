@@ -26,6 +26,10 @@
 
 @interface NFCamera()
 
+@property (nonatomic, assign) GLKVector3 position;
+@property (nonatomic, assign) GLKVector3 target;
+@property (nonatomic, assign) GLKVector3 up;
+
 @property (nonatomic, assign) GLKVector3 initialPosition;
 @property (nonatomic, assign) GLKVector3 initialTarget;
 @property (nonatomic, assign) GLKVector3 initialUp;
@@ -49,9 +53,6 @@
 @property (nonatomic, assign) float aspectRatio;
 
 
-- (void) updateViewVolume;
-
-
 - (void) calculatePositionTargetUp;
 - (void) updateModelViewMatrix;
 
@@ -60,10 +61,13 @@
 
 @implementation NFCamera
 
+@synthesize position = _position;
+@synthesize target = _target;
+@synthesize up = _up;
+
 @synthesize initialTarget = _initialTarget;
 @synthesize initialPosition = _initialPosition;
 @synthesize initialUp = _initialUp;
-
 
 @synthesize U = _U;
 @synthesize V = _V;
@@ -72,13 +76,6 @@
 
 //@synthesize motionVector = _motionVector;
 
-
-//
-// TODO: override setters so that any observers are notified of a change
-//
-@synthesize position = _position;
-@synthesize target = _target;
-@synthesize up = _up;
 
 @synthesize viewVolume = _viewVolume;
 
@@ -92,19 +89,8 @@
 
 @synthesize currentFlags = _currentFlags;
 
-- (void) setPosition:(GLKVector3)position {
-    _position = position;
-    [self updateViewVolume];
-}
-
-- (void) setTarget:(GLKVector3)target {
-    _target = target;
-    [self updateViewVolume];
-}
-
 - (void) setUp:(GLKVector3)up {
     _up = GLKVector3Normalize(up);
-    [self updateViewVolume];
 }
 
 - (void) setWidth:(NSUInteger)width {
@@ -138,12 +124,6 @@
 }
 
 
-- (void) updateViewVolume {
-    self.viewVolume.view = GLKMatrix4MakeLookAt(self.position.v[0], self.position.v[1], self.position.v[2],
-                                                self.target.v[0], self.target.v[1], self.target.v[2],
-                                                self.up.v[0], self.up.v[1], self.up.v[2]);
-}
-
 - (instancetype) init {
     self = [super init];
     if (self != nil) {
@@ -157,26 +137,16 @@
         GLKVector3 target = GLKVector3Make(0.0f, 0.0f, 0.0f);
         GLKVector3 up = GLKVector3Make(0.0f, 1.0f, 0.0f);
 
-
-        //
-        // TODO: transition to UVN camera implementation
-        //
-
-
-        [self setPosition:position];
-        [self setTarget:target];
-        [self setUp:up];
-
         // set initial vectors so that the camera can be reset if the user becomes lost
         [self setInitialPosition:[self position]];
         [self setInitialTarget:[self target]];
         [self setInitialUp:[self up]];
 
         NFViewVolume *viewVolume = [[[NFViewVolume alloc] init] autorelease];
+        [self setViewVolume:viewVolume];
 
-        viewVolume.view = GLKMatrix4MakeLookAt(position.v[0], position.v[1], position.v[2],
-                                               target.v[0], target.v[1], target.v[2],
-                                               up.v[0], up.v[1], up.v[2]);
+        [self setPosition:position withTarget:target withUp:up];
+        
 
         //
         // TODO: need to set the projection matrix
@@ -194,9 +164,6 @@
         self.viewVolume.nearPlane = 1.0f;
         self.viewVolume.farPlane = 100.0f;
 */
-
-
-        [self setViewVolume:viewVolume];
 
 
         [self setCurrentFlags:0x00];
@@ -229,49 +196,30 @@
     return self;
 }
 
+// NOTE: delta is measured in microseconds
 - (void) step:(NSUInteger)delta {
     //
     // TODO: update camera position based on motion vector
     //
 
-    BOOL positionChanged = NO;
-
-    GLKVector3 newPosition = self.position;
-    GLKVector3 newTarget = self.target;
-
-    // NOTE: delta is measured in microseconds
-
     //
-    // TODO: increment position by multiple of time delta and use the UVN based camera
+    // TODO: increment position by multiple of time delta
     //
 
     if (self.currentFlags & FORWARD_BIT) {
-        newPosition.v[Z_IDX] -= self.translationSpeed.v[Z_IDX];
-        newTarget.v[Z_IDX] -= self.translationSpeed.v[Z_IDX];
-        positionChanged = YES;
+        [self translateWithDeltaX:0.0f withDeltaY:0.0f withDeltaZ:-self.translationSpeed.v[Z_IDX]];
     }
 
     if (self.currentFlags & BACK_BIT) {
-        newPosition.v[Z_IDX] += self.translationSpeed.v[Z_IDX];
-        newTarget.v[Z_IDX] += self.translationSpeed.v[Z_IDX];
-        positionChanged = YES;
+        [self translateWithDeltaX:0.0f withDeltaY:0.0f withDeltaZ:self.translationSpeed.v[Z_IDX]];
     }
 
     if (self.currentFlags & LEFT_BIT) {
-        newPosition.v[X_IDX] += self.translationSpeed.v[X_IDX];
-        newTarget.v[X_IDX] += self.translationSpeed.v[X_IDX];
-        positionChanged = YES;
+        [self translateWithDeltaX:self.translationSpeed.v[X_IDX] withDeltaY:0.0f withDeltaZ:0.0f];
     }
 
     if (self.currentFlags & RIGHT_BIT) {
-        newPosition.v[X_IDX] -= self.translationSpeed.v[X_IDX];
-        newTarget.v[X_IDX] -= self.translationSpeed.v[X_IDX];
-        positionChanged = YES;
-    }
-
-    if (positionChanged) {
-        self.position = newPosition;
-        self.target = newTarget;
+        [self translateWithDeltaX:-self.translationSpeed.v[X_IDX] withDeltaY:0.0f withDeltaZ:0.0f];
     }
 }
 
