@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
 
-#import "NFViewVolume.h"
 #import "NFUtils.h"
 
 
@@ -30,7 +29,6 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 //
 // TODO: define NFMotionVector in NFRUtils ?? or will it be NFCamera specific ??
 //
-
 @interface NFMotionVector : NSObject
 @property (nonatomic, assign) GLKVector4 currentValue;
 @property (nonatomic, assign) GLKVector4 modifier;
@@ -47,9 +45,15 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 
 @property (nonatomic, assign) float vFOV; // fov Y in radians
 
+
+//
+// TODO: these should be stored here, they are part of the viewport/framebuffer which
+//       belong in the renderer
+//
 // width and height of the camera (i.e. the camera's target resolution)
 @property (nonatomic, assign) NSUInteger width;
 @property (nonatomic, assign) NSUInteger height;
+
 
 @property (nonatomic, assign, readonly) float aspectRatio;
 
@@ -91,6 +95,18 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 
 
 - (void) setPosition:(GLKVector3)position withTarget:(GLKVector3)target withUp:(GLKVector3)up;
+
+//
+// TODO: is vertical FOV and aspect ratio enough to determine width/height
+//
+/*
+- (void) setShapeWithVerticalFOV:(float)vAngle withAspectRatio:(float)aspect
+                    withNearDist:(float)nearDist withFarDist:(float)farDist;
+*/
+
+//- (void) setNearClipDistance:(float)nearDist;
+//- (void) setFarClipDistance:(float)farDist;
+
 
 // NOTE: translations are relative movements to the camera's current position
 - (void) translateWithVector3:(GLKVector3)vec;

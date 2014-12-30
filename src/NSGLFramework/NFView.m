@@ -8,7 +8,6 @@
 // application headers
 #import "NFView.h"
 #import "NFRenderer.h"
-#import "NFViewVolume.h"
 
 // Cocoa headers
 #import <QuartzCore/CVDisplayLink.h>
@@ -401,49 +400,9 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             [self.camera setState:kCameraStateActLeft];
             break;
 
-
-
-        case 'j': {
-
             //
-            // TODO: move this interal to the NFCamera class for extracting postion/target/up
-            //       from modelview matrix (if not extracting from UVN)
+            // TODO: add keyboard controls for camera roll
             //
-
-            bool isInvertable;
-            GLKMatrix4 viewMat = GLKMatrix4Invert([self.camera getViewMatrix], &isInvertable);
-            if (isInvertable) {
-                GLKVector4 posVec = GLKMatrix4GetColumn(viewMat, 3);
-                NSLog(@"position vector (%f, %f, %f, %f)", posVec.v[0], posVec.v[1], posVec.v[2], posVec.v[3]);
-            }
-
-            // another way of extracting the position from a view matrix
-            /*
-            vec3 ExtractCameraPos_NoScale(const mat4 & a_modelView)
-            {
-                mat3 rotMat(a_modelView);
-                vec3 d(a_modelView[3]);
-
-                vec3 retVec = -d * rotMat;
-                return retVec;
-            }
-            */
-
-
-        } break;
-
-
-        case 'k': {
-
-            // angular delta values in radians (0.004998, -0.004009)
-
-            //[self.camera roll:0.005f];
-
-            [self.camera pitch:0.005f];
-
-            //[self.camera yaw:0.005f];
-
-        } break;
 
         default:
             break;
@@ -485,9 +444,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
 - (void) mouseDown:(NSEvent *)theEvent {
 
-    NSPoint location = [self convertPointFromBacking:[theEvent locationInWindow]];
-    NSLog(@"NFView mouse down at (%f, %f)", location.x, location.y);
-
     //
     // TODO: use this code when there is more than one view for the window
     //
@@ -526,21 +482,15 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     CGWarpMouseCursorPosition(centerPoint);
     CGDisplayHideCursor(displayId);
-
-    //
-    //
-    //
 }
 
 - (void) mouseUp:(NSEvent *)theEvent {
 
-    //NSPoint location = [self convertPointFromBacking:[theEvent locationInWindow]];
-    //NSLog(@"NFView received a mouseUp event at location (%f, %f)", location.x, location.y);
-
-    NSLog(@"NFView received a mouseUp event");
-
     CGDisplayShowCursor(CGMainDisplayID());
 
+    //
+    // TODO: warp mouse location to where the click originated
+    //
 }
 
 - (void) mouseDragged:(NSEvent *)theEvent {
@@ -559,67 +509,9 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     centerPoint.x = CGDisplayPixelsWide(displayId) / 2.0f;
     centerPoint.y = CGDisplayPixelsHigh(displayId) / 2.0f;
 
-
-/*
-    static float horizontalAngle = M_PI;    // Initial horizontal angle : toward -Z
-    static float verticalAngle = 0.0f;      // Initial vertical angle : none
-    static const float mouseSpeed = 0.005f;
-
-    // compute new orientation
-    horizontalAngle += mouseSpeed * (centerPoint.x - point.x);
-    verticalAngle += mouseSpeed * (centerPoint.y - point.y);
-
-    NSLog(@"horizontal angular delta: %f", mouseSpeed * (centerPoint.x - point.x));
-    NSLog(@"vertical angular delta: %f", mouseSpeed * (centerPoint.y - point.y));
-
-    // direction vector - spherical coordinates to Cartesian coordinates conversion
-    GLKVector3 direction = GLKVector3Make(cosf(verticalAngle) * sinf(horizontalAngle),
-                                          sinf(verticalAngle),
-                                          cosf(verticalAngle) * cosf(horizontalAngle));
-
-    // right vector
-    GLKVector3 right = GLKVector3Make(sinf(horizontalAngle) - M_PI_2,
-                                      0.0f,
-                                      cosf(horizontalAngle) - M_PI_2);
-
-    // up vector
-    GLKVector3 up = GLKVector3CrossProduct(right, direction);
-
-    // view matrix
-    GLKVector4 position = self.camera.position;
-    GLKVector4 target = GLKVector4Add(position, GLKVector4MakeWithVector3(direction, 1.0f));
-    GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(position.v[0], position.v[1], position.v[2],
-                                                target.v[0], target.v[1], target.v[2],
-                                                up.v[0], up.v[1], up.v[2]);
-
-    //self.camera.target = target;
-    //self.camera.up = GLKVector4MakeWithVector3(up, 1.0f);
-
-    [self.camera setViewMatrix:viewMatrix];
-*/
-
-
     // x - red
     // y - green
     // z - blue
-
-    //
-    // TODO: currently right handed, should switch to left
-    //
-
-    // x = ro * sin phi * sin theta
-    // y = ro * cos phi
-    // z = ro * sin phi * cos theta
-
-    // ro = distance from origin
-    // phi = angle from y ro x around z axis
-    // theta = angle from z to x around y axis
-
-
-    //
-    // TODO: use calculation below to convert angular deltas (spherical coordinates) to cartesian
-    //       coordinates i.e. the direction vector
-    //
 
     // these values will be normalized to [-0.5f, 0.5f] i.e. -45.0 to 45.0
 
@@ -643,20 +535,13 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     float angularDeltaX = angleX1 - angleX0;
     float angularDeltaY = angleY1 - angleY0;
 
-    //NSLog(@"new point angles (%f, %f) old point angles (%f, %f)", angleX0 * 180.0f/M_PI, angleY0 * 180.0f/M_PI,
-    //      angleX1 * 180.0f/M_PI, angleY1 * 180.0f/M_PI);
-
-    NSLog(@"angular delta values (%f, %f)", angularDeltaX, angularDeltaY);
 
     //
-    // TODO: need to determine best and most accurate way of converting the angular distance
-    //       into a rotation to apply to the camera's target vector
+    // TODO: prevent camera from rolling
     //
-    //GLKMatrix4 rotationMatX = GLKMatrix4RotateX(GLKMatrix4Identity, angularDeltaX);
-    //GLKMatrix4 rotationMatY = GLKMatrix4RotateY(GLKMatrix4Identity, angularDeltaY);
+    [self.camera pitch:angularDeltaY];
+    [self.camera yaw:angularDeltaX];
 
-    //GLKQuaternion quatRotationX = GLKQuaternionMakeWithAngleAndVector3Axis(angularDeltaX, GLKVector3Make(1.0f, 0.0f, 0.0f));
-    //GLKQuaternion quatRotationY = GLKQuaternionMakeWithAngleAndVector3Axis(angularDeltaY, GLKVector3Make(0.0f, 1.0f, 0.0f));
 
     // NOTE: NSPoint is a typedef of CGPoint so this is a safe cast to make
     self.mouseLocation = (NSPoint)point;
@@ -712,24 +597,20 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     self.glRenderer = [[[NFRenderer alloc] init] autorelease];
     NSAssert(self.glRenderer != nil, @"Failed to initialize and create NSGLRenderer");
 
+    CGFloat width = self.frame.size.width;
+    CGFloat height = self.frame.size.height;
+
 
     //
     // TODO: should move the camera ownership into NFSimulation (or where ever the main update loop will be)
     //
-    float nearPlane = 1.0f;
-    float farPlane = 100.0f;
-
-    CGFloat width = self.frame.size.width;
-    CGFloat height = self.frame.size.height;
-
-    GLKMatrix4 projection = GLKMatrix4MakePerspective(M_PI_4, width / height, nearPlane, farPlane);
 
     //
     // TODO: explicitly init camera's postion/target/up
     //
-    //self.camera.position = GLKVector3Make(0.0f, 2.0f, 4.0f);
-    //self.camera.target = GLKVector3Make(0.0f, 0.0f, 0.0f);
-    //self.camera.up = GLKVector3Make(0.0f, 1.0f, 0.0f);
+    //GLKVector3 position = GLKVector3Make(0.0f, 2.0f, 4.0f);
+    //GLKVector3 target = GLKVector3Make(0.0f, 0.0f, 0.0f);
+    //GLKVector3 up = GLKVector3Make(0.0f, 1.0f, 0.0f);
 
     self.camera = [[[NFCamera alloc] init] autorelease];
 
@@ -738,23 +619,20 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     self.camera.vFOV = (float) M_PI_4;
 
+
+    //
+    // TODO: encapsulate this in the NFCamera class
+    //
+    float nearPlane = 1.0f;
+    float farPlane = 100.0f;
+    GLKMatrix4 projection = GLKMatrix4MakePerspective(M_PI_4, width / height, nearPlane, farPlane);
     [self.camera setProjectionMatrix:projection];
-    //
-    //
-    //
 }
 
 - (void) setupDisplayLink {
     CVReturn rv;
 
     // create a display link capable of being used with all active displays
-
-    //
-    // TODO: get working with getter (probably can't as getter is returing by value), in order
-    //       for this to work will need to make the display link a class member instead of a
-    //       property
-    //
-    //rv = CVDisplayLinkCreateWithActiveCGDisplays(&(self.displayLink));
     rv = CVDisplayLinkCreateWithActiveCGDisplays(&_displayLink);
 
     NSAssert(rv == kCVReturnSuccess, @"Failed to create display link with active display");

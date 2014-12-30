@@ -7,6 +7,7 @@
 
 #import "NFCamera.h"
 
+
 #define FORWARD_BIT 0x01
 #define BACK_BIT    0x02
 #define LEFT_BIT    0x04
@@ -22,6 +23,33 @@
 @synthesize modifier = _modifier;
 @synthesize updateRate = _updateRate;
 @end
+
+
+
+
+@interface NFViewVolume : NSObject
+@property (nonatomic, assign) GLKMatrix4 view;
+@property (nonatomic, assign) GLKMatrix4 projection;
+
+@property (nonatomic, assign) CGFloat farPlane;
+@property (nonatomic, assign) CGFloat nearPlane;
+
+//
+// TODO: replace viewportSize with vertical FOV and aspect ratio properties
+//
+@property (nonatomic, assign) CGSize viewportSize;
+@end
+
+@implementation NFViewVolume
+@synthesize view = _view;
+@synthesize projection = _projection;
+
+@synthesize farPlane = _farPlane;
+@synthesize nearPlane = _nearPlane;
+
+@synthesize viewportSize = _viewportSize;
+@end
+
 
 
 @interface NFCamera()
@@ -412,6 +440,27 @@
     //
     // TODO: calculate position, target, and up vectors from UVN
     //
+
+    /*
+    bool isInvertable;
+    GLKMatrix4 viewMat = GLKMatrix4Invert([self.camera getViewMatrix], &isInvertable);
+    if (isInvertable) {
+        GLKVector4 posVec = GLKMatrix4GetColumn(viewMat, 3);
+        NSLog(@"position vector (%f, %f, %f, %f)", posVec.v[0], posVec.v[1], posVec.v[2], posVec.v[3]);
+    }
+    */
+
+    // another way of extracting the position from a view matrix
+    /*
+     vec3 ExtractCameraPos_NoScale(const mat4 & a_modelView)
+     {
+     mat3 rotMat(a_modelView);
+     vec3 d(a_modelView[3]);
+
+     vec3 retVec = -d * rotMat;
+     return retVec;
+     }
+     */
 }
 
 - (void) updateModelViewMatrix {
