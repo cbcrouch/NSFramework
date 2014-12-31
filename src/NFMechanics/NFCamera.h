@@ -96,6 +96,7 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 
 - (void) setPosition:(GLKVector3)position withTarget:(GLKVector3)target withUp:(GLKVector3)up;
 
+
 //
 // TODO: is vertical FOV and aspect ratio enough to determine width/height
 //
@@ -106,6 +107,7 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 
 //- (void) setNearClipDistance:(float)nearDist;
 //- (void) setFarClipDistance:(float)farDist;
+
 
 
 // NOTE: translations are relative movements to the camera's current position
@@ -129,20 +131,6 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 
 - (GLKMatrix4) getViewMatrix;
 - (GLKMatrix4) getProjectionMatrix;
-
-
-
-
-//
-// TODO: methods for setting view volume projection properties
-//
-
-//
-// TODO: these are temporary setters
-//
-//- (void) setViewMatrix:(GLKMatrix4)view;
-- (void) setProjectionMatrix:(GLKMatrix4)projection;
-
 
 
 @end

@@ -617,16 +617,11 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     self.camera.width = (NSUInteger)width;
     self.camera.height = (NSUInteger)height;
 
+
+    //
+    // TODO: set projection shape for NFCamera
+    //
     self.camera.vFOV = (float) M_PI_4;
-
-
-    //
-    // TODO: encapsulate this in the NFCamera class
-    //
-    float nearPlane = 1.0f;
-    float farPlane = 100.0f;
-    GLKMatrix4 projection = GLKMatrix4MakePerspective(M_PI_4, width / height, nearPlane, farPlane);
-    [self.camera setProjectionMatrix:projection];
 }
 
 - (void) setupDisplayLink {

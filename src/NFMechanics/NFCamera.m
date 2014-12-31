@@ -131,26 +131,12 @@
     self.aspectRatio = self.width / (float) height;
 }
 
-
 - (GLKMatrix4) getViewMatrix {
     return self.viewVolume.view;
 }
 - (GLKMatrix4) getProjectionMatrix {
     return self.viewVolume.projection;
 }
-
-
-//
-// TODO: build out camera class enough so that these methods can be replaced
-//
-- (void) setViewMatrix:(GLKMatrix4)view {
-    self.viewVolume.view = view;
-}
-
-- (void) setProjectionMatrix:(GLKMatrix4)projection {
-    self.viewVolume.projection = projection;
-}
-
 
 - (instancetype) init {
     self = [super init];
@@ -171,28 +157,22 @@
         [self setInitialUp:[self up]];
 
         NFViewVolume *viewVolume = [[[NFViewVolume alloc] init] autorelease];
+
+        
+        //
+        // TODO: need better defined defaults for projection matrix
+        //
+        CGFloat nearPlane = 1.0f;
+        CGFloat farPlane = 100.0f;
+        CGFloat width = 1280.0f;
+        CGFloat height = 720.0f;
+
+        viewVolume.projection = GLKMatrix4MakePerspective(M_PI_4, width / height, nearPlane, farPlane);
+
+
         [self setViewVolume:viewVolume];
 
         [self setPosition:position withTarget:target withUp:up];
-        
-
-        //
-        // TODO: need to set the projection matrix
-        //
-/*
-        float nearPlane = 1.0f;
-        float farPlane = 100.0f;
-
-        CGFloat width = self.frame.size.width;
-        CGFloat height = self.frame.size.height;
-
-        GLKMatrix4 projection = GLKMatrix4MakePerspective(M_PI_4, width / height, nearPlane, farPlane);
-        [self.viewVolume pushProjectionMatrix:projection];
-
-        self.viewVolume.nearPlane = 1.0f;
-        self.viewVolume.farPlane = 100.0f;
-*/
-
 
         [self setCurrentFlags:0x00];
 
