@@ -2,7 +2,7 @@
 //  NFCamera.h
 //  NSGLFramework
 //
-//  Copyright (c) 2014 Casey Crouch. All rights reserved.
+//  Copyright (c) 2015 Casey Crouch. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -104,6 +104,7 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 - (void) setShapeWithVerticalFOV:(float)vAngle withAspectRatio:(float)aspect
                     withNearDist:(float)nearDist withFarDist:(float)farDist;
 */
+
 
 //- (void) setNearClipDistance:(float)nearDist;
 //- (void) setFarClipDistance:(float)farDist;

@@ -2,7 +2,7 @@
 //  AppDelegate.h
 //  NSGLFramework
 //
-//  Copyright (c) 2014 Casey Crouch. All rights reserved.
+//  Copyright (c) 2015 Casey Crouch. All rights reserved.
 //
 
 //#import <Cocoa/Cocoa.h> // includes AppKit, and CoreData in addition to Foundation.h
