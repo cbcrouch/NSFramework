@@ -597,10 +597,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     self.glRenderer = [[[NFRenderer alloc] init] autorelease];
     NSAssert(self.glRenderer != nil, @"Failed to initialize and create NSGLRenderer");
 
-    CGFloat width = self.frame.size.width;
-    CGFloat height = self.frame.size.height;
-
-
     //
     // TODO: should move the camera ownership into NFSimulation (or where ever the main update loop will be)
     //
@@ -614,14 +610,13 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     self.camera = [[[NFCamera alloc] init] autorelease];
 
-    self.camera.width = (NSUInteger)width;
-    self.camera.height = (NSUInteger)height;
+    CGFloat width = self.frame.size.width;
+    CGFloat height = self.frame.size.height;
 
-
-    //
-    // TODO: set projection shape for NFCamera
-    //
-    self.camera.vFOV = (float) M_PI_4;
+    self.camera.nearPlaneDistance = 1.0f;
+    self.camera.farPlaneDistance = 100.0f;
+    self.camera.aspectRatio = width / height;
+    self.camera.vFOV = (float)M_PI_4;
 }
 
 - (void) setupDisplayLink {

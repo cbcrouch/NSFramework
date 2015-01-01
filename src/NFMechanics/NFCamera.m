@@ -26,28 +26,14 @@
 
 
 
-
 @interface NFViewVolume : NSObject
 @property (nonatomic, assign) GLKMatrix4 view;
 @property (nonatomic, assign) GLKMatrix4 projection;
-
-@property (nonatomic, assign) CGFloat farPlane;
-@property (nonatomic, assign) CGFloat nearPlane;
-
-//
-// TODO: replace viewportSize with vertical FOV and aspect ratio properties
-//
-@property (nonatomic, assign) CGSize viewportSize;
 @end
 
 @implementation NFViewVolume
 @synthesize view = _view;
 @synthesize projection = _projection;
-
-@synthesize farPlane = _farPlane;
-@synthesize nearPlane = _nearPlane;
-
-@synthesize viewportSize = _viewportSize;
 @end
 
 
@@ -62,11 +48,9 @@
 @property (nonatomic, assign) GLKVector3 initialTarget;
 @property (nonatomic, assign) GLKVector3 initialUp;
 
-
 @property (nonatomic, assign) GLKVector3 U;
 @property (nonatomic, assign) GLKVector3 V;
 @property (nonatomic, assign) GLKVector3 N;
-
 
 @property (nonatomic, retain) NFViewVolume* viewVolume;
 
@@ -78,10 +62,7 @@
 
 @property (nonatomic, assign) NSUInteger currentFlags;
 
-@property (nonatomic, assign) float aspectRatio;
 
-
-- (void) calculatePositionTargetUp;
 - (void) updateModelViewMatrix;
 
 @end
@@ -89,9 +70,17 @@
 
 @implementation NFCamera
 
+//@synthesize hFOV = _hFOV;
+@synthesize vFOV = _vFOV;
+
 @synthesize position = _position;
 @synthesize target = _target;
 @synthesize up = _up;
+
+@synthesize nearPlaneDistance = _nearPlaneDistance;
+@synthesize farPlaneDistance = _farPlaneDistance;
+@synthesize aspectRatio = _aspectRatio;
+
 
 @synthesize initialTarget = _initialTarget;
 @synthesize initialPosition = _initialPosition;
@@ -104,31 +93,68 @@
 
 //@synthesize motionVector = _motionVector;
 
-
 @synthesize viewVolume = _viewVolume;
 
 @synthesize translationSpeed = _translationSpeed;
 
-//@synthesize hFOV = _hFOV;
-@synthesize vFOV = _vFOV;
-@synthesize width = _width;
-@synthesize height = _height;
-@synthesize aspectRatio = _aspectRatio;
-
 @synthesize currentFlags = _currentFlags;
+
+- (GLKVector3) position {
+    //
+    // TODO: calculate position, target, and up vectors from UVN
+    //
+
+    /*
+    bool isInvertable;
+    GLKMatrix4 viewMat = GLKMatrix4Invert([self.camera getViewMatrix], &isInvertable);
+    if (isInvertable) {
+        GLKVector4 posVec = GLKMatrix4GetColumn(viewMat, 3);
+        NSLog(@"position vector (%f, %f, %f, %f)", posVec.v[0], posVec.v[1], posVec.v[2], posVec.v[3]);
+    }
+    */
+
+    // another way of extracting the position from a view matrix
+    /*
+    vec3 ExtractCameraPos_NoScale(const mat4 & a_modelView)
+    {
+        mat3 rotMat(a_modelView);
+        vec3 d(a_modelView[3]);
+
+        vec3 retVec = -d * rotMat;
+        return retVec;
+    }
+    */
+    return _position;
+}
+
+- (GLKVector3) target {
+    return _target;
+}
+
+- (GLKVector3) up {
+    return _up;
+}
 
 - (void) setUp:(GLKVector3)up {
     _up = GLKVector3Normalize(up);
 }
 
-- (void) setWidth:(NSUInteger)width {
-    _width = width;
-    self.aspectRatio = width / (float) self.height;
+- (void) setNearPlaneDistance:(float)nearPlaneDistance {
+    _nearPlaneDistance = nearPlaneDistance;
+    self.viewVolume.projection = GLKMatrix4MakePerspective(self.vFOV, self.aspectRatio,
+                                                           nearPlaneDistance, self.farPlaneDistance);
 }
 
-- (void) setHeight:(NSUInteger)height {
-    _height = height;
-    self.aspectRatio = self.width / (float) height;
+- (void) setFarPlaneDistance:(float)farPlaneDistance {
+    _farPlaneDistance = farPlaneDistance;
+    self.viewVolume.projection = GLKMatrix4MakePerspective(self.vFOV, self.aspectRatio,
+                                                           self.nearPlaneDistance, farPlaneDistance);
+}
+
+- (void) setAspectRatio:(float)aspectRatio {
+    _aspectRatio = aspectRatio;
+    self.viewVolume.projection = GLKMatrix4MakePerspective(self.vFOV, aspectRatio,
+                                                           self.nearPlaneDistance, self.farPlaneDistance);
 }
 
 - (GLKMatrix4) getViewMatrix {
@@ -157,7 +183,6 @@
         [self setInitialUp:[self up]];
 
         NFViewVolume *viewVolume = [[[NFViewVolume alloc] init] autorelease];
-
         
         //
         // TODO: need better defined defaults for projection matrix
@@ -166,14 +191,17 @@
         CGFloat farPlane = 100.0f;
         CGFloat width = 1280.0f;
         CGFloat height = 720.0f;
+        CGFloat fov = (CGFloat)M_PI_4;
 
-        viewVolume.projection = GLKMatrix4MakePerspective(M_PI_4, width / height, nearPlane, farPlane);
+        [self setNearPlaneDistance:nearPlane];
+        [self setFarPlaneDistance:farPlane];
+        [self setVFOV:fov];
+        [self setAspectRatio:width / height];
 
+        viewVolume.projection = GLKMatrix4MakePerspective(fov, width / height, nearPlane, farPlane);
 
         [self setViewVolume:viewVolume];
-
         [self setPosition:position withTarget:target withUp:up];
-
         [self setCurrentFlags:0x00];
 
         //[self setMotionVector:GLKVector4Make(0.0f, 0.0f, 0.0f, 0.0f)];
@@ -233,9 +261,13 @@
 
 - (void) pushMotionVector:(NFMotionVector *)motionVector {
     //
+    // TODO: implement motion vectors
+    //
 }
 
 - (void) clearMotionVectors {
+    //
+    // TODO: implement motion vectors
     //
 }
 
@@ -316,6 +348,18 @@
     self.V = GLKVector3CrossProduct(self.N, self.U);
 
     [self updateModelViewMatrix];
+}
+
+- (void) setShapeWithVerticalFOV:(float)vAngle withAspectRatio:(float)aspect
+                    withNearDist:(float)nearDist withFarDist:(float)farDist {
+    //
+    // TODO: somewhat costly to be recalculating the projection matrix on every setter
+    //       (should clean it up so it is only calculated once)
+    //
+    self.vFOV = vAngle;
+    self.aspectRatio = aspect;
+    self.nearPlaneDistance = nearDist;
+    self.farPlaneDistance = farDist;
 }
 
 - (void) translateWithVector3:(GLKVector3)vec {
@@ -414,33 +458,6 @@
     self.N = tempN;
 
     [self updateModelViewMatrix];
-}
-
-- (void) calculatePositionTargetUp {
-    //
-    // TODO: calculate position, target, and up vectors from UVN
-    //
-
-    /*
-    bool isInvertable;
-    GLKMatrix4 viewMat = GLKMatrix4Invert([self.camera getViewMatrix], &isInvertable);
-    if (isInvertable) {
-        GLKVector4 posVec = GLKMatrix4GetColumn(viewMat, 3);
-        NSLog(@"position vector (%f, %f, %f, %f)", posVec.v[0], posVec.v[1], posVec.v[2], posVec.v[3]);
-    }
-    */
-
-    // another way of extracting the position from a view matrix
-    /*
-     vec3 ExtractCameraPos_NoScale(const mat4 & a_modelView)
-     {
-     mat3 rotMat(a_modelView);
-     vec3 d(a_modelView[3]);
-
-     vec3 retVec = -d * rotMat;
-     return retVec;
-     }
-     */
 }
 
 - (void) updateModelViewMatrix {
