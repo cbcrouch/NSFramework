@@ -19,7 +19,7 @@ Dependencies
 ------------
 
 OS X 10.10
-OpenGL 4.1 compatible GPUe
+OpenGL 4.1 compatible GPU
 
 Building
 --------
@@ -51,7 +51,7 @@ If you are in need of Wavefront obj files to parse:
 License (BSD 2-clause)
 ----------------------
 
-Copyright 2014 Casey Crouch. All rights reserved.
+Copyright 2015 Casey Crouch. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
