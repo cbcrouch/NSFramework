@@ -11,9 +11,7 @@
 #import "NFUtils.h"
 
 
-//
-// TODO: rename enum NF_CAMERA_TRANSLATION_STATE or something similar
-//
+
 typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
     kCameraStateActFwd,
     kCameraStateNilFwd,
@@ -24,6 +22,28 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
     kCameraStateActLeft,
     kCameraStateNilLeft
 };
+
+// kCameraStateFwdRoll
+// kCameraStateRevRoll
+
+// kCameraStateFwdPitch
+// kCameraStateRevPitch
+
+// kCameraStateFwdYaw
+// kCameraStateRevYaw
+
+
+//
+// TODO: add camera state control over roll/pitch/yaw, should ideally get
+//       something better than the bit-mask implementation internally
+//
+
+// vec4 for translation values, vec3 for rotation values
+
+// state is set by placing a value in the vector +/- or 0 if not set
+
+// every step just updates everything (probably faster than checking each value for 0)
+
 
 
 //
@@ -36,16 +56,32 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 @end
 
 
+
+
+
+@interface NFCameraAlt : NSObject
+
+//
+// TODO: implement alternative camera to test against UVN camera
+//
+
+@end
+
+
+
+
 @interface NFCamera : NSObject
 
 //
 // TODO: allow user control to set the horizontal FOV which will modify the aspect ratio
+//       (solve FOV equations for aspect ratio if at all possible/practical)
 //
-//@property (nonatomic, assign) float hFOV;
-@property (nonatomic, assign) float vFOV; // vertical FOV in radians
 
 // hFOV = 2 * arctan(tan(vFOV/2) * aspectRatio)
 // vFOV = 2 * arctan(tan(hFOV/2) * 1/aspectRatio)
+
+//@property (nonatomic, assign) float hFOV;
+@property (nonatomic, assign) float vFOV; // vertical FOV in radians
 
 
 @property (nonatomic, assign, readonly) GLKVector3 position;
@@ -99,6 +135,11 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 - (void) roll:(float)angle;
 - (void) pitch:(float)angle;
 - (void) yaw:(float)angle;
+
+//
+// TODO: current roll/pitch/yaw angles are relative, add methods for setting
+//       (and getting) absolute angles in world coordinates
+//
 
 - (GLKMatrix4) getViewMatrix;
 - (GLKMatrix4) getProjectionMatrix;

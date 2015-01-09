@@ -168,6 +168,15 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     //double m_currHostFreq; // ticks per second
     //uint32_t m_minHostDelta; // number of ticks accuracy
+
+
+
+    //
+    // TODO: make this a property if can get it working correctly
+    //
+    NSTrackingArea* myTrackingArea;
+
+
 }
 
 @property (nonatomic, assign) CVDisplayLinkRef displayLink;
@@ -241,9 +250,16 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
         NSLog(@"failed initWithFrame");
     }
     else {
+
+        //
+        // TODO: move the call sequence in the else block out into an
+        //       engine initialize (or equivalent) method
+        //
         [self setupTiming];
         [self setupOpenGL];
         [self initRenderer];
+
+        //[self setupTrackingArea];
     }
 
     return self;
@@ -258,15 +274,56 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
         [self setupTiming];
         [self setupOpenGL];
         [self initRenderer];
+
+        //[self setupTrackingArea];
     }
 
     return self;
 }
 
+
+
+//
+// TODO: may need to use a tracking area, identify under which circumstances it is needed
+//       (will definitely be needed for mouse entered/exited events)
+//
+
+// https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/EventOverview/MouseTrackingEvents/MouseTrackingEvents.html
+// https://developer.apple.com/library/mac/samplecode/TrackIt/Introduction/Intro.html#//apple_ref/doc/uid/DTS10004139-Intro-DontLinkElementID_2
+
+
+// https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/WinPanel/Introduction.html#//apple_ref/doc/uid/10000031i
+// https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/EventOverview/HandlingMouseEvents/HandlingMouseEvents.html
+
+
+- (void) setupTrackingArea {
+    [self clearTrackingArea];
+
+    NSTrackingAreaOptions trackingOptions = NSTrackingCursorUpdate | NSTrackingEnabledDuringMouseDrag |
+        NSTrackingMouseEnteredAndExited | NSTrackingActiveInActiveApp;
+
+    myTrackingArea = [[NSTrackingArea alloc] initWithRect:[self bounds] options:trackingOptions owner:self userInfo:nil];
+    [self addTrackingArea:myTrackingArea];
+}
+
+- (void) clearTrackingArea {
+    if (myTrackingArea) {
+        [self removeTrackingArea:myTrackingArea];
+        [myTrackingArea release];
+        myTrackingArea = nil;
+    }
+}
+
+
+
 - (void) dealloc {
     //
     // TODO: make sure dealloc is cleaning everything up (i.e. do events need to be unregisterd etc.)
     //
+
+
+    //[self clearTrackingArea];
+
 
     // stop the display link BEFORE releasing anything in the view
     // otherwise the display link thread may call into the view and crash
@@ -291,6 +348,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
                                              selector:@selector(surfaceNeedsUpdate:)
                                                  name:NSViewGlobalFrameDidChangeNotification
                                                object:self];
+
+    // setup to handle mouse moved events
+    [[self window] makeFirstResponder:self];
+    [[self window] setAcceptsMouseMovedEvents:YES];
 }
 
 // NOTE: not using prepareOpenGL method as it appears to get called indirectly through the
@@ -300,10 +361,14 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 //    NSLog(@"prepareOpenGL");
 //}
 
+//
 // TODO: setup some kind of catch all method to attempt to see who is trying to call what
 //       on the NFView (i.e. self)
+//
 
+//
 // TODO: add comment summarizing Apple documentation about why method should be overridden
+//
 - (BOOL) isOpaque {
     return YES;
 }
@@ -373,9 +438,17 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //m_minHostDelta = CVGetHostClockMinimumTimeDelta();
 }
 
-- (BOOL) acceptsFirstResponder {
-    return YES;
-}
+//
+// TODO: make sure these aren't really needed
+//
+
+//- (BOOL) acceptsFirstResponder {
+//    return YES;
+//}
+
+//- (BOOL) acceptsFirstMouse:(NSEvent *)theEvent {
+//    return YES;
+//}
 
 //- (BOOL) canBecomeKeyView {
 //    return YES;
@@ -427,6 +500,20 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
         case 'd':
             [self.camera setState:kCameraStateNilLeft];
             break;
+
+
+            //
+            // TODO: need to expand the camera state to also include roll/pitch/yaw
+            //       for smoother control over the camera
+            //
+        case 'r':
+            [self.camera roll:0.05];
+            break;
+
+        case 't':
+            [self.camera roll:-0.05];
+            break;
+
 
         case 'o':
             [self.camera resetTarget];
@@ -492,6 +579,23 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     // TODO: warp mouse location to where the click originated
     //
 }
+
+
+
+- (void) mouseMoved:(NSEvent *)theEvent {
+    NSLog(@"mouseMoved deltas: (%f, %f, %f)", [theEvent deltaX], [theEvent deltaY], [theEvent deltaZ]);
+}
+
+
+- (void) mouseEntered:(NSEvent *)theEvent {
+    NSLog(@"mouseEntered NFView");
+}
+
+- (void) mouseExited:(NSEvent *)theEvent {
+    NSLog(@"mouseExited NFView");
+}
+
+
 
 - (void) mouseDragged:(NSEvent *)theEvent {
     //NSPoint location = [theEvent locationInWindow];

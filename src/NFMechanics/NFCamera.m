@@ -273,17 +273,14 @@
 
 - (void) setState:(CAMERA_STATE)state {
 
-    //
-    // TODO: this should be checking against the bit flags
-    //       not the enum state
-    //
-
+/*
     if (state == kCameraStateActFwd && self.currentFlags & FORWARD_BIT) {
         return;
     }
     else if (state == kCameraStateActBack && self.currentFlags & BACK_BIT) {
         return;
     }
+*/
 
     switch (state) {
 
