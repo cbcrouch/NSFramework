@@ -19,141 +19,6 @@
 //
 #import "NFCamera.h"
 
-/*
-@interface NFArcBall : NSObject
-
-@property (nonatomic, assign) NSInteger lastX;
-@property (nonatomic, assign) NSInteger lastY;
-@property (nonatomic, assign) NSInteger currentX;
-@property (nonatomic, assign) NSInteger currentY;
-
-@property (nonatomic, assign) CGSize viewportSize;
-@property (nonatomic, assign) BOOL active;
-
-//
-// TODO: need to lock the arc ball while computing the rotation matrix
-//       (i.e. this will need to be made thread safe)
-//
-- (GLKMatrix4) getRotationMatrix;
-
-@end
-
-@interface NFArcBall()
-
-- (GLKVector4) getVectorWithX:(NSInteger)x withY:(NSInteger)y;
-
-@end
-
-@implementation NFArcBall
-
-@synthesize currentX = _currentX;
-@synthesize currentY = _currentY;
-
-@synthesize viewportSize = _viewportSize;
-@synthesize active = _active;
-
-- (instancetype) init {
-    self = [super init];
-    if (self != nil) {
-        [self setLastX:0];
-        [self setLastY:0];
-        [self setCurrentX:0];
-        [self setCurrentY:0];
-        [self setViewportSize:CGSizeMake(0.0f, 0.0f)];
-        [self setActive:NO];
-    }
-    return self;
-}
-
-- (GLKVector4) getVectorWithX:(NSInteger)x withY:(NSInteger)y {
-
-    //
-    // TODO: this method has not yet been tested and can drop usage
-    //       of the multiplicative identity
-    //
-
-    GLKVector4 P = GLKVector4Make(1.0f * (x / self.viewportSize.width) * 2.0f - 1.0f,
-                                  1.0f * (y / self.viewportSize.height) * 2.0f -1.0f,
-                                  0.0f, 0.0f);
-    P.v[1] = -P.v[1];
-
-    float opSquare = (P.v[0] * P.v[0]) + (P.v[1] * P.v[1]);
-    if (opSquare <= 1.0f) {
-        P.v[2] = sqrtf(1.0f - opSquare);
-    }
-    else {
-        P = GLKVector4Normalize(P);
-    }
-
-    return P;
-}
-
-//
-// TODO: this arc ball calculation is to rotate an object, not the camera, will need to modify
-//       to work with the NFCamera class (but will still want the ability to generate a rotation
-//       matrix in order to manipulate various geometry in the scene)
-//
-
-- (GLKMatrix4) getRotationMatrix {
-
-    //
-    // TODO: convert snippet from wikibook to ObjC
-    //
-
-
-    GLKVector4 va = [self getVectorWithX:self.lastX withY:self.lastY];
-    GLKVector4 vb = [self getVectorWithX:self.currentX withY:self.currentY];
-
-    float angle = acosf(min(1.0f, GLKVector4DotProduct(va, vb)));
-    GLKVector4 axisCameraCoord = GLKVector4CrossProduct(va, vb);
- 
- 
- //
- // TODO: what is transforms[MODE_CAMERA] and objectToWorld set as ??
- //
-
-    //GLKMatrix4 cameraToObject = GLKMatrix4Invert(transfroms[MODE_CAMERA] * objectToWorld, NO);
-    //GLKVector4 axisObjectCoord = cameraToObject * axisCameraCoord;
-
-    //GLKMatrix4 = GLKMatrix4Rotate(originalMatrix, angle, axisObjectCoord.v[0], axisObjectCoord.v[1], axisObjectCoord.v[2]);
-
-
-    self.lastX = self.currentX;
-    self.lastY = self.currentY;
-
-#if 0
-    glm::vec3 va = get_arcball_vector(last_mx, last_my);
-    glm::vec3 vb = get_arcball_vector( cur_mx,  cur_my);
-
-    float angle = acos(min(1.0f, glm::dot(va, vb)));
-
-    glm::vec3 axis_in_camera_coord = glm::cross(va, vb);
-
-    glm::mat3 camera2object = glm::inverse(glm::mat3(transforms[MODE_CAMERA]) * glm::mat3(mesh.object2world));
-    glm::vec3 axis_in_object_coord = camera2object * axis_in_camera_coord;
-
-    mesh.object2world = glm::rotate(mesh.object2world, glm::degrees(angle), axis_in_object_coord);
-
-    last_mx = cur_mx;
-    last_my = cur_my;
-#endif
-
-    return GLKMatrix4Make(0.0f, 0.0f, 0.0f, 0.0f,
-                          0.0f, 0.0f, 0.0f, 0.0f,
-                          0.0f, 0.0f, 0.0f, 0.0f,
-                          0.0f, 0.0f, 0.0f, 0.0f);
-
-}
-
-@end
-*/
-
-
-//
-// TODO: when ultimatly making cross platform window configuration consider passing
-//       an EGL configuration and context attribute as the interface to the abstracted
-//       window
-//
 
 static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp* now,
                                     const CVTimeStamp* outputTime, CVOptionFlags flagsIn,
@@ -177,6 +42,11 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     NSTrackingArea* myTrackingArea;
 
 
+
+    float m_pitch;
+    float m_yaw;
+    NFCameraAlt *m_cameraAlt;
+
 }
 
 @property (nonatomic, assign) CVDisplayLinkRef displayLink;
@@ -193,12 +63,12 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
 
 
-
 //
 // TODO: these properties will need a better home ??
 //
 
 // NFCursorController ??
+// NFMotionController ??
 
 @property (nonatomic, assign) NSPoint mouseLocation;
 
@@ -206,7 +76,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 @property (nonatomic, assign) BOOL onRightEdge;
 @property (nonatomic, assign) BOOL onUpperEdge;
 @property (nonatomic, assign) BOOL onLowerEdge;
-
 
 
 
@@ -282,7 +151,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 }
 
 
-
 //
 // TODO: may need to use a tracking area, identify under which circumstances it is needed
 //       (will definitely be needed for mouse entered/exited events)
@@ -313,7 +181,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
         myTrackingArea = nil;
     }
 }
-
 
 
 - (void) dealloc {
@@ -405,12 +272,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     // NOTE: the renderer draws on a secondary thread through the display link while the resize call
     //       occurs on the main thread hence the context lock to keep the threads in sync
     CGLLockContext([self.glContext CGLContextObj]);
-
-
-    //
-    // TODO: make sure that any relevant NFCamera objects get updated
-    //
-
 
     // NOTE: not using dirtyRect since it will only contain the portion of the view that needs updating
     CGRect rect = [self bounds];
@@ -581,12 +442,58 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 }
 
 
+static const float ROTATION_GAIN = 0.008f;
+//static const float MOVEMENT_GAIN = 2.0f;
 
 - (void) mouseMoved:(NSEvent *)theEvent {
     NSLog(@"mouseMoved deltas: (%f, %f, %f)", [theEvent deltaX], [theEvent deltaY], [theEvent deltaZ]);
+
+
+    GLKVector2 rotationDelta;
+    rotationDelta.v[0] = [theEvent deltaX] * ROTATION_GAIN;
+    rotationDelta.v[1] = [theEvent deltaY] * ROTATION_GAIN;
+
+    m_yaw += rotationDelta.v[0];
+    m_pitch -= rotationDelta.v[1];
+
+    // limit pitch to straight up or straight down
+    float limit = M_PI / 2.0f - 0.01f;
+    m_pitch = MAX(-limit, m_pitch);
+    m_pitch = MIN(+limit, m_pitch);
+
+    // keep longitude in sane range by wrapping
+    if (m_yaw > M_PI) {
+        m_yaw -= M_PI * 2.0f;
+    }
+    else if (m_yaw < -M_PI) {
+        m_yaw += M_PI * 2.0f;
+    }
+}
+
+- (GLKVector3) lookDirection {
+    GLKVector3 lookDirection;
+
+    float r = cosf(m_pitch);
+    lookDirection.v[0] = r * sinf(m_yaw);
+    lookDirection.v[1] = sinf(m_pitch);
+    lookDirection.v[2] = r * cosf(m_yaw);
+
+    return lookDirection;
+
+    //
+    // TODO: on update set the camera look direction then use resulting view matrix
+    //
+
+    //[m_cameraAlt lookDirection:lookDirection];
+    //GLKMatrix4 viewMat = [m_cameraAlt getViewMatrix];
+
+    //
+    //
+    //
 }
 
 
+// NOTE: these will only be active when the view has a tracking area setup
 - (void) mouseEntered:(NSEvent *)theEvent {
     NSLog(@"mouseEntered NFView");
 }
@@ -594,7 +501,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 - (void) mouseExited:(NSEvent *)theEvent {
     NSLog(@"mouseExited NFView");
 }
-
 
 
 - (void) mouseDragged:(NSEvent *)theEvent {
@@ -638,7 +544,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     float angularDeltaX = angleX1 - angleX0;
     float angularDeltaY = angleY1 - angleY0;
-
 
     //
     // TODO: prevent camera from rolling
@@ -721,6 +626,28 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     self.camera.farPlaneDistance = 100.0f;
     self.camera.aspectRatio = width / height;
     self.camera.vFOV = (float)M_PI_4;
+
+
+    //
+    //
+    //
+
+    m_cameraAlt = [[[NFCameraAlt alloc] init] autorelease];
+
+    GLKVector3 eye = GLKVector3Make(0.0f, 2.0f, 4.0f);
+    GLKVector3 look = GLKVector3Make(0.0f, 0.0f, 0.0f);
+    GLKVector3 up = GLKVector3Make(0.0f, 1.0f, 0.0f);
+
+    [m_cameraAlt setViewParamsWithEye:eye withLook:look withUp:up];
+
+    m_pitch = [m_cameraAlt getPitch];
+    m_yaw = [m_cameraAlt getYaw];
+
+    //
+    //
+    //
+
+
 }
 
 - (void) setupDisplayLink {

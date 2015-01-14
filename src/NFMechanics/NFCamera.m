@@ -38,6 +38,66 @@
 
 
 
+@interface NFCameraAlt() {
+    GLKVector3 m_eye;
+    GLKVector3 m_look;
+    GLKVector3 m_up;
+
+    GLKMatrix4 m_view;
+    GLKMatrix4 m_inverseView;
+
+    float m_yawAngle;
+    float m_pitchAngle;
+}
+@end
+
+@implementation NFCameraAlt
+
+- (GLKMatrix4) getViewMatrix {
+    return m_view;
+}
+- (GLKMatrix4) getInverseViewMatrix {
+    return m_inverseView;
+}
+
+- (float) getPitch {
+    return m_pitchAngle;
+}
+
+- (float) getYaw {
+    return m_yawAngle;
+}
+
+- (void) lookDirection:(GLKVector3)lookDirection {
+    GLKVector3 lookAt;
+    lookAt = GLKVector3Add(m_eye, lookDirection);
+    [self setViewParamsWithEye:m_eye withLook:lookAt withUp:m_up];
+}
+
+- (void) setViewParamsWithEye:(GLKVector3)eye withLook:(GLKVector3)look withUp:(GLKVector3)up {
+    m_eye = eye;
+    m_look = look;
+    m_up = up;
+
+    m_view = GLKMatrix4MakeLookAt(m_eye.v[0], m_eye.v[1], m_eye.v[2],
+                                  m_look.v[0], m_look.v[1], m_look.v[2],
+                                  m_up.v[0], m_up.v[1], m_up.v[2]);
+
+    bool invertable;
+    m_inverseView = GLKMatrix4Invert(m_view, &invertable);
+    NSAssert(invertable != false, @"view matrix was not invertible");
+
+    GLKVector4 zBasis = GLKMatrix4GetRow(m_inverseView, 2);
+    float len = sqrtf(zBasis.v[2] * zBasis.v[2] + zBasis.v[0] * zBasis.v[0]);
+
+    m_yawAngle = atan2f(zBasis.v[0], zBasis.v[2]);
+    m_pitchAngle = atan2f(zBasis.v[2], len);
+}
+
+@end
+
+
+
 @interface NFCamera()
 
 @property (nonatomic, assign) GLKVector3 position;
