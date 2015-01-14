@@ -87,11 +87,20 @@
     m_inverseView = GLKMatrix4Invert(m_view, &invertable);
     NSAssert(invertable != false, @"view matrix was not invertible");
 
+
+
+    //
+    // TODO: this needs modifications, it is currently the wrong coordinate system
+    //
+
     GLKVector4 zBasis = GLKMatrix4GetRow(m_inverseView, 2);
     float len = sqrtf(zBasis.v[2] * zBasis.v[2] + zBasis.v[0] * zBasis.v[0]);
 
     m_yawAngle = atan2f(zBasis.v[0], zBasis.v[2]);
     m_pitchAngle = atan2f(zBasis.v[2], len);
+
+
+
 }
 
 @end

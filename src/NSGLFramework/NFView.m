@@ -446,15 +446,15 @@ static const float ROTATION_GAIN = 0.008f;
 //static const float MOVEMENT_GAIN = 2.0f;
 
 - (void) mouseMoved:(NSEvent *)theEvent {
-    NSLog(@"mouseMoved deltas: (%f, %f, %f)", [theEvent deltaX], [theEvent deltaY], [theEvent deltaZ]);
-
-
     GLKVector2 rotationDelta;
     rotationDelta.v[0] = [theEvent deltaX] * ROTATION_GAIN;
     rotationDelta.v[1] = [theEvent deltaY] * ROTATION_GAIN;
 
-    m_yaw += rotationDelta.v[0];
+    //m_yaw += rotationDelta.v[0]; // use for south paw
+    m_yaw -= rotationDelta.v[0];
+
     m_pitch -= rotationDelta.v[1];
+
 
     // limit pitch to straight up or straight down
     float limit = M_PI / 2.0f - 0.01f;
@@ -479,17 +479,6 @@ static const float ROTATION_GAIN = 0.008f;
     lookDirection.v[2] = r * cosf(m_yaw);
 
     return lookDirection;
-
-    //
-    // TODO: on update set the camera look direction then use resulting view matrix
-    //
-
-    //[m_cameraAlt lookDirection:lookDirection];
-    //GLKMatrix4 viewMat = [m_cameraAlt getViewMatrix];
-
-    //
-    //
-    //
 }
 
 
@@ -632,9 +621,11 @@ static const float ROTATION_GAIN = 0.008f;
     //
     //
 
-    m_cameraAlt = [[[NFCameraAlt alloc] init] autorelease];
+    //m_cameraAlt = [[[NFCameraAlt alloc] init] autorelease];
 
-    GLKVector3 eye = GLKVector3Make(0.0f, 2.0f, 4.0f);
+    m_cameraAlt = [[NFCameraAlt alloc] init];
+
+    GLKVector3 eye = GLKVector3Make(0.0f, 2.0f, -4.0f);
     GLKVector3 look = GLKVector3Make(0.0f, 0.0f, 0.0f);
     GLKVector3 up = GLKVector3Make(0.0f, 1.0f, 0.0f);
 
@@ -711,8 +702,20 @@ static const float ROTATION_GAIN = 0.008f;
     //
     [self.camera step:16000];
 
-    [self.glRenderer updateFrameWithTime:outputTime withViewMatrix:[self.camera getViewMatrix]
+
+
+    //[self.glRenderer updateFrameWithTime:outputTime withViewMatrix:[self.camera getViewMatrix]
+    //                      withProjection:[self.camera getProjectionMatrix]];
+
+
+    GLKVector3 lookDirection = [self lookDirection];
+    [m_cameraAlt lookDirection:lookDirection];
+    GLKMatrix4 viewMat = [m_cameraAlt getViewMatrix];
+
+    [self.glRenderer updateFrameWithTime:outputTime withViewMatrix:viewMat
                           withProjection:[self.camera getProjectionMatrix]];
+
+
 
     // perform drawing code
     [self.glRenderer renderFrame];
