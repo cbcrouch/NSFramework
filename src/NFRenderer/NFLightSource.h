@@ -7,14 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-// http://www.glprogramming.com/red/chapter05.html
-
-// http://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/lighting.php
-
-// http://www.lighthouse3d.com/tutorials/glsl-tutorial/directional-lights-i/
-
-// http://www.lighthouse3d.com/tutorials/glsl-tutorial/spot-light-per-pixel/
-
 
 @interface NFLightSource : NSObject
 

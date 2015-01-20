@@ -451,11 +451,11 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
     //
 
     for (NSString *line in lines) {
-        // TODO: may have to handle leading whitespace in obj file as well unless the spec
-        //       officially forbids it
 
+        //
         // TODO: will also need to handle leading tabs, should be able to update regex
         //       to find either leading whitespace or tabs
+        //
 
         // remove any white space in the front of the line
         NSRange range = [line rangeOfString:@"^\\s*" options:NSRegularExpressionSearch];
@@ -558,7 +558,7 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
     NSImage *nsimage = [[NSImage alloc] initWithContentsOfFile:imgPath];
 
     //
-    // TODO: switch of the file name extension to use the correct representation when loading
+    // TODO: switch off the file name extension to use the correct representation when loading
     //       the NSBitmapImage object
     //
     // use NSImage NSBitmapImageRep to load TIFF, BMP, JPEG, GIF, PNG, DIB, ICO
@@ -619,27 +619,16 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
     BOOL flipVertical = YES;
 
 
-    //
-    // TODO: CGBitmapContextCreate is failing when loading the RGB teapot texture
-    //
-
     NSLog(@"size of texture: (%f, %f)", CGRectGetWidth(mapSize), CGRectGetHeight(mapSize));
     NSLog(@"rowByteSize: %ld", rowByteSize);
     NSLog(@"bitsPerComponent: %ld", bitsPerComponent);
 
-
-    //
-    //<Error>: CGBitmapContextCreate: unsupported parameter combination: 8 integer bits/component;
-    //    24 bits/pixel; 3-component color space; kCGImageAlphaNone; 384 bytes/row.
-    //
 
     // NOTE: as stated by the Apple developer docs
     // "The constants for specifying the alpha channel information are declared with the CGImageAlphaInfo type but can be passed to this parameter safely."
     CGContextRef context = CGBitmapContextCreate(pData, CGRectGetWidth(mapSize), CGRectGetHeight(mapSize),
                                                  bitsPerComponent, rowByteSize, CGImageGetColorSpace(cgImage),
                                                  bitmapInfo);
-
-
 
     CGContextSetBlendMode(context, kCGBlendModeCopy);
     if (flipVertical) {

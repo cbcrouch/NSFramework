@@ -34,13 +34,6 @@ typedef NS_ENUM(NSUInteger, FaceGroupType) {
 }
 
 - (void) addSubsetWithIndices:(NSMutableArray *)indices ofObject:(WFObject *)wfObj atIndex:(NSUInteger)idx {
-
-    //
-    // TODO: as part of parsing/processing the Wavefront obj file it would be a good time to
-    //       potentially improve vertex cache performance by sorting/reordering the vertices/indices
-    //       (see home.comcast.net/~tom_forsyth/fast_vert_cache_opt.html for reference)
-    //
-
     NFSubset *subset = [self.subsetArray objectAtIndex:idx];
 
     NSMutableArray *uniqueArray = [[[NSMutableArray alloc] init] autorelease];
@@ -88,25 +81,10 @@ typedef NS_ENUM(NSUInteger, FaceGroupType) {
         // texture coordinates are also optional
         //f v1//vn1 v2//vn2 v3//vn3
 
-
-
         //
         // TODO: if there is no normal data calculate a normal vector from the three
         //       vertices listed by the face
         //
-
-        // https://www.opengl.org/wiki/Calculating_a_Surface_Normal
-
-        // for a triangle with points p1, p2, p3
-
-        // U = p2 - p1
-        // V = p3 - p1
-        // N = U X V
-
-        // Nx = UyVz - UzVy
-        // Ny = UzVx - UxVz
-        // Nz = UxVy - UyVx
-
 
         //
         // TODO: should see if vertices themselves are optional i.e. if a file only has NURBS data

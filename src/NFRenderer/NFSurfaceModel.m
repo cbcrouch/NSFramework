@@ -7,11 +7,6 @@
 
 #import "NFSurfaceModel.h"
 
-// TODO: find out who is including gl.h into the project (might be the display link...), one way around all this
-//       might be to skip the provided OpenGL header file and use a custom loader
-
-// NOTE: because both gl.h and gl3.h are included will get symbols for deprecated GL functions
-//       and they should absolutely not be used
 #define GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
 #import <OpenGL/gl3.h>
 

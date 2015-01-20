@@ -17,9 +17,6 @@ typedef NS_ENUM(NSUInteger, SHADER_TYPE) {
     kProgram
 };
 
-//
-// TODO: move NFUtils methods here
-//
 
 // NFRUBO_t
 // - blockIndex
@@ -50,11 +47,6 @@ typedef NS_ENUM(NSUInteger, SHADER_TYPE) {
 // TODO: add a method for drawing a bounding box around an object
 //
 //+(void) drawBoundingBox:(GLKMatrix4 *)mat;
-
-//
-// TODO: add a method for creating an NFAssetData object with an x-z grid and the cardinal axis
-//
-//+(NFAssetData *) createBaseGrid:(int)size withAxis:(int size);
 
 
 // VAO utils

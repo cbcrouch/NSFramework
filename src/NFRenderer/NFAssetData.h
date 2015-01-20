@@ -11,10 +11,6 @@
 #import "NFSurfaceModel.h"
 
 
-//
-// TODO: use ALIGN macro on structures to ensure cache friendliness
-//
-
 #define NFLOATS_POS 4
 #define NFLOATS_NORM 4
 #define NFLOATS_TEX 3
@@ -49,11 +45,6 @@ typedef struct NFFace_t {
 //
 
 // the following struct should contain all the light params as an OpenGL 2.1 light
-
-//
-// TODO: use something like the definition provided by:
-//       http://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/lighting.php
-//
 
 typedef struct NFLight_t {
     float pos[4];

@@ -125,7 +125,12 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 - (void) resetTarget;
 - (void) resetPosition; // TODO: needs a better name resetToInitialValues ??
 
+
+//
+// TODO: merge pitch/yaw look direction controls in with the UVN camera implementation
+//
 - (void) setPosition:(GLKVector3)position withTarget:(GLKVector3)target withUp:(GLKVector3)up;
+
 
 - (void) setShapeWithVerticalFOV:(float)vAngle withAspectRatio:(float)aspect
                     withNearDist:(float)nearDist withFarDist:(float)farDist;

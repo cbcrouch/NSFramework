@@ -26,14 +26,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
 @interface NFView()
 {
-    //
-    // TODO: implement and use an NSResources group with two classes NSResourceLoader (class methods) and
-    //       NSResourceCache that will aid in streaming assets to an NSGLScene/NSScene
-    //
-
     //double m_currHostFreq; // ticks per second
     //uint32_t m_minHostDelta; // number of ticks accuracy
-
 
 
     //
@@ -42,11 +36,9 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     NSTrackingArea* myTrackingArea;
 
 
-
     float m_pitch;
     float m_yaw;
     NFCameraAlt *m_cameraAlt;
-
 }
 
 @property (nonatomic, assign) CVDisplayLinkRef displayLink;
@@ -64,11 +56,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
 
 //
-// TODO: these properties will need a better home ??
+// TODO: these properties will need a better home
 //
 
-// NFCursorController ??
-// NFMotionController ??
+// NFInputController class ??
 
 @property (nonatomic, assign) NSPoint mouseLocation;
 
@@ -78,8 +69,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 @property (nonatomic, assign) BOOL onLowerEdge;
 
 
-
-// instance methods
+- (void) execStartupSequence;
 - (void) setupTiming;
 - (void) setupOpenGL;
 - (void) initRenderer;
@@ -96,11 +86,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 @synthesize glRenderer = _glRenderer;
 @synthesize camera = _camera;
 
-//
-// TODO: shouldn't be performing error checking beyond debug asserts but rather have the platform
-//       detection/analysis code determine whether the application will run or not
-//
-
 static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp* now,
                                     const CVTimeStamp* outputTime, CVOptionFlags flagsIn,
                                     CVOptionFlags* flagsOut, void* displayLinkContext) {
@@ -109,45 +94,37 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     return result;
 }
 
-//
-// TODO: add some NOTEs explaining why initWithFrame won't get called and initWithCoder will
-//       plus include some text on why both are implemented
-//
+// initWithFrame is the initializer used when if object is instantiated in code
 - (instancetype) initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self == nil) {
         NSLog(@"failed initWithFrame");
     }
     else {
-
-        //
-        // TODO: move the call sequence in the else block out into an
-        //       engine initialize (or equivalent) method
-        //
-        [self setupTiming];
-        [self setupOpenGL];
-        [self initRenderer];
-
-        //[self setupTrackingArea];
+        [self execStartupSequence];
     }
-
     return self;
 }
 
+// initWithCoder is the initializer called for archived objects, as objects stored in nibs
+// are archived objects, this initializer is used when loading object from a nib
 - (instancetype) initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
     if (self == nil) {
         NSLog(@"failed initWithCode");
     }
     else {
-        [self setupTiming];
-        [self setupOpenGL];
-        [self initRenderer];
-
-        //[self setupTrackingArea];
+        [self execStartupSequence];
     }
-
     return self;
+}
+
+- (void) execStartupSequence {
+    [self setupTiming];
+    [self setupOpenGL];
+    [self initRenderer];
+
+    //[self setupTrackingArea];
 }
 
 
@@ -188,9 +165,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     // TODO: make sure dealloc is cleaning everything up (i.e. do events need to be unregisterd etc.)
     //
 
-
     //[self clearTrackingArea];
-
 
     // stop the display link BEFORE releasing anything in the view
     // otherwise the display link thread may call into the view and crash
@@ -221,21 +196,19 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     [[self window] setAcceptsMouseMovedEvents:YES];
 }
 
-// NOTE: not using prepareOpenGL method as it appears to get called indirectly through the
-//       NSOpenGLContext class' view member (which is this view), the reason for this is to
-//       have fine grained control over the view
-//- (void) prepareOpenGL {
-//    NSLog(@"prepareOpenGL");
-//}
+// method is called only once after the OpenGL context is made the current context, subclasses that
+// implement this method can use it to configure the OpenGL state in preparation for drawing
+- (void) prepareOpenGL {
+    //NSLog(@"prepareOpenGL");
+}
 
 //
 // TODO: setup some kind of catch all method to attempt to see who is trying to call what
 //       on the NFView (i.e. self)
 //
 
-//
-// TODO: add comment summarizing Apple documentation about why method should be overridden
-//
+// drawing performance will be faster when view object is opaque (view object will be
+// responsible for filling its bounding rectanlge
 - (BOOL) isOpaque {
     return YES;
 }
@@ -299,19 +272,21 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //m_minHostDelta = CVGetHostClockMinimumTimeDelta();
 }
 
-//
-// TODO: make sure these aren't really needed
-//
+// enusre that view is first object in the responder chain to be sent key events and action messages
+- (BOOL) acceptsFirstResponder {
+    return YES;
+}
 
-//- (BOOL) acceptsFirstResponder {
-//    return YES;
-//}
+// ensure full keyboard access behavior for view
+- (BOOL) canBecomeKeyView {
+    return YES;
+}
 
+// default is NO, return YES to be set a mouseDown message for an initial mouse-down event
+//
+// TODO: determine if this is needed to capture mouseMoved events
+//
 //- (BOOL) acceptsFirstMouse:(NSEvent *)theEvent {
-//    return YES;
-//}
-
-//- (BOOL) canBecomeKeyView {
 //    return YES;
 //}
 
@@ -391,9 +366,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 }
 
 - (void) mouseDown:(NSEvent *)theEvent {
-
     //
-    // TODO: use this code when there is more than one view for the window
+    // NOTE: use this code when there is more than one view for the window
     //
     //NSPoint mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
     //BOOL isInside = [self mouse:mouseLoc inRect:[self bounds]];
@@ -424,8 +398,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //
 
     NSPoint centerPoint;
-    centerPoint.x = CGDisplayPixelsWide(displayId) / 2;
-    centerPoint.y = CGDisplayPixelsHigh(displayId) / 2;
+    centerPoint.x = CGDisplayPixelsWide(displayId) / 2.0f;
+    centerPoint.y = CGDisplayPixelsHigh(displayId) / 2.0f;
     self.mouseLocation = centerPoint;
 
     CGWarpMouseCursorPosition(centerPoint);
@@ -442,10 +416,11 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 }
 
 
-static const float ROTATION_GAIN = 0.008f;
+//static const float ROTATION_GAIN = 0.008f;
 //static const float MOVEMENT_GAIN = 2.0f;
 
 - (void) mouseMoved:(NSEvent *)theEvent {
+/*
     GLKVector2 rotationDelta;
     rotationDelta.v[0] = [theEvent deltaX] * ROTATION_GAIN;
     rotationDelta.v[1] = [theEvent deltaY] * ROTATION_GAIN;
@@ -454,6 +429,10 @@ static const float ROTATION_GAIN = 0.008f;
     m_yaw -= rotationDelta.v[0];
 
     m_pitch -= rotationDelta.v[1];
+
+
+    NSLog(@"pitch increment %f", -1 * rotationDelta.v[1]);
+    NSLog(@"yaw increment %f", -1 * rotationDelta.v[0]);
 
 
     // limit pitch to straight up or straight down
@@ -468,12 +447,13 @@ static const float ROTATION_GAIN = 0.008f;
     else if (m_yaw < -M_PI) {
         m_yaw += M_PI * 2.0f;
     }
+*/
 }
 
 - (GLKVector3) lookDirection {
     GLKVector3 lookDirection;
-
     float r = cosf(m_pitch);
+
     lookDirection.v[0] = r * sinf(m_yaw);
     lookDirection.v[1] = sinf(m_pitch);
     lookDirection.v[2] = r * cosf(m_yaw);
@@ -508,6 +488,10 @@ static const float ROTATION_GAIN = 0.008f;
     centerPoint.x = CGDisplayPixelsWide(displayId) / 2.0f;
     centerPoint.y = CGDisplayPixelsHigh(displayId) / 2.0f;
 
+    //
+    // TODO: need to overhaul the coordinate system to something that makes a lot more sense
+    //
+
     // x - red
     // y - green
     // z - blue
@@ -524,7 +508,6 @@ static const float ROTATION_GAIN = 0.008f;
     // TODO: would it make sense to map the normalized values into the NFCamera's vertical and
     //       horizontal field of view
     //
-
     float angleX0 = asin(normalizedX0);
     float angleY0 = asin(normalizedY0);
 
@@ -534,11 +517,32 @@ static const float ROTATION_GAIN = 0.008f;
     float angularDeltaX = angleX1 - angleX0;
     float angularDeltaY = angleY1 - angleY0;
 
+
+
     //
     // TODO: prevent camera from rolling
     //
     [self.camera pitch:angularDeltaY];
     [self.camera yaw:angularDeltaX];
+
+
+
+    m_yaw -= angularDeltaX;
+    m_pitch -= angularDeltaY;
+
+    // limit pitch to straight up or straight down
+    float limit = M_PI / 2.0f - 0.01f;
+    m_pitch = MAX(-limit, m_pitch);
+    m_pitch = MIN(+limit, m_pitch);
+
+    // keep longitude in sane range by wrapping
+    if (m_yaw > M_PI) {
+        m_yaw -= M_PI * 2.0f;
+    }
+    else if (m_yaw < -M_PI) {
+        m_yaw += M_PI * 2.0f;
+    }
+
 
 
     // NOTE: NSPoint is a typedef of CGPoint so this is a safe cast to make
@@ -621,12 +625,10 @@ static const float ROTATION_GAIN = 0.008f;
     //
     //
 
-    //m_cameraAlt = [[[NFCameraAlt alloc] init] autorelease];
-
     m_cameraAlt = [[NFCameraAlt alloc] init];
 
-    GLKVector3 eye = GLKVector3Make(0.0f, 2.0f, -4.0f);
-    GLKVector3 look = GLKVector3Make(0.0f, 0.0f, 0.0f);
+    GLKVector3 eye = GLKVector3Make(4.0f, 2.0f, 4.0f);
+    GLKVector3 look = GLKVector3Make(0.0f, 1.0f, 0.0f);
     GLKVector3 up = GLKVector3Make(0.0f, 1.0f, 0.0f);
 
     [m_cameraAlt setViewParamsWithEye:eye withLook:look withUp:up];
@@ -671,7 +673,9 @@ static const float ROTATION_GAIN = 0.008f;
     // it's important to create one or you will leak objects
     //NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
+    //
     // TODO: is this faster than or an alternative to locking the CGL context ??
+    //
 /*
     if ([self lockFocusIfCanDraw]) {
         // update frame
@@ -680,13 +684,11 @@ static const float ROTATION_GAIN = 0.008f;
 */
 
     //
-    // TODO: need to follow Apple documentation on how to set this all up
-    //
-
     // TODO: only make current once and then perform check to is if still current
+    //
     [self.glContext makeCurrentContext];
 
-    // when resizing the view, -reshape is called automatically on the main thread
+    // when resizing the view, reshape is called automatically on the main thread
     // add a mutex around to avoid the threads accessing the context simultaneously	when resizing
     CGLLockContext([self.glContext CGLContextObj]);
 
@@ -704,17 +706,17 @@ static const float ROTATION_GAIN = 0.008f;
 
 
 
-    //[self.glRenderer updateFrameWithTime:outputTime withViewMatrix:[self.camera getViewMatrix]
-    //                      withProjection:[self.camera getProjectionMatrix]];
+    [self.glRenderer updateFrameWithTime:outputTime withViewMatrix:[self.camera getViewMatrix]
+                          withProjection:[self.camera getProjectionMatrix]];
 
-
+/*
     GLKVector3 lookDirection = [self lookDirection];
     [m_cameraAlt lookDirection:lookDirection];
     GLKMatrix4 viewMat = [m_cameraAlt getViewMatrix];
 
     [self.glRenderer updateFrameWithTime:outputTime withViewMatrix:viewMat
                           withProjection:[self.camera getProjectionMatrix]];
-
+*/
 
 
     // perform drawing code

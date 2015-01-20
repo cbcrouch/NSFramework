@@ -9,11 +9,6 @@
 
 @interface NFAssetData (Procedural)
 
-//
-// TODO: generate assets including a sphere, grid, default texture, axis guide, etc.
-//
-
-
 - (void) createGridOfSize:(NSInteger)size; // add parameters to specify size of X axis and Z axis
 
 - (void) createAxisOfSize:(NSInteger)size;
@@ -21,11 +16,9 @@
 
 - (void) createPlaneOfSize:(NSInteger)size;
 
-
 + (NFFace_t) calculateFaceWithPoints:(NFVertex_t *)vertices withIndices:(GLushort *)indices;
 + (GLKVector4) calculateAreaWeightedNormalOfIndex:(GLushort)index withFaces:(NSArray *)faceArray;
 + (GLKVector4) calculateAngleWeightedNormalOfVertex:(GLfloat[4])vertex withFaces:(NSArray *)faceArray;
-
 
 //
 // TODO: use the following geometries to visualize lights

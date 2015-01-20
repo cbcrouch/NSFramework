@@ -17,28 +17,6 @@
 
     NFAssetData *asset = [[NFAssetData alloc] init];
 
-    //
-    // TODO: is it common convention that variadic method arguments be of all
-    //       the same type in Objective C
-    //
-/*
-    if (firstObj != nil) {
-        va_list args;
-        va_start(args, firstObj);
-
-        id obj = firstObj;
-
-        //NSString *fileNamePath = (NSString *)firstObj;
-        //NSLog(@"allocAssetDataOfType first arg: %@", fileNamePath);
-
-        do {
-            //
-            // perfrom operations on object
-            //
-        } while ( (obj = va_arg(args, id)) );
-    }
-*/
-
     switch (type) {
         case kWavefrontObj: {
             NSAssert(firstObj != nil, @"ERROR: expected a string for the file name and path, received nil");

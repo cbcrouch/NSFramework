@@ -9,8 +9,10 @@
 #import "NFRenderer.h"
 #import "NFRUtils.h"
 
+//
 // TODO: find out who is including gl.h into the project (might be the display link...), one way around all this
 //       might be to skip the provided OpenGL header file and use a custom loader
+//
 
 // NOTE: because both gl.h and gl3.h are included will get symbols for deprecated GL functions
 //       and they should absolutely not be used
@@ -71,12 +73,6 @@ typedef struct NFVertState_t {
     if (self == nil) {
         return nil;
     }
-
-    //
-    // TODO: need to clean up init methods to something clearer and in accordance
-    //       with ObjC conventions, assign super call to init, don't use property dot
-    //       notation, etc.
-    //
 
     [self setDrawMode:kDrawTriangles];
     [self setModelMat:GLKMatrix4Identity];
@@ -455,12 +451,6 @@ typedef struct NFVertState_t {
 
     CHECK_GL_ERROR();
 }
-
-
-//
-// TODO: replace with a load surface model method, should the method live in the renderer
-//       or in the NFSurfaceModel class ??
-//
 
 - (void) loadResourcesGL {
     glBindVertexArray(self.hVAO);

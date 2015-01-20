@@ -7,8 +7,6 @@
 
 #import "NFRUtils.h"
 
-// TODO: find out who is including gl.h into the project (might be the display link...)
-
 // NOTE: because both gl.h and gl3.h are included will get symbols for deprecated GL functions
 //       and they should absolutely not be used
 #define GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
@@ -26,13 +24,6 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
     kValidateStatus
 };
 
-
-// static OpenGL global state variables
-// consider build state bundles to help manage relevant state
-
-// http://openglinsights.com/pipeline.html
-
-// http://www.opengl.org/wiki/Rendering_Pipeline_Overview
 
 // uniform buffer binding point will need to default to 1 in renderer init (will need a class method for initializing OpenGL state)
 //static GLuint g_bindingPoint = 1; // must be smaller than GL_MAX_UNIFORM_BUFFER_BINDINGS
@@ -127,6 +118,7 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
 
     //
     // TODO: get the MAX number of possible attributes per VAO and loop on that
+    //       instead of using a magic number i.e. 16
     //
 
     // for every possible attribute set in the VAO

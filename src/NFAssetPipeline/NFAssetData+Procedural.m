@@ -176,22 +176,6 @@ static const char *g_faceType = @encode(NFFace_t);
     vertices[11].texCoord[0] = f1;
     vertices[11].texCoord[1] = f2;
 
-
-/*
-    for (int i=0; i<8; ++i) {
-        float x = i & 1 ? -1.0f : 1.0f;
-        float y = i & 2 ? -1.0f : 1.0f;
-        float z = i & 4 ? -1.0f : 1.0f;
-
-        // will start with x == 1 then -1
-        // then will repeat with y == 1 then -1
-        // ...
-
-        NSLog(@"%f %f %f", x, y, z);
-    }
-*/
-
-
     const NSInteger numIndices = 12;
     GLushort indices[numIndices];
 
@@ -426,12 +410,6 @@ static const char *g_faceType = @encode(NFFace_t);
     // TODO: should only use this method when vertex and faces are contained within a smoothing group
     //
 
-    // http://www.bytehazard.com/code/vertnorm.html
-
-    // http://meshlabstuff.blogspot.com/2009/04/on-computation-of-vertex-normals.html
-
-
-
     // cos(theta) = A dot B if A and B have been normalized
 
     // A dot B is then bound between [-1 1] at which point would then have to get the angle based on that or
@@ -453,7 +431,6 @@ static const char *g_faceType = @encode(NFFace_t);
         //       accomplished with an index, right ??)
         //
     }
-    
     
     vector = GLKVector4Normalize(vector);
     return vector;

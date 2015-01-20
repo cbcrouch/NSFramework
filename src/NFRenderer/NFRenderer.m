@@ -9,16 +9,10 @@
 #import "NFRUtils.h"
 
 //
-// TODO: these headers and modules shouldn't be used in the renderer and are
-//       only being used temporarily
+// TODO: move NFAssetLoader module test code into NFSimulation module once it has been stubbed out
 //
 #import "NFAssetLoader.h"
 
-
-//
-// TODO: find out who is including gl.h into the project (might be the display link...), one way around all this
-//       might be to skip the provided OpenGL header file and use a custom loader
-//
 
 // NOTE: because both gl.h and gl3.h are included will get symbols for deprecated GL functions
 //       and they should absolutely not be used
@@ -48,12 +42,6 @@
 #pragma mark - NSGLRenderer Interface
 @interface NFRenderer()
 {
-    //
-    // TODO: need to replace these with properties as they should always be used in place
-    //       of "naked" instance variables according to ObjC conventions
-    //
-
-    // asset data should be stored in a scene container of some sorts
     NFAssetData *m_pAsset;
     NFAssetData *m_axisData;
     NFAssetData *m_gridData;
@@ -124,7 +112,7 @@
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
 
     //
-    // TODO: calculate normals for the teapot so that it can be lit, and import RGB based textures
+    // TODO: calculate normals for the teapot so that it can be lit, and import RGBA based textures
     //
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/teapot/teapot.obj";
 
@@ -139,10 +127,6 @@
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/buddha.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/dragon.obj";
 
-
-    //
-    // TODO: need to organize the NFAssetData objects into a display set and/or PVS
-    //
 
     m_pAsset = [NFAssetLoader allocAssetDataOfType:kWavefrontObj withArgs:fileNamePath, nil];
     [m_pAsset createVertexStateWithProgram:m_hProgram];
@@ -165,7 +149,7 @@
 
 
     // setup OpenGL state that will never change
-    //glClearColor(1.0f, 0.0f, 1.0f, 1.0f); // hot pink for hot debugging
+    //glClearColor(1.0f, 0.0f, 1.0f, 1.0f); // hot pink for debugging
     glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 
     glEnable(GL_DEPTH_TEST);
