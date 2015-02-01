@@ -70,7 +70,14 @@
 
 - (void) lookDirection:(GLKVector3)lookDirection {
     GLKVector3 lookAt;
-    lookAt = GLKVector3Add(m_eye, lookDirection);
+
+    //
+    // TODO: verify that subtract is correct
+    //
+
+    //lookAt = GLKVector3Add(m_eye, lookDirection);
+    lookAt = GLKVector3Subtract(m_eye, lookDirection);
+
     [self setViewParamsWithEye:m_eye withLook:lookAt withUp:m_up];
 }
 
@@ -79,23 +86,24 @@
     m_look = look;
     m_up = up;
 
-    //
-    // TODO: this is not working correctly ??
-    //
     m_view = GLKMatrix4MakeLookAt(m_eye.v[0], m_eye.v[1], m_eye.v[2],
                                   m_look.v[0], m_look.v[1], m_look.v[2],
                                   m_up.v[0], m_up.v[1], m_up.v[2]);
-
 
     bool invertable;
     m_inverseView = GLKMatrix4Invert(m_view, &invertable);
     NSAssert(invertable != false, @"view matrix was not invertible");
 
-    GLKVector4 zBasis = GLKMatrix4GetRow(m_inverseView, 2);
-    float len = sqrtf(zBasis.v[2] * zBasis.v[2] + zBasis.v[0] * zBasis.v[0]);
+    //
+    // TODO: look into faster alternative ways of calculating pitch and yaw that
+    //       don't use atan2
+    //
 
+    GLKVector4 zBasis = GLKMatrix4GetRow(m_inverseView, 2);
     m_yawAngle = atan2f(zBasis.v[0], zBasis.v[2]);
-    m_pitchAngle = atan2f(zBasis.v[2], len);
+
+    float len = sqrtf(zBasis.v[2] * zBasis.v[2] + zBasis.v[0] * zBasis.v[0]);
+    m_pitchAngle = atan2f(zBasis.v[1], len);
 }
 
 @end

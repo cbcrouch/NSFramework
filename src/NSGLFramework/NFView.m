@@ -120,6 +120,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 }
 
 - (void) execStartupSequence {
+
     [self setupTiming];
     [self setupOpenGL];
     [self initRenderer];
@@ -452,6 +453,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
 - (GLKVector3) lookDirection {
     GLKVector3 lookDirection;
+
     float r = cosf(m_pitch);
 
     lookDirection.v[0] = r * sinf(m_yaw);
@@ -488,10 +490,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     centerPoint.x = CGDisplayPixelsWide(displayId) / 2.0f;
     centerPoint.y = CGDisplayPixelsHigh(displayId) / 2.0f;
 
-    //
-    // TODO: need to overhaul the coordinate system to something that makes a lot more sense
-    //
-
     // x - red
     // y - green
     // z - blue
@@ -516,8 +514,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     float angularDeltaX = angleX1 - angleX0;
     float angularDeltaY = angleY1 - angleY0;
-
-
 
     //
     // TODO: prevent camera from rolling
@@ -627,8 +623,12 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     m_cameraAlt = [[NFCameraAlt alloc] init];
 
-    GLKVector3 eye = GLKVector3Make(4.0f, 2.0f, 4.0f);
-    GLKVector3 look = GLKVector3Make(0.0f, 1.0f, 0.0f);
+    //GLKVector3 eye = GLKVector3Make(4.0f, 2.0f, 4.0f);
+    GLKVector3 eye = GLKVector3Make(0.0f, 0.0f, 4.0f);
+
+    //GLKVector3 look = GLKVector3Make(0.0f, 1.0f, 0.0f);
+    GLKVector3 look = GLKVector3Make(0.0f, 0.0f, 0.0f);
+
     GLKVector3 up = GLKVector3Make(0.0f, 1.0f, 0.0f);
 
     [m_cameraAlt setViewParamsWithEye:eye withLook:look withUp:up];
@@ -705,18 +705,17 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     [self.camera step:16000];
 
 
-
+#if 0
     [self.glRenderer updateFrameWithTime:outputTime withViewMatrix:[self.camera getViewMatrix]
                           withProjection:[self.camera getProjectionMatrix]];
-
-/*
+#else
     GLKVector3 lookDirection = [self lookDirection];
     [m_cameraAlt lookDirection:lookDirection];
-    GLKMatrix4 viewMat = [m_cameraAlt getViewMatrix];
 
+    GLKMatrix4 viewMat = [m_cameraAlt getViewMatrix];
     [self.glRenderer updateFrameWithTime:outputTime withViewMatrix:viewMat
                           withProjection:[self.camera getProjectionMatrix]];
-*/
+#endif
 
 
     // perform drawing code
