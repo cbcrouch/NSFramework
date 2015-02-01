@@ -38,6 +38,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     float m_pitch;
     float m_yaw;
+    BOOL m_input;
     NFCameraAlt *m_cameraAlt;
 }
 
@@ -120,6 +121,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 }
 
 - (void) execStartupSequence {
+
+    m_input = NO;
 
     [self setupTiming];
     [self setupOpenGL];
@@ -458,6 +461,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     lookDirection.v[0] = r * sinf(m_yaw);
     lookDirection.v[1] = sinf(m_pitch);
+
+    //
+    // TODO: z direction seems to be calculated in correctly
+    //
     lookDirection.v[2] = r * cosf(m_yaw);
 
     return lookDirection;
@@ -516,13 +523,17 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     float angularDeltaY = angleY1 - angleY0;
 
     //
-    // TODO: prevent camera from rolling
+    // TODO: prevent UVN camera from rolling or use alt camera implementation
     //
     [self.camera pitch:angularDeltaY];
     [self.camera yaw:angularDeltaX];
 
 
-
+    //
+    // TODO: disabled mouse control to explicitly test with hardcoded angular deltas
+    //       bound to key presses
+    //
+#if 0
     m_yaw -= angularDeltaX;
     m_pitch -= angularDeltaY;
 
@@ -539,6 +550,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
         m_yaw += M_PI * 2.0f;
     }
 
+    m_input = YES;
+#endif
 
 
     // NOTE: NSPoint is a typedef of CGPoint so this is a safe cast to make
@@ -623,19 +636,32 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     m_cameraAlt = [[NFCameraAlt alloc] init];
 
+    //
+    // TODO: the look direction calculation is currently incorrect
+    //
+
     //GLKVector3 eye = GLKVector3Make(4.0f, 2.0f, 4.0f);
+
     GLKVector3 eye = GLKVector3Make(0.0f, 0.0f, 4.0f);
+    //GLKVector3 eye = GLKVector3Make(0.0f, 4.0f, 0.0f); // will cause view matrix to be non-invertable
+
 
     //GLKVector3 look = GLKVector3Make(0.0f, 1.0f, 0.0f);
     GLKVector3 look = GLKVector3Make(0.0f, 0.0f, 0.0f);
+
 
     GLKVector3 up = GLKVector3Make(0.0f, 1.0f, 0.0f);
 
     [m_cameraAlt setViewParamsWithEye:eye withLook:look withUp:up];
 
+
+#if 1
     m_pitch = [m_cameraAlt getPitch];
     m_yaw = [m_cameraAlt getYaw];
 
+    m_input = YES; // would normally be NO, this will trigger one update which should
+                   // leave the view matrix unchanged (i.e. this is a sanity check)
+#endif
     //
     //
     //
@@ -709,8 +735,11 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     [self.glRenderer updateFrameWithTime:outputTime withViewMatrix:[self.camera getViewMatrix]
                           withProjection:[self.camera getProjectionMatrix]];
 #else
-    GLKVector3 lookDirection = [self lookDirection];
-    [m_cameraAlt lookDirection:lookDirection];
+    if (m_input) {
+        GLKVector3 lookDirection = [self lookDirection];
+        [m_cameraAlt lookDirection:lookDirection];
+        m_input = NO;
+    }
 
     GLKMatrix4 viewMat = [m_cameraAlt getViewMatrix];
     [self.glRenderer updateFrameWithTime:outputTime withViewMatrix:viewMat

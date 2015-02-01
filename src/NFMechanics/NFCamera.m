@@ -69,16 +69,24 @@
 }
 
 - (void) lookDirection:(GLKVector3)lookDirection {
-    GLKVector3 lookAt;
 
-    //
-    // TODO: verify that subtract is correct
-    //
+    NSLog(@"lookDir (%f, %f, %f)", lookDirection.v[0], lookDirection.v[1], lookDirection.v[2]);
 
+
+    //GLKVector3 lookAt;
     //lookAt = GLKVector3Add(m_eye, lookDirection);
-    lookAt = GLKVector3Subtract(m_eye, lookDirection);
 
-    [self setViewParamsWithEye:m_eye withLook:lookAt withUp:m_up];
+    //
+    // TODO: will eventually need to subtract the the lookDirection vector from the eye
+    //       to transform the screen space lookDirection into world space (currently disabled
+    //       to eliminate moving parts and get correct lookDirection calculation
+    //
+    //lookAt = GLKVector3Subtract(m_eye, lookDirection);
+
+    //[self setViewParamsWithEye:m_eye withLook:lookAt withUp:m_up];
+
+
+    [self setViewParamsWithEye:m_eye withLook:lookDirection withUp:m_up];
 }
 
 - (void) setViewParamsWithEye:(GLKVector3)eye withLook:(GLKVector3)look withUp:(GLKVector3)up {
@@ -86,6 +94,7 @@
     m_look = look;
     m_up = up;
 
+    // NOTE: it would appear that GLK is using a UVN based coordinate system under-the-hood
     m_view = GLKMatrix4MakeLookAt(m_eye.v[0], m_eye.v[1], m_eye.v[2],
                                   m_look.v[0], m_look.v[1], m_look.v[2],
                                   m_up.v[0], m_up.v[1], m_up.v[2]);
@@ -104,6 +113,8 @@
 
     float len = sqrtf(zBasis.v[2] * zBasis.v[2] + zBasis.v[0] * zBasis.v[0]);
     m_pitchAngle = atan2f(zBasis.v[1], len);
+
+    NSLog(@"updated pitch:(%f), yaw:(%f)", m_pitchAngle, m_yawAngle);
 }
 
 @end
