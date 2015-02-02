@@ -43,6 +43,8 @@
     GLKVector3 m_look;
     GLKVector3 m_up;
 
+    GLKVector3 m_origLook;
+
     GLKMatrix4 m_view;
     GLKMatrix4 m_inverseView;
 
@@ -68,25 +70,16 @@
     return m_yawAngle;
 }
 
+#define NO_INVERT
+
 - (void) lookDirection:(GLKVector3)lookDirection {
 
-    NSLog(@"lookDir (%f, %f, %f)", lookDirection.v[0], lookDirection.v[1], lookDirection.v[2]);
+    GLKVector3 lookAt = GLKVector3Add(m_eye, lookDirection);
+    //GLKVector3 lookAt = GLKVector3Subtract(m_eye, lookDirection);
 
+    NSLog(@"lookAt (%f, %f, %f)", lookAt.v[0], lookAt.v[1], lookAt.v[2]);
 
-    //GLKVector3 lookAt;
-    //lookAt = GLKVector3Add(m_eye, lookDirection);
-
-    //
-    // TODO: will eventually need to subtract the the lookDirection vector from the eye
-    //       to transform the screen space lookDirection into world space (currently disabled
-    //       to eliminate moving parts and get correct lookDirection calculation
-    //
-    //lookAt = GLKVector3Subtract(m_eye, lookDirection);
-
-    //[self setViewParamsWithEye:m_eye withLook:lookAt withUp:m_up];
-
-
-    [self setViewParamsWithEye:m_eye withLook:lookDirection withUp:m_up];
+    [self setViewParamsWithEye:m_eye withLook:lookAt withUp:m_up];
 }
 
 - (void) setViewParamsWithEye:(GLKVector3)eye withLook:(GLKVector3)look withUp:(GLKVector3)up {
@@ -99,22 +92,39 @@
                                   m_look.v[0], m_look.v[1], m_look.v[2],
                                   m_up.v[0], m_up.v[1], m_up.v[2]);
 
+#ifndef NO_INVERT
+
     bool invertable;
     m_inverseView = GLKMatrix4Invert(m_view, &invertable);
     NSAssert(invertable != false, @"view matrix was not invertible");
 
     //
+    // TODO: make sure that this is actually getting the correct row (may actually be
+    //       column ?? need to verify how GLK API works)
+    //
+    GLKVector4 zBasis = GLKMatrix4GetRow(m_inverseView, 2);
+    //GLKVector4 zBasis = GLKMatrix4GetColumn(m_inverseView, 2);
+
+
+    //
     // TODO: look into faster alternative ways of calculating pitch and yaw that
     //       don't use atan2
     //
-
-    GLKVector4 zBasis = GLKMatrix4GetRow(m_inverseView, 2);
     m_yawAngle = atan2f(zBasis.v[0], zBasis.v[2]);
 
     float len = sqrtf(zBasis.v[2] * zBasis.v[2] + zBasis.v[0] * zBasis.v[0]);
     m_pitchAngle = atan2f(zBasis.v[1], len);
+#else
 
-    NSLog(@"updated pitch:(%f), yaw:(%f)", m_pitchAngle, m_yawAngle);
+    static BOOL doOnce = YES;
+    if (doOnce) {
+        m_origLook = look;
+    }
+
+    m_yawAngle = 0.0f;
+    m_pitchAngle = 0.0f;
+
+#endif
 }
 
 @end

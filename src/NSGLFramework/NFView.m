@@ -313,10 +313,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             [self.camera setState:kCameraStateActLeft];
             break;
 
-            //
-            // TODO: add keyboard controls for camera roll
-            //
-
         default:
             break;
     }
@@ -346,6 +342,28 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             // TODO: need to expand the camera state to also include roll/pitch/yaw
             //       for smoother control over the camera
             //
+
+        case 'y':
+            m_yaw += (float)(M_PI_4 / 2.0);
+            m_input = YES;
+            break;
+
+        case 't':
+            m_yaw -= (float)(M_PI_4 / 2.0);
+            m_input = YES;
+            break;
+
+        case 'p':
+            m_pitch += (float)(M_PI_4 / 2.0);
+            m_input = YES;
+            break;
+
+        case 'o':
+            m_pitch -= (float)(M_PI_4 / 2.0);
+            m_input = YES;
+            break;
+
+/*
         case 'r':
             [self.camera roll:0.05];
             break;
@@ -363,7 +381,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             [self.camera resetPosition];
             [self.camera resetTarget];
             break;
-
+*/
         default:
             break;
     }
@@ -457,15 +475,41 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 - (GLKVector3) lookDirection {
     GLKVector3 lookDirection;
 
-    float r = cosf(m_pitch);
+#if 0
 
+    float r = cosf(m_pitch);
     lookDirection.v[0] = r * sinf(m_yaw);
     lookDirection.v[1] = sinf(m_pitch);
-
-    //
-    // TODO: z direction seems to be calculated in correctly
-    //
     lookDirection.v[2] = r * cosf(m_yaw);
+
+#else
+
+/*
+    // combined equations
+    float x = sinf(m_yaw);
+    float y = sinf(m_pitch);
+    float z = sinf(m_yaw) - cosf(m_pitch);
+*/
+
+/*
+    // original equations
+    float x = -cosf(m_yaw);
+    float y = sinf(m_pitch);
+    float z = sinf(m_yaw) - cosf(m_pitch);
+*/
+
+    // alternate equations
+    float x = sinf(m_yaw);
+    float y = sinf(m_pitch);
+    float z = -(cosf(m_yaw) + cosf(m_pitch));
+
+    NSLog(@"alt look direction: (%f, %f, %f)", x, y, z);
+
+    lookDirection.v[0] = x;
+    lookDirection.v[1] = y;
+    lookDirection.v[2] = z;
+
+#endif
 
     return lookDirection;
 }
@@ -636,14 +680,13 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     m_cameraAlt = [[NFCameraAlt alloc] init];
 
-    //
-    // TODO: the look direction calculation is currently incorrect
-    //
 
     //GLKVector3 eye = GLKVector3Make(4.0f, 2.0f, 4.0f);
 
+
+    //GLKVector3 eye = GLKVector3Make(4.0f, 0.0f, 0.0f);
+    //GLKVector3 eye = GLKVector3Make(0.0f, 4.0f, 0.0f); // view matrix invert will fail
     GLKVector3 eye = GLKVector3Make(0.0f, 0.0f, 4.0f);
-    //GLKVector3 eye = GLKVector3Make(0.0f, 4.0f, 0.0f); // will cause view matrix to be non-invertable
 
 
     //GLKVector3 look = GLKVector3Make(0.0f, 1.0f, 0.0f);
@@ -651,17 +694,12 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
 
     GLKVector3 up = GLKVector3Make(0.0f, 1.0f, 0.0f);
-
     [m_cameraAlt setViewParamsWithEye:eye withLook:look withUp:up];
 
-
-#if 1
     m_pitch = [m_cameraAlt getPitch];
     m_yaw = [m_cameraAlt getYaw];
+    m_input = YES;
 
-    m_input = YES; // would normally be NO, this will trigger one update which should
-                   // leave the view matrix unchanged (i.e. this is a sanity check)
-#endif
     //
     //
     //
@@ -736,6 +774,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
                           withProjection:[self.camera getProjectionMatrix]];
 #else
     if (m_input) {
+        NSLog(@"updated pitch:(%f), yaw:(%f)", m_pitch * 180.0f / M_PI, m_yaw * 180.0f / M_PI);
         GLKVector3 lookDirection = [self lookDirection];
         [m_cameraAlt lookDirection:lookDirection];
         m_input = NO;
