@@ -73,13 +73,26 @@
 #define NO_INVERT
 
 - (void) lookDirection:(GLKVector3)lookDirection {
-
     GLKVector3 lookAt = GLKVector3Add(m_eye, lookDirection);
-    //GLKVector3 lookAt = GLKVector3Subtract(m_eye, lookDirection);
-
     NSLog(@"lookAt (%f, %f, %f)", lookAt.v[0], lookAt.v[1], lookAt.v[2]);
-
     [self setViewParamsWithEye:m_eye withLook:lookAt withUp:m_up];
+}
+
+- (void) updateWithHorizontalAngle:(float)h_angle withVerticalAngle:(float)v_angle {
+    GLKVector3 look;
+    //float r = cosf(v_angle);
+    look.v[0] = cosf(v_angle) * sinf(h_angle);
+    look.v[1] = sinf(v_angle);
+    look.v[2] = cosf(v_angle) * cosf(h_angle);
+
+    GLKVector3 right;
+    right.v[0] = sinf(h_angle - M_PI_2);
+    right.v[1] = 0.0f;
+    right.v[2] = cosf(h_angle - M_PI_2);
+
+    GLKVector3 up = GLKVector3CrossProduct(right, look);
+
+    [self setViewParamsWithEye:m_eye withLook:GLKVector3Add(m_eye, look) withUp:up];
 }
 
 - (void) setViewParamsWithEye:(GLKVector3)eye withLook:(GLKVector3)look withUp:(GLKVector3)up {

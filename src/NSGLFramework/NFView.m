@@ -38,6 +38,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     float m_pitch;
     float m_yaw;
+
+    float m_horizontalAngle;
+    float m_verticalAngle;
+
     BOOL m_input;
     NFCameraAlt *m_cameraAlt;
 }
@@ -346,21 +350,29 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
         case 'y':
             m_yaw += (float)(M_PI_4 / 2.0);
             m_input = YES;
+
+            m_horizontalAngle += (float)(M_PI_4 / 2.0);
             break;
 
         case 't':
             m_yaw -= (float)(M_PI_4 / 2.0);
             m_input = YES;
+
+            m_horizontalAngle -= (float)(M_PI_4 / 2.0);
             break;
 
         case 'p':
             m_pitch += (float)(M_PI_4 / 2.0);
             m_input = YES;
+
+            m_verticalAngle += (float)(M_PI_4 / 2.0);
             break;
 
         case 'o':
             m_pitch -= (float)(M_PI_4 / 2.0);
             m_input = YES;
+
+            m_verticalAngle -= (float)(M_PI_4 / 2.0);
             break;
 
 /*
@@ -477,6 +489,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
 #if 0
 
+    // spherical coordinates
     float r = cosf(m_pitch);
     lookDirection.v[0] = r * sinf(m_yaw);
     lookDirection.v[1] = sinf(m_pitch);
@@ -510,6 +523,13 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     lookDirection.v[2] = z;
 
 #endif
+
+    //
+    // TODO: will need to calculate a right vector to cross with the look direction
+    //       to get the new up vector
+    //
+
+    // http://www.opengl-tutorial.org/beginners-tutorials/tutorial-6-keyboard-and-mouse/
 
     return lookDirection;
 }
@@ -684,9 +704,9 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //GLKVector3 eye = GLKVector3Make(4.0f, 2.0f, 4.0f);
 
 
-    //GLKVector3 eye = GLKVector3Make(4.0f, 0.0f, 0.0f);
-    //GLKVector3 eye = GLKVector3Make(0.0f, 4.0f, 0.0f); // view matrix invert will fail
-    GLKVector3 eye = GLKVector3Make(0.0f, 0.0f, 4.0f);
+    //GLKVector3 eye = GLKVector3Make(5.0f, 0.0f, 0.0f);
+    //GLKVector3 eye = GLKVector3Make(0.0f, 5.0f, 0.0f); // view matrix invert will fail
+    GLKVector3 eye = GLKVector3Make(0.0f, 0.0f, 5.0f);
 
 
     //GLKVector3 look = GLKVector3Make(0.0f, 1.0f, 0.0f);
@@ -699,6 +719,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     m_pitch = [m_cameraAlt getPitch];
     m_yaw = [m_cameraAlt getYaw];
     m_input = YES;
+
+
+    m_horizontalAngle = M_PI;  // toward -Z
+    m_verticalAngle = 0.0f;    // look at horizon
 
     //
     //
@@ -774,10 +798,13 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
                           withProjection:[self.camera getProjectionMatrix]];
 #else
     if (m_input) {
-        NSLog(@"updated pitch:(%f), yaw:(%f)", m_pitch * 180.0f / M_PI, m_yaw * 180.0f / M_PI);
-        GLKVector3 lookDirection = [self lookDirection];
-        [m_cameraAlt lookDirection:lookDirection];
         m_input = NO;
+
+        //NSLog(@"updated pitch:(%f), yaw:(%f)", m_pitch * 180.0f / M_PI, m_yaw * 180.0f / M_PI);
+        //[m_cameraAlt lookDirection:[self lookDirection]];
+
+        NSLog(@"update vertical angle:(%f) horizontal angle:(%f)", m_verticalAngle, m_horizontalAngle);
+        [m_cameraAlt updateWithHorizontalAngle:m_horizontalAngle withVerticalAngle:m_verticalAngle];
     }
 
     GLKMatrix4 viewMat = [m_cameraAlt getViewMatrix];

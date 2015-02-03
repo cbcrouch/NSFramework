@@ -69,7 +69,14 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 - (float) getPitch;
 - (float) getYaw;
 
+
+
 - (void) lookDirection:(GLKVector3)lookDirection;
+
+- (void) updateWithHorizontalAngle:(float)h_angle withVerticalAngle:(float)v_angle;
+
+
+
 - (void) setViewParamsWithEye:(GLKVector3)eye withLook:(GLKVector3)look withUp:(GLKVector3)up;
 
 @end
