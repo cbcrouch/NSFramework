@@ -59,23 +59,14 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 
 
 //
-// TODO: implement alternative camera to test against UVN camera
+// TODO: replace NFCamera's internal UVN implementation with the view matrix
+//       calculations from the alt camera
 //
 @interface NFCameraAlt : NSObject
 
 - (GLKMatrix4) getViewMatrix;
-- (GLKMatrix4) getInverseViewMatrix;
-
-- (float) getPitch;
-- (float) getYaw;
-
-
-
-- (void) lookDirection:(GLKVector3)lookDirection;
 
 - (void) updateWithHorizontalAngle:(float)h_angle withVerticalAngle:(float)v_angle;
-
-
 
 - (void) setViewParamsWithEye:(GLKVector3)eye withLook:(GLKVector3)look withUp:(GLKVector3)up;
 

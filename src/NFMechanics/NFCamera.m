@@ -53,37 +53,26 @@
 }
 @end
 
+
 @implementation NFCameraAlt
 
 - (GLKMatrix4) getViewMatrix {
     return m_view;
 }
-- (GLKMatrix4) getInverseViewMatrix {
-    return m_inverseView;
-}
 
-- (float) getPitch {
-    return m_pitchAngle;
-}
-
-- (float) getYaw {
-    return m_yawAngle;
-}
-
-#define NO_INVERT
-
-- (void) lookDirection:(GLKVector3)lookDirection {
-    GLKVector3 lookAt = GLKVector3Add(m_eye, lookDirection);
-    NSLog(@"lookAt (%f, %f, %f)", lookAt.v[0], lookAt.v[1], lookAt.v[2]);
-    [self setViewParamsWithEye:m_eye withLook:lookAt withUp:m_up];
-}
-
+//
+// TODO: this works, use this function and replace the UVN camera with alt camera
+//
 - (void) updateWithHorizontalAngle:(float)h_angle withVerticalAngle:(float)v_angle {
+
+    // h_angle == yaw
+    // v_angle == pitch
+
     GLKVector3 look;
-    //float r = cosf(v_angle);
-    look.v[0] = cosf(v_angle) * sinf(h_angle);
+    float r = cosf(v_angle);
+    look.v[0] = r * sinf(h_angle);
     look.v[1] = sinf(v_angle);
-    look.v[2] = cosf(v_angle) * cosf(h_angle);
+    look.v[2] = r * cosf(h_angle);
 
     GLKVector3 right;
     right.v[0] = sinf(h_angle - M_PI_2);
@@ -104,40 +93,6 @@
     m_view = GLKMatrix4MakeLookAt(m_eye.v[0], m_eye.v[1], m_eye.v[2],
                                   m_look.v[0], m_look.v[1], m_look.v[2],
                                   m_up.v[0], m_up.v[1], m_up.v[2]);
-
-#ifndef NO_INVERT
-
-    bool invertable;
-    m_inverseView = GLKMatrix4Invert(m_view, &invertable);
-    NSAssert(invertable != false, @"view matrix was not invertible");
-
-    //
-    // TODO: make sure that this is actually getting the correct row (may actually be
-    //       column ?? need to verify how GLK API works)
-    //
-    GLKVector4 zBasis = GLKMatrix4GetRow(m_inverseView, 2);
-    //GLKVector4 zBasis = GLKMatrix4GetColumn(m_inverseView, 2);
-
-
-    //
-    // TODO: look into faster alternative ways of calculating pitch and yaw that
-    //       don't use atan2
-    //
-    m_yawAngle = atan2f(zBasis.v[0], zBasis.v[2]);
-
-    float len = sqrtf(zBasis.v[2] * zBasis.v[2] + zBasis.v[0] * zBasis.v[0]);
-    m_pitchAngle = atan2f(zBasis.v[1], len);
-#else
-
-    static BOOL doOnce = YES;
-    if (doOnce) {
-        m_origLook = look;
-    }
-
-    m_yawAngle = 0.0f;
-    m_pitchAngle = 0.0f;
-
-#endif
 }
 
 @end
