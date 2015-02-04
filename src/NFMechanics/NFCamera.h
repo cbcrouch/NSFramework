@@ -11,6 +11,7 @@
 #import "NFUtils.h"
 
 
+//typedef NS_ENUM(NSUInteger, CAMERA_TRANSLATION_STATE)
 
 typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
     kCameraStateActFwd,
@@ -23,37 +24,34 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
     kCameraStateNilLeft
 };
 
-// kCameraStateFwdRoll
-// kCameraStateRevRoll
 
-// kCameraStateFwdPitch
-// kCameraStateRevPitch
-
-// kCameraStateFwdYaw
-// kCameraStateRevYaw
-
+//
+// TODO: keyboard control of camera look direction implemented similar
+//       to the keyboard translation control
+//
+typedef NS_ENUM(NSUInteger, CAMERA_DIRECTION_STATE) {
+    kCameraStateFwdRoll,
+    kCameraStateRevRoll,
+    kCameraStateFwdPitch,
+    kCameraStateRevPitch,
+    kCameraStateFwdYaw,
+    kCameraStateRevYaw
+};
 
 //
 // TODO: add camera state control over roll/pitch/yaw, should ideally get
 //       something better than the bit-mask implementation internally
 //
 
-// vec4 for translation values, vec3 for rotation values
-
-// state is set by placing a value in the vector +/- or 0 if not set
-
-// every step just updates everything (probably faster than checking each value for 0)
-
-
+// - vec3 for translation values, vec3 for rotation values
+// - state is set by placing a value in the vector +/- or 0 if not set
+// - every step just updates everything (probably faster than checking each value for 0)
 
 //
-// TODO: define NFMotionVector in NFRUtils ?? or will it be NFCamera specific ??
+// TODO: when key press is up start decrement value by a small fixed amount until
+//       the value reaches 0, this will prevent very hard stops (value and whether it
+//       even gets applied should be adjustable)
 //
-@interface NFMotionVector : NSObject
-@property (nonatomic, assign) GLKVector4 currentValue;
-@property (nonatomic, assign) GLKVector4 modifier;
-@property (nonatomic, assign) MACH_TIME updateRate;
-@end
 
 
 
@@ -110,8 +108,6 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
 //
 - (void) step:(NSUInteger)delta;
 
-- (void) pushMotionVector:(NFMotionVector *)motionVector;
-- (void) clearMotionVectors;
 
 
 //

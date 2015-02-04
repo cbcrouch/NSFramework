@@ -29,12 +29,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //double m_currHostFreq; // ticks per second
     //uint32_t m_minHostDelta; // number of ticks accuracy
 
-
     //
-    // TODO: make this a property if can get it working correctly
+    // TODO: make these properties if the get promoted into the design
     //
-    NSTrackingArea* myTrackingArea;
-
+    NSTrackingArea* m_trackingArea;
 
     float m_horizontalAngle;
     float m_verticalAngle;
@@ -58,17 +56,16 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
 
 //
-// TODO: these properties will need a better home
+// TODO: create an NFInputController class and move these properties and the
+//       mouse and keyboard control into the class
 //
-
-// NFInputController class ??
-
 @property (nonatomic, assign) NSPoint mouseLocation;
-
 @property (nonatomic, assign) BOOL onLeftEdge;
 @property (nonatomic, assign) BOOL onRightEdge;
 @property (nonatomic, assign) BOOL onUpperEdge;
 @property (nonatomic, assign) BOOL onLowerEdge;
+
+
 
 
 - (void) execStartupSequence;
@@ -152,15 +149,15 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     NSTrackingAreaOptions trackingOptions = NSTrackingCursorUpdate | NSTrackingEnabledDuringMouseDrag |
         NSTrackingMouseEnteredAndExited | NSTrackingActiveInActiveApp;
 
-    myTrackingArea = [[NSTrackingArea alloc] initWithRect:[self bounds] options:trackingOptions owner:self userInfo:nil];
-    [self addTrackingArea:myTrackingArea];
+    m_trackingArea = [[NSTrackingArea alloc] initWithRect:[self bounds] options:trackingOptions owner:self userInfo:nil];
+    [self addTrackingArea:m_trackingArea];
 }
 
 - (void) clearTrackingArea {
-    if (myTrackingArea) {
-        [self removeTrackingArea:myTrackingArea];
-        [myTrackingArea release];
-        myTrackingArea = nil;
+    if (m_trackingArea) {
+        [self removeTrackingArea:m_trackingArea];
+        [m_trackingArea release];
+        m_trackingArea = nil;
     }
 }
 
@@ -424,37 +421,29 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //
 }
 
-
-//static const float ROTATION_GAIN = 0.008f;
-//static const float MOVEMENT_GAIN = 2.0f;
-
 - (void) mouseMoved:(NSEvent *)theEvent {
 /*
+    static const float ROTATION_GAIN = 0.008f;
+    //static const float MOVEMENT_GAIN = 2.0f;
+
     GLKVector2 rotationDelta;
     rotationDelta.v[0] = [theEvent deltaX] * ROTATION_GAIN;
     rotationDelta.v[1] = [theEvent deltaY] * ROTATION_GAIN;
 
-    //m_yaw += rotationDelta.v[0]; // use for south paw
-    m_yaw -= rotationDelta.v[0];
-
-    m_pitch -= rotationDelta.v[1];
-
-
-    NSLog(@"pitch increment %f", -1 * rotationDelta.v[1]);
-    NSLog(@"yaw increment %f", -1 * rotationDelta.v[0]);
-
+    m_horizontalAngle += rotationDelta.v[0];
+    m_verticalAngle -= rotationDelta.v[1];
 
     // limit pitch to straight up or straight down
     float limit = M_PI / 2.0f - 0.01f;
-    m_pitch = MAX(-limit, m_pitch);
-    m_pitch = MIN(+limit, m_pitch);
+    m_verticalAngle = MAX(-limit, m_verticalAngle);
+    m_verticalAngle = MIN(+limit, m_verticalAngle);
 
     // keep longitude in sane range by wrapping
-    if (m_yaw > M_PI) {
-        m_yaw -= M_PI * 2.0f;
+    if (m_horizontalAngle > M_PI) {
+        m_horizontalAngle -= M_PI * 2.0f;
     }
-    else if (m_yaw < -M_PI) {
-        m_yaw += M_PI * 2.0f;
+    else if (m_horizontalAngle < -M_PI) {
+        m_horizontalAngle += M_PI * 2.0f;
     }
 */
 }
@@ -511,18 +500,11 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     float angularDeltaX = angleX1 - angleX0;
     float angularDeltaY = angleY1 - angleY0;
 
-    //
-    // TODO: prevent UVN camera from rolling or use alt camera implementation
-    //
-    //[self.camera pitch:angularDeltaY];
-    //[self.camera yaw:angularDeltaX];
-
-
     m_horizontalAngle -= angularDeltaX;
     m_verticalAngle -= angularDeltaY;
 
     // limit pitch to straight up or straight down
-    float limit = M_PI / 2.0f - 0.01f;
+    float limit = M_PI_2 - 0.01f;
     m_verticalAngle = MAX(-limit, m_verticalAngle);
     m_verticalAngle = MIN(+limit, m_verticalAngle);
 
@@ -535,7 +517,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     }
 
     m_input = YES;
-
 
     // NOTE: NSPoint is a typedef of CGPoint so this is a safe cast to make
     self.mouseLocation = (NSPoint)point;
@@ -611,21 +592,14 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     m_cameraAlt = [[NFCameraAlt alloc] init];
 
-
     GLKVector3 eye = GLKVector3Make(4.0f, 2.0f, 4.0f);
 
-    //GLKVector3 eye = GLKVector3Make(5.0f, 0.0f, 0.0f);
-    //GLKVector3 eye = GLKVector3Make(0.0f, 5.0f, 0.0f);
-    //GLKVector3 eye = GLKVector3Make(0.0f, 0.0f, 5.0f);
+    //GLKVector3 eye = GLKVector3Make(4.0f, 0.0f, 4.0f);
+    //GLKVector3 eye = GLKVector3Make(0.0f, 4.0f, 4.0f);
 
-
-    //GLKVector3 look = GLKVector3Make(0.0f, 1.0f, 0.0f);
     GLKVector3 look = GLKVector3Make(0.0f, 0.0f, 0.0f);
-
-
     GLKVector3 up = GLKVector3Make(0.0f, 1.0f, 0.0f);
     [m_cameraAlt setViewParamsWithEye:eye withLook:look withUp:up];
-
 
     //
     // TODO: need to calculate the starting angles based on the eye, look, and up vectors
@@ -638,8 +612,18 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     // horizontal angle should just be the angle between the x,z points
     // vertical angle should just be the angle between the y,z points
 
-    m_horizontalAngle = M_PI;  // toward -Z
-    m_verticalAngle = 0.0f;    // look at horizon
+    //m_horizontalAngle = M_PI;    // look to -Z
+    //m_horizontalAngle = -M_PI;   // look to -Z
+    //m_horizontalAngle = 0.0f;    // look to +Z
+
+    //m_verticalAngle = M_PI_2 - 0.01f;   // look straight up
+    //m_verticalAngle = -M_PI_2 + 0.01f;  // look straight down
+    //m_verticalAngle = 0.0f;             // look at horizon
+
+    m_verticalAngle = -M_PI_4 / 2.0f;
+    m_horizontalAngle = -M_PI + M_PI_4;
+
+    m_input = YES;
 
     //
     //

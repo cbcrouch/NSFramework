@@ -18,13 +18,6 @@
 #define Z_IDX 2
 
 
-@implementation NFMotionVector
-@synthesize currentValue = _currentValue;
-@synthesize modifier = _modifier;
-@synthesize updateRate = _updateRate;
-@end
-
-
 
 @interface NFViewVolume : NSObject
 @property (nonatomic, assign) GLKMatrix4 view;
@@ -43,13 +36,7 @@
     GLKVector3 m_look;
     GLKVector3 m_up;
 
-    GLKVector3 m_origLook;
-
     GLKMatrix4 m_view;
-    GLKMatrix4 m_inverseView;
-
-    float m_yawAngle;
-    float m_pitchAngle;
 }
 @end
 
@@ -115,14 +102,7 @@
 
 @property (nonatomic, retain) NFViewVolume* viewVolume;
 
-
-//
-// TODO: make a stack of motionVectors
-//
-//@property (nonatomic, assign) NFMotionVector motionVector;
-
 @property (nonatomic, assign) NSUInteger currentFlags;
-
 
 - (void) updateModelViewMatrix;
 
@@ -152,8 +132,6 @@
 @synthesize N = _N;
 
 
-//@synthesize motionVector = _motionVector;
-
 @synthesize viewVolume = _viewVolume;
 
 @synthesize translationSpeed = _translationSpeed;
@@ -161,30 +139,6 @@
 @synthesize currentFlags = _currentFlags;
 
 - (GLKVector3) position {
-    //
-    // TODO: calculate position, target, and up vectors from UVN
-    //
-
-    /*
-    bool isInvertable;
-    GLKMatrix4 viewMat = GLKMatrix4Invert([self.camera getViewMatrix], &isInvertable);
-    if (isInvertable) {
-        GLKVector4 posVec = GLKMatrix4GetColumn(viewMat, 3);
-        NSLog(@"position vector (%f, %f, %f, %f)", posVec.v[0], posVec.v[1], posVec.v[2], posVec.v[3]);
-    }
-    */
-
-    // another way of extracting the position from a view matrix
-    /*
-    vec3 ExtractCameraPos_NoScale(const mat4 & a_modelView)
-    {
-        mat3 rotMat(a_modelView);
-        vec3 d(a_modelView[3]);
-
-        vec3 retVec = -d * rotMat;
-        return retVec;
-    }
-    */
     return _position;
 }
 
@@ -234,7 +188,7 @@
         //       makes the most sense (try Maya first, would be a nice nod towards
         //       Alias Wavefront which also where the obj file format comes from)
         //
-        GLKVector3 position = GLKVector3Make(0.0f, 2.0f, 4.0f);
+        GLKVector3 position = GLKVector3Make(4.0f, 2.0f, 4.0f);
         GLKVector3 target = GLKVector3Make(0.0f, 0.0f, 0.0f);
         GLKVector3 up = GLKVector3Make(0.0f, 1.0f, 0.0f);
 
@@ -264,8 +218,6 @@
         [self setViewVolume:viewVolume];
         [self setPosition:position withTarget:target withUp:up];
         [self setCurrentFlags:0x00];
-
-        //[self setMotionVector:GLKVector4Make(0.0f, 0.0f, 0.0f, 0.0f)];
 
         [self setTranslationSpeed:GLKVector4Make(0.025f, 0.0f, 0.025f, 0.0f)];
     }
@@ -318,18 +270,6 @@
     if (self.currentFlags & RIGHT_BIT) {
         [self translateWithDeltaX:-self.translationSpeed.v[X_IDX] withDeltaY:0.0f withDeltaZ:0.0f];
     }
-}
-
-- (void) pushMotionVector:(NFMotionVector *)motionVector {
-    //
-    // TODO: implement motion vectors
-    //
-}
-
-- (void) clearMotionVectors {
-    //
-    // TODO: implement motion vectors
-    //
 }
 
 - (void) setState:(CAMERA_STATE)state {
