@@ -140,6 +140,30 @@
                                   up.v[0], up.v[1], up.v[2]);
 }
 
+- (void) step:(NSUInteger)milliseconds {
+    //
+    //
+    //
+}
+
+- (void) setTranslationState:(CAMERA_STATE)state {
+    //
+    //
+    //
+}
+
+- (void) resetTarget {
+    //
+    //
+    //
+}
+
+- (void) resetPosition {
+    //
+    //
+    //
+}
+
 @end
 
 

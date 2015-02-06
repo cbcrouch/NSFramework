@@ -24,8 +24,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
                                     const CVTimeStamp* outputTime, CVOptionFlags flagsIn,
                                     CVOptionFlags* flagsOut, void* displayLinkContext);
 
-@interface NFView()
-{
+@interface NFView() {
     //double m_currHostFreq; // ticks per second
     //uint32_t m_minHostDelta; // number of ticks accuracy
 
@@ -37,18 +36,23 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
 
     //
+    // TODO: create an NFInputController class and move these properties and the
+    //       mouse and keyboard control into the class
+    //
+    NSPoint m_mouseLocation;
+    //BOOL m_onLeftEdge;
+    //BOOL m_onRightEdge;
+    //BOOL m_onUpperEdge;
+    //BOOL m_onLowerEdge;
+
+
+    //
     // TODO: these should be made properties of the input controller
     //
     float m_horizontalAngle;
     float m_verticalAngle;
     BOOL m_input;
 
-
-    //
-    // TODO: make these properties
-    //
-    NFCamera *m_camera;
-    NFViewVolume *m_viewVolume;
 }
 
 @property (nonatomic, assign) CVDisplayLinkRef displayLink;
@@ -61,22 +65,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 @property (nonatomic, retain) NSOpenGLPixelFormat *pixelFormat;
 
 @property (nonatomic, retain) NFRenderer *glRenderer;
-
-
-
-
-//
-// TODO: create an NFInputController class and move these properties and the
-//       mouse and keyboard control into the class
-//
-@property (nonatomic, assign) NSPoint mouseLocation;
-@property (nonatomic, assign) BOOL onLeftEdge;
-@property (nonatomic, assign) BOOL onRightEdge;
-@property (nonatomic, assign) BOOL onUpperEdge;
-@property (nonatomic, assign) BOOL onLowerEdge;
-
-
-
+@property (nonatomic, retain) NFViewVolume *viewVolume;
+@property (nonatomic, retain) NFCamera *camera;
 
 - (void) execStartupSequence;
 - (void) setupTiming;
@@ -93,6 +83,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 @synthesize pixelFormat = _pixelFormat;
 
 @synthesize glRenderer = _glRenderer;
+@synthesize viewVolume = _viewVolume;
+@synthesize camera = _camera;
 
 static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp* now,
                                     const CVTimeStamp* outputTime, CVOptionFlags flagsIn,
@@ -305,19 +297,19 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     unichar key = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
     switch (key) {
         case 'w':
-            //[self.camera setState:kCameraStateActFwd];
+            [self.camera setTranslationState:kCameraStateActFwd];
             break;
 
         case 's':
-            //[self.camera setState:kCameraStateActBack];
+            [self.camera setTranslationState:kCameraStateActBack];
             break;
 
         case 'a':
-            //[self.camera setState:kCameraStateActRight];
+            [self.camera setTranslationState:kCameraStateActRight];
             break;
 
         case 'd':
-            //[self.camera setState:kCameraStateActLeft];
+            [self.camera setTranslationState:kCameraStateActLeft];
             break;
 
         default:
@@ -329,43 +321,21 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     unichar key = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
     switch (key) {
         case 'w':
-            //[self.camera setState:kCameraStateNilFwd];
+            [self.camera setTranslationState:kCameraStateNilFwd];
             break;
 
         case 's':
-            //[self.camera setState:kCameraStateNilBack];
+            [self.camera setTranslationState:kCameraStateNilBack];
             break;
 
         case 'a':
-            //[self.camera setState:kCameraStateNilRight];
+            [self.camera setTranslationState:kCameraStateNilRight];
             break;
 
         case 'd':
-            //[self.camera setState:kCameraStateNilLeft];
+            [self.camera setTranslationState:kCameraStateNilLeft];
             break;
 
-
-        case 'y':
-            m_horizontalAngle += (float)(M_PI_4 / 4.0);
-            m_input = YES;
-            break;
-
-        case 't':
-            m_horizontalAngle -= (float)(M_PI_4 / 4.0);
-            m_input = YES;
-            break;
-
-        case 'p':
-            m_verticalAngle += (float)(M_PI_4 / 4.0);
-            m_input = YES;
-            break;
-
-        case 'o':
-            m_verticalAngle -= (float)(M_PI_4 / 4.0);
-            m_input = YES;
-            break;
-
-/*
         case 'o':
             [self.camera resetTarget];
             break;
@@ -374,7 +344,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             [self.camera resetPosition];
             [self.camera resetTarget];
             break;
-*/
+
         default:
             break;
     }
@@ -397,10 +367,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //       only one display), it should be updated to handle movement within a window/view
     //
 
-    self.onLeftEdge = NO;
-    self.onRightEdge = NO;
-    self.onUpperEdge = NO;
-    self.onLowerEdge = NO;
+    //m_onLeftEdge = NO;
+    //m_onRightEdge = NO;
+    //m_onUpperEdge = NO;
+    //m_onLowerEdge = NO;
 
     //
     // TODO: will want to better handle the CG display i.e should get the display
@@ -419,7 +389,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     NSPoint centerPoint;
     centerPoint.x = CGDisplayPixelsWide(displayId) / 2.0f;
     centerPoint.y = CGDisplayPixelsHigh(displayId) / 2.0f;
-    self.mouseLocation = centerPoint;
+
+    m_mouseLocation = centerPoint;
 
     CGWarpMouseCursorPosition(centerPoint);
     CGDisplayHideCursor(displayId);
@@ -494,8 +465,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     // these values will be normalized to [-0.5f, 0.5f] i.e. -45.0 to 45.0
 
-    float normalizedX0 = (self.mouseLocation.x - centerPoint.x) / CGDisplayPixelsWide(displayId);
-    float normalizedY0 = (self.mouseLocation.y - centerPoint.y) / CGDisplayPixelsHigh(displayId);
+    float normalizedX0 = (m_mouseLocation.x - centerPoint.x) / CGDisplayPixelsWide(displayId);
+    float normalizedY0 = (m_mouseLocation.y - centerPoint.y) / CGDisplayPixelsHigh(displayId);
 
     float normalizedX1 = (point.x - centerPoint.x) / CGDisplayPixelsWide(displayId);
     float normalizedY1 = (point.y - centerPoint.y) / CGDisplayPixelsHigh(displayId);
@@ -532,7 +503,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     m_input = YES;
 
     // NOTE: NSPoint is a typedef of CGPoint so this is a safe cast to make
-    self.mouseLocation = (NSPoint)point;
+    m_mouseLocation = (NSPoint)point;
 }
 
 - (void) setupOpenGL {
@@ -582,14 +553,18 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
 - (void) initRenderer {
     [self.glContext makeCurrentContext];
+
     self.glRenderer = [[[NFRenderer alloc] init] autorelease];
-    NSAssert(self.glRenderer != nil, @"Failed to initialize and create NSGLRenderer");
+    self.viewVolume = [[[NFViewVolume alloc] init] autorelease];
+    self.camera = [[[NFCamera alloc] init] autorelease];
 
-    //
-    // TODO: should move the camera and view volume ownership into NFSimulation (assumed location of main update loop)
-    //
 
-    m_camera = [[NFCamera alloc] init];
+    CGFloat width = self.frame.size.width;
+    CGFloat height = self.frame.size.height;
+
+    [self.viewVolume setShapeWithVerticalFOV:(float)M_PI_4 withAspectRatio:(width/height)
+                                withNearDist:1.0f withFarDist:100.0f];
+
 
     GLKVector3 eye = GLKVector3Make(4.0f, 2.0f, 4.0f);
 
@@ -599,7 +574,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     GLKVector3 look = GLKVector3Make(0.0f, 0.0f, 0.0f);
     GLKVector3 up = GLKVector3Make(0.0f, 1.0f, 0.0f);
 
-    [m_camera setEyePosition:eye withLookVector:look withUpVector:up];
+    //[m_camera setEyePosition:eye withLookVector:look withUpVector:up];
+    [self.camera setEyePosition:eye withLookVector:look withUpVector:up];
 
     //
     // TODO: need to calculate the starting angles based on the eye, look, and up vectors
@@ -624,18 +600,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     m_horizontalAngle = -M_PI + M_PI_4;
 
     m_input = YES;
-
-
-    m_viewVolume = [[NFViewVolume alloc] init];
-
-    CGFloat width = self.frame.size.width;
-    CGFloat height = self.frame.size.height;
-    [m_viewVolume setShapeWithVerticalFOV:(float)M_PI_4 withAspectRatio:(width/height)
-                             withNearDist:1.0f withFarDist:100.0f];
-
-    //
-    //
-    //
 }
 
 - (void) setupDisplayLink {
@@ -664,6 +628,41 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 }
 
 - (CVReturn)getFrameForTime:(const CVTimeStamp*)outputTime {
+
+    //static float secs = 0.0; // elapsed time
+    static uint64_t prevVideoTime = 0;
+
+    //
+    // TODO: if debug check time stamp flags against kCVTimeStampVideoHostTimeValid
+    //
+
+    //NSLog(@"update period per second: %lld", outputTime->videoTimeScale / outputTime->videoRefreshPeriod);
+
+    // update rate 59 hertz
+    // 0.016699 seconds
+    // 16.600 ms
+
+    NSUInteger msElapsed = 0;
+    NSUInteger usElapsed = 0;
+
+    if (prevVideoTime != 0) {
+        //secs += (outputTime->videoTime - prevVideoTime) / (float) outputTime->videoTimeScale;
+        //NSLog(@"secs: %f", secs);
+
+        // step is floating point seconds
+        float step = (outputTime->videoTime - prevVideoTime) / (float) outputTime->videoTimeScale;
+
+        //
+        // TODO: make constants for convert seconds to milli/micro seconds
+        //
+        msElapsed = (NSUInteger)(step * 1000.0f);
+        usElapsed = (NSUInteger)(step * 1000.0f * 1000.0f);
+    }
+
+    prevVideoTime = outputTime->videoTime;
+
+
+
     // there is no autorelease pool when this method is called because it will be called from a background thread
     // it's important to create one or you will leak objects
     //NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -693,21 +692,22 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //       the event system is in place and working)
     //
 
-    // "step scene" with lastest time delta
-    //
-    // TODO: get ride of hardcoded value of 16 ms
-    //
-    //[self.camera step:16000];
+    // step scene/simulation with lastest time delta
+    [self.camera step:msElapsed];
 
 
     if (m_input) {
         m_input = NO;
-        [m_camera setLookHorizontalAngle:m_horizontalAngle verticalAngle:m_verticalAngle];
+        [self.camera setLookHorizontalAngle:m_horizontalAngle verticalAngle:m_verticalAngle];
     }
 
-    GLKMatrix4 viewMat = m_camera.viewMatrix;
-    GLKMatrix4 projMat = m_viewVolume.projection;
+    GLKMatrix4 viewMat = self.camera.viewMatrix;
+    GLKMatrix4 projMat = self.viewVolume.projection;
 
+    
+    //
+    // TODO: rather than pass in the outputTime pass in the msElapsed
+    //
     [self.glRenderer updateFrameWithTime:outputTime withViewMatrix:viewMat withProjection:projMat];
 
 

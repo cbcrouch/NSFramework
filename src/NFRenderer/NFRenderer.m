@@ -177,6 +177,7 @@
 
 - (void) updateFrameWithTime:(const CVTimeStamp*)outputTime withViewMatrix:(GLKMatrix4)viewMatrix
               withProjection:(GLKMatrix4)projection {
+
     //static float secs = 0.0; // elapsed time
     static uint64_t prevVideoTime = 0;
 
@@ -196,6 +197,10 @@
 
         // step is a floating point measure of time (1.0 == one second)
         float step = (outputTime->videoTime - prevVideoTime) / (float) outputTime->videoTimeScale;
+
+        //
+        // TODO: change stepTransforms to take either milli or micro seconds
+        //
         [m_pAsset stepTransforms:step];
     }
 
