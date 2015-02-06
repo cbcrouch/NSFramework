@@ -55,24 +55,61 @@ typedef NS_ENUM(NSUInteger, CAMERA_DIRECTION_STATE) {
 
 
 
+@interface NFViewVolume : NSObject
+
+@property (nonatomic, assign, readonly) GLKMatrix4 projection;
 
 //
-// TODO: replace NFCamera's internal UVN implementation with the view matrix
-//       calculations from the alt camera
+// TODO: don't use the FOV properites yet as they are not fully implemented
 //
-@interface NFCameraAlt : NSObject
+// field of view measurements are in radians
+@property (nonatomic, assign) float hFOV;
+@property (nonatomic, assign) float vFOV;
 
-- (GLKMatrix4) getViewMatrix;
+@property (nonatomic, assign) float aspectRatio;
 
-- (void) updateWithHorizontalAngle:(float)h_angle withVerticalAngle:(float)v_angle;
+@property (nonatomic, assign) float nearPlaneDistance;
+@property (nonatomic, assign) float farPlaneDistance;
 
-- (void) setViewParamsWithEye:(GLKVector3)eye withLook:(GLKVector3)look withUp:(GLKVector3)up;
+- (void) setShapeWithVerticalFOV:(float)vAngle withAspectRatio:(float)aspect
+                    withNearDist:(float)nearDist withFarDist:(float)farDist;
+
+@end
+
+
+@interface NFCamera : NSObject
+
+@property (nonatomic, assign, readonly) GLKMatrix4 viewMatrix;
+
+@property (nonatomic, assign, readonly) GLKVector3 eye;
+@property (nonatomic, assign, readonly) GLKVector3 look;
+@property (nonatomic, assign, readonly) GLKVector3 up;
+
+//
+// TODO: would it make more sense to rename the horizontal and veritcal angles to
+//       yaw and pitch respectively ??
+//
+
+//
+// TODO: if using these properties then override the setters to update the view matrix
+//
+//@property (nonatomic, assign) float lookHorizontal;
+//@property (nonatomic, assign) float lookVertical;
+
+- (void) setLookHorizontalAngle:(float)h_angle verticalAngle:(float)v_angle;
+- (void) setEyePosition:(GLKVector3)eye withLookVector:(GLKVector3)look withUpVector:(GLKVector3)up;
+
+//
+// TODO: add the translation logic directly to the camera or possibly in another
+//       object (e.g. NFTranslationControl ??) which could be used to simply
+//       move around other entities
+//
 
 @end
 
 
 
-
+/*
 @interface NFCamera : NSObject
 
 //
@@ -116,13 +153,14 @@ typedef NS_ENUM(NSUInteger, CAMERA_DIRECTION_STATE) {
 - (void) setState:(CAMERA_STATE)state;
 
 
-- (void) resetTarget;
-- (void) resetPosition; // TODO: needs a better name resetToInitialValues ??
+- (void) resetTarget; // TODO: needs a better name - resetLookDirection ??
+- (void) resetPosition; // TODO: needs a better name - resetToInitialValues ??
 
 
 //
 // TODO: merge pitch/yaw look direction controls in with the UVN camera implementation
 //
+
 - (void) setPosition:(GLKVector3)position withTarget:(GLKVector3)target withUp:(GLKVector3)up;
 
 
@@ -134,20 +172,17 @@ typedef NS_ENUM(NSUInteger, CAMERA_DIRECTION_STATE) {
 - (void) translateWithVector3:(GLKVector3)vec;
 - (void) translateWithDeltaX:(float)delX withDeltaY:(float)delY withDeltaZ:(float)delZ;
 
+
 //
-// TODO: while the sparse documentation online does claim that the UVN camera system will
-//       prevent gimbal lock, should really prove it mathematically
+// TODO: current roll/pitch/yaw angles are relative, add methods for setting (and getting) absolute angles
 //
 - (void) roll:(float)angle;
 - (void) pitch:(float)angle;
 - (void) yaw:(float)angle;
 
-//
-// TODO: current roll/pitch/yaw angles are relative, add methods for setting
-//       (and getting) absolute angles in world coordinates
-//
 
 - (GLKMatrix4) getViewMatrix;
 - (GLKMatrix4) getProjectionMatrix;
 
 @end
+*/

@@ -29,16 +29,26 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //double m_currHostFreq; // ticks per second
     //uint32_t m_minHostDelta; // number of ticks accuracy
 
+
     //
-    // TODO: make these properties if the get promoted into the design
+    // TODO: perform more testing before promoting tracking area to a property
     //
     NSTrackingArea* m_trackingArea;
 
+
+    //
+    // TODO: these should be made properties of the input controller
+    //
     float m_horizontalAngle;
     float m_verticalAngle;
-
     BOOL m_input;
-    NFCameraAlt *m_cameraAlt;
+
+
+    //
+    // TODO: make these properties
+    //
+    NFCamera *m_camera;
+    NFViewVolume *m_viewVolume;
 }
 
 @property (nonatomic, assign) CVDisplayLinkRef displayLink;
@@ -51,7 +61,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 @property (nonatomic, retain) NSOpenGLPixelFormat *pixelFormat;
 
 @property (nonatomic, retain) NFRenderer *glRenderer;
-@property (nonatomic, retain) NFCamera *camera;
+
 
 
 
@@ -83,7 +93,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 @synthesize pixelFormat = _pixelFormat;
 
 @synthesize glRenderer = _glRenderer;
-@synthesize camera = _camera;
 
 static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp* now,
                                     const CVTimeStamp* outputTime, CVOptionFlags flagsIn,
@@ -296,19 +305,19 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     unichar key = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
     switch (key) {
         case 'w':
-            [self.camera setState:kCameraStateActFwd];
+            //[self.camera setState:kCameraStateActFwd];
             break;
 
         case 's':
-            [self.camera setState:kCameraStateActBack];
+            //[self.camera setState:kCameraStateActBack];
             break;
 
         case 'a':
-            [self.camera setState:kCameraStateActRight];
+            //[self.camera setState:kCameraStateActRight];
             break;
 
         case 'd':
-            [self.camera setState:kCameraStateActLeft];
+            //[self.camera setState:kCameraStateActLeft];
             break;
 
         default:
@@ -320,19 +329,19 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     unichar key = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
     switch (key) {
         case 'w':
-            [self.camera setState:kCameraStateNilFwd];
+            //[self.camera setState:kCameraStateNilFwd];
             break;
 
         case 's':
-            [self.camera setState:kCameraStateNilBack];
+            //[self.camera setState:kCameraStateNilBack];
             break;
 
         case 'a':
-            [self.camera setState:kCameraStateNilRight];
+            //[self.camera setState:kCameraStateNilRight];
             break;
 
         case 'd':
-            [self.camera setState:kCameraStateNilLeft];
+            //[self.camera setState:kCameraStateNilLeft];
             break;
 
 
@@ -370,6 +379,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             break;
     }
 }
+
+//
+// TODO: use mouse wheel and a key to increase/decrease to FOV of the camera
+//
 
 - (void) mouseDown:(NSEvent *)theEvent {
     //
@@ -573,24 +586,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     NSAssert(self.glRenderer != nil, @"Failed to initialize and create NSGLRenderer");
 
     //
-    // TODO: should move the camera ownership into NFSimulation (or where ever the main update loop will be)
+    // TODO: should move the camera and view volume ownership into NFSimulation (assumed location of main update loop)
     //
 
-    self.camera = [[[NFCamera alloc] init] autorelease];
-
-    CGFloat width = self.frame.size.width;
-    CGFloat height = self.frame.size.height;
-
-    self.camera.nearPlaneDistance = 1.0f;
-    self.camera.farPlaneDistance = 100.0f;
-    self.camera.aspectRatio = width / height;
-    self.camera.vFOV = (float)M_PI_4;
-
-    //
-    //
-    //
-
-    m_cameraAlt = [[NFCameraAlt alloc] init];
+    m_camera = [[NFCamera alloc] init];
 
     GLKVector3 eye = GLKVector3Make(4.0f, 2.0f, 4.0f);
 
@@ -599,7 +598,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     GLKVector3 look = GLKVector3Make(0.0f, 0.0f, 0.0f);
     GLKVector3 up = GLKVector3Make(0.0f, 1.0f, 0.0f);
-    [m_cameraAlt setViewParamsWithEye:eye withLook:look withUp:up];
+
+    [m_camera setEyePosition:eye withLookVector:look withUpVector:up];
 
     //
     // TODO: need to calculate the starting angles based on the eye, look, and up vectors
@@ -624,6 +624,14 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     m_horizontalAngle = -M_PI + M_PI_4;
 
     m_input = YES;
+
+
+    m_viewVolume = [[NFViewVolume alloc] init];
+
+    CGFloat width = self.frame.size.width;
+    CGFloat height = self.frame.size.height;
+    [m_viewVolume setShapeWithVerticalFOV:(float)M_PI_4 withAspectRatio:(width/height)
+                             withNearDist:1.0f withFarDist:100.0f];
 
     //
     //
@@ -689,22 +697,19 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //
     // TODO: get ride of hardcoded value of 16 ms
     //
-    [self.camera step:16000];
+    //[self.camera step:16000];
 
 
-#if 0
-    [self.glRenderer updateFrameWithTime:outputTime withViewMatrix:[self.camera getViewMatrix]
-                          withProjection:[self.camera getProjectionMatrix]];
-#else
     if (m_input) {
         m_input = NO;
-        [m_cameraAlt updateWithHorizontalAngle:m_horizontalAngle withVerticalAngle:m_verticalAngle];
+        [m_camera setLookHorizontalAngle:m_horizontalAngle verticalAngle:m_verticalAngle];
     }
 
-    GLKMatrix4 viewMat = [m_cameraAlt getViewMatrix];
-    [self.glRenderer updateFrameWithTime:outputTime withViewMatrix:viewMat
-                          withProjection:[self.camera getProjectionMatrix]];
-#endif
+    GLKMatrix4 viewMat = m_camera.viewMatrix;
+    GLKMatrix4 projMat = m_viewVolume.projection;
+
+    [self.glRenderer updateFrameWithTime:outputTime withViewMatrix:viewMat withProjection:projMat];
+
 
 
     // perform drawing code

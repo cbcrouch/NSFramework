@@ -19,38 +19,96 @@
 
 
 
-@interface NFViewVolume : NSObject
-@property (nonatomic, assign) GLKMatrix4 view;
+@interface NFViewVolume()
 @property (nonatomic, assign) GLKMatrix4 projection;
+- (void) recalculateProjection;
 @end
+
 
 @implementation NFViewVolume
-@synthesize view = _view;
+
 @synthesize projection = _projection;
-@end
+
+@synthesize hFOV = _hFOV;
+@synthesize vFOV = _vFOV;
+@synthesize aspectRatio = _aspectRatio;
+
+@synthesize nearPlaneDistance = _nearPlaneDistance;
+@synthesize farPlaneDistance = _farPlaneDistance;
 
 
+// hFOV = 2 * arctan(tan(vFOV/2) * aspectRatio)
+// vFOV = 2 * arctan(tan(hFOV/2) * 1/aspectRatio)
 
-@interface NFCameraAlt() {
-    GLKVector3 m_eye;
-    GLKVector3 m_look;
-    GLKVector3 m_up;
+// aspectRatio = hFOV / (2 * arctan(tan(vFOV/2)))
 
-    GLKMatrix4 m_view;
+//
+// TODO: override all these setters to update the project matrix
+//
+//@property (nonatomic, assign) float hFOV;
+//@property (nonatomic, assign) float vFOV;
+
+
+- (void) setNearPlaneDistance:(float)nearPlaneDistance {
+    _nearPlaneDistance = nearPlaneDistance;
+    [self recalculateProjection];
 }
+
+- (void) setFarPlaneDistance:(float)farPlaneDistance {
+    _farPlaneDistance = farPlaneDistance;
+    [self recalculateProjection];
+}
+
+- (void) setAspectRatio:(float)aspectRatio {
+    _aspectRatio = aspectRatio;
+    [self recalculateProjection];
+}
+
+- (void) recalculateProjection {
+    self.projection = GLKMatrix4MakePerspective(self.vFOV, self.aspectRatio, self.nearPlaneDistance, self.farPlaneDistance);
+}
+
+- (void) setShapeWithVerticalFOV:(float)vAngle withAspectRatio:(float)aspect
+                    withNearDist:(float)nearDist withFarDist:(float)farDist {
+    //
+    // TODO: verify that this will correctly set the properties but only calculate the
+    //       projection matrix once
+    //
+    _vFOV = vAngle;
+    _aspectRatio = aspect;
+    _nearPlaneDistance = nearDist;
+    _farPlaneDistance = farDist;
+    [self recalculateProjection];
+}
+
 @end
 
 
-@implementation NFCameraAlt
+
+@interface NFCamera()
+
+@property (nonatomic, assign) GLKMatrix4 viewMatrix;
+
+@property (nonatomic, assign) GLKVector3 eye;
+@property (nonatomic, assign) GLKVector3 look;
+@property (nonatomic, assign) GLKVector3 up;
+
+@end
+
+
+@implementation NFCamera
+
+@synthesize viewMatrix = _viewMatrix;
+
+@synthesize eye = _eye;
+@synthesize look = _look;
+@synthesize up = _up;
 
 - (GLKMatrix4) getViewMatrix {
-    return m_view;
+    return _viewMatrix;
 }
 
-//
-// TODO: this works, use this function and replace the UVN camera with alt camera
-//
-- (void) updateWithHorizontalAngle:(float)h_angle withVerticalAngle:(float)v_angle {
+- (void) setLookHorizontalAngle:(float)h_angle verticalAngle:(float)v_angle {
 
     // h_angle == yaw
     // v_angle == pitch
@@ -68,24 +126,24 @@
 
     GLKVector3 up = GLKVector3CrossProduct(right, look);
 
-    [self setViewParamsWithEye:m_eye withLook:GLKVector3Add(m_eye, look) withUp:up];
+    [self setEyePosition:self.eye withLookVector:GLKVector3Add(self.eye, look) withUpVector:up];
 }
 
-- (void) setViewParamsWithEye:(GLKVector3)eye withLook:(GLKVector3)look withUp:(GLKVector3)up {
-    m_eye = eye;
-    m_look = look;
-    m_up = up;
+- (void) setEyePosition:(GLKVector3)eye withLookVector:(GLKVector3)look withUpVector:(GLKVector3)up {
+    self.eye = eye;
+    self.look = look;
+    self.up = up;
 
     // NOTE: it would appear that GLK is using a UVN based coordinate system under-the-hood
-    m_view = GLKMatrix4MakeLookAt(m_eye.v[0], m_eye.v[1], m_eye.v[2],
-                                  m_look.v[0], m_look.v[1], m_look.v[2],
-                                  m_up.v[0], m_up.v[1], m_up.v[2]);
+    _viewMatrix = GLKMatrix4MakeLookAt(eye.v[0], eye.v[1], eye.v[2],
+                                  look.v[0], look.v[1], look.v[2],
+                                  up.v[0], up.v[1], up.v[2]);
 }
 
 @end
 
 
-
+/*
 @interface NFCamera()
 
 @property (nonatomic, assign) GLKVector3 position;
@@ -103,6 +161,8 @@
 @property (nonatomic, retain) NFViewVolume* viewVolume;
 
 @property (nonatomic, assign) NSUInteger currentFlags;
+
+@property (nonatomic, assign) GLKMatrix4 viewMatrix;
 
 - (void) updateModelViewMatrix;
 
@@ -137,6 +197,10 @@
 @synthesize translationSpeed = _translationSpeed;
 
 @synthesize currentFlags = _currentFlags;
+
+
+@synthesize viewMatrix = _viewMatrix;
+
 
 - (GLKVector3) position {
     return _position;
@@ -173,7 +237,7 @@
 }
 
 - (GLKMatrix4) getViewMatrix {
-    return self.viewVolume.view;
+    return self.viewMatrix;
 }
 - (GLKMatrix4) getProjectionMatrix {
     return self.viewVolume.projection;
@@ -274,14 +338,14 @@
 
 - (void) setState:(CAMERA_STATE)state {
 
-/*
+#if 0
     if (state == kCameraStateActFwd && self.currentFlags & FORWARD_BIT) {
         return;
     }
     else if (state == kCameraStateActBack && self.currentFlags & BACK_BIT) {
         return;
     }
-*/
+#endif
 
     switch (state) {
 
@@ -481,7 +545,8 @@
     viewMat.m[14] = -1.0f * GLKVector3DotProduct(self.position, self.N);
     viewMat.m[15] = 1.0f;
 
-    self.viewVolume.view = viewMat;
+    self.viewMatrix = viewMat;
 }
 
 @end
+*/
