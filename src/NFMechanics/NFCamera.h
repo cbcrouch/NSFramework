@@ -105,7 +105,7 @@ typedef NS_ENUM(NSUInteger, CAMERA_DIRECTION_STATE) {
 //       move around other entities
 //
 
-- (void) step:(NSUInteger)milliseconds;
+- (void) step:(float)secsElapsed;
 - (void) setTranslationState:(CAMERA_STATE)state;
 
 - (void) resetTarget; // TODO: needs a better name - resetLookDirection ??

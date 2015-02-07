@@ -175,36 +175,10 @@
     [super dealloc];
 }
 
-- (void) updateFrameWithTime:(const CVTimeStamp*)outputTime withViewMatrix:(GLKMatrix4)viewMatrix
+- (void) updateFrameWithTime:(float)secsElapsed withViewMatrix:(GLKMatrix4)viewMatrix
               withProjection:(GLKMatrix4)projection {
 
-    //static float secs = 0.0; // elapsed time
-    static uint64_t prevVideoTime = 0;
-
-    //
-    // TODO: if debug check time stamp flags against kCVTimeStampVideoHostTimeValid
-    //
-
-    //NSLog(@"update period per second: %lld", outputTime->videoTimeScale / outputTime->videoRefreshPeriod);
-
-    // update rate 59 hertz
-    // 0.016699 seconds
-    // 16.600 ms
-
-    if (prevVideoTime != 0) {
-        //secs += (outputTime->videoTime - prevVideoTime) / (float) outputTime->videoTimeScale;
-        //NSLog(@"secs: %f", secs);
-
-        // step is a floating point measure of time (1.0 == one second)
-        float step = (outputTime->videoTime - prevVideoTime) / (float) outputTime->videoTimeScale;
-
-        //
-        // TODO: change stepTransforms to take either milli or micro seconds
-        //
-        [m_pAsset stepTransforms:step];
-    }
-
-    prevVideoTime = outputTime->videoTime;
+    [m_pAsset stepTransforms:secsElapsed];
 
 
     //

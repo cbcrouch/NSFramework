@@ -638,25 +638,20 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     //NSLog(@"update period per second: %lld", outputTime->videoTimeScale / outputTime->videoRefreshPeriod);
 
-    // update rate 59 hertz
-    // 0.016699 seconds
-    // 16.600 ms
-
-    NSUInteger msElapsed = 0;
-    NSUInteger usElapsed = 0;
+    float secsElapsed = 0.0f;
+    float msElapsed = 0.0f;
 
     if (prevVideoTime != 0) {
         //secs += (outputTime->videoTime - prevVideoTime) / (float) outputTime->videoTimeScale;
         //NSLog(@"secs: %f", secs);
 
         // step is floating point seconds
-        float step = (outputTime->videoTime - prevVideoTime) / (float) outputTime->videoTimeScale;
+        secsElapsed = (outputTime->videoTime - prevVideoTime) / (float) outputTime->videoTimeScale;
 
         //
-        // TODO: make constants for convert seconds to milli/micro seconds
+        // TODO: use msElapsed to record/display the framerate
         //
-        msElapsed = (NSUInteger)(step * 1000.0f);
-        usElapsed = (NSUInteger)(step * 1000.0f * 1000.0f);
+        msElapsed = secsElapsed * 1000.0f;
     }
 
     prevVideoTime = outputTime->videoTime;
@@ -693,7 +688,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //
 
     // step scene/simulation with lastest time delta
-    [self.camera step:msElapsed];
+    [self.camera step:secsElapsed];
 
 
     if (m_input) {
@@ -708,7 +703,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //
     // TODO: rather than pass in the outputTime pass in the msElapsed
     //
-    [self.glRenderer updateFrameWithTime:outputTime withViewMatrix:viewMat withProjection:projMat];
+    [self.glRenderer updateFrameWithTime:secsElapsed withViewMatrix:viewMat withProjection:projMat];
 
 
 

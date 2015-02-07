@@ -355,20 +355,20 @@ typedef struct NFVertState_t {
     [super dealloc];
 }
 
-- (void) stepTransforms:(float)step {
+- (void) stepTransforms:(float)secsElapsed {
 
     //
     // TODO: this "animation" is currently hardcoded, need to design something simple
     //       for getting/setting a transform heirarchy and providing step/update functionality
     //
 
-
     //
     // TODO: perform rotation with quaternions if GLK documentation doesn't prevent
     //       gimbal lock with GLKMatrix4Rotate
     //
 
-    float angle = step * M_PI_4;
+    float angle = secsElapsed * M_PI_4;
+
     GLKMatrix4 model = [[self.subsetArray objectAtIndex:0] modelMat];
 
 

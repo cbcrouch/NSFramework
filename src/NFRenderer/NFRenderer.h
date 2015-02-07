@@ -35,7 +35,7 @@ typedef NSInteger NFViewportId;
 
 - (void) dealloc;
 
-- (void) updateFrameWithTime:(const CVTimeStamp*)outputTime withViewMatrix:(GLKMatrix4)viewMatrix
+- (void) updateFrameWithTime:(float)secsElapsed withViewMatrix:(GLKMatrix4)viewMatrix
               withProjection:(GLKMatrix4)projection;
 
 - (void) renderFrame;

@@ -140,7 +140,7 @@
                                   up.v[0], up.v[1], up.v[2]);
 }
 
-- (void) step:(NSUInteger)milliseconds {
+- (void) step:(float)secsElapsed {
     //
     //
     //

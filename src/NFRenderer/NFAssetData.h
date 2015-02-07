@@ -98,7 +98,7 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
 - (instancetype) init;
 - (void) dealloc;
 
-- (void) stepTransforms:(float)step;
+- (void) stepTransforms:(float)secsElapsed;
 
 - (void) drawWithProgram:(GLuint)hProgram withModelUniform:(GLuint)modelLoc;
 
