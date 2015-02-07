@@ -85,110 +85,35 @@ typedef NS_ENUM(NSUInteger, CAMERA_DIRECTION_STATE) {
 @property (nonatomic, assign, readonly) GLKVector3 look;
 @property (nonatomic, assign, readonly) GLKVector3 up;
 
-//
-// TODO: would it make more sense to rename the horizontal and veritcal angles to
-//       yaw and pitch respectively ??
-//
+@property (nonatomic, assign, readonly) float yaw;
+@property (nonatomic, assign, readonly) float pitch;
+
+- (instancetype) initWithEyePosition:(GLKVector3)eye withLookVector:(GLKVector3)look withUpVector:(GLKVector3)up;
+
+// NOTE: yaw and pitch angles are absolute angles in spherical coordinates
+- (void) setLookWithYaw:(float)yawAngle withPitch:(float)pitchAngle;
 
 //
-// TODO: if using these properties then override the setters to update the view matrix
+// TODO: add support for rolling the camera
 //
-//@property (nonatomic, assign) float lookHorizontal;
-//@property (nonatomic, assign) float lookVertical;
 
-- (void) setLookHorizontalAngle:(float)h_angle verticalAngle:(float)v_angle;
-- (void) setEyePosition:(GLKVector3)eye withLookVector:(GLKVector3)look withUpVector:(GLKVector3)up;
 
 //
 // TODO: add the translation logic directly to the camera or possibly in another
 //       object (e.g. NFTranslationControl ??) which could be used to simply
 //       move around other entities
 //
-
 - (void) step:(float)secsElapsed;
 - (void) setTranslationState:(CAMERA_STATE)state;
 
-- (void) resetTarget; // TODO: needs a better name - resetLookDirection ??
-- (void) resetPosition; // TODO: needs a better name - resetToInitialValues ??
+
+- (void) resetLookDirection;
+- (void) resetState;
+
+//
+// TODO: function will preserve the cameras current state, this state will be
+//       what is used on the next resetLookDirection and resetState calls
+//
+- (void) saveState;
 
 @end
-
-
-
-/*
-@interface NFCamera : NSObject
-
-//
-// TODO: allow user control to set the horizontal FOV which will modify the aspect ratio
-//       (solve FOV equations for aspect ratio if at all possible/practical)
-//
-
-// hFOV = 2 * arctan(tan(vFOV/2) * aspectRatio)
-// vFOV = 2 * arctan(tan(hFOV/2) * 1/aspectRatio)
-
-//@property (nonatomic, assign) float hFOV;
-@property (nonatomic, assign) float vFOV; // vertical FOV in radians
-
-
-@property (nonatomic, assign, readonly) GLKVector3 position;
-@property (nonatomic, assign, readonly) GLKVector3 target;
-@property (nonatomic, assign, readonly) GLKVector3 up;
-
-@property (nonatomic, assign) float nearPlaneDistance;
-@property (nonatomic, assign) float farPlaneDistance;
-@property (nonatomic, assign) float aspectRatio;
-
-
-// component values is what will be applied as a translation based on the camera state
-@property (nonatomic, assign) GLKVector4 translationSpeed;
-
-
-- (instancetype) initWithPosition:(GLKVector3)position withTarget:(GLKVector3)target withUp:(GLKVector3)up;
-
-
-//
-// TODO: pass in microsecond step
-//
-- (void) step:(NSUInteger)delta;
-
-
-
-//
-// TODO: should rename this to something like setTranslationState
-//
-- (void) setState:(CAMERA_STATE)state;
-
-
-- (void) resetTarget; // TODO: needs a better name - resetLookDirection ??
-- (void) resetPosition; // TODO: needs a better name - resetToInitialValues ??
-
-
-//
-// TODO: merge pitch/yaw look direction controls in with the UVN camera implementation
-//
-
-- (void) setPosition:(GLKVector3)position withTarget:(GLKVector3)target withUp:(GLKVector3)up;
-
-
-- (void) setShapeWithVerticalFOV:(float)vAngle withAspectRatio:(float)aspect
-                    withNearDist:(float)nearDist withFarDist:(float)farDist;
-
-
-// NOTE: translations are relative movements to the camera's current position
-- (void) translateWithVector3:(GLKVector3)vec;
-- (void) translateWithDeltaX:(float)delX withDeltaY:(float)delY withDeltaZ:(float)delZ;
-
-
-//
-// TODO: current roll/pitch/yaw angles are relative, add methods for setting (and getting) absolute angles
-//
-- (void) roll:(float)angle;
-- (void) pitch:(float)angle;
-- (void) yaw:(float)angle;
-
-
-- (GLKMatrix4) getViewMatrix;
-- (GLKMatrix4) getProjectionMatrix;
-
-@end
-*/

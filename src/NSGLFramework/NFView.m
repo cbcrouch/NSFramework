@@ -312,6 +312,21 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             [self.camera setTranslationState:kCameraStateActLeft];
             break;
 
+        case 'i':
+            NSLog(@"saving current camera state...");
+            [self.camera saveState];
+            break;
+
+        case 'o':
+            NSLog(@"resetting camera look direction...");
+            [self.camera resetLookDirection];
+            break;
+
+        case 'p':
+            NSLog(@"resetting camera state...");
+            [self.camera resetState];
+            break;
+
         default:
             break;
     }
@@ -334,15 +349,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
         case 'd':
             [self.camera setTranslationState:kCameraStateNilLeft];
-            break;
-
-        case 'o':
-            [self.camera resetTarget];
-            break;
-
-        case 'p':
-            [self.camera resetPosition];
-            [self.camera resetTarget];
             break;
 
         default:
@@ -555,9 +561,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     [self.glContext makeCurrentContext];
 
     self.glRenderer = [[[NFRenderer alloc] init] autorelease];
-    self.viewVolume = [[[NFViewVolume alloc] init] autorelease];
-    self.camera = [[[NFCamera alloc] init] autorelease];
 
+    self.viewVolume = [[[NFViewVolume alloc] init] autorelease];
 
     CGFloat width = self.frame.size.width;
     CGFloat height = self.frame.size.height;
@@ -566,38 +571,15 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
                                 withNearDist:1.0f withFarDist:100.0f];
 
 
-    GLKVector3 eye = GLKVector3Make(4.0f, 2.0f, 4.0f);
+    //GLKVector3 eye = GLKVector3Make(4.0f, 2.0f, 4.0f);
+    //GLKVector3 look = GLKVector3Make(0.0f, 0.0f, 0.0f);
+    //GLKVector3 up = GLKVector3Make(0.0f, 1.0f, 0.0f);
+    //self.camera = [[[NFCamera alloc] initWithEyePosition:eye withLookVector:look withUpVector:up] autorelease];
 
-    //GLKVector3 eye = GLKVector3Make(4.0f, 0.0f, 4.0f);
-    //GLKVector3 eye = GLKVector3Make(0.0f, 4.0f, 4.0f);
+    self.camera = [[[NFCamera alloc] init] autorelease];
 
-    GLKVector3 look = GLKVector3Make(0.0f, 0.0f, 0.0f);
-    GLKVector3 up = GLKVector3Make(0.0f, 1.0f, 0.0f);
-
-    //[m_camera setEyePosition:eye withLookVector:look withUpVector:up];
-    [self.camera setEyePosition:eye withLookVector:look withUpVector:up];
-
-    //
-    // TODO: need to calculate the starting angles based on the eye, look, and up vectors
-    //       should also extract horizontal and vertical angle from camera class since they
-    //       can be changed with setViewParams method (or remove the setViewParams method and
-    //       replace with translate and lookAt methods - would still need to determine
-    //       horizontal and vertical angles from both methods)
-    //
-
-    // horizontal angle should just be the angle between the x,z points
-    // vertical angle should just be the angle between the y,z points
-
-    //m_horizontalAngle = M_PI;    // look to -Z
-    //m_horizontalAngle = -M_PI;   // look to -Z
-    //m_horizontalAngle = 0.0f;    // look to +Z
-
-    //m_verticalAngle = M_PI_2 - 0.01f;   // look straight up
-    //m_verticalAngle = -M_PI_2 + 0.01f;  // look straight down
-    //m_verticalAngle = 0.0f;             // look at horizon
-
-    m_verticalAngle = -M_PI_4 / 2.0f;
-    m_horizontalAngle = -M_PI + M_PI_4;
+    m_verticalAngle = self.camera.pitch;
+    m_horizontalAngle = self.camera.yaw;
 
     m_input = YES;
 }
@@ -690,22 +672,15 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     // step scene/simulation with lastest time delta
     [self.camera step:secsElapsed];
 
-
     if (m_input) {
         m_input = NO;
-        [self.camera setLookHorizontalAngle:m_horizontalAngle verticalAngle:m_verticalAngle];
+        [self.camera setLookWithYaw:m_horizontalAngle withPitch:m_verticalAngle];
     }
 
     GLKMatrix4 viewMat = self.camera.viewMatrix;
     GLKMatrix4 projMat = self.viewVolume.projection;
 
-    
-    //
-    // TODO: rather than pass in the outputTime pass in the msElapsed
-    //
     [self.glRenderer updateFrameWithTime:secsElapsed withViewMatrix:viewMat withProjection:projMat];
-
-
 
     // perform drawing code
     [self.glRenderer renderFrame];
