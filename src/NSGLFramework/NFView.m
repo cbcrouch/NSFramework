@@ -305,11 +305,11 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             break;
 
         case 'a':
-            [self.camera setTranslationState:kCameraStateActRight];
+            [self.camera setTranslationState:kCameraStateActLeft];
             break;
 
         case 'd':
-            [self.camera setTranslationState:kCameraStateActLeft];
+            [self.camera setTranslationState:kCameraStateActRight];
             break;
 
         case 'i':
@@ -344,11 +344,11 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             break;
 
         case 'a':
-            [self.camera setTranslationState:kCameraStateNilRight];
+            [self.camera setTranslationState:kCameraStateNilLeft];
             break;
 
         case 'd':
-            [self.camera setTranslationState:kCameraStateNilLeft];
+            [self.camera setTranslationState:kCameraStateNilRight];
             break;
 
         default:
@@ -621,7 +621,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //NSLog(@"update period per second: %lld", outputTime->videoTimeScale / outputTime->videoRefreshPeriod);
 
     float secsElapsed = 0.0f;
-    float msElapsed = 0.0f;
+    //float msElapsed = 0.0f;
 
     if (prevVideoTime != 0) {
         //secs += (outputTime->videoTime - prevVideoTime) / (float) outputTime->videoTimeScale;
@@ -633,7 +633,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
         //
         // TODO: use msElapsed to record/display the framerate
         //
-        msElapsed = secsElapsed * 1000.0f;
+        //msElapsed = secsElapsed * 1000.0f;
     }
 
     prevVideoTime = outputTime->videoTime;

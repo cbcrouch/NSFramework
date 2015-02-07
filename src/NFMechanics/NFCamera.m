@@ -91,10 +91,15 @@
 
 @property (nonatomic, assign) GLKVector3 eye;
 @property (nonatomic, assign) GLKVector3 look;
+@property (nonatomic, assign) GLKVector3 right;
 @property (nonatomic, assign) GLKVector3 up;
 
 @property (nonatomic, assign) float yaw;
 @property (nonatomic, assign) float pitch;
+
+//
+// TODO: store original vectors and yaw/pitch angles
+//
 
 @property (nonatomic, assign) NSUInteger currentFlags;
 
@@ -134,11 +139,9 @@
         //
         // TODO: read default values from an engine config file
         //
-        GLKVector3 eye = GLKVector3Make(4.0f, 2.0f, 4.0f);
-        GLKVector3 look = GLKVector3Make(0.0f, 0.0f, 0.0f);
-        GLKVector3 up = GLKVector3Make(0.0f, 1.0f, 0.0f);
-
-        [self setEyePosition:eye withLookVector:look withUpVector:up];
+        _eye = GLKVector3Make(4.0f, 2.0f, 4.0f);
+        _look = GLKVector3Make(0.0f, 0.0f, 0.0f);
+        _up = GLKVector3Make(0.0f, 1.0f, 0.0f);
 
         //
         // TODO: calculate actual value rather than hardcoding
@@ -148,6 +151,8 @@
 
         [self setCurrentFlags:0x00];
         [self setTranslationSpeed:GLKVector4Make(0.025f, 0.0f, 0.025f, 0.0f)];
+
+        [self setLookWithYaw:_yaw withPitch:_pitch];
     }
 
     return self;
@@ -156,7 +161,11 @@
 - (instancetype) initWithEyePosition:(GLKVector3)eye withLookVector:(GLKVector3)look withUpVector:(GLKVector3)up {
     self = [super init];
     if (self != nil) {
-        [self setEyePosition:eye withLookVector:look withUpVector:up];
+
+        _eye = eye;
+        _look = look;
+        _up = up;
+
 
         //
         // TODO: need to calculate the starting angles based on the eye, look, and up vectors
@@ -177,13 +186,14 @@
         //m_verticalAngle = -M_PI_2 + 0.01f;  // look straight down
         //m_verticalAngle = 0.0f;             // look at horizon
 
-
         _yaw = -M_PI + M_PI_4;
         _pitch = -M_PI_4 / 2.0f;
 
 
         [self setCurrentFlags:0x00];
         [self setTranslationSpeed:GLKVector4Make(0.025f, 0.0f, 0.025f, 0.0f)];
+
+        [self setLookWithYaw:_yaw withPitch:_pitch];
     }
     
     return self;
@@ -204,6 +214,8 @@
     right.v[1] = 0.0f;
     right.v[2] = cosf(yawAngle - M_PI_2);
 
+    self.right = right;
+
     GLKVector3 up = GLKVector3CrossProduct(right, look);
 
     [self setEyePosition:self.eye withLookVector:GLKVector3Add(self.eye, look) withUpVector:up];
@@ -223,29 +235,47 @@
     GLKVector3 position = self.eye;
 
     if (self.currentFlags & FORWARD_BIT) {
-
-        //
-        // TODO: one possible option interpolate position along unit look vector ??
-        //
-
-        position = GLKVector3Add(position, GLKVector3Make(0.0f, 0.0f, -self.translationSpeed.v[Z_IDX]));
+        GLKVector3 translationVec = GLKVector3Normalize(GLKVector3Subtract(position, self.look));
+        translationVec = GLKVector3MultiplyScalar(translationVec, self.translationSpeed.v[Z_IDX]);
+        position = GLKVector3Subtract(position, translationVec);
         updated = YES;
     }
 
     if (self.currentFlags & BACK_BIT) {
-        position = GLKVector3Add(position, GLKVector3Make(0.0f, 0.0f, self.translationSpeed.v[Z_IDX]));
+        GLKVector3 translationVec = GLKVector3Normalize(GLKVector3Subtract(position, self.look));
+        translationVec = GLKVector3MultiplyScalar(translationVec, self.translationSpeed.v[Z_IDX]);
+        position = GLKVector3Add(position, translationVec);
         updated = YES;
     }
 
+
+    //
+    // TODO: forward/backward works correctly, left/right does not
+    //
     if (self.currentFlags & LEFT_BIT) {
-        position = GLKVector3Add(position, GLKVector3Make(self.translationSpeed.v[X_IDX], 0.0f, 0.0f));
+
+        //
+        // TODO: translationVec needs to be calculated with the right vector ??
+        //
+
+        //GLKVector3 translationVec = GLKVector3Normalize(GLKVector3Add(position, self.right));
+
+        //translationVec = GLKVector3MultiplyScalar(translationVec, self.translationSpeed.v[X_IDX]);
+        //position = GLKVector3Subtract(position, translationVec);
+
         updated = YES;
     }
 
     if (self.currentFlags & RIGHT_BIT) {
-        position = GLKVector3Add(position, GLKVector3Make(-self.translationSpeed.v[X_IDX], 0.0f, 0.0f));
+
+        //GLKVector3 translationVec = GLKVector3Normalize(GLKVector3Add(position, self.right));
+
+        //translationVec = GLKVector3MultiplyScalar(translationVec, self.translationSpeed.v[X_IDX]);
+        //position = GLKVector3Add(position, translationVec);
+
         updated = YES;
     }
+
 
     if (updated) {
         self.eye = position;
