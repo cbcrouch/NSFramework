@@ -91,7 +91,6 @@
 
 @property (nonatomic, assign) GLKVector3 eye;
 @property (nonatomic, assign) GLKVector3 look;
-@property (nonatomic, assign) GLKVector3 right;
 @property (nonatomic, assign) GLKVector3 up;
 
 @property (nonatomic, assign) float yaw;
@@ -214,21 +213,16 @@
     right.v[1] = 0.0f;
     right.v[2] = cosf(yawAngle - M_PI_2);
 
-    self.right = right;
-
     GLKVector3 up = GLKVector3CrossProduct(right, look);
 
     [self setEyePosition:self.eye withLookVector:GLKVector3Add(self.eye, look) withUpVector:up];
 }
 
-//
-// TODO: currently move camera along absolute axis, modify so that translation occurs
-//       along the look vector
-//
 - (void) step:(float)secsElapsed {
 
     //
-    // TODO: increment position by multiple of time delta
+    // TODO: translation speed should be in world units per second and scaled to the
+    //       seconds elapse parameter
     //
 
     BOOL updated = NO;
@@ -248,34 +242,21 @@
         updated = YES;
     }
 
-
-    //
-    // TODO: forward/backward works correctly, left/right does not
-    //
     if (self.currentFlags & LEFT_BIT) {
-
-        //
-        // TODO: translationVec needs to be calculated with the right vector ??
-        //
-
-        //GLKVector3 translationVec = GLKVector3Normalize(GLKVector3Add(position, self.right));
-
-        //translationVec = GLKVector3MultiplyScalar(translationVec, self.translationSpeed.v[X_IDX]);
-        //position = GLKVector3Subtract(position, translationVec);
-
+        GLKVector3 side = GLKVector3CrossProduct(GLKVector3Subtract(position, self.look), self.up);
+        GLKVector3 translationVec = GLKVector3Normalize(side);
+        translationVec = GLKVector3MultiplyScalar(translationVec, self.translationSpeed.v[X_IDX]);
+        position = GLKVector3Add(position, translationVec);
         updated = YES;
     }
 
     if (self.currentFlags & RIGHT_BIT) {
-
-        //GLKVector3 translationVec = GLKVector3Normalize(GLKVector3Add(position, self.right));
-
-        //translationVec = GLKVector3MultiplyScalar(translationVec, self.translationSpeed.v[X_IDX]);
-        //position = GLKVector3Add(position, translationVec);
-
+        GLKVector3 side = GLKVector3CrossProduct(GLKVector3Subtract(position, self.look), self.up);
+        GLKVector3 translationVec = GLKVector3Normalize(side);
+        translationVec = GLKVector3MultiplyScalar(translationVec, self.translationSpeed.v[X_IDX]);
+        position = GLKVector3Subtract(position, translationVec);
         updated = YES;
     }
-
 
     if (updated) {
         self.eye = position;
