@@ -177,16 +177,16 @@
 
 - (void) updateFrameWithTime:(float)secsElapsed withViewMatrix:(GLKMatrix4)viewMatrix
               withProjection:(GLKMatrix4)projection {
-
+    //
+    //
+    //
     [m_pAsset stepTransforms:secsElapsed];
-
 
     //
     // TODO: need to either send in a dirty flag or cache the values and compare so that the
     //       renderer is not updating the UBO every frame
     //
     [self updateUboWithViewMatrix:viewMatrix withProjection:projection];
-
 }
 
 //
@@ -224,7 +224,6 @@
 }
 
 - (void) resizeToRect:(CGRect)rect {
-
     NFViewport *viewport = [self.viewports objectAtIndex:0];
 
     if (viewport.viewRect.size.width != CGRectGetWidth(rect) ||
@@ -273,7 +272,6 @@
     //       methods for simplfying UBOs assuming they can be made worth while
     //
     //+ (void) setUniformBuffer:(GLuint)hUBO withData:(NSArray *)dataArray inProgrm:(GLuint)handle;
-
 
     GLsizeiptr matrixSize = (GLsizeiptr)(16 * sizeof(float));
     GLintptr offset = (GLintptr)matrixSize;

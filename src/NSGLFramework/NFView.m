@@ -320,11 +320,17 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
         case 'o':
             NSLog(@"resetting camera look direction...");
             [self.camera resetLookDirection];
+            m_verticalAngle = self.camera.pitch;
+            m_horizontalAngle = self.camera.yaw;
+            m_input = YES;
             break;
 
         case 'p':
             NSLog(@"resetting camera state...");
             [self.camera resetState];
+            m_verticalAngle = self.camera.pitch;
+            m_horizontalAngle = self.camera.yaw;
+            m_input = YES;
             break;
 
         default:

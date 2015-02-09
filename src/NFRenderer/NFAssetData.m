@@ -236,8 +236,6 @@ typedef struct NFVertState_t {
     //
 
     // create and bind new vertex buffer object associated with the VAO
-    //glGenBuffers(1, &(m_hVBO));
-
     GLuint vbo;
     glGenBuffers(1, &vbo);
     self.hVBO = vbo;
@@ -340,8 +338,10 @@ typedef struct NFVertState_t {
 }
 
 - (void) dealloc {
+    //
     // TODO: should disable all vertex attirbs when deleting the VAO just in case the OpenGL
     //       implementation doesn't properly clean them up when said VAO is deleted
+    //
 /*
     glDisableVertexAttribArray(m_WavefrontVAO.texAttrib);
     glDisableVertexAttribArray(m_WavefrontVAO.normAttrib);
@@ -363,7 +363,7 @@ typedef struct NFVertState_t {
     //
 
     //
-    // TODO: perform rotation with quaternions if GLK documentation doesn't prevent
+    // TODO: perform rotation with quaternions if GLK implementation doesn't prevent
     //       gimbal lock with GLKMatrix4Rotate
     //
 
@@ -460,7 +460,6 @@ typedef struct NFVertState_t {
         NFVertState_t *pState = self.vertexState;
         [subset loadResourcesWithVertexState:*pState];
 
-
         //
         // TODO: use load surface model method once it has been written
         //
@@ -487,20 +486,6 @@ typedef struct NFVertState_t {
                      [diffuseMap format], [diffuseMap type], [diffuseMap data]);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
-
-
-
-    //
-    // TODO: need to expose transform heirarchy operations so individual assets
-    //       can be manipulated
-    //
-
-    //GLKMatrix4 model = [[self.subsetArray objectAtIndex:0] modelMat];
-    //model = GLKMatrix4Translate(model, 2.0f, 2.0f, 2.0f);
-    //[[self.subsetArray objectAtIndex:0] setModelMat:model];
-
-
-
 
     // unbind the VAO and check for errors
     glBindVertexArray(0);

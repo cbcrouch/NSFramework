@@ -96,9 +96,13 @@
 @property (nonatomic, assign) float yaw;
 @property (nonatomic, assign) float pitch;
 
-//
-// TODO: store original vectors and yaw/pitch angles
-//
+
+
+@property (nonatomic, assign) GLKVector3 cached_eye;
+@property (nonatomic, assign) float cached_yaw;
+@property (nonatomic, assign) float cached_pitch;
+
+
 
 @property (nonatomic, assign) NSUInteger currentFlags;
 
@@ -124,6 +128,10 @@
 @synthesize yaw = _yaw;
 @synthesize pitch = _pitch;
 
+@synthesize cached_eye = _cached_eye;
+@synthesize cached_yaw = _cached_yaw;
+@synthesize cached_pitch = _cached_pitch;
+
 @synthesize currentFlags = _currentFlags;
 @synthesize translationSpeed = _translationSpeed;
 
@@ -142,15 +150,29 @@
         _look = GLKVector3Make(0.0f, 0.0f, 0.0f);
         _up = GLKVector3Make(0.0f, 1.0f, 0.0f);
 
+        GLKVector3 hyp = GLKVector3Subtract(_eye, _look);
+        hyp = GLKVector3Normalize(hyp);
+
+        //_yaw = M_PI;    // look to -Z
+        //_yaw = -M_PI;   // look to -Z
+        //_yaw = 0.0f;    // look to +Z
+
+        //_pitch = M_PI_2 - 0.01f;   // look straight up
+        //_pitch = -M_PI_2 + 0.01f;  // look straight down
+        //_pitch = 0.0f;             // look at horizon
+
         //
-        // TODO: calculate actual value rather than hardcoding
+        // TODO: verify that these offsets/modifiers are what should be used
         //
-        _yaw = -M_PI + M_PI_4;
-        _pitch = -M_PI_4 / 2.0f;
+        _yaw = -M_PI + atan2f(hyp.v[0], hyp.v[2]);
+        _pitch = -atan2(hyp.v[1], hyp.v[1]) / 2.0f;
+
+        _cached_eye = _eye;
+        _cached_yaw = _yaw;
+        _cached_pitch = _pitch;
 
         [self setCurrentFlags:0x00];
         [self setTranslationSpeed:GLKVector4Make(0.025f, 0.0f, 0.025f, 0.0f)];
-
         [self setLookWithYaw:_yaw withPitch:_pitch];
     }
 
@@ -165,33 +187,21 @@
         _look = look;
         _up = up;
 
+        GLKVector3 hyp = GLKVector3Subtract(_eye, _look);
+        hyp = GLKVector3Normalize(hyp);
 
         //
-        // TODO: need to calculate the starting angles based on the eye, look, and up vectors
-        //       should also extract horizontal and vertical angle from camera class since they
-        //       can be changed with setViewParams method (or remove the setViewParams method and
-        //       replace with translate and lookAt methods - would still need to determine
-        //       horizontal and vertical angles from both methods)
+        // TODO: verify that these offsets/modifiers are what should be used
         //
+        _yaw = -M_PI + atan2f(hyp.v[0], hyp.v[2]);
+        _pitch = -atan2(hyp.v[1], hyp.v[1]) / 2.0f;
 
-        // horizontal angle should just be the angle between the x,z points
-        // vertical angle should just be the angle between the y,z points
-
-        //m_horizontalAngle = M_PI;    // look to -Z
-        //m_horizontalAngle = -M_PI;   // look to -Z
-        //m_horizontalAngle = 0.0f;    // look to +Z
-
-        //m_verticalAngle = M_PI_2 - 0.01f;   // look straight up
-        //m_verticalAngle = -M_PI_2 + 0.01f;  // look straight down
-        //m_verticalAngle = 0.0f;             // look at horizon
-
-        _yaw = -M_PI + M_PI_4;
-        _pitch = -M_PI_4 / 2.0f;
-
+        _cached_eye = _eye;
+        _cached_yaw = _yaw;
+        _cached_pitch = _pitch;
 
         [self setCurrentFlags:0x00];
         [self setTranslationSpeed:GLKVector4Make(0.025f, 0.0f, 0.025f, 0.0f)];
-
         [self setLookWithYaw:_yaw withPitch:_pitch];
     }
     
@@ -214,6 +224,17 @@
     right.v[2] = cosf(yawAngle - M_PI_2);
 
     GLKVector3 up = GLKVector3CrossProduct(right, look);
+
+
+    //
+    // TODO: could try an alternate (potentially faster) implementation using a fixed up
+    //       vector and rotating the flat yaw vector around cross(look, up) i.e.
+    //
+    // up = (0, 1, 0)
+    // look = (cos(yaw), 0, sin(yaw))
+    // pitchMatrix = rotate(matrix, cross(look, up), pitch)
+    // look = pitchMatrix * look;
+
 
     [self setEyePosition:self.eye withLookVector:GLKVector3Add(self.eye, look) withUpVector:up];
 }
@@ -316,22 +337,18 @@
 }
 
 - (void) resetLookDirection {
-    //
-    // TODO: implement
-    //
+    [self setLookWithYaw:self.cached_yaw withPitch:self.cached_pitch];
 }
 
 - (void) resetState {
-    //
-    // TODO: implement
-    //
+    self.eye = self.cached_eye;
+    [self setLookWithYaw:self.cached_yaw withPitch:self.cached_pitch];
 }
 
 - (void) saveState {
-    //
-    // TODO: function will preserve the cameras current state, this state will be
-    //       what is used on the next resetLookDirection and resetState calls
-    //
+    self.cached_eye = self.eye;
+    self.cached_yaw = self.yaw;
+    self.cached_pitch = self.pitch;
 }
 
 - (void) setEyePosition:(GLKVector3)eye withLookVector:(GLKVector3)look withUpVector:(GLKVector3)up {
