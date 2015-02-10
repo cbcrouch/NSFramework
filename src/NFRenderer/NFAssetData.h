@@ -75,7 +75,18 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
 @interface NFSubset : NSObject
 
 @property (nonatomic, assign) DRAWING_MODE drawMode;
+
+
+
+//
+// TODO: rather than one "model" matrix store both the unit scalar matrix
+//       and center to origin matrix
+//
 @property (nonatomic, assign) GLKMatrix4 modelMat;
+
+@property (nonatomic, assign) GLKMatrix4 unitScalarMatrix;
+@property (nonatomic, assign) GLKMatrix4 originCenterMatrix;
+
 
 // assign is similar to weak, weak releases and sets the object to nil after
 // no more objects are pointing to it while assign will not

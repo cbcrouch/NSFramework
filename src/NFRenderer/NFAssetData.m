@@ -34,6 +34,22 @@ typedef struct NFVertState_t {
 
 @interface NFSubset()
 
+
+//
+// TODO: will need to integrate the min/max dimension finding into the NFAssetData containing object
+//       and keep the subsets transforms relative
+//
+
+//
+// TODO: should store the min/max dimensions of the complete asset as well as the subset
+//       also each subset should have a centering transform and unit scaling transform
+//       (moving through transform hierarchy will store relative transformations but will
+//       possibly need to use the unit scaling and centering transforms)
+//
+@property (nonatomic, assign) GLKVector3 minDimensions;
+@property (nonatomic, assign) GLKVector3 maxDimensions;
+
+
 @property (nonatomic, assign) NFVertex_t *vertices;
 @property (nonatomic, assign) GLushort *indices;
 @property (nonatomic, assign) NSInteger numVertices;
@@ -54,6 +70,12 @@ typedef struct NFVertState_t {
 @end
 
 @implementation NFSubset
+
+@synthesize unitScalarMatrix = _unitScalarMatrix;
+@synthesize originCenterMatrix = _originCenterMatrix;
+
+@synthesize minDimensions = _minDimensions;
+@synthesize maxDimensions = _maxDimensions;
 
 @synthesize drawMode = _drawMode;
 @synthesize modelMat = _modelMat;
@@ -128,15 +150,11 @@ typedef struct NFVertState_t {
     self.numIndices = (NSInteger)num;
 }
 
-//
-// TODO: calculate center mesh for entire object as well as the subset (move this
-//       method into the utils - will generate bounding box and/or origin
-//       translation from an NFAssetData object
-//
-- (void) calcCenterPointTransform {
-    GLfloat min_x, max_x;
-    GLfloat min_y, max_y;
-    GLfloat min_z, max_z;
+- (void) calcSubsetBounds {
+    float min_x, max_x;
+    float min_y, max_y;
+    float min_z, max_z;
+
     min_x = max_x = self.vertices->pos[0];
     min_y = max_y = self.vertices->pos[1];
     min_z = max_z = self.vertices->pos[2];
@@ -150,22 +168,53 @@ typedef struct NFVertState_t {
         if (self.vertices[i].pos[2] > max_z) { max_z = self.vertices[i].pos[2]; }
     }
 
-    //
-    // TODO: probably a very good idea to keep the max/min x,y,z in the subset to provide
-    //       an easy way to cull anything not in the view volume
-    //
-
     //NSLog(@"min x:%f, max x:%f", min_x, max_x);
     //NSLog(@"min y:%f, max y:%f", min_y, max_y);
     //NSLog(@"min z:%f, max z:%f", min_z, max_z);
 
-    // NOTE: this transform will scale and center a unit cube so that it fits
-    //       around the surronding object
+    self.minDimensions.v[0] = min_x;
+    self.minDimensions.v[1] = min_y;
+    self.minDimensions.v[2] = min_z;
+
+    self.maxDimensions.v[0] = max_x;
+    self.maxDimensions.v[1] = max_y;
+    self.maxDimensions.v[2] = max_z;
+}
+
+//
+// TODO: calculate center mesh for entire object as well as the subset (move this
+//       method into the utils - will generate bounding box and/or origin
+//       translation from an NFAssetData object
+//
+
+- (void) calcCenterPointTransform {
+
     GLKMatrix4 m_transform;
 
-#if 1
+    GLKVector3 size = GLKVector3Subtract(self.maxDimensions, self.minDimensions);
+    GLKVector3 center = GLKVector3MultiplyScalar(GLKVector3Add(self.maxDimensions, self.minDimensions), 0.5f);
 
-    GLfloat abs_x, abs_y, abs_z;
+    m_transform = GLKMatrix4Multiply(GLKMatrix4TranslateWithVector4(GLKMatrix4Identity, GLKVector4MakeWithVector3(center, 1.0f)),
+                                     GLKMatrix4ScaleWithVector4(GLKMatrix4Identity, GLKVector4MakeWithVector3(size, 1.0f)));
+
+    // self.modelMat = m_transform;
+
+    self.originCenterMatrix = m_transform;
+}
+
+- (void) calcUnitScaleMatrix {
+
+    GLKMatrix4 m_transform;
+
+    float max_x = self.maxDimensions.v[0];
+    float max_y = self.maxDimensions.v[1];
+    float max_z = self.maxDimensions.v[2];
+
+    float min_x = self.minDimensions.v[0];
+    float min_y = self.minDimensions.v[1];
+    float min_z = self.minDimensions.v[2];
+
+    float abs_x, abs_y, abs_z;
     abs_x = fabsf(max_x) > fabsf(min_x) ? fabsf(max_x) : fabsf(min_x);
     abs_y = fabsf(max_y) > fabsf(min_y) ? fabsf(max_y) : fabsf(min_y);
     abs_z = fabsf(max_z) > fabsf(min_z) ? fabsf(max_z) : fabsf(min_z);
@@ -176,7 +225,7 @@ typedef struct NFVertState_t {
     abs_z *= 2.0f;
 
     // use the largest abs value and scale all dimensions by that value to avoid distortion
-    GLfloat scaleFactor;
+    float scaleFactor;
     scaleFactor = abs_x > abs_y ? abs_x : abs_y;
     scaleFactor = scaleFactor > abs_z ? scaleFactor : abs_z;
 
@@ -194,17 +243,7 @@ typedef struct NFVertState_t {
 
     //m_transform = GLKMatrix4ScaleWithVector4(GLKMatrix4Identity, unitScale);
 
-#else
-
-    GLKVector4 size = {max_x-min_x, max_y-min_y, max_z-min_z, 1.0f};
-    GLKVector4 center = {(max_x+min_x)/2.0f, (max_y+min_y)/2.0f, (max_z+min_z)/2.0f, 1.0f};
-
-    m_transform = GLKMatrix4Multiply(GLKMatrix4TranslateWithVector4(GLKMatrix4Identity, center),
-                                     GLKMatrix4ScaleWithVector4(GLKMatrix4Identity, size));
-
-#endif
-
-    self.modelMat = m_transform;
+    self.unitScalarMatrix = m_transform;
 }
 
 - (void) loadVertexData:(NFVertex_t *)pVertexData ofSize:(size_t)size {
@@ -212,13 +251,17 @@ typedef struct NFVertState_t {
     NSAssert(size > 0, @"loadVertexData failed, size <= 0");
     memcpy(self.vertices, pVertexData, size);
 
-
     //
     // TODO: build the transform hierarchy independent of the low level (OpenGL) subset
     //       and asset data class, though will want to build the bounding box here
     //       (need to determine a way of interfacing a transform hierarchy with asset data object)
     //
-    //[self calcCenterPointTransform];
+
+    [self calcSubsetBounds];
+    [self calcCenterPointTransform];
+    [self calcUnitScaleMatrix];
+
+    self.modelMat = GLKMatrix4Identity;
 }
 
 - (void) loadIndexData:(GLushort *)pIndexData ofSize:(size_t)size {
