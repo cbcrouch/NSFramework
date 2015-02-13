@@ -32,8 +32,13 @@ typedef struct NFVertState_t {
 } NFVertState_t;
 
 
-@interface NFSubset()
 
+// rename NFAssetData to NFAssetContainer, NFGeometry, NFRenderComponent ??
+
+//
+// TODO: move NFSubset into its own header/source file (also rename NFAssetSubset, NFGeometrySubset)
+//
+@interface NFSubset()
 
 //
 // TODO: will need to integrate the min/max dimension finding into the NFAssetData containing object
@@ -60,7 +65,8 @@ typedef struct NFVertState_t {
 @property (nonatomic, assign) GLenum mode;
 
 - (void) loadResourcesWithVertexState:(NFVertState_t)state;
-- (void) drawWithVertexState:(NFVertState_t)state withProgram:(GLuint)hProgram withModelUniform:(GLuint)modelLoc;
+- (void) drawWithVertexState:(NFVertState_t)state withProgram:(GLuint)hProgram withModelUniform:(GLuint)modelLoc
+           withAssetModelMat:(GLKMatrix4)assetModelMat;
 
 //
 // TODO: rename something like calcUnitLengthTransform and add a calcBoundingBox method
@@ -74,11 +80,14 @@ typedef struct NFVertState_t {
 @synthesize unitScalarMatrix = _unitScalarMatrix;
 @synthesize originCenterMatrix = _originCenterMatrix;
 
+//
+// TODO: rename to min/maxBounds or min/maxCoordinates ??
+//
 @synthesize minDimensions = _minDimensions;
 @synthesize maxDimensions = _maxDimensions;
 
 @synthesize drawMode = _drawMode;
-@synthesize modelMat = _modelMat;
+@synthesize subsetModelMat = _subsetModelMat;
 @synthesize surfaceModel = _surfaceModel;
 
 @synthesize vertices = _vertices;
@@ -96,8 +105,11 @@ typedef struct NFVertState_t {
         return nil;
     }
 
+    //
+    // TODO: these should all be set using _subsetModelMat = ... etc.
+    //
     [self setDrawMode:kDrawTriangles];
-    [self setModelMat:GLKMatrix4Identity];
+    [self setSubsetModelMat:GLKMatrix4Identity];
 
     [self setVertices:NULL];
     [self setIndices:NULL];
@@ -189,23 +201,22 @@ typedef struct NFVertState_t {
 
 - (void) calcCenterPointTransform {
 
-    GLKMatrix4 m_transform;
-
-    GLKVector3 size = GLKVector3Subtract(self.maxDimensions, self.minDimensions);
+    //GLKVector3 size = GLKVector3Subtract(self.maxDimensions, self.minDimensions);
     GLKVector3 center = GLKVector3MultiplyScalar(GLKVector3Add(self.maxDimensions, self.minDimensions), 0.5f);
 
-    m_transform = GLKMatrix4Multiply(GLKMatrix4TranslateWithVector4(GLKMatrix4Identity, GLKVector4MakeWithVector3(center, 1.0f)),
-                                     GLKMatrix4ScaleWithVector4(GLKMatrix4Identity, GLKVector4MakeWithVector3(size, 1.0f)));
+    GLKMatrix4 translateMat = GLKMatrix4TranslateWithVector4(GLKMatrix4Identity, GLKVector4MakeWithVector3(center, 1.0f));
 
-    // self.modelMat = m_transform;
+    //GLKMatrix4 scaleMat = GLKMatrix4ScaleWithVector4(GLKMatrix4Identity, GLKVector4MakeWithVector3(size, 1.0f));
 
-    self.originCenterMatrix = m_transform;
+    //
+    // TODO: this should only translate geometry center point to the origin without any scaling
+    //
+
+    //self.originCenterMatrix = GLKMatrix4Multiply(translateMat, scaleMat);
+    self.originCenterMatrix = translateMat;
 }
 
 - (void) calcUnitScaleMatrix {
-
-    GLKMatrix4 m_transform;
-
     float max_x = self.maxDimensions.v[0];
     float max_y = self.maxDimensions.v[1];
     float max_z = self.maxDimensions.v[2];
@@ -231,19 +242,16 @@ typedef struct NFVertState_t {
 
     GLKVector4 unitScale = {1.0f/scaleFactor, 1.0f/scaleFactor, 1.0f/scaleFactor, 1.0f};
 
-    //
-    // TODO: verify will translate center of the object to the origin
-    //
     GLKVector4 origin = {0.0f, 0.0f, 0.0f, 1.0f};
 
-    // NOTE: GLK operation with vector will concatenates matrix with vector
+    //
+    // TODO: remove origin translation from the calculations to determine the unit scalar matrix
+    //
 
-    m_transform = GLKMatrix4Multiply(GLKMatrix4TranslateWithVector4(GLKMatrix4Identity, origin),
+    self.unitScalarMatrix = GLKMatrix4Multiply(GLKMatrix4TranslateWithVector4(GLKMatrix4Identity, origin),
                                      GLKMatrix4ScaleWithVector4(GLKMatrix4Identity, unitScale));
 
     //m_transform = GLKMatrix4ScaleWithVector4(GLKMatrix4Identity, unitScale);
-
-    self.unitScalarMatrix = m_transform;
 }
 
 - (void) loadVertexData:(NFVertex_t *)pVertexData ofSize:(size_t)size {
@@ -261,7 +269,16 @@ typedef struct NFVertState_t {
     [self calcCenterPointTransform];
     [self calcUnitScaleMatrix];
 
-    self.modelMat = GLKMatrix4Identity;
+    //
+    // TODO: animations should ideally transform the model matrix, i.e. a game object is told to move
+    //       along a particular vector or spline over a period of time and the animation system determines
+    //       the pose and model matrix for a given time slice
+    //
+
+    // also animations should have the ability to stack and blend, for example a character can be running
+    // while waving to another character
+
+    self.subsetModelMat = GLKMatrix4Identity;
 }
 
 - (void) loadIndexData:(GLushort *)pIndexData ofSize:(size_t)size {
@@ -304,10 +321,16 @@ typedef struct NFVertState_t {
     CHECK_GL_ERROR();
 }
 
-- (void) drawWithVertexState:(NFVertState_t)state withProgram:(GLuint)hProgram withModelUniform:(GLuint)modelLoc {
+- (void) drawWithVertexState:(NFVertState_t)state withProgram:(GLuint)hProgram withModelUniform:(GLuint)modelLoc
+           withAssetModelMat:(GLKMatrix4)assetModelMat{
+
+    GLKMatrix4 renderMat = GLKMatrix4Multiply(assetModelMat, self.subsetModelMat);
 
     // update shader uniforms with asset specific data
-    glProgramUniformMatrix4fv(hProgram, modelLoc, 1, GL_FALSE, self.modelMat.m);
+
+    //glProgramUniformMatrix4fv(hProgram, modelLoc, 1, GL_FALSE, self.subsetModelMat.m);
+    glProgramUniformMatrix4fv(hProgram, modelLoc, 1, GL_FALSE, renderMat.m);
+
 
     glBindBuffer(GL_ARRAY_BUFFER, self.hVBO);
 
@@ -351,6 +374,8 @@ typedef struct NFVertState_t {
 
 @implementation NFAssetData
 
+@synthesize modelMatrix = _modelMatrix;
+
 @synthesize subsetArray = _subsetArray;
 @synthesize surfaceModelArray = _surfaceModelArray;
 
@@ -374,6 +399,8 @@ typedef struct NFVertState_t {
 
     NFVertState_t *pState = (NFVertState_t *)malloc(sizeof(NFVertState_t));
     NSAssert(pState != NULL, @"ERROR: failed to allocate vertex state in NFAssetData object");
+
+    _modelMatrix = GLKMatrix4Identity;
 
     [self setVertexState:pState];
 
@@ -411,32 +438,8 @@ typedef struct NFVertState_t {
     //
 
     float angle = secsElapsed * M_PI_4;
-
-    GLKMatrix4 model = [[self.subsetArray objectAtIndex:0] modelMat];
-
-
-    //
-    // rotate around model Y axis
-    //
-/*
-    bool isInvertable;
-    GLKMatrix4 invertedModel = GLKMatrix4Invert(model, &isInvertable);
-    if (isInvertable) {
-        GLKVector4 posVec = GLKMatrix4GetColumn(invertedModel, 3);
-        NSLog(@"position vector (%f, %f, %f, %f)", posVec.v[0], posVec.v[1], posVec.v[2], posVec.v[3]);
-
-        model = GLKMatrix4Translate(model, -posVec.v[0], -posVec.v[1], -posVec.v[2]);
-        model = GLKMatrix4Rotate(model, angle, 0.0f, 1.0f, 0.0f);
-        model = GLKMatrix4Translate(model, posVec.v[0], posVec.v[1], posVec.v[2]);
-
-        [[self.subsetArray objectAtIndex:0] setModelMat:model];
-    }
-*/
-
-    //
-    // rotate around origin
-    //
-    [[self.subsetArray objectAtIndex:0] setModelMat:GLKMatrix4RotateY(model, angle)];
+    GLKMatrix4 model = [[self.subsetArray objectAtIndex:0] subsetModelMat];
+    [[self.subsetArray objectAtIndex:0] setSubsetModelMat:GLKMatrix4RotateY(model, angle)];
 }
 
 - (void) drawWithProgram:(GLuint)hProgram withModelUniform:(GLuint)modelLoc {
@@ -447,7 +450,7 @@ typedef struct NFVertState_t {
     glBindVertexArray(self.hVAO);
     for (NFSubset *subset in self.subsetArray) {
         NFVertState_t *pState = self.vertexState;
-        [subset drawWithVertexState:*pState withProgram:hProgram withModelUniform:modelLoc];
+        [subset drawWithVertexState:*pState withProgram:hProgram withModelUniform:modelLoc withAssetModelMat:self.modelMatrix];
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);

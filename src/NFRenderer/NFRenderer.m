@@ -132,6 +132,12 @@
     [m_pAsset createVertexStateWithProgram:m_hProgram];
     [m_pAsset loadResourcesGL];
 
+    m_pAsset.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 0.75f, 0.0f);
+
+    //
+    // TODO: need a call to the asset to tell it to scale and/or center on the origin
+    //
+
 
     m_axisData = [NFAssetLoader allocAssetDataOfType:kAxisWireframe withArgs:nil];
     [m_axisData createVertexStateWithProgram:m_hProgram];
@@ -212,12 +218,14 @@
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_normTexFuncIdx);
     [m_pAsset drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
 
-    glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_expTexFuncIdx);
-    [m_axisData drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
 
     //[m_gridData drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
 
     //[m_planeData drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
+
+
+    glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_expTexFuncIdx);
+    [m_axisData drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
 
     glUseProgram(0);
     CHECK_GL_ERROR();

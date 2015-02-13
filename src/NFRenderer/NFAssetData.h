@@ -76,13 +76,7 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
 
 @property (nonatomic, assign) DRAWING_MODE drawMode;
 
-
-
-//
-// TODO: rather than one "model" matrix store both the unit scalar matrix
-//       and center to origin matrix
-//
-@property (nonatomic, assign) GLKMatrix4 modelMat;
+@property (nonatomic, assign) GLKMatrix4 subsetModelMat;
 
 @property (nonatomic, assign) GLKMatrix4 unitScalarMatrix;
 @property (nonatomic, assign) GLKMatrix4 originCenterMatrix;
@@ -102,6 +96,8 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
 
 
 @interface NFAssetData : NSObject
+
+@property (nonatomic, assign) GLKMatrix4 modelMatrix;
 
 @property (nonatomic, retain) NSArray *subsetArray;
 @property (nonatomic, retain) NSArray *surfaceModelArray;

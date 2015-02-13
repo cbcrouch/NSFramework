@@ -5,11 +5,27 @@
 //  Copyright (c) 2015 Casey Crouch. All rights reserved.
 //
 
+// check, print, and clear all OpenGL errors
 #ifdef DEBUG
-#define CHECK_GL_ERROR() [NFRUtils checkGLError:__FILE__ line:__LINE__ function:__FUNCTION__]
+#   define CHECK_GL_ERROR() [NFRUtils checkGLError:__FILE__ line:__LINE__ function:__FUNCTION__]
 #else
-#define CHECK_GL_ERROR() // no-op when building a release version
+#   define CHECK_GL_ERROR()
 #endif
+
+// an OpenGL assert to break on a failure
+#ifdef DEBUG
+#   define GL(line) do { \
+        line; \
+        assert(glGetError() == GL_NO_ERROR); \
+    } while(0);
+#else
+#   define GL(line) line
+#endif
+
+// usage:
+// GL(glClear(GL_COLORS_MASK));
+// GL(pos_loc = glGetAttribLocation(prog, "pos"));
+
 
 typedef NS_ENUM(NSUInteger, SHADER_TYPE) {
     kVertexShader,
