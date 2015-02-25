@@ -107,14 +107,14 @@
 
     NSString *fileNamePath;
 
-    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
+    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
 
     //
-    // TODO: calculate normals for the teapot so that it can be lit, and import RGBA based textures
+    // TODO: calculate normals for the teapot so that it can be lit
     //
-    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/teapot/teapot.obj";
+    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/teapot/teapot.obj";
 
     //
     // TODO: the following models have no textures applied to them (the suzanne model also has no normals) and
@@ -132,11 +132,11 @@
     [m_pAsset createVertexStateWithProgram:m_hProgram];
     [m_pAsset loadResourcesGL];
 
-    m_pAsset.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 0.75f, 0.0f);
+    //m_pAsset.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 0.75f, 0.0f);
 
-    //
-    // TODO: need a call to the asset to tell it to scale and/or center on the origin
-    //
+    //[m_pAsset applyOriginCenterMatrix];
+
+    [m_pAsset applyUnitScalarMatrix]; // use for teapot
 
 
     m_axisData = [NFAssetLoader allocAssetDataOfType:kAxisWireframe withArgs:nil];
@@ -186,7 +186,9 @@
     //
     //
     //
-    [m_pAsset stepTransforms:secsElapsed];
+    //[m_pAsset stepTransforms:secsElapsed];
+
+    [m_pAsset stepTransforms:0.0f];
 
     //
     // TODO: need to either send in a dirty flag or cache the values and compare so that the

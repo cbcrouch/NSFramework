@@ -579,26 +579,23 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 
     CGColorSpaceRef colorSpace = CGImageGetColorSpace(cgImage);
     CGColorSpaceModel colorModel = CGColorSpaceGetModel(colorSpace);
-
     CGBitmapInfo bitmapInfo = (CGBitmapInfo)kCGImageAlphaNone;
-
-    //
-    // TODO: remove all OpenGL dependencies from asset parsing/processing by defining common data types
-    //       (this will help keep the framework portable should the Metal API come to OS X)
-    //
     if (colorModel == kCGColorSpaceModelRGB) {
         if ([imageClass hasAlpha]) {
+            //
+            // TODO: remove all OpenGL dependencies from asset parsing/processing by defining common data types
+            //
             format = GL_RGBA;
-
-            //
-            // TODO: add alpha support to texture loading and rendering
-            //
-            //bitmapInfo = (CGBitmapInfo)kCGImageAlphaLast;
-            bitmapInfo = (CGBitmapInfo)kCGImageAlphaNoneSkipLast;
+            bitmapInfo = kCGBitmapByteOrderDefault | kCGImageAlphaPremultipliedLast;
         }
         else {
-            NSLog(@"WARNING: RGB image format has not been tested");
             format = GL_RGB;
+            // NOTE: as stated by the Apple developer docs for the CGBitmapContextCreate function
+            // "The constants for specifying the alpha channel information are declared with the CGImageAlphaInfo type but can be passed to this parameter safely."
+            bitmapInfo = (CGBitmapInfo)kCGImageAlphaNoneSkipLast;
+
+            NSAssert(bitsPerComponent == 8, @"ERROR: RGB images currently only support 8 bits per component");
+            rowByteSize = CGRectGetWidth(mapSize) * 4;
         }
     }
     else {
@@ -617,15 +614,6 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
     NSAssert(pData != NULL, @"ERROR: failed to allocate image data buffer");
 
     BOOL flipVertical = YES;
-
-
-    NSLog(@"size of texture: (%f, %f)", CGRectGetWidth(mapSize), CGRectGetHeight(mapSize));
-    NSLog(@"rowByteSize: %ld", rowByteSize);
-    NSLog(@"bitsPerComponent: %ld", bitsPerComponent);
-
-
-    // NOTE: as stated by the Apple developer docs
-    // "The constants for specifying the alpha channel information are declared with the CGImageAlphaInfo type but can be passed to this parameter safely."
     CGContextRef context = CGBitmapContextCreate(pData, CGRectGetWidth(mapSize), CGRectGetHeight(mapSize),
                                                  bitsPerComponent, rowByteSize, CGImageGetColorSpace(cgImage),
                                                  bitmapInfo);
@@ -668,7 +656,6 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 #endif
 
     [nsimage release];
-
 
     NFDataMap *dataMap = [[[NFDataMap alloc] init] autorelease];
     [dataMap loadWithData:pData ofSize:mapSize ofType:type withFormat:format];

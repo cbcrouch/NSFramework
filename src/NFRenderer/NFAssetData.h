@@ -107,6 +107,14 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
 
 - (void) stepTransforms:(float)secsElapsed;
 
+
+//
+// TODO: remove these terrible debug/test calls
+//
+- (void) applyUnitScalarMatrix;
+- (void) applyOriginCenterMatrix;
+
+
 - (void) drawWithProgram:(GLuint)hProgram withModelUniform:(GLuint)modelLoc;
 
 - (void) createVertexStateWithProgram:(GLuint)hProgram;
