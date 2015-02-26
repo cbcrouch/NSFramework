@@ -33,10 +33,17 @@
             NFWavefrontObj *wavefrontObj = [[[NFWavefrontObj alloc] init] autorelease];
             [wavefrontObj loadFileWithPath:fileNamePath];
 
+
             //
             // TODO: profile and optimize the file parsing
             //
             [wavefrontObj parseFile];
+
+            if ([[[wavefrontObj object] normals] count] == 0) {
+                NSLog(@"WARNING: Wavefront obj has no normals");
+                [[wavefrontObj object] calculateNormals];
+            }
+
 
             //
             // TODO: only one Wavefront object is currently supported, will need to update
@@ -49,6 +56,7 @@
                 [asset addSubsetWithIndices:[group faceStrArray] ofObject:[wavefrontObj object] atIndex:index];
                 ++index;
             }
+
 
             // loop through all values and convert them into NFLightingModel objects
             NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];

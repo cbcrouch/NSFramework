@@ -108,13 +108,13 @@
     NSString *fileNamePath;
 
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
-    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
+    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
 
     //
     // TODO: calculate normals for the teapot so that it can be lit
     //
-    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/teapot/teapot.obj";
+    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/teapot/teapot.obj";
 
     //
     // TODO: the following models have no textures applied to them (the suzanne model also has no normals) and
@@ -136,7 +136,7 @@
 
     //[m_pAsset applyOriginCenterMatrix];
 
-    [m_pAsset applyUnitScalarMatrix]; // use for teapot
+    //[m_pAsset applyUnitScalarMatrix]; // use for teapot
 
 
     m_axisData = [NFAssetLoader allocAssetDataOfType:kAxisWireframe withArgs:nil];

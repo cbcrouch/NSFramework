@@ -76,8 +76,59 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
     }
     return _groups;
 }
-@end
 
+//
+// NOTE: Wavefront obj normals are per-vertex
+//
+- (void) calculateNormals {
+
+
+    // Vertex3f_t is only used by Wavefront obj parsing
+    //Vertex3f_t vert;
+
+    // calculateFaceWithPoints only reads position component of NFVertex_t
+
+    //
+    // TODO: convert self.vertices into an NFVertex_t array that can be used to
+    //       calculate the vertex normals
+    //
+
+
+    NSUInteger count = [[self vertices] count];
+
+    for (WFGroup* group in self.groups) {
+        NSMutableArray* faceStrings = [group faceStrArray];
+
+        //
+        // TODO: need to iterate in groups of three (quads should have been converted into triangles by this point)
+        //
+        for (NSString *str in faceStrings) {
+            //NSLog(@"%@", str);
+
+
+            Vertex3f_t vertex;
+
+            int vertIndex = [str intValue];
+            vertIndex = (vertIndex > 0) ? (vertIndex - 1) : (int)(count + vertIndex);
+
+            [[[self vertices] objectAtIndex:vertIndex] getValue:&vertex];
+
+
+            GLushort indices[3];
+            indices[0] = 2;
+            indices[1] = 1;
+            indices[2] = 0;
+
+            //
+            // TODO: calculateFaceWithPoints wants an NFVertex_t array
+            //
+
+            //NFFace_t face = [NFAssetData calculateFaceWithPoints:NFVertex withIndices:indices];
+
+        }
+    }
+}
+@end
 
 @implementation WFGroup
 @synthesize groupName = _groupName;

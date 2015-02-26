@@ -58,11 +58,6 @@ typedef NS_ENUM(NSUInteger, FaceGroupType) {
         return (intValue > 0) ? (intValue - 1) : (count + intValue);
     };
 
-    //
-    // TODO: break out the parsing of the sorted array into a sub/helper method that parses the
-    //       vertx ("face") string
-    //
-
     // iterate through the uniqueArray and create interleaved vertices
     int dataIndex = 0;
 
@@ -82,13 +77,8 @@ typedef NS_ENUM(NSUInteger, FaceGroupType) {
         //f v1//vn1 v2//vn2 v3//vn3
 
         //
-        // TODO: if there is no normal data calculate a normal vector from the three
-        //       vertices listed by the face
-        //
-
-        //
         // TODO: should see if vertices themselves are optional i.e. if a file only has NURBS data
-        //       does it need to contain faces for the indexes or are they generated from the NURBS
+        //       does it need to contain faces for the indexes or are they generated from the NURBS ??
         //
 
         // NOTE: indices in file start at 1, need to make zero based and if you ever see a negative face index
@@ -100,7 +90,7 @@ typedef NS_ENUM(NSUInteger, FaceGroupType) {
         NSUInteger count = [groupParts count];
         NSInteger intValue;
         for (NSUInteger i=0; i<count; ++i) {
-            // NOTE: will have an empty string i.e. "" at the texture coordinate position when
+            // NOTE: will have an empty string i.e. "" at the texture coordinate or normal position when
             //       there is no texture coordinate given and this will return an intValue of 0
             intValue = [[groupParts objectAtIndex:i] intValue];
             switch (i) {
@@ -110,12 +100,6 @@ typedef NS_ENUM(NSUInteger, FaceGroupType) {
                 default: NSAssert(false, @"Error, unknown face index type"); break;
             }
         }
-
-        //
-        // TODO: should safe guard must be in place for the texture coordinate and the normal, once
-        //       parsing parametric surfaces, NURBS, etc. will need to verify if vertices can be optional
-        //       when defining faces
-        //
 
         NSValue *valueObj;
 

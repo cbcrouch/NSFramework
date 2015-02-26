@@ -38,14 +38,13 @@ typedef NS_ENUM(NSUInteger, REFLECTION_MODEL) {
 };
 
 
-//
-// TODO: try using ALIGN(p) or ALIGNBYTES and benchmark byte aligned versus not byte aligned structs
-//
+
 typedef struct xyz3f_t {
     float x;
     float y;
     float z;
 } Vertex3f_t, Vector3f_t;
+
 
 
 // container for Wavefront object
@@ -56,6 +55,9 @@ typedef struct xyz3f_t {
 @property (nonatomic, retain) NSMutableArray *vertices;
 @property (nonatomic, retain) NSMutableArray *textureCoords;
 @property (nonatomic, retain) NSMutableArray *normals;
+
+- (void) calculateNormals;
+
 @end
 
 
