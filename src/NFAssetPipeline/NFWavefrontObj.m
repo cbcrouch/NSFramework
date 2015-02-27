@@ -98,6 +98,17 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
         vertexArray[i].pos[3] = 1.0f;
     }
 
+    float (^normalizeFloatZero)(float) = ^ float (float floatValue) {
+        // epsilon value based off of C++ std::numeric_limits<float>::epsilon()
+        static const float epsilon = 0.000000112;
+        if (floatValue < epsilon && floatValue > -epsilon) {
+            if (signbit(floatValue)) {
+                floatValue *= -1.0f;
+            }
+        }
+        return floatValue;
+    };
+
     for (WFGroup* group in self.groups) {
 
         NSAssert([[group faceStrArray] count] % 3 == 0, @"ERROR: face string array can only process triangles");
@@ -123,11 +134,13 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 
             NFFace_t face = [NFAssetUtils calculateFaceWithPoints:vertexArray withIndices:indices];
 
+            face.normal[0] = normalizeFloatZero(face.normal[0]);
+            face.normal[1] = normalizeFloatZero(face.normal[1]);
+            face.normal[2] = normalizeFloatZero(face.normal[2]);
+
             //
             // TODO: normals are calculated in the correct order (as per the Wavefront obj file)
             //       need to store them in self.normals and set indicies in the groups face string array
-            //
-            //       should consider getting rid of -0.0 in order to reduce the number of normals stored
             //
 
             NSLog(@"%f %f %f", face.normal[0], face.normal[1], face.normal[2]);
