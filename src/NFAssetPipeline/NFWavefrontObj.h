@@ -38,13 +38,17 @@ typedef NS_ENUM(NSUInteger, REFLECTION_MODEL) {
 };
 
 
-
-typedef struct xyz3f_t {
-    float x;
-    float y;
-    float z;
-} Vertex3f_t, Vector3f_t;
-
+//
+// TODO: rename to something that will along the lines of checkObjFaceIndex, also rename count argument
+//       to something like primitivesArrayCount
+//
+static NSInteger (^indexCheck)(NSInteger, NSUInteger) = ^ NSInteger (NSInteger intValue, NSUInteger count) {
+    // return -1 if the intValue or the count are 0, -1 should be treated as "value not present"
+    if (intValue == 0 || count == 0) {
+        return -1;
+    }
+    return (intValue > 0) ? (intValue - 1) : (count + intValue);
+};
 
 
 // container for Wavefront object

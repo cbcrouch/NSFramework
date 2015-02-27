@@ -26,9 +26,13 @@ static NSString * const g_normPrefix = @"vn ";
 // g_paramPrefix
 static NSString * const g_facePrefix = @"f ";
 
-static const char *g_vertexType = @encode(Vertex3f_t);
-static const char *g_texType = @encode(MapCoord3f_t);
-static const char *g_normType = @encode(Vector3f_t);
+//
+// TODO: only need to encode a single type
+//
+static const char *g_vertexType = @encode(GLKVector3);
+static const char *g_texType = @encode(GLKVector3);
+static const char *g_normType = @encode(GLKVector3);
+
 // g_paramType
 
 void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *line, NSString *prefix, NSArray *triplet) {
@@ -89,12 +93,12 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 
     for (int i=0; i<vertexCount; ++i) {
         // NOTE: Vertex3f_t is only used by Wavefront obj parsing
-        Vertex3f_t vert;
+        GLKVector3 vert;
         [self.vertices[i] getValue:&vert];
 
-        vertexArray[i].pos[0] = vert.x;
-        vertexArray[i].pos[1] = vert.y;
-        vertexArray[i].pos[2] = vert.z;
+        vertexArray[i].pos[0] = vert.v[0];
+        vertexArray[i].pos[1] = vert.v[1];
+        vertexArray[i].pos[2] = vert.v[2];
         vertexArray[i].pos[3] = 1.0f;
     }
 
@@ -116,10 +120,47 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
         NFFace_t faceArray[faceCount / 3];
         for (int i=0; i<faceCount; i+=3) {
 
+
+
             //
             // TODO: this currently assumes no texture coordinate, need to update to handle insert normal index
             //       into face strings with texture coordinates
             //
+
+
+            // NSArray *groupParts = [faceStr componentsSeparatedByString:@"/"];
+            // intValue = [[groupParts objectAtIndex:i] intValue];
+
+            /*
+            NSUInteger count = [groupParts count];
+            NSInteger intValue;
+            for (NSUInteger i=0; i<count; ++i) {
+                // NOTE: will have an empty string i.e. "" at the texture coordinate or normal position when
+                //       there is no texture coordinate given and this will return an intValue of 0
+                intValue = [[groupParts objectAtIndex:i] intValue];
+                switch (i) {
+                    case kGroupIndexVertex: vertIndex = indexCheck(intValue, [[wfObj vertices] count]); break;
+                    case kGroupIndexTex: texIndex = indexCheck(intValue, [[wfObj textureCoords] count]); break;
+                    case kGroupIndexNorm: normIndex = indexCheck(intValue, [[wfObj normals] count]); break;
+                    default: NSAssert(NO, @"Error, unknown face index type"); break;
+                }
+            }
+
+            if (vertIndex != -1) {
+                // contains a vertex index
+            }
+
+            if (texIndex != -1) {
+                // contains a texture coordinate index
+            }
+
+            if (normIndex != -1) {
+                // contains a normal index
+            }
+            */
+
+
+
             int index1 = [faceStrings[i] intValue];
             int index2 = [faceStrings[i + 1] intValue];
             int index3 = [faceStrings[i + 2] intValue];
@@ -132,6 +173,9 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
             indices[0] = (GLushort)index1;
             indices[1] = (GLushort)index2;
             indices[2] = (GLushort)index3;
+
+
+
 
             //NSLog(@"%d %d %d", indices[0], indices[1], indices[2]);
 
@@ -475,10 +519,10 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 
 - (void) parseVertexArray:(NSArray *)vertexArray {
     // parse vertex
-    Vertex3f_t vertex;
-    vertex.x = [[vertexArray objectAtIndex:0] floatValue];
-    vertex.y = [[vertexArray objectAtIndex:1] floatValue];
-    vertex.z = [[vertexArray objectAtIndex:2] floatValue];
+    GLKVector3 vertex;
+    vertex.v[0] = [[vertexArray objectAtIndex:0] floatValue];
+    vertex.v[1] = [[vertexArray objectAtIndex:1] floatValue];
+    vertex.v[2] = [[vertexArray objectAtIndex:2] floatValue];
 
     // add vertex to parent class NSAssetData
     NSValue *value = [NSValue value:&vertex withObjCType:g_vertexType];
@@ -487,16 +531,16 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 
 - (void) parseTextureCoordArray:(NSArray *)texCoordArray {
     // parse texture coord
-    MapCoord3f_t texCoord;
-    texCoord.u = [[texCoordArray objectAtIndex:0] floatValue];
-    texCoord.v = [[texCoordArray objectAtIndex:1] floatValue];
+    GLKVector3 texCoord;
+    texCoord.v[0] = [[texCoordArray objectAtIndex:0] floatValue];
+    texCoord.v[1] = [[texCoordArray objectAtIndex:1] floatValue];
 
     // if texture coordiante supports depth use it
     if ([texCoordArray count] > 2) {
-        texCoord.w = [[texCoordArray objectAtIndex:2] floatValue];
+        texCoord.v[2] = [[texCoordArray objectAtIndex:2] floatValue];
     }
     else {
-        texCoord.w = 0.0f;
+        texCoord.v[2] = 0.0f;
     }
 
     // add texture coord to parent NSAssetData
@@ -506,10 +550,10 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 
 - (void) parseNormalVectorArray:(NSArray *)normVectorArray {
     // parse normal vector
-    Vector3f_t normal;
-    normal.x = [[normVectorArray objectAtIndex:0] floatValue];
-    normal.y = [[normVectorArray objectAtIndex:1] floatValue];
-    normal.z = [[normVectorArray objectAtIndex:2] floatValue];
+    GLKVector3 normal;
+    normal.v[0] = [[normVectorArray objectAtIndex:0] floatValue];
+    normal.v[1] = [[normVectorArray objectAtIndex:1] floatValue];
+    normal.v[2] = [[normVectorArray objectAtIndex:2] floatValue];
 
     // add normal to parent NSAssetData
     NSValue *value = [NSValue value:&normal withObjCType:g_normType];
@@ -701,7 +745,7 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
         }
     }
     else {
-        NSAssert(false, @"ERROR: unsupported color model");
+        NSAssert(NO, @"ERROR: unsupported color model");
     }
 
     // check if sample size is the same as unsigned byte size
@@ -709,7 +753,7 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
         type = GL_UNSIGNED_BYTE;
     }
     else {
-        NSAssert(false, @"ERROR: unsupported sample type");
+        NSAssert(NO, @"ERROR: unsupported sample type");
     }
 
     GLubyte *pData = (GLubyte *)malloc(mapSize.size.height * rowByteSize);

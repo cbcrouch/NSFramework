@@ -145,7 +145,7 @@ typedef struct NFVertState_t {
         case kDrawTriangles: self.mode = GL_TRIANGLES; break;
 
         default:
-            NSAssert(false, @"ERROR: setDrawMode received unknown type");
+            NSAssert(NO, @"ERROR: setDrawMode received unknown type");
             break;
     }
 }

@@ -50,14 +50,6 @@ typedef NS_ENUM(NSUInteger, FaceGroupType) {
 
     NSMutableArray *indexArray = [[[NSMutableArray alloc] init] autorelease];
 
-    NSInteger (^indexCheck)(NSInteger, NSUInteger) = ^ NSInteger (NSInteger intValue, NSUInteger count) {
-        //return -1 if the intValue or the count are 0
-        if (intValue == 0 || count == 0) {
-            return -1;
-        }
-        return (intValue > 0) ? (intValue - 1) : (count + intValue);
-    };
-
     // iterate through the uniqueArray and create interleaved vertices
     int dataIndex = 0;
 
@@ -97,7 +89,7 @@ typedef NS_ENUM(NSUInteger, FaceGroupType) {
                 case kGroupIndexVertex: vertIndex = indexCheck(intValue, [[wfObj vertices] count]); break;
                 case kGroupIndexTex: texIndex = indexCheck(intValue, [[wfObj textureCoords] count]); break;
                 case kGroupIndexNorm: normIndex = indexCheck(intValue, [[wfObj normals] count]); break;
-                default: NSAssert(false, @"Error, unknown face index type"); break;
+                default: NSAssert(NO, @"Error, unknown face index type"); break;
             }
         }
 
@@ -106,31 +98,31 @@ typedef NS_ENUM(NSUInteger, FaceGroupType) {
         // NOTE: w component of norm should be 0.0, and 1.0 for position (for vectors w = 0.0 and for points w = 1.0)
 
         if (vertIndex != -1) {
-            Vertex3f_t vertex;
+            GLKVector3 vertex;
             valueObj = [[wfObj vertices] objectAtIndex:vertIndex];
             [valueObj getValue:&vertex];
-            pData[dataIndex].pos[0] = vertex.x;
-            pData[dataIndex].pos[1] = vertex.y;
-            pData[dataIndex].pos[2] = vertex.z;
+            pData[dataIndex].pos[0] = vertex.v[0];
+            pData[dataIndex].pos[1] = vertex.v[1];
+            pData[dataIndex].pos[2] = vertex.v[2];
             pData[dataIndex].pos[3] = 1.0f;
         }
 
         if (texIndex != -1) {
-            MapCoord3f_t texCoord;
+            GLKVector3 texCoord;
             valueObj = [[wfObj textureCoords] objectAtIndex:texIndex];
             [valueObj getValue:&texCoord];
-            pData[dataIndex].texCoord[0] = texCoord.u;
-            pData[dataIndex].texCoord[1] = texCoord.v;
-            pData[dataIndex].texCoord[2] = texCoord.w;
+            pData[dataIndex].texCoord[0] = texCoord.v[0];
+            pData[dataIndex].texCoord[1] = texCoord.v[1];
+            pData[dataIndex].texCoord[2] = texCoord.v[2];
         }
 
         if (normIndex != -1) {
-            Vector3f_t normal;
+            GLKVector3 normal;
             valueObj = [[wfObj normals] objectAtIndex:normIndex];
             [valueObj getValue:&normal];
-            pData[dataIndex].norm[0] = normal.x;
-            pData[dataIndex].norm[1] = normal.y;
-            pData[dataIndex].norm[2] = normal.z;
+            pData[dataIndex].norm[0] = normal.v[0];
+            pData[dataIndex].norm[1] = normal.v[1];
+            pData[dataIndex].norm[2] = normal.v[2];
             pData[dataIndex].norm[3] = 0.0f;
         }
 

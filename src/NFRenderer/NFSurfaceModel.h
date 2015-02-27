@@ -8,32 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-
-//
-// TODO: move data map functionality into NFRCommonTypes.h or something similar so that other
-//       modules don't have to include all of the surface model class
-//
-typedef struct MapCoord3f_t {
-    float u;
-    float v;
-
-    // TODO: cleanup quote from OpenGL documentation and explain the difference between extra texture params
-    //       that OpenGL is expecting and what is defined in the Wavefront obj specification
-
-    // The size of the vec type of texCoord​ depends on the dimensionality of sampler​. A 1D sampler takes a "float", 2D
-    // samplers take "vec2", etc. Array samplers add one additional coordinate for the array level to sample. Shadow
-    // samplers add one additional coordinate for the sampler comparison value. Array and shadow samplers add two
-    // coordinates: the array level followed by the comparison value. So vec when used with a sampler1DArrayShadow is
-    // a "vec3".
-
-    float w; // Wavefront obj format allows for a w coord (texture depth, default = 0.0)
-} MapCoord3f_t;
-
-// NOTE: OpenGL texture coordinates usually use (S, T, R) may be worth adopting this convention to avoid
-//       overloading the "w" component
-
-
-
 //
 // TODO: should expand NFDataMap to support cube map textures, array textures, and buffer textures
 //

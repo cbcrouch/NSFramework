@@ -67,7 +67,7 @@
             break;
 
         default:
-            NSAssert(false, @"ERROR: NFDataMap can NOT load data with an unknown type");
+            NSAssert(NO, @"ERROR: NFDataMap can NOT load data with an unknown type");
             break;
     }
 
@@ -82,7 +82,7 @@
             break;
 
         default:
-            NSAssert(false, @"ERROR: NFDataMap can NOT load data with an unknown format");
+            NSAssert(NO, @"ERROR: NFDataMap can NOT load data with an unknown format");
             break;
     }
 

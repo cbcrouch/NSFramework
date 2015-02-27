@@ -11,6 +11,16 @@
 #import "NFSurfaceModel.h"
 
 
+//
+// TODO: disable __STRICT_ANSI__ so can use .xyz .rgb .stp with GLKVector3
+//
+
+
+//
+// TODO: move vertex/face definitions into NFRCommonTypes.h or something similar so that other
+//       modules don't have to include the NFAssetData
+//
+
 #define NFLOATS_POS 4
 #define NFLOATS_NORM 4
 #define NFLOATS_TEX 3

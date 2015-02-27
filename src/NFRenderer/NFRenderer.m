@@ -183,12 +183,9 @@
 
 - (void) updateFrameWithTime:(float)secsElapsed withViewMatrix:(GLKMatrix4)viewMatrix
               withProjection:(GLKMatrix4)projection {
-    //
-    //
-    //
-    //[m_pAsset stepTransforms:secsElapsed];
 
-    [m_pAsset stepTransforms:0.0f];
+    [m_pAsset stepTransforms:secsElapsed];
+    //[m_pAsset stepTransforms:0.0f];
 
     //
     // TODO: need to either send in a dirty flag or cache the values and compare so that the
