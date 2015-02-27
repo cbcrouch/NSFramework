@@ -116,54 +116,39 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
         NSMutableArray* faceStrings = [group faceStrArray];
         NSUInteger faceCount = [faceStrings count];
 
+        //
+        // NOTE: test one face to see if it contains a texture coordinate, doing this rather than checking if
+        //       self.textureCoords count > 0 since it is possible that one group will have texture coordinates
+        //       and another will not
+        //
+        BOOL hasTextureCoordinates = NO;
+        NSArray *groupParts = [faceStrings[0] componentsSeparatedByString:@"/"];
+        for (NSInteger i=0; i<[groupParts count]; ++i) {
+            NSInteger intValue = [[groupParts objectAtIndex:i] integerValue];
+            switch (i) {
+                case kGroupIndexTex: indexCheck(intValue, [self.textureCoords count]);
+                    hasTextureCoordinates = YES;
+                    break;
+                default: break;
+            }
+        }
+
         int faceIndex = 0;
         NFFace_t faceArray[faceCount / 3];
         for (int i=0; i<faceCount; i+=3) {
-
-
-
-            //
-            // TODO: this currently assumes no texture coordinate, need to update to handle insert normal index
-            //       into face strings with texture coordinates
-            //
-
-
-            // NSArray *groupParts = [faceStr componentsSeparatedByString:@"/"];
-            // intValue = [[groupParts objectAtIndex:i] intValue];
-
-            /*
-            NSUInteger count = [groupParts count];
-            NSInteger intValue;
-            for (NSUInteger i=0; i<count; ++i) {
-                // NOTE: will have an empty string i.e. "" at the texture coordinate or normal position when
-                //       there is no texture coordinate given and this will return an intValue of 0
-                intValue = [[groupParts objectAtIndex:i] intValue];
-                switch (i) {
-                    case kGroupIndexVertex: vertIndex = indexCheck(intValue, [[wfObj vertices] count]); break;
-                    case kGroupIndexTex: texIndex = indexCheck(intValue, [[wfObj textureCoords] count]); break;
-                    case kGroupIndexNorm: normIndex = indexCheck(intValue, [[wfObj normals] count]); break;
-                    default: NSAssert(NO, @"Error, unknown face index type"); break;
-                }
+            int index1 = -1;
+            int index2 = -1;
+            int index3 = -1;
+            if (hasTextureCoordinates) {
+                index1 = [[[faceStrings[i] componentsSeparatedByString:@"/"] objectAtIndex:0] intValue];
+                index2 = [[[faceStrings[i + 1] componentsSeparatedByString:@"/"] objectAtIndex:0] intValue];
+                index3 = [[[faceStrings[i + 2] componentsSeparatedByString:@"/"] objectAtIndex:0] intValue];
             }
-
-            if (vertIndex != -1) {
-                // contains a vertex index
+            else {
+                index1 = [faceStrings[i] intValue];
+                index2 = [faceStrings[i + 1] intValue];
+                index3 = [faceStrings[i + 2] intValue];
             }
-
-            if (texIndex != -1) {
-                // contains a texture coordinate index
-            }
-
-            if (normIndex != -1) {
-                // contains a normal index
-            }
-            */
-
-
-
-            int index1 = [faceStrings[i] intValue];
-            int index2 = [faceStrings[i + 1] intValue];
-            int index3 = [faceStrings[i + 2] intValue];
 
             index1 = (index1 > 0) ? (index1 - 1) : (int)(vertexCount + index1);
             index2 = (index2 > 0) ? (index2 - 1) : (int)(vertexCount + index2);
@@ -174,19 +159,11 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
             indices[1] = (GLushort)index2;
             indices[2] = (GLushort)index3;
 
-
-
-
-            //NSLog(@"%d %d %d", indices[0], indices[1], indices[2]);
-
             faceArray[faceIndex] = [NFAssetUtils calculateFaceWithPoints:vertexArray withIndices:indices];
 
             faceArray[faceIndex].normal[0] = normalizeFloatZero(faceArray[faceIndex].normal[0]);
             faceArray[faceIndex].normal[1] = normalizeFloatZero(faceArray[faceIndex].normal[1]);
             faceArray[faceIndex].normal[2] = normalizeFloatZero(faceArray[faceIndex].normal[2]);
-
-            //NSLog(@"%f %f %f", faceArray[faceIndex].normal[0], faceArray[faceIndex].normal[1], faceArray[faceIndex].normal[2]);
-            //NSLog(@"%d %d %d", faceArray[faceIndex].indices[0], faceArray[faceIndex].indices[1], faceArray[faceIndex].indices[2]);
 
             ++faceIndex;
         }

@@ -7,12 +7,6 @@
 
 #import "NFAssetData+Wavefront.h"
 
-typedef NS_ENUM(NSUInteger, FaceGroupType) {
-    kGroupIndexVertex = 0,
-    kGroupIndexTex = 1,
-    kGroupIndexNorm = 2
-};
-
 @implementation NFAssetData (Wavefront)
 
 - (void) setNumberOfSubsets:(NSInteger)numSubsets {

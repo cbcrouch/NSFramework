@@ -38,6 +38,13 @@ typedef NS_ENUM(NSUInteger, REFLECTION_MODEL) {
 };
 
 
+typedef NS_ENUM(NSUInteger, FaceGroupType) {
+    kGroupIndexVertex = 0,
+    kGroupIndexTex = 1,
+    kGroupIndexNorm = 2
+};
+
+
 //
 // TODO: rename to something that will along the lines of checkObjFaceIndex, also rename count argument
 //       to something like primitivesArrayCount
