@@ -87,15 +87,11 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 // NOTE: Wavefront obj normals are per-vertex
 //
 - (void) calculateNormals {
-
     NSUInteger vertexCount = [[self vertices] count];
     NFVertex_t vertexArray[vertexCount];
-
     for (int i=0; i<vertexCount; ++i) {
-        // NOTE: Vertex3f_t is only used by Wavefront obj parsing
         GLKVector3 vert;
         [self.vertices[i] getValue:&vert];
-
         vertexArray[i].pos[0] = vert.v[0];
         vertexArray[i].pos[1] = vert.v[1];
         vertexArray[i].pos[2] = vert.v[2];
@@ -134,6 +130,8 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
         }
 
         int faceIndex = 0;
+
+        // calculate face normals
         NFFace_t faceArray[faceCount / 3];
         for (int i=0; i<faceCount; i+=3) {
             int index1 = -1;
@@ -149,7 +147,6 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
                 index2 = [faceStrings[i + 1] intValue];
                 index3 = [faceStrings[i + 2] intValue];
             }
-
             index1 = (index1 > 0) ? (index1 - 1) : (int)(vertexCount + index1);
             index2 = (index2 > 0) ? (index2 - 1) : (int)(vertexCount + index2);
             index3 = (index3 > 0) ? (index3 - 1) : (int)(vertexCount + index3);
@@ -168,36 +165,55 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
             ++faceIndex;
         }
 
+        // convert C face normals array into an NSArray so it can be used with NFAssetUtils vertex normal calculation
+        static const char *faceType = @encode(NFFace_t);
+        NSMutableArray* tempFaceNormals = [[[NSMutableArray alloc] initWithCapacity:faceIndex] autorelease];
+        for (int i=0; i<faceIndex; ++i) {
+            NSValue *value = [NSValue value:&(faceArray[i]) withObjCType:faceType];
+            [tempFaceNormals addObject:value];
+        }
+        NSArray* faceNormals = [[[NSArray alloc] initWithArray:tempFaceNormals] autorelease];
+
+        // calculate vertex normals and update Wavefront obj face
+        for (int i=0; i<faceCount; ++i) {
+            int index = -1;
+            if (hasTextureCoordinates) {
+                index = [[[faceStrings[i] componentsSeparatedByString:@"/"] objectAtIndex:0] intValue];
+            }
+            else {
+                index = [faceStrings[i] intValue];
+            }
+            index = (index > 0) ? (index - 1) : (int)(vertexCount + index);
 
 
-        //
-        // TODO: parse face array and calculate vertex normals (should take a param that will
-        //       determine whether to use area weighted normals or angle weighted normals)
-        //
-
-        // NFAssetUtils, currently only area weighted normals is implemented
-        //+ (GLKVector4) calculateAreaWeightedNormalOfIndex:(GLushort)index withFaces:(NSArray *)faceArray;
+            //
+            // TODO: parse face array and calculate vertex normals (should take a param that will
+            //       determine whether to use area weighted normals or angle weighted normals)
+            //
 
 
+            // NOTE: currently only area weighted normals is implemented
+            GLKVector4 vertexNormal = [NFAssetUtils calculateAreaWeightedNormalOfIndex:index withFaces:faceNormals];
+            NSValue* value = [NSValue value:&vertexNormal withObjCType:g_vertexType];
+            [self.normals addObject:value];
 
-        //
-        // TODO: create new face string and replace current face string
-        //
 
-        //
-        // NOTE: normal index should be one based at this point
-        //
+            NSLog(@"%f %f %f", vertexNormal.v[0], vertexNormal.v[1], vertexNormal.v[2]);
 
-        // v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3
 
-        // v1/vt1 v2/vt2 v3/vt3 v4/vt4
+            //
+            // TODO: create new face string and replace current face string
+            //
 
-        // v1//vn1 v2//vn2 v3//vn3
+            // v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3
+            // v1/vt1 v2/vt2 v3/vt3 v4/vt4
+            // v1//vn1 v2//vn2 v3//vn3
 
-        //NSString* str1 = [NSString stringWithFormat:@"%d\\\\%d", index1+1, normalIndex+1];
-        //NSString* str2 = [NSString stringWithFormat:@"%d\\\\%d", index2+1, normalIndex+2];
-        //NSString* str3 = [NSString stringWithFormat:@"%d\\\\%d", index3+1, normalIndex+3];
-        //NSLog(@"%@ %@ %@", str1, str2, str3);
+            // NOTE: normal index should be one based at this point
+            //NSString* str = [NSString stringWithFormat:@"%d\\\\%d", index, [self.normals count]+1];
+
+            //faceStrings[i] = str;
+        }
     }
 }
 @end
