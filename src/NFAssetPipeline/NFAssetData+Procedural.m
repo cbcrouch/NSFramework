@@ -6,7 +6,7 @@
 //
 
 #import "NFAssetData+Procedural.h"
-
+#import "NFAssetUtils.h"
 
 static const char *g_faceType = @encode(NFFace_t);
 
@@ -281,12 +281,12 @@ static const char *g_faceType = @encode(NFFace_t);
     indices[4] = 3;
     indices[5] = 2;
 
-    NFFace_t face1 = [NFAssetData calculateFaceWithPoints:vertices withIndices:indices];
+    NFFace_t face1 = [NFAssetUtils calculateFaceWithPoints:vertices withIndices:indices];
 
     GLushort *indexPtr = indices;
     indexPtr += 3;
 
-    NFFace_t face2 = [NFAssetData calculateFaceWithPoints:vertices withIndices:indexPtr];
+    NFFace_t face2 = [NFAssetUtils calculateFaceWithPoints:vertices withIndices:indexPtr];
 
     // encode the faces into an array
     NSValue *value1 = [NSValue value:&face1 withObjCType:g_faceType];
@@ -294,7 +294,7 @@ static const char *g_faceType = @encode(NFFace_t);
     NSArray *array = [[[NSArray alloc] initWithObjects:value1, value2, nil] autorelease];
 
     for (int i=0; i<4; ++i) {
-        GLKVector4 vertexNormal = [NFAssetData calculateAreaWeightedNormalOfIndex:i withFaces:array];
+        GLKVector4 vertexNormal = [NFAssetUtils calculateAreaWeightedNormalOfIndex:i withFaces:array];
         vertices[i].norm[0] = vertexNormal.v[0];
         vertices[i].norm[1] = vertexNormal.v[1];
         vertices[i].norm[2] = vertexNormal.v[2];

@@ -8,6 +8,8 @@
 #import "NFWavefrontObj.h"
 #import "NFAssetData+Wavefront.h"
 
+#import "NFAssetUtils.h"
+
 
 static NSString * const g_matPrefix = @"mtllib ";
 //
@@ -82,49 +84,53 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 //
 - (void) calculateNormals {
 
+    NSUInteger vertexCount = [[self vertices] count];
+    NFVertex_t vertexArray[vertexCount];
 
-    // Vertex3f_t is only used by Wavefront obj parsing
-    //Vertex3f_t vert;
+    for (int i=0; i<vertexCount; ++i) {
+        // Vertex3f_t is only used by Wavefront obj parsing
+        Vertex3f_t vert;
+        [self.vertices[i] getValue:&vert];
 
-    // calculateFaceWithPoints only reads position component of NFVertex_t
-
-    //
-    // TODO: convert self.vertices into an NFVertex_t array that can be used to
-    //       calculate the vertex normals
-    //
-
-
-    NSUInteger count = [[self vertices] count];
+        vertexArray[i].pos[0] = vert.x;
+        vertexArray[i].pos[1] = vert.y;
+        vertexArray[i].pos[2] = vert.z;
+        vertexArray[i].pos[3] = 1.0f;
+    }
 
     for (WFGroup* group in self.groups) {
+
+        NSAssert([[group faceStrArray] count] % 3 == 0, @"ERROR: face string array can only process triangles");
+
         NSMutableArray* faceStrings = [group faceStrArray];
+        NSUInteger faceCount = [faceStrings count];
 
-        //
-        // TODO: need to iterate in groups of three (quads should have been converted into triangles by this point)
-        //
-        for (NSString *str in faceStrings) {
-            //NSLog(@"%@", str);
+        for (int i=0; i<faceCount; i+=3) {
+            int index1 = [faceStrings[i] intValue];
+            int index2 = [faceStrings[i + 1] intValue];
+            int index3 = [faceStrings[i + 2] intValue];
 
-
-            Vertex3f_t vertex;
-
-            int vertIndex = [str intValue];
-            vertIndex = (vertIndex > 0) ? (vertIndex - 1) : (int)(count + vertIndex);
-
-            [[[self vertices] objectAtIndex:vertIndex] getValue:&vertex];
-
+            index1 = (index1 > 0) ? (index1 - 1) : (int)(vertexCount + index1);
+            index2 = (index2 > 0) ? (index2 - 1) : (int)(vertexCount + index2);
+            index3 = (index3 > 0) ? (index3 - 1) : (int)(vertexCount + index3);
 
             GLushort indices[3];
-            indices[0] = 2;
-            indices[1] = 1;
-            indices[2] = 0;
+            indices[0] = (GLushort)index1;
+            indices[1] = (GLushort)index2;
+            indices[2] = (GLushort)index3;
+
+            //NSLog(@"%d %d %d", indices[0], indices[1], indices[2]);
+
+            NFFace_t face = [NFAssetUtils calculateFaceWithPoints:vertexArray withIndices:indices];
 
             //
-            // TODO: calculateFaceWithPoints wants an NFVertex_t array
+            // TODO: normals are calculated in the correct order (as per the Wavefront obj file)
+            //       need to store them in self.normals and set indicies in the groups face string array
+            //
+            //       should consider getting rid of -0.0 in order to reduce the number of normals stored
             //
 
-            //NFFace_t face = [NFAssetData calculateFaceWithPoints:NFVertex withIndices:indices];
-
+            NSLog(@"%f %f %f", face.normal[0], face.normal[1], face.normal[2]);
         }
     }
 }
