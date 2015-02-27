@@ -88,7 +88,7 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
     NFVertex_t vertexArray[vertexCount];
 
     for (int i=0; i<vertexCount; ++i) {
-        // Vertex3f_t is only used by Wavefront obj parsing
+        // NOTE: Vertex3f_t is only used by Wavefront obj parsing
         Vertex3f_t vert;
         [self.vertices[i] getValue:&vert];
 
@@ -99,9 +99,7 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
     }
 
     float (^normalizeFloatZero)(float) = ^ float (float floatValue) {
-        // epsilon value based off of C++ std::numeric_limits<float>::epsilon()
-        static const float epsilon = 0.000000112;
-        if (floatValue < epsilon && floatValue > -epsilon) {
+        if (floatValue < FLT_EPSILON && floatValue > -FLT_EPSILON) {
             if (signbit(floatValue)) {
                 floatValue *= -1.0f;
             }
@@ -110,13 +108,18 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
     };
 
     for (WFGroup* group in self.groups) {
-
         NSAssert([[group faceStrArray] count] % 3 == 0, @"ERROR: face string array can only process triangles");
-
         NSMutableArray* faceStrings = [group faceStrArray];
         NSUInteger faceCount = [faceStrings count];
 
+        int faceIndex = 0;
+        NFFace_t faceArray[faceCount / 3];
         for (int i=0; i<faceCount; i+=3) {
+
+            //
+            // TODO: this currently assumes no texture coordinate, need to update to handle insert normal index
+            //       into face strings with texture coordinates
+            //
             int index1 = [faceStrings[i] intValue];
             int index2 = [faceStrings[i + 1] intValue];
             int index3 = [faceStrings[i + 2] intValue];
@@ -132,19 +135,48 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 
             //NSLog(@"%d %d %d", indices[0], indices[1], indices[2]);
 
-            NFFace_t face = [NFAssetUtils calculateFaceWithPoints:vertexArray withIndices:indices];
+            faceArray[faceIndex] = [NFAssetUtils calculateFaceWithPoints:vertexArray withIndices:indices];
 
-            face.normal[0] = normalizeFloatZero(face.normal[0]);
-            face.normal[1] = normalizeFloatZero(face.normal[1]);
-            face.normal[2] = normalizeFloatZero(face.normal[2]);
+            faceArray[faceIndex].normal[0] = normalizeFloatZero(faceArray[faceIndex].normal[0]);
+            faceArray[faceIndex].normal[1] = normalizeFloatZero(faceArray[faceIndex].normal[1]);
+            faceArray[faceIndex].normal[2] = normalizeFloatZero(faceArray[faceIndex].normal[2]);
 
-            //
-            // TODO: normals are calculated in the correct order (as per the Wavefront obj file)
-            //       need to store them in self.normals and set indicies in the groups face string array
-            //
+            //NSLog(@"%f %f %f", faceArray[faceIndex].normal[0], faceArray[faceIndex].normal[1], faceArray[faceIndex].normal[2]);
+            //NSLog(@"%d %d %d", faceArray[faceIndex].indices[0], faceArray[faceIndex].indices[1], faceArray[faceIndex].indices[2]);
 
-            NSLog(@"%f %f %f", face.normal[0], face.normal[1], face.normal[2]);
+            ++faceIndex;
         }
+
+
+
+        //
+        // TODO: parse face array and calculate vertex normals (should take a param that will
+        //       determine whether to use area weighted normals or angle weighted normals)
+        //
+
+        // NFAssetUtils, currently only area weighted normals is implemented
+        //+ (GLKVector4) calculateAreaWeightedNormalOfIndex:(GLushort)index withFaces:(NSArray *)faceArray;
+
+
+
+        //
+        // TODO: create new face string and replace current face string
+        //
+
+        //
+        // NOTE: normal index should be one based at this point
+        //
+
+        // v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3
+
+        // v1/vt1 v2/vt2 v3/vt3 v4/vt4
+
+        // v1//vn1 v2//vn2 v3//vn3
+
+        //NSString* str1 = [NSString stringWithFormat:@"%d\\\\%d", index1+1, normalIndex+1];
+        //NSString* str2 = [NSString stringWithFormat:@"%d\\\\%d", index2+1, normalIndex+2];
+        //NSString* str3 = [NSString stringWithFormat:@"%d\\\\%d", index3+1, normalIndex+3];
+        //NSLog(@"%@ %@ %@", str1, str2, str3);
     }
 }
 @end

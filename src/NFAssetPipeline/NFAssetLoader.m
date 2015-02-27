@@ -40,7 +40,6 @@
             [wavefrontObj parseFile];
 
             if ([[[wavefrontObj object] normals] count] == 0) {
-                NSLog(@"WARNING: Wavefront obj has no normals");
                 [[wavefrontObj object] calculateNormals];
             }
 

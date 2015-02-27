@@ -98,6 +98,9 @@
 }
 
 + (GLKVector4) calculateAngleWeightedNormalOfVertex:(GLfloat[4])vertex withFaces:(NSArray *)faceArray {
+
+    NSAssert(NO, @"ERROR: this function is NOT implemented, yet...");
+
     GLKVector4 vector;
     memset(&vector, 0x00, sizeof(GLKVector4));
 
@@ -122,8 +125,7 @@
         [value getValue:&encodedFace];
 
         //
-        // TODO: check if vertex provided is contained within the face (this should be able to be
-        //       accomplished with an index, right ??)
+        // TODO: check if vertex provided is contained within the face
         //
     }
     
