@@ -80,9 +80,9 @@
             //       there is no texture coordinate given and this will return an intValue of 0
             intValue = [[groupParts objectAtIndex:i] intValue];
             switch (i) {
-                case kGroupIndexVertex: vertIndex = indexCheck(intValue, [[wfObj vertices] count]); break;
-                case kGroupIndexTex: texIndex = indexCheck(intValue, [[wfObj textureCoords] count]); break;
-                case kGroupIndexNorm: normIndex = indexCheck(intValue, [[wfObj normals] count]); break;
+                case kGroupIndexVertex: vertIndex = normalizeObjIndex(intValue, [[wfObj vertices] count]); break;
+                case kGroupIndexTex: texIndex = normalizeObjIndex(intValue, [[wfObj textureCoords] count]); break;
+                case kGroupIndexNorm: normIndex = normalizeObjIndex(intValue, [[wfObj normals] count]); break;
                 default: NSAssert(NO, @"Error, unknown face index type"); break;
             }
         }
@@ -95,9 +95,14 @@
             GLKVector3 vertex;
             valueObj = [[wfObj vertices] objectAtIndex:vertIndex];
             [valueObj getValue:&vertex];
+
+            //
+            // TODO: use GLKVector3 .xyz etc.
+            //
             pData[dataIndex].pos[0] = vertex.v[0];
             pData[dataIndex].pos[1] = vertex.v[1];
             pData[dataIndex].pos[2] = vertex.v[2];
+
             pData[dataIndex].pos[3] = 1.0f;
         }
 

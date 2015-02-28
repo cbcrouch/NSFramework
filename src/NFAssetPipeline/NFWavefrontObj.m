@@ -125,7 +125,7 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
         for (NSInteger i=0; i<[groupParts count]; ++i) {
             NSInteger intValue = [[groupParts objectAtIndex:i] integerValue];
             switch (i) {
-                case kGroupIndexTex: indexCheck(intValue, [self.textureCoords count]);
+                case kGroupIndexTex: normalizeObjIndex(intValue, [self.textureCoords count]);
                     hasTextureCoordinates = YES;
                     break;
                 default: break;
@@ -155,9 +155,10 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
                 index2 = [faceStrings[i + 1] intValue];
                 index3 = [faceStrings[i + 2] intValue];
             }
-            index1 = (index1 > 0) ? (index1 - 1) : (int)(vertexCount + index1);
-            index2 = (index2 > 0) ? (index2 - 1) : (int)(vertexCount + index2);
-            index3 = (index3 > 0) ? (index3 - 1) : (int)(vertexCount + index3);
+
+            index1 = (int)normalizeObjIndex(index1, vertexCount);
+            index2 = (int)normalizeObjIndex(index2, vertexCount);
+            index3 = (int)normalizeObjIndex(index3, vertexCount);
 
             GLushort indices[3];
             indices[0] = (GLushort)index1;
@@ -191,7 +192,7 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
             else {
                 index = [faceStrings[i] intValue];
             }
-            index = (index > 0) ? (index - 1) : (int)(vertexCount + index);
+            index = (int)normalizeObjIndex(index, vertexCount);
 
 
             //

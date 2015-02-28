@@ -9,10 +9,10 @@ a hobby project that will be a perpetual WIP as its primary purpose is to expand
 Objective-C and Cocoa more than anything else. Work will be slow going given that I am a family man and
 have other hobby projects as well.
 
-Beware of hardcoded paths.
+Beware of hardcoded paths!
 
-The project is configured to use strict ANSI C11 (no GNU extension) and ARC has been disabled. These
-decisions were made to avoid being dependent on non-standard language/compiler features and because
+The project is configured to use C11 (with __STRICT_ANSI__ manually undefined), and ARC has been disabled.
+These decisions were made to avoid being dependent on non-standard language/compiler features and because
 memory allocations will be managed manually.
 
 Dependencies
@@ -47,9 +47,10 @@ Assets
 
 If you are in need of Wavefront obj files to parse:
 - http://graphics.cs.williams.edu/data/meshes.xml
+- http://graphics.stanford.edu/~mdfisher/Data/Meshes/bunny.obj
 
-License (BSD 2-clause)
-----------------------
+License
+-------
 
 Copyright 2015 Casey Crouch. All rights reserved.
 

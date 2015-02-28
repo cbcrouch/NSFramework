@@ -12,11 +12,6 @@
 
 
 //
-// TODO: disable __STRICT_ANSI__ so can use .xyz .rgb .stp with GLKVector3
-//
-
-
-//
 // TODO: move vertex/face definitions into NFRCommonTypes.h or something similar so that other
 //       modules don't have to include the NFAssetData
 //
@@ -40,7 +35,6 @@ typedef struct NFFace_t {
     // TODO: in order to perform @encode on a struct it appears that all its members must be
     //       primitive data types, verify that this is correct and not a bug
     //
-
     //GLKVector4 normal;
     GLfloat normal[4];
 

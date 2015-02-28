@@ -45,16 +45,12 @@ typedef NS_ENUM(NSUInteger, FaceGroupType) {
 };
 
 
-//
-// TODO: rename to something that will along the lines of checkObjFaceIndex, also rename count argument
-//       to something like primitivesArrayCount
-//
-static NSInteger (^indexCheck)(NSInteger, NSUInteger) = ^ NSInteger (NSInteger intValue, NSUInteger count) {
-    // return -1 if the intValue or the count are 0, -1 should be treated as "value not present"
-    if (intValue == 0 || count == 0) {
+static NSInteger (^normalizeObjIndex)(NSInteger, NSUInteger) = ^ NSInteger (NSInteger index, NSUInteger numElements) {
+    // return -1 if the index or the numElements are 0, -1 should be treated as "value not present"
+    if (index == 0 || numElements == 0) {
         return -1;
     }
-    return (intValue > 0) ? (intValue - 1) : (count + intValue);
+    return (index > 0) ? (index - 1) : (numElements + index);
 };
 
 
