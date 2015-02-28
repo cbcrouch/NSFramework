@@ -84,7 +84,7 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 }
 
 //
-// NOTE: Wavefront obj normals are per-vertex
+// TODO: should take a param that will determine whether to use area weighted normals or angle weighted normals
 //
 - (void) calculateNormals {
     NSUInteger vertexCount = [[self vertices] count];
@@ -107,6 +107,9 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
         return floatValue;
     };
 
+    //
+    // NOTE: Wavefront obj normals are per-vertex
+    //
     for (WFGroup* group in self.groups) {
         NSAssert([[group faceStrArray] count] % 3 == 0, @"ERROR: face string array can only process triangles");
         NSMutableArray* faceStrings = [group faceStrArray];
@@ -137,6 +140,11 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
             int index1 = -1;
             int index2 = -1;
             int index3 = -1;
+
+            //
+            // TODO: should give models without a texture a default one, this should be done prior
+            //       to calculating the vertex normals inorder to avoid handling two different face formats
+            //
             if (hasTextureCoordinates) {
                 index1 = [[[faceStrings[i] componentsSeparatedByString:@"/"] objectAtIndex:0] intValue];
                 index2 = [[[faceStrings[i + 1] componentsSeparatedByString:@"/"] objectAtIndex:0] intValue];
@@ -187,10 +195,8 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 
 
             //
-            // TODO: parse face array and calculate vertex normals (should take a param that will
-            //       determine whether to use area weighted normals or angle weighted normals)
+            // TODO: vertex normals do not appear to be either calculated correctly or used correctly
             //
-
 
             // NOTE: currently only area weighted normals is implemented
             GLKVector4 vertexNormal = [NFAssetUtils calculateAreaWeightedNormalOfIndex:index withFaces:faceNormals];
@@ -198,21 +204,24 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
             [self.normals addObject:value];
 
 
-            NSLog(@"%f %f %f", vertexNormal.v[0], vertexNormal.v[1], vertexNormal.v[2]);
-
-
             //
-            // TODO: create new face string and replace current face string
+            // TODO: create new face string and replace current face string (should eliminate duplicate
+            //       normals to help keep file size down when writing out new files)
             //
 
             // v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3
             // v1/vt1 v2/vt2 v3/vt3 v4/vt4
             // v1//vn1 v2//vn2 v3//vn3
 
-            // NOTE: normal index should be one based at this point
-            //NSString* str = [NSString stringWithFormat:@"%d\\\\%d", index, [self.normals count]+1];
-
-            //faceStrings[i] = str;
+            if (hasTextureCoordinates) {
+                int texCoordIndex = [[[faceStrings[i] componentsSeparatedByString:@"/"] objectAtIndex:1] intValue];
+                NSString* str = [NSString stringWithFormat:@"%d\\%d\\%d", index, texCoordIndex, (int)([self.normals count]+1)];
+                [[group faceStrArray] setObject:str atIndexedSubscript:i];
+            }
+            else {
+                NSString* str = [NSString stringWithFormat:@"%d\\\\%d", index, (int)([self.normals count])];
+                [[group faceStrArray] setObject:str atIndexedSubscript:i];
+            }
         }
     }
 }
