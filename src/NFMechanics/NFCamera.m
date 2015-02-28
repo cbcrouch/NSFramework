@@ -13,11 +13,6 @@
 #define LEFT_BIT    0x04
 #define RIGHT_BIT   0x08
 
-#define X_IDX 0
-#define Y_IDX 1
-#define Z_IDX 2
-
-
 
 @interface NFViewVolume()
 @property (nonatomic, assign) GLKMatrix4 projection;
@@ -164,8 +159,8 @@
         //
         // TODO: verify that these offsets/modifiers are what should be used
         //
-        _yaw = -M_PI + atan2f(hyp.v[0], hyp.v[2]);
-        _pitch = -atan2(hyp.v[1], hyp.v[1]) / 2.0f;
+        _yaw = -M_PI + atan2f(hyp.x, hyp.z);
+        _pitch = -atan2(hyp.y, hyp.y) / 2.0f;
 
         _cached_eye = _eye;
         _cached_yaw = _yaw;
@@ -193,8 +188,8 @@
         //
         // TODO: verify that these offsets/modifiers are what should be used
         //
-        _yaw = -M_PI + atan2f(hyp.v[0], hyp.v[2]);
-        _pitch = -atan2(hyp.v[1], hyp.v[1]) / 2.0f;
+        _yaw = -M_PI + atan2f(hyp.x, hyp.z);
+        _pitch = -atan2(hyp.y, hyp.y) / 2.0f;
 
         _cached_eye = _eye;
         _cached_yaw = _yaw;
@@ -214,14 +209,14 @@
 
     GLKVector3 look;
     float r = cosf(pitchAngle);
-    look.v[0] = r * sinf(yawAngle);
-    look.v[1] = sinf(pitchAngle);
-    look.v[2] = r * cosf(yawAngle);
+    look.x = r * sinf(yawAngle);
+    look.y = sinf(pitchAngle);
+    look.z = r * cosf(yawAngle);
 
     GLKVector3 right;
-    right.v[0] = sinf(yawAngle - M_PI_2);
-    right.v[1] = 0.0f;
-    right.v[2] = cosf(yawAngle - M_PI_2);
+    right.x = sinf(yawAngle - M_PI_2);
+    right.y = 0.0f;
+    right.z = cosf(yawAngle - M_PI_2);
 
     GLKVector3 up = GLKVector3CrossProduct(right, look);
 
@@ -251,14 +246,14 @@
 
     if (self.currentFlags & FORWARD_BIT) {
         GLKVector3 translationVec = GLKVector3Normalize(GLKVector3Subtract(position, self.look));
-        translationVec = GLKVector3MultiplyScalar(translationVec, self.translationSpeed.v[Z_IDX]);
+        translationVec = GLKVector3MultiplyScalar(translationVec, self.translationSpeed.z);
         position = GLKVector3Subtract(position, translationVec);
         updated = YES;
     }
 
     if (self.currentFlags & BACK_BIT) {
         GLKVector3 translationVec = GLKVector3Normalize(GLKVector3Subtract(position, self.look));
-        translationVec = GLKVector3MultiplyScalar(translationVec, self.translationSpeed.v[Z_IDX]);
+        translationVec = GLKVector3MultiplyScalar(translationVec, self.translationSpeed.z);
         position = GLKVector3Add(position, translationVec);
         updated = YES;
     }
@@ -266,7 +261,7 @@
     if (self.currentFlags & LEFT_BIT) {
         GLKVector3 side = GLKVector3CrossProduct(GLKVector3Subtract(position, self.look), self.up);
         GLKVector3 translationVec = GLKVector3Normalize(side);
-        translationVec = GLKVector3MultiplyScalar(translationVec, self.translationSpeed.v[X_IDX]);
+        translationVec = GLKVector3MultiplyScalar(translationVec, self.translationSpeed.x);
         position = GLKVector3Add(position, translationVec);
         updated = YES;
     }
@@ -274,7 +269,7 @@
     if (self.currentFlags & RIGHT_BIT) {
         GLKVector3 side = GLKVector3CrossProduct(GLKVector3Subtract(position, self.look), self.up);
         GLKVector3 translationVec = GLKVector3Normalize(side);
-        translationVec = GLKVector3MultiplyScalar(translationVec, self.translationSpeed.v[X_IDX]);
+        translationVec = GLKVector3MultiplyScalar(translationVec, self.translationSpeed.x);
         position = GLKVector3Subtract(position, translationVec);
         updated = YES;
     }
@@ -357,9 +352,9 @@
     self.up = up;
 
     // NOTE: it would appear that GLK is using a UVN based coordinate system under-the-hood
-    _viewMatrix = GLKMatrix4MakeLookAt(eye.v[0], eye.v[1], eye.v[2],
-                                       look.v[0], look.v[1], look.v[2],
-                                       up.v[0], up.v[1], up.v[2]);
+    _viewMatrix = GLKMatrix4MakeLookAt(eye.x, eye.y, eye.z,
+                                       look.x, look.y, look.z,
+                                       up.x, up.y, up.z);
 }
 
 @end

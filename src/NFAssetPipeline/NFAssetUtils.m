@@ -43,10 +43,10 @@
 
     N = GLKVector4Normalize(N);
 
-    face.normal[0] = N.v[0];
-    face.normal[1] = N.v[1];
-    face.normal[2] = N.v[2];
-    face.normal[3] = N.v[3];
+    face.normal[0] = N.x;
+    face.normal[1] = N.y;
+    face.normal[2] = N.z;
+    face.normal[3] = N.w;
 
     // length between two 3d points
     // xd = x2 - x1
@@ -55,13 +55,13 @@
     // d = sqrt(xd^2 + yd^2 + zd^2)
 
     GLKVector4 vd = GLKVector4Subtract(v2, v1);
-    float a = sqrtf(powf(vd.v[0], 2) + powf(vd.v[1], 2) + powf(vd.v[2], 2));
+    float a = sqrtf(powf(vd.x, 2) + powf(vd.y, 2) + powf(vd.z, 2));
 
     vd = GLKVector4Subtract(v3, v1);
-    float b = sqrtf(powf(vd.v[0], 2) + powf(vd.v[1], 2) + powf(vd.v[2], 2));
+    float b = sqrtf(powf(vd.x, 2) + powf(vd.y, 2) + powf(vd.z, 2));
 
     vd = GLKVector4Subtract(v3, v2);
-    float c = sqrtf(powf(vd.v[0], 2) + powf(vd.v[1], 2) + powf(vd.v[2], 2));
+    float c = sqrtf(powf(vd.x, 2) + powf(vd.y, 2) + powf(vd.z, 2));
 
     // Heron's Formula (triangle surface area):
     // a, b, and c are the lengths of the triangle sides

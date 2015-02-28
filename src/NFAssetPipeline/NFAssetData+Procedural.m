@@ -295,10 +295,10 @@ static const char *g_faceType = @encode(NFFace_t);
 
     for (int i=0; i<4; ++i) {
         GLKVector4 vertexNormal = [NFAssetUtils calculateAreaWeightedNormalOfIndex:i withFaces:array];
-        vertices[i].norm[0] = vertexNormal.v[0];
-        vertices[i].norm[1] = vertexNormal.v[1];
-        vertices[i].norm[2] = vertexNormal.v[2];
-        vertices[i].norm[3] = vertexNormal.v[3];
+        vertices[i].norm[0] = vertexNormal.x;
+        vertices[i].norm[1] = vertexNormal.y;
+        vertices[i].norm[2] = vertexNormal.z;
+        vertices[i].norm[3] = vertexNormal.w;
     }
 
     [pSubset allocateVerticesWithNumElts:numVertices];

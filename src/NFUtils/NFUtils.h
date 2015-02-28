@@ -107,11 +107,11 @@ static NSArray * (^convertCfloatArrayToNS)(float[3]) = ^ NSArray * (float triple
  GLKVector4 P = GLKVector4Make(1.0f * (x / self.viewportSize.width) * 2.0f - 1.0f,
  1.0f * (y / self.viewportSize.height) * 2.0f -1.0f,
  0.0f, 0.0f);
- P.v[1] = -P.v[1];
+ P.y = -P.y;
 
- float opSquare = (P.v[0] * P.v[0]) + (P.v[1] * P.v[1]);
+ float opSquare = (P.x * P.x) + (P.y * P.y);
  if (opSquare <= 1.0f) {
- P.v[2] = sqrtf(1.0f - opSquare);
+ P.z = sqrtf(1.0f - opSquare);
  }
  else {
  P = GLKVector4Normalize(P);
@@ -147,7 +147,7 @@ static NSArray * (^convertCfloatArrayToNS)(float[3]) = ^ NSArray * (float triple
  //GLKMatrix4 cameraToObject = GLKMatrix4Invert(transfroms[MODE_CAMERA] * objectToWorld, NO);
  //GLKVector4 axisObjectCoord = cameraToObject * axisCameraCoord;
 
- //GLKMatrix4 = GLKMatrix4Rotate(originalMatrix, angle, axisObjectCoord.v[0], axisObjectCoord.v[1], axisObjectCoord.v[2]);
+ //GLKMatrix4 = GLKMatrix4Rotate(originalMatrix, angle, axisObjectCoord.x, axisObjectCoord.y, axisObjectCoord.z);
 
 
  self.lastX = self.currentX;

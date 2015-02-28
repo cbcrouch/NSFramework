@@ -423,11 +423,11 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //static const float MOVEMENT_GAIN = 2.0f;
 
     GLKVector2 rotationDelta;
-    rotationDelta.v[0] = [theEvent deltaX] * ROTATION_GAIN;
-    rotationDelta.v[1] = [theEvent deltaY] * ROTATION_GAIN;
+    rotationDelta.x = [theEvent deltaX] * ROTATION_GAIN;
+    rotationDelta.y = [theEvent deltaY] * ROTATION_GAIN;
 
-    m_horizontalAngle += rotationDelta.v[0];
-    m_verticalAngle -= rotationDelta.v[1];
+    m_horizontalAngle += rotationDelta.x;
+    m_verticalAngle -= rotationDelta.y;
 
     // limit pitch to straight up or straight down
     float limit = M_PI / 2.0f - 0.01f;

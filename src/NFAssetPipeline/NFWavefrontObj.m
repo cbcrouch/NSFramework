@@ -92,9 +92,9 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
     for (int i=0; i<vertexCount; ++i) {
         GLKVector3 vert;
         [self.vertices[i] getValue:&vert];
-        vertexArray[i].pos[0] = vert.v[0];
-        vertexArray[i].pos[1] = vert.v[1];
-        vertexArray[i].pos[2] = vert.v[2];
+        vertexArray[i].pos[0] = vert.x;
+        vertexArray[i].pos[1] = vert.y;
+        vertexArray[i].pos[2] = vert.z;
         vertexArray[i].pos[3] = 1.0f;
     }
 
@@ -523,9 +523,9 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 - (void) parseVertexArray:(NSArray *)vertexArray {
     // parse vertex
     GLKVector3 vertex;
-    vertex.v[0] = [[vertexArray objectAtIndex:0] floatValue];
-    vertex.v[1] = [[vertexArray objectAtIndex:1] floatValue];
-    vertex.v[2] = [[vertexArray objectAtIndex:2] floatValue];
+    vertex.x = [[vertexArray objectAtIndex:0] floatValue];
+    vertex.y = [[vertexArray objectAtIndex:1] floatValue];
+    vertex.z = [[vertexArray objectAtIndex:2] floatValue];
 
     // add vertex to parent class NSAssetData
     NSValue *value = [NSValue value:&vertex withObjCType:g_vertexType];
@@ -535,15 +535,15 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 - (void) parseTextureCoordArray:(NSArray *)texCoordArray {
     // parse texture coord
     GLKVector3 texCoord;
-    texCoord.v[0] = [[texCoordArray objectAtIndex:0] floatValue];
-    texCoord.v[1] = [[texCoordArray objectAtIndex:1] floatValue];
+    texCoord.s = [[texCoordArray objectAtIndex:0] floatValue];
+    texCoord.t = [[texCoordArray objectAtIndex:1] floatValue];
 
     // if texture coordiante supports depth use it
     if ([texCoordArray count] > 2) {
-        texCoord.v[2] = [[texCoordArray objectAtIndex:2] floatValue];
+        texCoord.p = [[texCoordArray objectAtIndex:2] floatValue];
     }
     else {
-        texCoord.v[2] = 0.0f;
+        texCoord.p = 0.0f;
     }
 
     // add texture coord to parent NSAssetData
@@ -554,9 +554,9 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 - (void) parseNormalVectorArray:(NSArray *)normVectorArray {
     // parse normal vector
     GLKVector3 normal;
-    normal.v[0] = [[normVectorArray objectAtIndex:0] floatValue];
-    normal.v[1] = [[normVectorArray objectAtIndex:1] floatValue];
-    normal.v[2] = [[normVectorArray objectAtIndex:2] floatValue];
+    normal.x = [[normVectorArray objectAtIndex:0] floatValue];
+    normal.y = [[normVectorArray objectAtIndex:1] floatValue];
+    normal.z = [[normVectorArray objectAtIndex:2] floatValue];
 
     // add normal to parent NSAssetData
     NSValue *value = [NSValue value:&normal withObjCType:g_normType];
