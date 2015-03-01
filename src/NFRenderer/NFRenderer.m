@@ -108,11 +108,13 @@
     NSString *fileNamePath;
 
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
-    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
+    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
 
     //
-    // TODO: calculate normals for the teapot so that it can be lit
+    // TODO: teapot contains vertices and texture coordinates (no normals), does not use objects or groups,
+    //       and has two different geometries defined separated by listing i.e. first object has v,vt,f and
+    //       then the second object lists its v,vt,f components
     //
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/teapot/teapot.obj";
 
@@ -123,7 +125,9 @@
     //       also the buddha and dragon models do not get drawn correctly, it looks like they might have a
     //       different primitive mode
     //
-    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/suzanne.obj";
+
+    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/suzanne.obj";
+
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/buddha.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/dragon.obj";
 

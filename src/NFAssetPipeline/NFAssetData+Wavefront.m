@@ -95,10 +95,6 @@
             GLKVector3 vertex;
             valueObj = [[wfObj vertices] objectAtIndex:vertIndex];
             [valueObj getValue:&vertex];
-
-            //
-            // TODO: use GLKVector3 .xyz etc.
-            //
             pData[dataIndex].pos[0] = vertex.x;
             pData[dataIndex].pos[1] = vertex.y;
             pData[dataIndex].pos[2] = vertex.z;

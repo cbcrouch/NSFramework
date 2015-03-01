@@ -23,8 +23,24 @@ static NSString * const g_useMatPrefix = @"usemtl "; // need to handle the "(nul
 static NSString * const g_vertPrefix = @"v ";
 static NSString * const g_texPrefix = @"vt ";
 static NSString * const g_normPrefix = @"vn ";
+
+//
+// TODO: should also parse @"t " as texture coordinate and @"n " as normal, not sure if this
+//       is a part of the official spec be appears to be in use
+//
+
 // g_paramPrefix
 static NSString * const g_facePrefix = @"f ";
+
+//
+// TODO: not sure if these are part of the official spec but they appear to be in use and
+//       therefore should be supported since they won't interfere with anything else
+//
+// @"vs "    // number of vertices
+// @"vts "   // number of vertex texture coordinates
+// @"vns "   // number of vertex normals
+// @"ts "    // number of texture coordinates
+// @"ns "    // number of normals
 
 //
 // TODO: only need to encode a single type
@@ -194,33 +210,29 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
             }
             index = (int)normalizeObjIndex(index, vertexCount);
 
-
-            //
-            // TODO: vertex normals do not appear to be either calculated correctly or used correctly
-            //
-
             // NOTE: currently only area weighted normals is implemented
             GLKVector4 vertexNormal = [NFAssetUtils calculateAreaWeightedNormalOfIndex:index withFaces:faceNormals];
             NSValue* value = [NSValue value:&vertexNormal withObjCType:g_vertexType];
             [self.normals addObject:value];
 
-
-            //
-            // TODO: create new face string and replace current face string (should eliminate duplicate
-            //       normals to help keep file size down when writing out new files)
-            //
-
+            // face string formats:
             // v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3
             // v1/vt1 v2/vt2 v3/vt3 v4/vt4
             // v1//vn1 v2//vn2 v3//vn3
 
             if (hasTextureCoordinates) {
                 int texCoordIndex = [[[faceStrings[i] componentsSeparatedByString:@"/"] objectAtIndex:1] intValue];
-                NSString* str = [NSString stringWithFormat:@"%d\\%d\\%d", index, texCoordIndex, (int)([self.normals count]+1)];
+                NSString* str = [NSString stringWithFormat:@"%d/%d/%d", index+1, texCoordIndex, (int)([self.normals count]+1)];
                 [[group faceStrArray] setObject:str atIndexedSubscript:i];
+
+                //
+                // TODO: parsing of files with vertices and texture coordiantes (no normals) is currently failing
+                //       and should be fixed prior to confirming this working
+                //
+                NSLog(@"%@", str);
             }
             else {
-                NSString* str = [NSString stringWithFormat:@"%d\\\\%d", index, (int)([self.normals count])];
+                NSString* str = [NSString stringWithFormat:@"%d//%d", index+1, (int)([self.normals count])];
                 [[group faceStrArray] setObject:str atIndexedSubscript:i];
             }
         }
@@ -455,11 +467,24 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
             if (![matName isEqualToString:@"(null)"]) {
                 self.activeGroup.materialName = matName;
             }
+            else {
+                //
+                // TODO: fallback to a default texture and material, will need to perform a UV mapping algorithm
+                //
+                NSLog(@"WARNING: should fallback to default texture, this is behavior is not yet implemented");
 
-            //
-            // TODO: fallback to a default texture
-            //
+                // simple UV mapping algorithm (basically treat model as if it is spherical)
+                // - calc center point of geometry
+                // - for each vertex calc vector from center point to vertex
+                // - normalize vector
+                // - u = 0.5 + arctan2(vec.z, vec.x)/2pi
+                // - v = 0.5 - arcsin(vec.y)/pi
 
+                // NOTE: not sure if applying a UV unwrapping algorithm to the model will be worthwhile, though
+                //       it will flatten the model so it can easily be transformed into texture coordinate space,
+                //       it most likely won't cleanly map the texture to the model (i.e. UV unwrapping is largely
+                //       performed to allow artist to draw on a "flat" model surface)
+            }
         }
         else if ([line hasPrefix:g_vertPrefix]) {
             NSArray *vertArray = [NFWavefrontObj componentsFromWavefrontObjLine:line withPrefix:g_vertPrefix];
