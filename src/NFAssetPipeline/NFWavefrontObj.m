@@ -102,7 +102,17 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 //
 // TODO: should take a param that will determine whether to use area weighted normals or angle weighted normals
 //
+// enum
+// - useFaceNormals
+// - unbiasedVertexNormals
+// - surfaceAreaWeightedVertexNormals
+// - faceAngleWeightedVertexNormals
+// - areaAndAngleWeightedVertexNormals (TODO: determine how feasible this is)
+
 - (void) calculateNormals {
+    //
+    // NOTE: Wavefront obj normals are per-vertex
+    //
     NSUInteger vertexCount = [[self vertices] count];
     NFVertex_t vertexArray[vertexCount];
     for (int i=0; i<vertexCount; ++i) {
@@ -123,9 +133,6 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
         return floatValue;
     };
 
-    //
-    // NOTE: Wavefront obj normals are per-vertex
-    //
     for (WFGroup* group in self.groups) {
         NSAssert([[group faceStrArray] count] % 3 == 0, @"ERROR: face string array can only process triangles");
         NSMutableArray* faceStrings = [group faceStrArray];
@@ -156,11 +163,6 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
             int index1 = -1;
             int index2 = -1;
             int index3 = -1;
-
-            //
-            // TODO: should give models without a texture a default one, this should be done prior
-            //       to calculating the vertex normals inorder to avoid handling two different face formats
-            //
             if (hasTextureCoordinates) {
                 index1 = [[[faceStrings[i] componentsSeparatedByString:@"/"] objectAtIndex:0] intValue];
                 index2 = [[[faceStrings[i + 1] componentsSeparatedByString:@"/"] objectAtIndex:0] intValue];
@@ -171,7 +173,6 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
                 index2 = [faceStrings[i + 1] intValue];
                 index3 = [faceStrings[i + 2] intValue];
             }
-
             index1 = (int)normalizeObjIndex(index1, vertexCount);
             index2 = (int)normalizeObjIndex(index2, vertexCount);
             index3 = (int)normalizeObjIndex(index3, vertexCount);
@@ -219,17 +220,10 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
             // v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3
             // v1/vt1 v2/vt2 v3/vt3 v4/vt4
             // v1//vn1 v2//vn2 v3//vn3
-
             if (hasTextureCoordinates) {
                 int texCoordIndex = [[[faceStrings[i] componentsSeparatedByString:@"/"] objectAtIndex:1] intValue];
-                NSString* str = [NSString stringWithFormat:@"%d/%d/%d", index+1, texCoordIndex, (int)([self.normals count]+1)];
+                NSString* str = [NSString stringWithFormat:@"%d/%d/%d", index+1, texCoordIndex, (int)([self.normals count])];
                 [[group faceStrArray] setObject:str atIndexedSubscript:i];
-
-                //
-                // TODO: parsing of files with vertices and texture coordiantes (no normals) is currently failing
-                //       and should be fixed prior to confirming this working
-                //
-                NSLog(@"%@", str);
             }
             else {
                 NSString* str = [NSString stringWithFormat:@"%d//%d", index+1, (int)([self.normals count])];
