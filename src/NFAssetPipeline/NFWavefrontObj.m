@@ -481,6 +481,13 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
             }
         }
         else if ([line hasPrefix:g_vertPrefix]) {
+
+            //
+            // TODO: if vertex, texture coordinate, or normal data is found after faces have been listed
+            //       then create a new object or group (whatever makes the most sense and seems to comply
+            //       with existing Wavefront Obj files)
+            //
+
             NSArray *vertArray = [NFWavefrontObj componentsFromWavefrontObjLine:line withPrefix:g_vertPrefix];
             [self parseVertexArray:vertArray];
         }

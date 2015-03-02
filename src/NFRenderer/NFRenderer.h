@@ -22,6 +22,14 @@ typedef NSInteger NFViewportId;
 
 @interface NFRenderer : NSObject
 
+
+//
+// TODO: this is a temporary/debug featuer to all the spacebar to pause/unpause animations
+//       (should be replace when a better mechanism for controlling asset animation)
+//
+@property (nonatomic, assign) BOOL stepTransforms;
+
+
 - (instancetype) init;
 
 //

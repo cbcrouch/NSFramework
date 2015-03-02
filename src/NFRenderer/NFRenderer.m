@@ -68,6 +68,8 @@
 #pragma mark - NSGLRenderer Implementation
 @implementation NFRenderer
 
+@synthesize stepTransforms = _stepTransforms;
+
 @synthesize viewports = _viewports;
 
 - (instancetype) init {
@@ -158,6 +160,9 @@
     [m_planeData loadResourcesGL];
 
 
+    _stepTransforms = YES;
+
+
     // setup OpenGL state that will never change
     //glClearColor(1.0f, 0.0f, 1.0f, 1.0f); // hot pink for debugging
     glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
@@ -187,9 +192,10 @@
 
 - (void) updateFrameWithTime:(float)secsElapsed withViewMatrix:(GLKMatrix4)viewMatrix
               withProjection:(GLKMatrix4)projection {
-
-    [m_pAsset stepTransforms:secsElapsed];
-    //[m_pAsset stepTransforms:0.0f];
+    if (self.stepTransforms) {
+        [m_pAsset stepTransforms:secsElapsed];
+        //[m_pAsset stepTransforms:0.0f];
+    }
 
     //
     // TODO: need to either send in a dirty flag or cache the values and compare so that the

@@ -333,6 +333,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             m_input = YES;
             break;
 
+        case ' ':
+            [self.glRenderer setStepTransforms:!self.glRenderer.stepTransforms];
+            break;
+
         default:
             break;
     }
