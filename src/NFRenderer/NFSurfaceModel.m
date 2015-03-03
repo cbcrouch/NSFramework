@@ -112,6 +112,7 @@
 
 + (NFSurfaceModel *) defaultModel {
     NFSurfaceModel *surface = [[[NFSurfaceModel alloc] init] autorelease];
+    [surface setName:@"NSGLFramework_defaultSurfaceModel"];
 
     static unsigned char DefaultTexture[] = {
         255, 255, 255, 255,   128, 128, 128, 255,
@@ -147,7 +148,7 @@
 @synthesize map_decalT = _map_decalT;
 
 //
-// TODO: override the setters for NFDataMap to copy the raw texture data
+// TODO: override NFDataMap properties so they can perform a lazy alloc
 //
 
 - (NFDataMap *) map_Kd {
@@ -156,6 +157,10 @@
     }
     return _map_Kd;
 }
+
+//
+// TODO: override the setters for NFDataMap to copy the raw texture data
+//
 
 - (void) setMap_Kd:(NFDataMap *)map_Kd {
     CGRect rect = CGRectMake(0.0, 0.0, map_Kd.width, map_Kd.height);

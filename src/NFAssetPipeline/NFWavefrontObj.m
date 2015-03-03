@@ -18,7 +18,7 @@ static NSString * const g_matPrefix = @"mtllib ";
 //
 static NSString * const g_objPrefix = @"o ";
 static NSString * const g_groupPrefix = @"g ";
-static NSString * const g_useMatPrefix = @"usemtl "; // need to handle the "(null)" material as well
+static NSString * const g_useMatPrefix = @"usemtl ";
 
 static NSString * const g_vertPrefix = @"v ";
 static NSString * const g_texPrefix = @"vt ";
@@ -97,6 +97,109 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
         _groups = [[[NSMutableArray alloc] init] autorelease];
     }
     return _groups;
+}
+
+//
+// TODO: pass in Wavefront obj center point
+//
+- (void) calculateTextureCoordinates {
+
+    NSLog(@"NFWavefrontObj calculateTextureCoordinates");
+
+    //
+    // NOTE: not sure if applying a UV unwrapping algorithm to the model will be worthwhile, though
+    //       it will flatten the model so it can easily be transformed into texture coordinate space,
+    //       it most likely won't cleanly map the texture to the model (i.e. UV unwrapping is largely
+    //       performed to allow artist to draw on a "flat" model surface)
+    //
+
+    NSUInteger vertexCount = [[self vertices] count];
+    for (WFGroup* group in self.groups) {
+        NSAssert([[group faceStrArray] count] % 3 == 0, @"ERROR: face string array can only process triangles");
+        NSMutableArray* faceStrings = [group faceStrArray];
+        NSUInteger faceCount = [faceStrings count];
+
+        BOOL hasNormalss = NO;
+        NSArray *groupParts = [faceStrings[0] componentsSeparatedByString:@"/"];
+        for (NSInteger i=0; i<[groupParts count]; ++i) {
+            NSInteger intValue = [[groupParts objectAtIndex:i] integerValue];
+            switch (i) {
+                case kGroupIndexNorm: normalizeObjIndex(intValue, [self.normals count]);
+                    hasNormalss = YES;
+                    break;
+                default: break;
+            }
+        }
+
+
+        if (hasNormalss) {
+            NSLog(@"group has normals");
+        }
+        else {
+            NSLog(@"group does not have normals");
+        }
+
+
+        for (int i=0; i<faceCount; ++i) {
+            int index = -1;
+            if (hasNormalss) {
+                index = [[[faceStrings[i] componentsSeparatedByString:@"/"] objectAtIndex:0] intValue];
+            }
+            else {
+                index = [faceStrings[i] intValue];
+            }
+            index = (int)normalizeObjIndex(index, vertexCount);
+
+
+
+            GLKVector3 vertex;
+            NSValue *value = [self.vertices objectAtIndex:index];
+            [value getValue:&vertex];
+
+            //
+            // TODO: find vector from center point to the vertex and normalize, this is
+            //       the vector that should be used in the texture coordinate calculation
+            //
+            //GLKVector3 vec = GLKVector3Subtract(vertex, center);
+            //vec = GLKVector3Normalize(vec);
+
+            vertex = GLKVector3Normalize(vertex);
+
+            GLKVector3 texCoord;
+            texCoord.s = 0.5f + atan2f(vertex.z, vertex.x) / (2 * M_PI);
+            texCoord.t = 0.5f - asin(vertex.y) / M_PI;
+            texCoord.p = 0.0f;
+
+            [self.textureCoords addObject:[NSValue value:&texCoord withObjCType:g_texType]];
+
+
+
+            // simple UV mapping algorithm (basically treat model as if it is spherical)
+            // - calc center point of geometry
+            // - for each vertex calc vector from center point to vertex
+            // - normalize vector
+            // - u = 0.5 + arctan2(vec.z, vec.x)/2pi
+            // - v = 0.5 - arcsin(vec.y)/pi
+
+
+
+            // face string formats:
+            // v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3
+            // v1/vt1 v2/vt2 v3/vt3 v4/vt4
+            // v1//vn1 v2//vn2 v3//vn3
+/*
+            if (hasTextureCoordinates) {
+                int texCoordIndex = [[[faceStrings[i] componentsSeparatedByString:@"/"] objectAtIndex:1] intValue];
+                NSString* str = [NSString stringWithFormat:@"%d/%d/%d", index+1, texCoordIndex, (int)([self.normals count])];
+                [[group faceStrArray] setObject:str atIndexedSubscript:i];
+            }
+            else {
+                NSString* str = [NSString stringWithFormat:@"%d//%d", index+1, (int)([self.normals count])];
+                [[group faceStrArray] setObject:str atIndexedSubscript:i];
+            }
+*/
+        }
+    }
 }
 
 //
@@ -447,37 +550,39 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 
         }
         else if ([line hasPrefix:g_useMatPrefix]) {
-
-            //
-            // TODO: should remove all prefixes using something like the componentsFromWavefrontObjLine
-            //       class method, should try to implement something like a stringFromWavefrontObjLine
-            //       (really could use a better name)
-            //
             NSString *matName = [line substringFromIndex:[g_useMatPrefix length]];
 
-            //
-            // TODO: may need to also check against "null" in addition to "(null)"
-            //
-            if (![matName isEqualToString:@"(null)"]) {
+            if (![matName isEqualToString:@"(null)"] && ![matName isEqualToString:@"null"]) {
                 self.activeGroup.materialName = matName;
             }
             else {
                 //
-                // TODO: fallback to a default texture and material, will need to perform a UV mapping algorithm
+                // TODO: need a better mechanism for creating default objects and groups
                 //
-                NSLog(@"WARNING: should fallback to default texture, this is behavior is not yet implemented");
+                if (self.activeObject == nil) {
+                    //
+                    // TODO: allocate a new object (which will be the current active object) and add to the object array
+                    //
 
-                // simple UV mapping algorithm (basically treat model as if it is spherical)
-                // - calc center point of geometry
-                // - for each vertex calc vector from center point to vertex
-                // - normalize vector
-                // - u = 0.5 + arctan2(vec.z, vec.x)/2pi
-                // - v = 0.5 - arcsin(vec.y)/pi
+                    //[self.object setObjectName:@"default_object"];
+                }
 
-                // NOTE: not sure if applying a UV unwrapping algorithm to the model will be worthwhile, though
-                //       it will flatten the model so it can easily be transformed into texture coordinate space,
-                //       it most likely won't cleanly map the texture to the model (i.e. UV unwrapping is largely
-                //       performed to allow artist to draw on a "flat" model surface)
+                if (self.activeGroup == nil) {
+                    // allocate a new group (which will be the current active group) and add to object's group array
+                    self.activeGroup = [[[WFGroup alloc] init] autorelease];
+                    [self.object.groups addObject:self.activeGroup];
+                    self.activeGroup.groupName = @"default_group";
+                }
+
+
+                //
+                // TODO: only do this once but will need to hold onto the defaultSurface pointer
+                //       so the material name can be set
+                //
+                NFSurfaceModel *defaultSurface = [NFSurfaceModel defaultModel];
+                [[self materialsArray] addObject:defaultSurface];
+
+                self.activeGroup.materialName = defaultSurface.name;
             }
         }
         else if ([line hasPrefix:g_vertPrefix]) {
@@ -716,11 +821,7 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
     }
 
     if (matValid == YES) {
-
         // finished parsing material add it to the object's materials array
-        //NSValue *value = [NSValue value:&mat withObjCType:g_matType];
-        //[self.materialsArray addObject:value];
-
         [[self materialsArray] addObject:mat];
     }
 }

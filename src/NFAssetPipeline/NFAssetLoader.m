@@ -39,6 +39,10 @@
             //
             [wavefrontObj parseFile];
 
+            if ([[[wavefrontObj object] textureCoords] count] == 0) {
+                [[wavefrontObj object] calculateTextureCoordinates];
+            }
+
             if ([[[wavefrontObj object] normals] count] == 0) {
                 [[wavefrontObj object] calculateNormals];
             }
