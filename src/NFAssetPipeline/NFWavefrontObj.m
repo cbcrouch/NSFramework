@@ -103,9 +103,6 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 // TODO: pass in Wavefront obj center point
 //
 - (void) calculateTextureCoordinates {
-
-    NSLog(@"NFWavefrontObj calculateTextureCoordinates");
-
     //
     // NOTE: not sure if applying a UV unwrapping algorithm to the model will be worthwhile, though
     //       it will flatten the model so it can easily be transformed into texture coordinate space,
@@ -119,30 +116,21 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
         NSMutableArray* faceStrings = [group faceStrArray];
         NSUInteger faceCount = [faceStrings count];
 
-        BOOL hasNormalss = NO;
+        BOOL hasNormals = NO;
         NSArray *groupParts = [faceStrings[0] componentsSeparatedByString:@"/"];
         for (NSInteger i=0; i<[groupParts count]; ++i) {
             NSInteger intValue = [[groupParts objectAtIndex:i] integerValue];
             switch (i) {
                 case kGroupIndexNorm: normalizeObjIndex(intValue, [self.normals count]);
-                    hasNormalss = YES;
+                    hasNormals = YES;
                     break;
                 default: break;
             }
         }
 
-
-        if (hasNormalss) {
-            NSLog(@"group has normals");
-        }
-        else {
-            NSLog(@"group does not have normals");
-        }
-
-
         for (int i=0; i<faceCount; ++i) {
             int index = -1;
-            if (hasNormalss) {
+            if (hasNormals) {
                 index = [[[faceStrings[i] componentsSeparatedByString:@"/"] objectAtIndex:0] intValue];
             }
             else {
@@ -151,10 +139,17 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
             index = (int)normalizeObjIndex(index, vertexCount);
 
 
-
             GLKVector3 vertex;
             NSValue *value = [self.vertices objectAtIndex:index];
             [value getValue:&vertex];
+
+            // simple UV mapping algorithm (basically treat model as if it is spherical)
+            // - calc center point of geometry
+            // - for each vertex calc vector from center point to vertex
+            // - normalize vector
+            // - u = 0.5 + arctan2(vec.z, vec.x)/2pi
+            // - v = 0.5 - arcsin(vec.y)/pi
+
 
             //
             // TODO: find vector from center point to the vertex and normalize, this is
@@ -165,6 +160,7 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 
             vertex = GLKVector3Normalize(vertex);
 
+
             GLKVector3 texCoord;
             texCoord.s = 0.5f + atan2f(vertex.z, vertex.x) / (2 * M_PI);
             texCoord.t = 0.5f - asin(vertex.y) / M_PI;
@@ -173,31 +169,22 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
             [self.textureCoords addObject:[NSValue value:&texCoord withObjCType:g_texType]];
 
 
-
-            // simple UV mapping algorithm (basically treat model as if it is spherical)
-            // - calc center point of geometry
-            // - for each vertex calc vector from center point to vertex
-            // - normalize vector
-            // - u = 0.5 + arctan2(vec.z, vec.x)/2pi
-            // - v = 0.5 - arcsin(vec.y)/pi
-
-
-
             // face string formats:
             // v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3
             // v1/vt1 v2/vt2 v3/vt3 v4/vt4
             // v1//vn1 v2//vn2 v3//vn3
-/*
-            if (hasTextureCoordinates) {
-                int texCoordIndex = [[[faceStrings[i] componentsSeparatedByString:@"/"] objectAtIndex:1] intValue];
-                NSString* str = [NSString stringWithFormat:@"%d/%d/%d", index+1, texCoordIndex, (int)([self.normals count])];
+            if (hasNormals) {
+                //
+                // TODO: have not yet tested updating face strings that already contain normals
+                //
+                int normCoordIndex = [[[faceStrings[i] componentsSeparatedByString:@"/"] objectAtIndex:2] intValue];
+                NSString* str = [NSString stringWithFormat:@"%d/%d/%d", index+1, normCoordIndex, (int)([self.textureCoords count])];
                 [[group faceStrArray] setObject:str atIndexedSubscript:i];
             }
             else {
-                NSString* str = [NSString stringWithFormat:@"%d//%d", index+1, (int)([self.normals count])];
+                NSString* str = [NSString stringWithFormat:@"%d/%d", index+1, (int)([self.textureCoords count])];
                 [[group faceStrArray] setObject:str atIndexedSubscript:i];
             }
-*/
         }
     }
 }

@@ -114,30 +114,78 @@
     NFSurfaceModel *surface = [[[NFSurfaceModel alloc] init] autorelease];
     [surface setName:@"NSGLFramework_defaultSurfaceModel"];
 
+
+    //
+    // TODO: make a larger default texture, maybe roughtly 16x16 patches off-white / gray
+    //
+
+
+#if 1
+    const int width = 2;
+    const int height = 2;
     static unsigned char DefaultTexture[] = {
-        255, 255, 255, 255,   128, 128, 128, 255,
-        128, 128, 128, 128,   255, 255, 255, 255
+        200, 200, 200, 255,   100, 100, 100, 255,
+        100, 100, 100, 255,   200, 200, 200, 255
     };
+#else
+    const int width = 16;
+    const int height = 16;
+    unsigned char* DefaultTexture = (unsigned char*)malloc(4 * width * height * sizeof(uint8_t));
+    NSAssert(DefaultTexture != NULL, @"failed malloc, out of memory");
+
+    BOOL texFlip = NO;
+    for (int h=0; h<height; ++h) {
+        for (int w=0; w<width*4; w+=4) {
+            if (texFlip) {
+                DefaultTexture[h*width + w]     = 100;
+                DefaultTexture[h*width + w + 1] = 100;
+                DefaultTexture[h*width + w + 2] = 100;
+                DefaultTexture[h*width + w + 3] = 255;
+            }
+            else {
+                DefaultTexture[h*width + w]     = 200;
+                DefaultTexture[h*width + w + 1] = 200;
+                DefaultTexture[h*width + w + 2] = 200;
+                DefaultTexture[h*width + w + 3] = 255;
+            }
+            texFlip = !texFlip;
+        }
+        texFlip = !texFlip;
+    }
+#endif
+
 
     NFDataMap *diffuse = [[[NFDataMap alloc] init] autorelease];
-    CGRect rect = CGRectMake(0.0, 0.0, 2.0, 2.0);
 
+    CGRect rect = CGRectMake(0.0, 0.0, (float)width, (float)height);
     [diffuse loadWithData:DefaultTexture ofSize:rect ofType:GL_UNSIGNED_BYTE withFormat:GL_RGBA];
+
+    //free(DefaultTexture);
+
     [surface setMap_Kd:diffuse];
 
     return surface;
 }
 
 @synthesize name = _name;
+
+// these three won't need lazy alloc
 @synthesize Ns = _Ns;
 @synthesize Ni = _Ni;
 @synthesize Tr = _Tr;
+
+// will need NSArray lazy alloc
 @synthesize Tf = _Tf;
-@synthesize illum = _illum;
+
+@synthesize illum = _illum; // won't need lazy alloc
+
+// will need NSArray lazy alloc
 @synthesize Ka = _Ka;
 @synthesize Kd = _Kd;
 @synthesize Ks = _Ks;
 @synthesize Ke = _Ke;
+
+// these will need NFDataMap lazy alloc
 @synthesize map_Ka = _map_Ka;
 @synthesize map_Kd = _map_Kd;
 @synthesize map_Ks = _map_Ks;
