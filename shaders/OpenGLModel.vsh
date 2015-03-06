@@ -49,7 +49,7 @@ void main (void) {
     vec3 N = normalize(mat3(M) * v_normal.xyz);
     f_normal = vec4(N, 1.0);
 
-    // calculate the final vertex position (NOTE: correct order for right-handed coordinate system)
+    // calculate the final vertex position
     vec4 vertPos = UBO.projection * UBO.view * model * v_vertex;
 
     // NOTE: for projective texturing: vec4 projPos = projBias * projection * view * model * position
