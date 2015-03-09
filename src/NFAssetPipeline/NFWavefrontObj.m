@@ -166,6 +166,23 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
             texCoord.t = 0.5f - asin(vertex.y) / M_PI;
             texCoord.p = 0.0f;
 
+            //
+            // TODO: verify that these clamps aren't needed
+            //
+            if (texCoord.s < 0.0f) {
+                texCoord.s = 0.0f;
+            }
+            else if (texCoord.s > 1.0f) {
+                texCoord.s = 1.0f;
+            }
+
+            if (texCoord.t < 0.0f) {
+                texCoord.t = 0.0f;
+            }
+            else if (texCoord.t > 1.0f) {
+                texCoord.t = 1.0f;
+            }
+
             [self.textureCoords addObject:[NSValue value:&texCoord withObjCType:g_texType]];
 
 

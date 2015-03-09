@@ -17,6 +17,11 @@
 - (void) createPlaneOfSize:(NSInteger)size;
 
 //
+// TODO: pass in a param for number of slices/strips both vertical and horizontal to use when making the sphere
+//
+- (void) createSolidSphereWithRadius:(float)radius;
+
+//
 // TODO: use the following geometries to visualize lights
 //
 // point light == sphere

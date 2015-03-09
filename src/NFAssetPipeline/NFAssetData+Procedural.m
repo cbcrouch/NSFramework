@@ -310,4 +310,25 @@ static const char *g_faceType = @encode(NFFace_t);
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
 
+- (void) createSolidSphereWithRadius:(float)radius {
+    //
+    // TODO: generate vertices, index them, and then calculate texture coordinates
+    //
+
+    //vertex.x = r * sin(theta) * cos(phi);
+    //vertex.y = r * sin(theta) * sin(phi);
+    //vertez.z = r * cos(theta);
+
+    // phi => [0, M_PI)
+    // theta => [0, 2*M_PI)
+
+    // generate point at top
+
+    // generate first slice and index triangles to the top
+
+    // generate second slice and index to above slice (should be the same number of triangles)
+
+    // generate n slice and bottom point then index to bottom point
+}
+
 @end

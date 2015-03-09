@@ -47,6 +47,8 @@
     NFAssetData *m_gridData;
     NFAssetData *m_planeData;
 
+    NFAssetData *m_solidSphere;
+
     //
     // TODO: this information should be stored in some kind of NFRendererProgram object
     //       or an NFPipeline object (need to determine the easiest and simplist way to encapsulate shaders)
@@ -109,7 +111,7 @@
 
     NSString *fileNamePath;
 
-    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
+    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
 
@@ -117,6 +119,8 @@
     // TODO: teapot contains vertices and texture coordinates (no normals), does not use objects or groups,
     //       and has two different geometries defined separated by listing i.e. first object has v,vt,f and
     //       then the second object lists its v,vt,f components
+    //
+    //       also need to figure out why the default texture is not getting applied
     //
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/teapot/teapot.obj";
 
@@ -128,7 +132,7 @@
     //       different primitive mode
     //
 
-    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/suzanne.obj";
+    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/suzanne.obj";
 
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/buddha.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/dragon.obj";
@@ -138,11 +142,11 @@
     [m_pAsset createVertexStateWithProgram:m_hProgram];
     [m_pAsset loadResourcesGL];
 
-    //m_pAsset.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 0.75f, 0.0f);
+    //m_pAsset.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 1.0f, 0.0f);
 
     //[m_pAsset applyOriginCenterMatrix];
 
-    //[m_pAsset applyUnitScalarMatrix]; // use for teapot
+    [m_pAsset applyUnitScalarMatrix]; // use for teapot
 
 
     m_axisData = [NFAssetLoader allocAssetDataOfType:kAxisWireframe withArgs:nil];
@@ -158,6 +162,11 @@
     m_planeData = [NFAssetLoader allocAssetDataOfType:kSolidPlane withArgs:nil];
     [m_planeData createVertexStateWithProgram:m_hProgram];
     [m_planeData loadResourcesGL];
+
+
+    m_solidSphere = [NFAssetLoader allocAssetDataOfType:kSolidSphere withArgs:nil];
+    [m_solidSphere createVertexStateWithProgram:m_hProgram];
+    [m_solidSphere loadResourcesGL];
 
 
     _stepTransforms = YES;
@@ -183,6 +192,8 @@
     [m_axisData release];
     [m_gridData release];
     [m_planeData release];
+
+    [m_solidSphere release];
 
     // NOTE: helper method will take care of cleaning up all shaders attached to program
     [NFRUtils destroyProgramWithHandle:m_hProgram];
@@ -231,6 +242,8 @@
     //[m_gridData drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
 
     //[m_planeData drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
+
+    //[m_solidSphere drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
 
 
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_expTexFuncIdx);

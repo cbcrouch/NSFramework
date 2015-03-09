@@ -147,6 +147,23 @@
             }
         break;
 
+        case kSolidSphere: {
+            [asset createSolidSphereWithRadius:1];
+            // NOTE: default draw mode should work
+
+            NFSurfaceModel *surface = [NFSurfaceModel defaultModel];
+
+            NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];
+            [surfaceModels addObject:surface];
+
+            asset.surfaceModelArray = surfaceModels;
+
+            for (NFSubset *subset in [asset subsetArray]) {
+                subset.surfaceModel = [surfaceModels objectAtIndex:0];
+            }
+        }
+        break;
+
         default:
             NSAssert(NO, @"ERROR: received unknown type for loading asset");
         break;

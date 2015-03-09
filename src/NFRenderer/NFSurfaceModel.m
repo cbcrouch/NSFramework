@@ -117,9 +117,29 @@
     //
     // TODO: get a 16x16 default texture working correctly, currently doesn't seem to be indexed right
     //
-    const int width = 2;
-    const int height = 2;
 
+
+    //
+    // TODO: hardcode a 4x4 texture and verify that it is identical to the generated one and the same
+    //       artifacts are present when rendered
+    //
+
+    unsigned char DefaultTexture[] = {
+        200, 200, 200, 255,  100, 100, 100, 255,  200, 200, 200, 255,  100, 100, 100, 255,
+        100, 100, 100, 255,  200, 200, 200, 255,  100, 100, 100, 255,  200, 200, 200, 255,
+        200, 200, 200, 255,  100, 100, 100, 255,  200, 200, 200, 255,  100, 100, 100, 255,
+        100, 100, 100, 255,  200, 200, 200, 255,  100, 100, 100, 255,  200, 200, 200, 255
+    };
+
+    const int width = 4;
+    const int height = 4;
+
+    //
+    // TODO: generate a sphere and apply same texture coordinate generation to it as the
+    //       Wavefront obj files to verify the texture coordinates function correctly
+    //
+
+/*
     unsigned char* DefaultTexture = (unsigned char*)malloc(4 * width * height * sizeof(uint8_t));
     NSAssert(DefaultTexture != NULL, @"failed malloc, out of memory");
 
@@ -142,13 +162,13 @@
         }
         texFlip = !texFlip;
     }
-
+*/
     NFDataMap *diffuse = [[[NFDataMap alloc] init] autorelease];
 
     CGRect rect = CGRectMake(0.0, 0.0, (float)width, (float)height);
     [diffuse loadWithData:DefaultTexture ofSize:rect ofType:GL_UNSIGNED_BYTE withFormat:GL_RGBA];
 
-    free(DefaultTexture);
+    //free(DefaultTexture);
 
     [surface setMap_Kd:diffuse];
     return surface;
