@@ -26,7 +26,7 @@ Building
 
 ### Prerequisites
 
-XCode 6.1
+XCode 6.2
 (XCode Command Line Tools optional but recommended)
 
 ### Getting source
@@ -40,7 +40,7 @@ Launch XCode and build
 Internals
 ---------
 
-Currently using C11 without GNU extensions and NOT using ARC.
+Currently using C11 without GNU extensions, though __STRICT_ANSI__ has been undefined, and NOT using ARC.
 
 Assets
 ------
