@@ -692,6 +692,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     [self.glRenderer updateFrameWithTime:secsElapsed withViewMatrix:viewMat withProjection:projMat];
 
+    //
+    // TODO: need to prevent rendering a frame prior to the window being placed on the screen
+    //
+
     // perform drawing code
     [self.glRenderer renderFrame];
 

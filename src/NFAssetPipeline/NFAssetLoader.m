@@ -151,6 +151,13 @@
             [asset createSolidSphereWithRadius:1];
             // NOTE: default draw mode should work
 
+            //
+            // TODO: wireframe just for debugging purposes
+            //
+            for (NFSubset *subset in [asset subsetArray]) {
+                [subset setDrawMode:kDrawLineLoop];
+            }
+
             NFSurfaceModel *surface = [NFSurfaceModel defaultModel];
 
             NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];

@@ -311,10 +311,6 @@ static const char *g_faceType = @encode(NFFace_t);
 }
 
 - (void) createSolidSphereWithRadius:(float)radius {
-    //
-    // TODO: generate vertices, index them, and then calculate texture coordinates
-    //
-
     const NSInteger verticalSlices = 4;
     const NSInteger horizontalSlices = 8;
 
@@ -350,8 +346,8 @@ static const char *g_faceType = @encode(NFFace_t);
 
 
 
-    //float verticalAngleDelta = M_PI / (float)verticalSlices;
-    //float horizontalAngleDelta = (2 * M_PI) / (float)horizontalSlices;
+    float verticalAngleDelta = M_PI / (float)verticalSlices;
+    float horizontalAngleDelta = (2 * M_PI) / (float)horizontalSlices;
 
     float phi = 0.0f;
     float theta = 0.0f;
@@ -361,8 +357,60 @@ static const char *g_faceType = @encode(NFFace_t);
     vertices[0].pos[2] = radius * sin(phi) * cos(theta);
     vertices[0].pos[3] = 1.0f;
 
-    NSLog(@"solid sphere top coordinate: %f %f %f", vertices[0].pos[0], vertices[0].pos[1], vertices[0].pos[2]);
+    //
+    // TODO: generate vertices, index them, calculate normals, and then calculate texture coordinates
+    //
 
+    //NSLog(@"solid sphere top coordinate: %f %f %f", vertices[0].pos[0], vertices[0].pos[1], vertices[0].pos[2]);
+
+    phi += verticalAngleDelta;
+
+    int index = 1;
+    for (NSInteger i=0; i<horizontalSlices; ++i) {
+        vertices[index].pos[0] = radius * sin(phi) * sin(theta);
+        vertices[index].pos[1] = radius * cos(phi);
+        vertices[index].pos[2] = radius * sin(phi) * cos(theta);
+        vertices[index].pos[3] = 1.0f;
+
+        //NSLog(@"solid sphere %d coordinate: %f %f %f", index, vertices[index].pos[0], vertices[index].pos[1], vertices[index].pos[2]);
+
+        theta += horizontalAngleDelta;
+        ++index;
+    }
+
+    // 24 (numIndices) == 3 * horizontalSlices
+
+    indices[0] = 0;
+    indices[1] = 1;
+    indices[2] = 2;
+
+    indices[3] = 0;
+    indices[4] = 2;
+    indices[5] = 3;
+
+    indices[6] = 0;
+    indices[7] = 3;
+    indices[8] = 4;
+
+    indices[ 9] = 0;
+    indices[10] = 4;
+    indices[11] = 5;
+
+    indices[12] = 0;
+    indices[13] = 5;
+    indices[14] = 6;
+
+    indices[15] = 0;
+    indices[16] = 6;
+    indices[17] = 7;
+
+    indices[18] = 0;
+    indices[19] = 7;
+    indices[20] = 8;
+
+    indices[21] = 0;
+    indices[22] = 8;
+    indices[23] = 1;
 
 
     // generate point at top

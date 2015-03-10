@@ -236,14 +236,15 @@
     //
 
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_normTexFuncIdx);
-    [m_pAsset drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
 
+
+    //[m_pAsset drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
 
     //[m_gridData drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
 
     //[m_planeData drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
 
-    //[m_solidSphere drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
+    [m_solidSphere drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
 
 
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_expTexFuncIdx);
