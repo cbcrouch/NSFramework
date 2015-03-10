@@ -315,12 +315,55 @@ static const char *g_faceType = @encode(NFFace_t);
     // TODO: generate vertices, index them, and then calculate texture coordinates
     //
 
-    //vertex.x = r * sin(theta) * cos(phi);
-    //vertex.y = r * sin(theta) * sin(phi);
-    //vertez.z = r * cos(theta);
+    const NSInteger verticalSlices = 4;
+    const NSInteger horizontalSlices = 8;
 
-    // phi => [0, M_PI)
-    // theta => [0, 2*M_PI)
+    NFSubset *pSubset = [[[NFSubset alloc] init] autorelease];
+
+    // adding two vertices for the top and bottom points
+    const NSInteger numVertices = 2 + (verticalSlices * horizontalSlices);
+
+    // top and bottom horizontal slices will consist of only triangles and the remaing slices form quads
+    // from two triangles (3 indices per triangle, 6 per quad)
+    const NSInteger numIndices = (2 * horizontalSlices * 3) + ((verticalSlices - 2) * horizontalSlices * 6);
+
+    NFVertex_t vertices[numVertices];
+    GLushort indices[numIndices];
+
+    //
+    // TODO: remove these memsets after all elements have been calculated
+    //
+    memset(vertices, 0, sizeof(vertices));
+    memset(indices, 0, sizeof(indices));
+
+
+    // spherical coordinates as mapped to perspective coordiantes (x to the right, y up, +z towards the camera)
+    //x = r * sin(phi) * sin(theta);
+    //y = r * cos(phi);
+    //z = r * sin(phi) * cos(theta);
+
+    // phi => [0, M_PI]
+    // theta => [0, 2*M_PI]
+
+    // phi is vertical angle (inclination angle)
+    // theta is horizontal angle (azimuthal angle)
+
+
+
+    //float verticalAngleDelta = M_PI / (float)verticalSlices;
+    //float horizontalAngleDelta = (2 * M_PI) / (float)horizontalSlices;
+
+    float phi = 0.0f;
+    float theta = 0.0f;
+
+    vertices[0].pos[0] = radius * sin(phi) * sin(theta);
+    vertices[0].pos[1] = radius * cos(phi);
+    vertices[0].pos[2] = radius * sin(phi) * cos(theta);
+    vertices[0].pos[3] = 1.0f;
+
+    NSLog(@"solid sphere top coordinate: %f %f %f", vertices[0].pos[0], vertices[0].pos[1], vertices[0].pos[2]);
+
+
 
     // generate point at top
 
@@ -329,6 +372,32 @@ static const char *g_faceType = @encode(NFFace_t);
     // generate second slice and index to above slice (should be the same number of triangles)
 
     // generate n slice and bottom point then index to bottom point
+
+
+
+    //
+    // TODO: create a faces array and then calculate all the vertex normals
+    //
+/*
+    NFFace_t face = [NFAssetUtils calculateFaceWithPoints:vertices withIndices:indices];
+    NSValue *value = [NSValue value:&face withObjCType:g_faceType];
+
+    NSArray *array = [[[NSArray alloc] initWithObjects:value, value, nil] autorelease];
+
+    for (int i=0; i<numVertices; ++i) {
+        GLKVector4 vertexNormal = [NFAssetUtils calculateAreaWeightedNormalOfIndex:i withFaces:array];
+        vertices[i].norm[0] = vertexNormal.x;
+        vertices[i].norm[1] = vertexNormal.y;
+        vertices[i].norm[2] = vertexNormal.z;
+        vertices[i].norm[3] = vertexNormal.w;
+    }
+*/
+
+    [pSubset allocateVerticesWithNumElts:numVertices];
+    [pSubset allocateIndicesWithNumElts:numIndices];
+    [pSubset loadVertexData:vertices ofSize:(numVertices * sizeof(NFVertex_t))];
+    [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
+    self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
 
 @end
