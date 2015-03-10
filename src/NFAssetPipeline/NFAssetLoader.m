@@ -154,10 +154,11 @@
             //
             // TODO: wireframe just for debugging purposes
             //
+#if 0
             for (NFSubset *subset in [asset subsetArray]) {
                 [subset setDrawMode:kDrawLineLoop];
             }
-
+#endif
             NFSurfaceModel *surface = [NFSurfaceModel defaultModel];
 
             NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];

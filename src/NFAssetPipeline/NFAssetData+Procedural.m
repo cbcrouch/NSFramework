@@ -345,81 +345,122 @@ static const char *g_faceType = @encode(NFFace_t);
     // theta is horizontal angle (azimuthal angle)
 
 
-
     float verticalAngleDelta = M_PI / (float)verticalSlices;
     float horizontalAngleDelta = (2 * M_PI) / (float)horizontalSlices;
 
     float phi = 0.0f;
     float theta = 0.0f;
 
+    // top point of sphere
     vertices[0].pos[0] = radius * sin(phi) * sin(theta);
     vertices[0].pos[1] = radius * cos(phi);
     vertices[0].pos[2] = radius * sin(phi) * cos(theta);
     vertices[0].pos[3] = 1.0f;
 
-    //
-    // TODO: generate vertices, index them, calculate normals, and then calculate texture coordinates
-    //
-
-    //NSLog(@"solid sphere top coordinate: %f %f %f", vertices[0].pos[0], vertices[0].pos[1], vertices[0].pos[2]);
-
     phi += verticalAngleDelta;
 
+    // generate sphere cap
     int index = 1;
     for (NSInteger i=0; i<horizontalSlices; ++i) {
         vertices[index].pos[0] = radius * sin(phi) * sin(theta);
         vertices[index].pos[1] = radius * cos(phi);
         vertices[index].pos[2] = radius * sin(phi) * cos(theta);
         vertices[index].pos[3] = 1.0f;
-
-        //NSLog(@"solid sphere %d coordinate: %f %f %f", index, vertices[index].pos[0], vertices[index].pos[1], vertices[index].pos[2]);
-
         theta += horizontalAngleDelta;
         ++index;
     }
 
-    // 24 (numIndices) == 3 * horizontalSlices
+    // index sphere cap
+    GLushort idx = 1;
+    for (NSInteger i=0; i < 3*horizontalSlices; i+=3) {
+        indices[i]   = 0;
+        indices[i+1] = idx;
 
-    indices[0] = 0;
-    indices[1] = 1;
-    indices[2] = 2;
+        if (idx != horizontalSlices) {
+            indices[i+2] = idx+1;
+        }
+        else {
+            indices[i+2] = 1;
+        }
 
-    indices[3] = 0;
-    indices[4] = 2;
-    indices[5] = 3;
+        ++idx;
+    }
 
-    indices[6] = 0;
-    indices[7] = 3;
-    indices[8] = 4;
-
-    indices[ 9] = 0;
-    indices[10] = 4;
-    indices[11] = 5;
-
-    indices[12] = 0;
-    indices[13] = 5;
-    indices[14] = 6;
-
-    indices[15] = 0;
-    indices[16] = 6;
-    indices[17] = 7;
-
-    indices[18] = 0;
-    indices[19] = 7;
-    indices[20] = 8;
-
-    indices[21] = 0;
-    indices[22] = 8;
-    indices[23] = 1;
+    // generate all side slices
+    for (NSInteger i=0; i<(verticalSlices-2); ++i) {
+        phi += verticalAngleDelta;
+        theta = 0.0f;
+        for (NSInteger j=0; j<horizontalSlices; ++j) {
+            vertices[index].pos[0] = radius * sin(phi) * sin(theta);
+            vertices[index].pos[1] = radius * cos(phi);
+            vertices[index].pos[2] = radius * sin(phi) * cos(theta);
+            vertices[index].pos[3] = 1.0f;
+            theta += horizontalAngleDelta;
+            ++index;
+        }
+    }
 
 
-    // generate point at top
+    GLushort first = 1;
+    GLushort second = 2;
+/*
+    indices[24] = first;
+    indices[25] = idx;
+    indices[26] = idx+1;
 
-    // generate first slice and index triangles to the top
+    indices[27] = idx+1;
+    indices[28] = second;
+    indices[29] = first;
 
-    // generate second slice and index to above slice (should be the same number of triangles)
+    ++first;
+    ++second;
+    ++idx;
 
-    // generate n slice and bottom point then index to bottom point
+    indices[30] = first;
+    indices[31] = idx;
+    indices[32] = idx+1;
+
+    indices[33] = idx+1;
+    indices[34] = second;
+    indices[35] = first;
+*/
+
+    //
+    // TODO: wrap this in another loop to cover verticalSlices-2
+    //
+    NSInteger baseIdx = 3*horizontalSlices;
+    for (NSInteger i=0; i<horizontalSlices; ++i) {
+        if (i != horizontalSlices-1) {
+            indices[baseIdx] = first;
+            indices[baseIdx+1] = idx;
+            indices[baseIdx+2] = idx+1;
+
+            indices[baseIdx+3] = idx+1;
+            indices[baseIdx+4] = second;
+            indices[baseIdx+5] = first;
+        }
+        else {
+            // final/closing indexing of the horizontal slice
+            indices[baseIdx] = first;
+            indices[baseIdx+1] = idx;
+            indices[baseIdx+2] = 1;
+
+            indices[baseIdx+3] = idx;
+            indices[baseIdx+4] = second;
+            indices[baseIdx+5] = 1;
+        }
+
+        ++first;
+        ++second;
+        ++idx;
+
+        baseIdx += 6;
+    }
+
+
+    //
+    // TODO generate bottom point and bottom cap
+    //
 
 
 
