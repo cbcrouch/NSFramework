@@ -317,7 +317,7 @@ static const char *g_faceType = @encode(NFFace_t);
     NFSubset *pSubset = [[[NFSubset alloc] init] autorelease];
 
     // adding two vertices for the top and bottom points
-    const NSInteger numVertices = 2 + (verticalSlices * horizontalSlices);
+    const NSInteger numVertices = 2 + ((verticalSlices-1) * horizontalSlices);
 
     // top and bottom horizontal slices will consist of only triangles and the remaing slices form quads
     // from two triangles (3 indices per triangle, 6 per quad)
@@ -360,6 +360,10 @@ static const char *g_faceType = @encode(NFFace_t);
     phi += verticalAngleDelta;
 
     // generate sphere cap vertices
+    //
+    // TODO: fold all the vertex generation into one loop over verticalSlices-1
+    //       (top and bottom point will need to remain outside the loop)
+    //
     int index = 1;
     for (NSInteger i=0; i<horizontalSlices; ++i) {
         vertices[index].pos[0] = radius * sin(phi) * sin(theta);
@@ -432,12 +436,32 @@ static const char *g_faceType = @encode(NFFace_t);
         }
     }
 
+    // bottom point of the sphere
+    phi += verticalAngleDelta;
+    theta = 0.0f;
+    vertices[index].pos[0] = radius * sin(phi) * sin(theta);
+    vertices[index].pos[1] = radius * cos(phi);
+    vertices[index].pos[2] = radius * sin(phi) * cos(theta);
+    vertices[index].pos[3] = 1.0f;
 
 
-    //
-    // TODO generate bottom point and bottom cap
-    //
+    // index bottom cap of the sphere
+    GLushort first = ((verticalSlices-2) * horizontalSlices) + 1;
+    GLushort second = first+1;
+    for (NSInteger i=baseIdx; i < 3*horizontalSlices + baseIdx; i+=3) {
+        indices[i]   = first;
+        indices[i+1] = index;
 
+        if (second != index) {
+            indices[i+2] = second;
+        }
+        else {
+            indices[i+2] = 17;
+        }
+
+        ++first;
+        ++second;
+    }
 
 
     //
