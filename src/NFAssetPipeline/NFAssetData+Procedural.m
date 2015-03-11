@@ -359,7 +359,7 @@ static const char *g_faceType = @encode(NFFace_t);
 
     phi += verticalAngleDelta;
 
-    // generate sphere cap
+    // generate sphere cap vertices
     int index = 1;
     for (NSInteger i=0; i<horizontalSlices; ++i) {
         vertices[index].pos[0] = radius * sin(phi) * sin(theta);
@@ -386,7 +386,7 @@ static const char *g_faceType = @encode(NFFace_t);
         ++idx;
     }
 
-    // generate all side slices
+    // generate all side vertices
     for (NSInteger i=0; i<(verticalSlices-2); ++i) {
         phi += verticalAngleDelta;
         theta = 0.0f;
@@ -400,62 +400,38 @@ static const char *g_faceType = @encode(NFFace_t);
         }
     }
 
-
-    GLushort first = 1;
-    GLushort second = 2;
-/*
-    indices[24] = first;
-    indices[25] = idx;
-    indices[26] = idx+1;
-
-    indices[27] = idx+1;
-    indices[28] = second;
-    indices[29] = first;
-
-    ++first;
-    ++second;
-    ++idx;
-
-    indices[30] = first;
-    indices[31] = idx;
-    indices[32] = idx+1;
-
-    indices[33] = idx+1;
-    indices[34] = second;
-    indices[35] = first;
-*/
-
-    //
-    // TODO: wrap this in another loop to cover verticalSlices-2
-    //
+    // index sides
     NSInteger baseIdx = 3*horizontalSlices;
-    for (NSInteger i=0; i<horizontalSlices; ++i) {
-        if (i != horizontalSlices-1) {
-            indices[baseIdx] = first;
-            indices[baseIdx+1] = idx;
-            indices[baseIdx+2] = idx+1;
+    for (NSInteger i=0; i<verticalSlices-2; ++i) {
+        GLushort first = 1 + i*horizontalSlices;
+        GLushort second = 2 + i*horizontalSlices;
+        for (NSInteger j=0; j<horizontalSlices; ++j) {
+            if (j != horizontalSlices-1) {
+                indices[baseIdx] = first;
+                indices[baseIdx+1] = idx;
+                indices[baseIdx+2] = idx+1;
 
-            indices[baseIdx+3] = idx+1;
-            indices[baseIdx+4] = second;
-            indices[baseIdx+5] = first;
+                indices[baseIdx+3] = idx+1;
+                indices[baseIdx+4] = second;
+                indices[baseIdx+5] = first;
+            }
+            else {
+                // final/closing indexing of the horizontal slice
+                indices[baseIdx] = first;
+                indices[baseIdx+1] = idx;
+                indices[baseIdx+2] = 1 + i*horizontalSlices;
+
+                indices[baseIdx+3] = idx;
+                indices[baseIdx+4] = second;
+                indices[baseIdx+5] = 1 + i*horizontalSlices;
+            }
+            ++first;
+            ++second;
+            ++idx;
+            baseIdx += 6;
         }
-        else {
-            // final/closing indexing of the horizontal slice
-            indices[baseIdx] = first;
-            indices[baseIdx+1] = idx;
-            indices[baseIdx+2] = 1;
-
-            indices[baseIdx+3] = idx;
-            indices[baseIdx+4] = second;
-            indices[baseIdx+5] = 1;
-        }
-
-        ++first;
-        ++second;
-        ++idx;
-
-        baseIdx += 6;
     }
+
 
 
     //
@@ -465,7 +441,9 @@ static const char *g_faceType = @encode(NFFace_t);
 
 
     //
-    // TODO: create a faces array and then calculate all the vertex normals
+    // TODO: create a faces array and then calculate all the vertex normals (verify that vertex normals
+    //       are simply unit vectors from the origin to the vertex, if this is the case use it over
+    //       the constructed faces method)
     //
 /*
     NFFace_t face = [NFAssetUtils calculateFaceWithPoints:vertices withIndices:indices];

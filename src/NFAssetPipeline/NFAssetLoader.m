@@ -154,7 +154,7 @@
             //
             // TODO: wireframe just for debugging purposes
             //
-#if 0
+#if 1
             for (NFSubset *subset in [asset subsetArray]) {
                 [subset setDrawMode:kDrawLineLoop];
             }
