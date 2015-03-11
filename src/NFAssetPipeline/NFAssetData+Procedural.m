@@ -327,10 +327,9 @@ static const char *g_faceType = @encode(NFFace_t);
     GLushort indices[numIndices];
 
     //
-    // TODO: remove these memsets after all elements have been calculated
+    // TODO: remove memset after normals and texture coordinates have been calculated
     //
     memset(vertices, 0, sizeof(vertices));
-    memset(indices, 0, sizeof(indices));
 
 
     // spherical coordinates as mapped to perspective coordiantes (x to the right, y up, +z towards the camera)
@@ -345,11 +344,10 @@ static const char *g_faceType = @encode(NFFace_t);
     // theta is horizontal angle (azimuthal angle)
 
 
-    float verticalAngleDelta = M_PI / (float)verticalSlices;
-    float horizontalAngleDelta = (2 * M_PI) / (float)horizontalSlices;
-
     float phi = 0.0f;
     float theta = 0.0f;
+    float verticalAngleDelta = M_PI / (float)verticalSlices;
+    float horizontalAngleDelta = (2 * M_PI) / (float)horizontalSlices;
 
     // top point of sphere
     vertices[0].pos[0] = radius * sin(phi) * sin(theta);
@@ -357,24 +355,31 @@ static const char *g_faceType = @encode(NFFace_t);
     vertices[0].pos[2] = radius * sin(phi) * cos(theta);
     vertices[0].pos[3] = 1.0f;
 
-    phi += verticalAngleDelta;
-
-    // generate sphere cap vertices
-    //
-    // TODO: fold all the vertex generation into one loop over verticalSlices-1
-    //       (top and bottom point will need to remain outside the loop)
-    //
+    // generate all side vertices
     int index = 1;
-    for (NSInteger i=0; i<horizontalSlices; ++i) {
-        vertices[index].pos[0] = radius * sin(phi) * sin(theta);
-        vertices[index].pos[1] = radius * cos(phi);
-        vertices[index].pos[2] = radius * sin(phi) * cos(theta);
-        vertices[index].pos[3] = 1.0f;
-        theta += horizontalAngleDelta;
-        ++index;
+    for (NSInteger i=0; i<(verticalSlices-1); ++i) {
+        phi += verticalAngleDelta;
+        theta = 0.0f;
+        for (NSInteger j=0; j<horizontalSlices; ++j) {
+            vertices[index].pos[0] = radius * sin(phi) * sin(theta);
+            vertices[index].pos[1] = radius * cos(phi);
+            vertices[index].pos[2] = radius * sin(phi) * cos(theta);
+            vertices[index].pos[3] = 1.0f;
+            theta += horizontalAngleDelta;
+            ++index;
+        }
     }
 
-    // index sphere cap
+    // bottom point of the sphere
+    phi += verticalAngleDelta;
+    theta = 0.0f;
+    vertices[index].pos[0] = radius * sin(phi) * sin(theta);
+    vertices[index].pos[1] = radius * cos(phi);
+    vertices[index].pos[2] = radius * sin(phi) * cos(theta);
+    vertices[index].pos[3] = 1.0f;
+
+
+    // index to cap of the sphere
     GLushort idx = 1;
     for (NSInteger i=0; i < 3*horizontalSlices; i+=3) {
         indices[i]   = 0;
@@ -388,20 +393,6 @@ static const char *g_faceType = @encode(NFFace_t);
         }
 
         ++idx;
-    }
-
-    // generate all side vertices
-    for (NSInteger i=0; i<(verticalSlices-2); ++i) {
-        phi += verticalAngleDelta;
-        theta = 0.0f;
-        for (NSInteger j=0; j<horizontalSlices; ++j) {
-            vertices[index].pos[0] = radius * sin(phi) * sin(theta);
-            vertices[index].pos[1] = radius * cos(phi);
-            vertices[index].pos[2] = radius * sin(phi) * cos(theta);
-            vertices[index].pos[3] = 1.0f;
-            theta += horizontalAngleDelta;
-            ++index;
-        }
     }
 
     // index sides
@@ -436,15 +427,6 @@ static const char *g_faceType = @encode(NFFace_t);
         }
     }
 
-    // bottom point of the sphere
-    phi += verticalAngleDelta;
-    theta = 0.0f;
-    vertices[index].pos[0] = radius * sin(phi) * sin(theta);
-    vertices[index].pos[1] = radius * cos(phi);
-    vertices[index].pos[2] = radius * sin(phi) * cos(theta);
-    vertices[index].pos[3] = 1.0f;
-
-
     // index bottom cap of the sphere
     GLushort first = ((verticalSlices-2) * horizontalSlices) + 1;
     GLushort second = first+1;
@@ -456,7 +438,7 @@ static const char *g_faceType = @encode(NFFace_t);
             indices[i+2] = second;
         }
         else {
-            indices[i+2] = 17;
+            indices[i+2] = ((verticalSlices-2) * horizontalSlices) + 1;
         }
 
         ++first;
