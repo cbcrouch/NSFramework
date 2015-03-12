@@ -152,7 +152,7 @@
             // NOTE: default draw mode should work
 
             //
-            // TODO: wireframe just for debugging purposes
+            // TODO: wireframe just for debugging purposes, remove when done generating sphere
             //
 #if 0
             for (NFSubset *subset in [asset subsetArray]) {

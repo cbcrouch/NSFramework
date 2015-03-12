@@ -314,6 +314,10 @@ static const char *g_faceType = @encode(NFFace_t);
     const NSInteger verticalSlices = 4;
     const NSInteger horizontalSlices = 8;
 
+    // 8   16 for low resolution
+    // 16  32 for medium resolution
+    // 32  64 for high resolution
+
     NFSubset *pSubset = [[[NFSubset alloc] init] autorelease];
 
     // adding two vertices for the top and bottom points
@@ -325,11 +329,6 @@ static const char *g_faceType = @encode(NFFace_t);
 
     NFVertex_t vertices[numVertices];
     GLushort indices[numIndices];
-
-    //
-    // TODO: remove memset after normals and texture coordinates have been calculated
-    //
-    memset(vertices, 0, sizeof(vertices));
 
 
     // spherical coordinates as mapped to perspective coordiantes (x to the right, y up, +z towards the camera)
@@ -446,25 +445,33 @@ static const char *g_faceType = @encode(NFFace_t);
     }
 
 
-    //
-    // TODO: create a faces array and then calculate all the vertex normals (verify that vertex normals
-    //       are simply unit vectors from the origin to the vertex, if this is the case use it over
-    //       the constructed faces method)
-    //
-/*
-    NFFace_t face = [NFAssetUtils calculateFaceWithPoints:vertices withIndices:indices];
-    NSValue *value = [NSValue value:&face withObjCType:g_faceType];
 
-    NSArray *array = [[[NSArray alloc] initWithObjects:value, value, nil] autorelease];
+    //
+    // TODO: verify that vertex normals are simply unit vectors from the origin to the vertex, if this
+    //       is the case use it over the constructed faces method)
+    //
+    NSMutableArray* mutFaceArray = [[[NSMutableArray alloc] init] autorelease];
+    for (NSInteger i=0; i<numIndices; i+=3) {
+        GLushort* pIndices = indices + i;
+        NFFace_t face = [NFAssetUtils calculateFaceWithPoints:vertices withIndices:pIndices];
+        NSValue *value = [NSValue value:&face withObjCType:g_faceType];
+        [mutFaceArray addObject:value];
+    }
 
+    NSArray* faceArray = [NSArray arrayWithArray:mutFaceArray];
     for (int i=0; i<numVertices; ++i) {
-        GLKVector4 vertexNormal = [NFAssetUtils calculateAreaWeightedNormalOfIndex:i withFaces:array];
+        GLKVector4 vertexNormal = [NFAssetUtils calculateAreaWeightedNormalOfIndex:i withFaces:faceArray];
         vertices[i].norm[0] = vertexNormal.x;
         vertices[i].norm[1] = vertexNormal.y;
         vertices[i].norm[2] = vertexNormal.z;
         vertices[i].norm[3] = vertexNormal.w;
+
+        vertices[i].texCoord[0] = 0.5f + atan2f(vertices[i].pos[2], vertices[i].pos[0]) / (2 * M_PI);
+        vertices[i].texCoord[1] = 0.5f - asin(vertices[i].pos[1]) / M_PI;
+        vertices[i].texCoord[2] = 0.0f;
     }
-*/
+
+
 
     [pSubset allocateVerticesWithNumElts:numVertices];
     [pSubset allocateIndicesWithNumElts:numIndices];
