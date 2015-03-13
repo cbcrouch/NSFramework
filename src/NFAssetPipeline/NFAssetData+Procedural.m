@@ -311,8 +311,8 @@ static const char *g_faceType = @encode(NFFace_t);
 }
 
 - (void) createSolidSphereWithRadius:(float)radius {
-    const NSInteger verticalSlices = 4;
-    const NSInteger horizontalSlices = 8;
+    const NSInteger verticalSlices = 16;
+    const NSInteger horizontalSlices = 32;
 
     // 8   16 for low resolution
     // 16  32 for medium resolution
@@ -330,6 +330,12 @@ static const char *g_faceType = @encode(NFFace_t);
     NFVertex_t vertices[numVertices];
     GLushort indices[numIndices];
 
+
+    //
+    // TODO: would be awesome to be able to pass in an equation, a range for each variable, and number
+    //       of increments per variable and the shape would be generated (would still be useful to have
+    //       some custom defined functions that hardcoded the equation/ranges/slices/etc.)
+    //
 
     // spherical coordinates as mapped to perspective coordiantes (x to the right, y up, +z towards the camera)
     //x = r * sin(phi) * sin(theta);
@@ -354,6 +360,10 @@ static const char *g_faceType = @encode(NFFace_t);
     vertices[0].pos[2] = radius * sin(phi) * cos(theta);
     vertices[0].pos[3] = 1.0f;
 
+    vertices[0].texCoord[0] = 0.0f;
+    vertices[0].texCoord[1] = 1.0f;
+    vertices[0].texCoord[2] = 0.0f;
+
     // generate all side vertices
     int index = 1;
     for (NSInteger i=0; i<(verticalSlices-1); ++i) {
@@ -364,6 +374,7 @@ static const char *g_faceType = @encode(NFFace_t);
             vertices[index].pos[1] = radius * cos(phi);
             vertices[index].pos[2] = radius * sin(phi) * cos(theta);
             vertices[index].pos[3] = 1.0f;
+
             theta += horizontalAngleDelta;
             ++index;
         }
@@ -376,6 +387,10 @@ static const char *g_faceType = @encode(NFFace_t);
     vertices[index].pos[1] = radius * cos(phi);
     vertices[index].pos[2] = radius * sin(phi) * cos(theta);
     vertices[index].pos[3] = 1.0f;
+
+    vertices[index].texCoord[0] = 0.0f;
+    vertices[index].texCoord[1] = 0.0f;
+    vertices[index].texCoord[2] = 0.0f;
 
 
     // index to cap of the sphere
@@ -458,6 +473,13 @@ static const char *g_faceType = @encode(NFFace_t);
         [mutFaceArray addObject:value];
     }
 
+
+    //
+    // TODO: provide an method param to specify whether to use spherical texture coordinates,
+    //       positional texture coordinates, or normals based texture coordinates
+    //
+
+
     NSArray* faceArray = [NSArray arrayWithArray:mutFaceArray];
     for (int i=0; i<numVertices; ++i) {
         GLKVector4 vertexNormal = [NFAssetUtils calculateAreaWeightedNormalOfIndex:i withFaces:faceArray];
@@ -466,11 +488,43 @@ static const char *g_faceType = @encode(NFFace_t);
         vertices[i].norm[2] = vertexNormal.z;
         vertices[i].norm[3] = vertexNormal.w;
 
-        vertices[i].texCoord[0] = 0.5f + atan2f(vertices[i].pos[2], vertices[i].pos[0]) / (2 * M_PI);
-        vertices[i].texCoord[1] = 0.5f - asin(vertices[i].pos[1]) / M_PI;
-        vertices[i].texCoord[2] = 0.0f;
-    }
 
+        //
+        // TODO: correct texture coordinate calculation
+        //
+
+        // may need to flip the x,y,z axis around to match the projection coordinate system
+
+        // x => y
+        // y => z
+        // z => x
+
+        //vertices[i].texCoord[0] = 0.5f + atan2f(vertices[i].pos[2], vertices[i].pos[0]) / (2 * M_PI);
+        //vertices[i].texCoord[1] = 0.5f - asinf(vertices[i].pos[1]) / M_PI;
+
+        //
+        // TODO: swap X and Y to rotate texture back to how it should align with the sphere (after fixing
+        //       the incorrect texture coordiante being calculate around the current x-axis
+        //
+
+        vertices[i].texCoord[0] = 0.5f + atan2f(vertices[i].pos[1], vertices[i].pos[2]) / (2 * M_PI);
+        vertices[i].texCoord[1] = 0.5f - asinf(vertices[i].pos[0]) / M_PI;
+
+
+        //vertices[i].texCoord[0] = asinf(vertices[i].pos[0])/M_PI + 0.5f;
+        //vertices[i].texCoord[1] = asinf(vertices[i].pos[1])/M_PI + 0.5f;
+
+        //vertices[i].texCoord[0] = asinf(vertices[i].norm[0])/M_PI + 0.5f;
+        //vertices[i].texCoord[1] = asinf(vertices[i].norm[1])/M_PI + 0.5f;
+
+        vertices[i].texCoord[2] = 0.0f;
+
+        GLfloat s = vertices[i].texCoord[0];
+        GLfloat t = vertices[i].texCoord[1];
+        if(s<0.0f || s>1.0f || t<0.0f || t>1.0f) {
+            NSLog(@"texture coord is outside valid range: %f %f", s, t);
+        }
+    }
 
 
     [pSubset allocateVerticesWithNumElts:numVertices];
