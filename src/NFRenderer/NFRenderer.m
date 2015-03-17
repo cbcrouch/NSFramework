@@ -33,8 +33,6 @@
 @end
 
 @implementation NFViewport
-@synthesize uniqueId = _uniqueId;
-@synthesize viewRect = _viewRect;
 @end
 
 
@@ -69,10 +67,6 @@
 
 #pragma mark - NSGLRenderer Implementation
 @implementation NFRenderer
-
-@synthesize stepTransforms = _stepTransforms;
-
-@synthesize viewports = _viewports;
 
 - (instancetype) init {
     self = [super init];

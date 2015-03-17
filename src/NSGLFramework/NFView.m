@@ -78,14 +78,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
 @implementation NFView
 
-@synthesize displayLink = _displayLink;
-@synthesize glContext = _glContext;
-@synthesize pixelFormat = _pixelFormat;
-
-@synthesize glRenderer = _glRenderer;
-@synthesize viewVolume = _viewVolume;
-@synthesize camera = _camera;
-
 static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp* now,
                                     const CVTimeStamp* outputTime, CVOptionFlags flagsIn,
                                     CVOptionFlags* flagsOut, void* displayLinkContext) {
@@ -311,6 +303,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
         case 'd':
             [self.camera setTranslationState:kCameraStateActRight];
             break;
+
+            //
+            // TODO: add ability/state to move camera up/down
+            //
 
         case 'i':
             NSLog(@"saving current camera state...");

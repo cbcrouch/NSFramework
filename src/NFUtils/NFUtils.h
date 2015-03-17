@@ -78,12 +78,6 @@ static NSArray * (^convertCfloatArrayToNS)(float[3]) = ^ NSArray * (float triple
 
  @implementation NFArcBall
 
- @synthesize currentX = _currentX;
- @synthesize currentY = _currentY;
-
- @synthesize viewportSize = _viewportSize;
- @synthesize active = _active;
-
  - (instancetype) init {
  self = [super init];
  if (self != nil) {

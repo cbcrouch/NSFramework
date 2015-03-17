@@ -22,16 +22,6 @@
 
 @implementation NFViewVolume
 
-@synthesize projection = _projection;
-
-@synthesize hFOV = _hFOV;
-@synthesize vFOV = _vFOV;
-@synthesize aspectRatio = _aspectRatio;
-
-@synthesize nearPlaneDistance = _nearPlaneDistance;
-@synthesize farPlaneDistance = _farPlaneDistance;
-
-
 // hFOV = 2 * arctan(tan(vFOV/2) * aspectRatio)
 // vFOV = 2 * arctan(tan(hFOV/2) * 1/aspectRatio)
 
@@ -91,13 +81,9 @@
 @property (nonatomic, assign) float yaw;
 @property (nonatomic, assign) float pitch;
 
-
-
 @property (nonatomic, assign) GLKVector3 cached_eye;
 @property (nonatomic, assign) float cached_yaw;
 @property (nonatomic, assign) float cached_pitch;
-
-
 
 @property (nonatomic, assign) NSUInteger currentFlags;
 
@@ -113,22 +99,6 @@
 
 
 @implementation NFCamera
-
-@synthesize viewMatrix = _viewMatrix;
-
-@synthesize eye = _eye;
-@synthesize look = _look;
-@synthesize up = _up;
-
-@synthesize yaw = _yaw;
-@synthesize pitch = _pitch;
-
-@synthesize cached_eye = _cached_eye;
-@synthesize cached_yaw = _cached_yaw;
-@synthesize cached_pitch = _cached_pitch;
-
-@synthesize currentFlags = _currentFlags;
-@synthesize translationSpeed = _translationSpeed;
 
 - (GLKMatrix4) getViewMatrix {
     return _viewMatrix;

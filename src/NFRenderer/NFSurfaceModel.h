@@ -138,8 +138,8 @@
 
 @property (nonatomic, retain) NFDataMap *map_Tr; // transparency map
 
-@property (nonatomic, retain) NFDataMap *map_bump;
-@property (nonatomic, retain) NFDataMap *map_disp;
-@property (nonatomic, retain) NFDataMap *map_decalT;
+@property (nonatomic, retain) NFDataMap *map_bump;   // bump map
+@property (nonatomic, retain) NFDataMap *map_disp;   // displacement map
+@property (nonatomic, retain) NFDataMap *map_decalT; // decal texture
 
 @end

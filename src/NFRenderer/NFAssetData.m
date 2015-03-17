@@ -53,6 +53,9 @@ typedef struct NFVertState_t {
 //
 @property (nonatomic, assign) GLKVector3 minDimensions;
 @property (nonatomic, assign) GLKVector3 maxDimensions;
+//
+// TODO: rename to min/maxBounds or min/maxCoordinates ??
+//
 
 
 @property (nonatomic, assign) NFVertex_t *vertices;
@@ -76,28 +79,6 @@ typedef struct NFVertState_t {
 @end
 
 @implementation NFSubset
-
-@synthesize unitScalarMatrix = _unitScalarMatrix;
-@synthesize originCenterMatrix = _originCenterMatrix;
-
-//
-// TODO: rename to min/maxBounds or min/maxCoordinates ??
-//
-@synthesize minDimensions = _minDimensions;
-@synthesize maxDimensions = _maxDimensions;
-
-@synthesize drawMode = _drawMode;
-@synthesize subsetModelMat = _subsetModelMat;
-@synthesize surfaceModel = _surfaceModel;
-
-@synthesize vertices = _vertices;
-@synthesize indices = _indices;
-@synthesize numVertices = _numVertices;
-@synthesize numIndices = _numIndices;
-
-@synthesize hVBO = _hVBO;
-@synthesize hEBO = _hEBO;
-@synthesize mode = _mode;
 
 - (instancetype) init {
     self = [super init];
@@ -462,21 +443,6 @@ typedef struct NFVertState_t {
 @end
 
 @implementation NFAssetData
-
-@synthesize modelMatrix = _modelMatrix;
-
-@synthesize subsetArray = _subsetArray;
-@synthesize surfaceModelArray = _surfaceModelArray;
-
-@synthesize hVAO = _hVAO;
-@synthesize vertexState = _vertexState;
-
-//
-// TODO: need to come up with a good way of correlating texture handles with
-//       surface model data
-//
-@synthesize textureId = _textureId;
-@synthesize textureUniform = _textureUniform;
 
 - (instancetype) init {
     self = [super init];

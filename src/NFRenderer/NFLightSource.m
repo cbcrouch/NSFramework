@@ -20,21 +20,6 @@
 
 @implementation NFLightSource
 
-@synthesize ambient = _ambient;
-@synthesize diffuse = _diffuse;
-@synthesize specular = _specular;
-@synthesize position = _position;
-
-@synthesize spotDirection = _spotDirection;
-@synthesize spotExponent = _spotExponent;
-@synthesize spotCutoff = _spotCutoff;
-@synthesize spotCosCutoff = _spotCosCutoff;
-
-@synthesize constantAttenuation = _constantAttenuation;
-@synthesize linearAttenuation = _linearAttenuation;
-@synthesize quadraticAttenuation = _quadraticAttenuation;
-
-
 - (instancetype) init {
     self = [super init];
     if (self != nil) {

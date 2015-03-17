@@ -17,16 +17,6 @@
 @end
 
 @implementation NFDataMap
-@synthesize width = _width;
-@synthesize height = _height;
-//
-// TODO: determine the best way to support texture depth
-//
-//@synthesize depth = _depth;
-
-@synthesize size = _size;
-@synthesize rowByteSize = _rowByteSize;
-@synthesize data = _data;
 
 - (instancetype) init {
     self = [super init];
@@ -107,6 +97,9 @@
 @implementation NFDataSampler
 @end
 
+
+@interface NFSurfaceModel()
+@end
 
 @implementation NFSurfaceModel
 
@@ -189,33 +182,24 @@
     return surface;
 }
 
-@synthesize name = _name;
-
-// these three won't need lazy alloc
-@synthesize Ns = _Ns;
-@synthesize Ni = _Ni;
-@synthesize Tr = _Tr;
-
 // will need NSArray lazy alloc
-@synthesize Tf = _Tf;
-
-@synthesize illum = _illum; // won't need lazy alloc
-
-// will need NSArray lazy alloc
-@synthesize Ka = _Ka;
-@synthesize Kd = _Kd;
-@synthesize Ks = _Ks;
-@synthesize Ke = _Ke;
+//@synthesize Tf = _Tf;
+//@synthesize Ka = _Ka;
+//@synthesize Kd = _Kd;
+//@synthesize Ks = _Ks;
+//@synthesize Ke = _Ke;
 
 // these will need NFDataMap lazy alloc
-@synthesize map_Ka = _map_Ka;
+//@synthesize map_Ka = _map_Ka;
+
 @synthesize map_Kd = _map_Kd;
-@synthesize map_Ks = _map_Ks;
-@synthesize map_Ns = _map_Ns;
-@synthesize map_Tr = _map_Tr;
-@synthesize map_bump = _map_bump;
-@synthesize map_disp = _map_disp;
-@synthesize map_decalT = _map_decalT;
+
+//@synthesize map_Ks = _map_Ks;
+//@synthesize map_Ns = _map_Ns;
+//@synthesize map_Tr = _map_Tr;
+//@synthesize map_bump = _map_bump;
+//@synthesize map_disp = _map_disp;
+//@synthesize map_decalT = _map_decalT;
 
 //
 // TODO: override NFDataMap properties so they can perform a lazy alloc

@@ -493,12 +493,6 @@ static const char *g_faceType = @encode(NFFace_t);
         // TODO: correct texture coordinate calculation
         //
 
-        // may need to flip the x,y,z axis around to match the projection coordinate system
-
-        // x => y
-        // y => z
-        // z => x
-
         //vertices[i].texCoord[0] = 0.5f + atan2f(vertices[i].pos[2], vertices[i].pos[0]) / (2 * M_PI);
         //vertices[i].texCoord[1] = 0.5f - asinf(vertices[i].pos[1]) / M_PI;
 

@@ -22,6 +22,11 @@ typedef NS_ENUM(NSUInteger, CAMERA_STATE) {
     kCameraStateNilRight,
     kCameraStateActLeft,
     kCameraStateNilLeft
+
+    //kCameraStateActUp,
+    //kCameraStateNilUp,
+    //kCameraStateActDown,
+    //kCameraStateNilDown
 };
 
 

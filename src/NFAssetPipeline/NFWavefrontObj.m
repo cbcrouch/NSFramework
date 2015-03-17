@@ -64,12 +64,6 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 //
 
 @implementation WFObject
-@synthesize objectName = _objectName;
-@synthesize groups = _groups;
-
-@synthesize vertices = _vertices;
-@synthesize textureCoords = _textureCoords;
-@synthesize normals = _normals;
 
 - (NSMutableArray *)vertices {
     if (_vertices == nil) {
@@ -342,9 +336,6 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 @end
 
 @implementation WFGroup
-@synthesize groupName = _groupName;
-@synthesize materialName = _materialName;
-@synthesize faceStrArray = _faceStrArray;
 
 - (NSMutableArray *)faceStrArray {
     if (_faceStrArray == nil) {
@@ -352,6 +343,7 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
     }
     return _faceStrArray;
 }
+
 @end
 
 //
@@ -382,17 +374,6 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
 // TODO: use pragma mark to help organize this source file
 
 @implementation NFWavefrontObj
-
-@synthesize object = _object;
-
-@synthesize activeObject = _activeObject;
-@synthesize activeGroup = _activeGroup;
-
-@synthesize objPath = _objPath;
-@synthesize fileSource = _fileSource;
-@synthesize mtlSource = _mtlSource;
-
-@synthesize materialsArray = _materialsArray;
 
 + (NSArray *) componentsFromWavefrontObjLine:(NSString *)line withPrefix:(NSString *)prefix {
     // NOTE: there can be an indeterminant amount of white space after the prefix, need
