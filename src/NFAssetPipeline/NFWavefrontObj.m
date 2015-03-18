@@ -51,12 +51,14 @@ static const char *g_normType = @encode(GLKVector3);
 
 // g_paramType
 
-void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *line, NSString *prefix, NSArray *triplet) {
+GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *line, NSString *prefix) {
     NSString *truncLine = [line substringFromIndex:[prefix length]];
     NSArray *words = [truncLine componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    [triplet initWithObjects:[NSNumber numberWithFloat:[[words objectAtIndex:0] floatValue]],
-     [NSNumber numberWithFloat:[[words objectAtIndex:1] floatValue]],
-     [NSNumber numberWithFloat:[[words objectAtIndex:2] floatValue]], nil];
+    GLKVector3 vec3;
+    for (int i=0; i<3; ++i) {
+        vec3.v[i] = [[words objectAtIndex:i] floatValue];
+    }
+    return vec3;
 };
 
 //
@@ -783,16 +785,16 @@ void (^wfParseTriplet)(NSString *, NSString *, NSArray *) = ^ void (NSString *li
             // 10: casts shadows onto invisible surfaces
         }
         else if ([line hasPrefix:g_KaPrefix]) {
-            wfParseTriplet(line, g_KaPrefix, mat.Ka);
+            mat.Ka = wfParseVector3(line, g_KaPrefix);
         }
         else if ([line hasPrefix:g_KdPrefix]) {
-            wfParseTriplet(line, g_KdPrefix, mat.Kd);
+            mat.Kd = wfParseVector3(line, g_KdPrefix);
         }
         else if ([line hasPrefix:g_KsPrefix]) {
-            wfParseTriplet(line, g_KsPrefix, mat.Ks);
+            mat.Ks = wfParseVector3(line, g_KsPrefix);
         }
         else if ([line hasPrefix:g_KePrefix]) {
-            wfParseTriplet(line, g_KePrefix, mat.Ke);
+            mat.Ke = wfParseVector3(line, g_KePrefix);
         }
         else if ([line hasPrefix:g_mapKdPrefix]) {
 

@@ -7,6 +7,7 @@
 
 
 #import <Foundation/Foundation.h>
+#import <GLKit/GLKit.h>
 
 //
 // TODO: should expand NFDataMap to support cube map textures, array textures, and buffer textures
@@ -119,17 +120,15 @@
 //@property (nonatomic, assign) float d;
 //@property (nonatomic, assign) BOOL dHalo;
 
-@property (nonatomic, assign) float Tr; // transparency
-
-@property (nonatomic, retain) NSArray *Tf; // transmission factor
+@property (nonatomic, assign) float Tr;      // transparency
+@property (nonatomic, assign) GLKVector3 Tf; // transmission factor
 
 @property (nonatomic, assign) NSInteger illum; // illumination model
 
-@property (nonatomic, retain) NSArray *Ka; // ambient color
-@property (nonatomic, retain) NSArray *Kd; // diffuse color
-@property (nonatomic, retain) NSArray *Ks; // specular color
-
-@property (nonatomic, retain) NSArray *Ke; // emissive color
+@property (nonatomic, assign) GLKVector3 Ka; // ambient color
+@property (nonatomic, assign) GLKVector3 Kd; // diffuse color
+@property (nonatomic, assign) GLKVector3 Ks; // specular color
+@property (nonatomic, assign) GLKVector3 Ke; // emissive color
 
 @property (nonatomic, retain) NFDataMap *map_Ka; // ambient color texture map (will be same as diffuse most of the time)
 @property (nonatomic, retain) NFDataMap *map_Kd; // diffuse color texture map
