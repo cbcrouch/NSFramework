@@ -157,10 +157,22 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
             vertex = GLKVector3Normalize(vertex);
 
 
+            //
+            // TODO: will need to use an alternative texture coordinate algorithm than this naive spherical mapping
+            //       since this will introduce texturing artifacts where the texture wraps
+            //
+
+            // alternative algorithms to try
+            // - cubic mapping
+            // - omnitect mapping
+            // - icosahedral mapping
+            // - octahedral mapping
+
             GLKVector3 texCoord;
             texCoord.s = 0.5f + atan2f(vertex.z, vertex.x) / (2 * M_PI);
             texCoord.t = 0.5f - asin(vertex.y) / M_PI;
             texCoord.p = 0.0f;
+
 
             //
             // TODO: verify that these clamps aren't needed

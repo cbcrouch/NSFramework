@@ -352,6 +352,14 @@ static const char *g_faceType = @encode(NFFace_t);
             vertices[index].texCoord[1] = theta / (2.0f*M_PI);
             vertices[index].texCoord[2] = 0.0f;
 
+            GLKVector3 normal = GLKVector3Make(vertices[index].pos[0], vertices[index].pos[1], vertices[index].pos[2]);
+            normal = GLKVector3Normalize(normal);
+
+            vertices[index].norm[0] = normal.x;
+            vertices[index].norm[1] = normal.y;
+            vertices[index].norm[2] = normal.z;
+            vertices[index].norm[3] = 0.0f;
+
             theta += thetaDelta;
             ++index;
         }
@@ -369,47 +377,39 @@ static const char *g_faceType = @encode(NFFace_t);
         indices[index] = i;
         indices[index+1] = i + slices + 1;
         indices[index+2] = i + slices + 2;
+
+        NSLog(@"%d %d %d", indices[index], indices[index+1], indices[index+2]);
+
         index += 3;
     }
 
-/*
-    NSMutableArray* mutFaceArray = [[[NSMutableArray alloc] init] autorelease];
-    for (NSInteger i=0; i<numIndices; i+=3) {
-        GLushort* pIndices = indices + i;
-        NFFace_t face = [NFAssetUtils calculateFaceWithPoints:vertices withIndices:pIndices];
-        NSValue *value = [NSValue value:&face withObjCType:g_faceType];
-        [mutFaceArray addObject:value];
-    }
 
     //
-    // TODO: provide an method param to specify whether to use spherical texture coordinates,
-    //       positional texture coordinates, or normals based texture coordinates
+    // TODO: need to index with vertex 8
     //
 
-    NSArray* faceArray = [NSArray arrayWithArray:mutFaceArray];
-    for (int i=0; i<numVertices; ++i) {
-        GLKVector4 vertexNormal = [NFAssetUtils calculateAreaWeightedNormalOfIndex:i withFaces:faceArray];
-        vertices[i].norm[0] = vertexNormal.x;
-        vertices[i].norm[1] = vertexNormal.y;
-        vertices[i].norm[2] = vertexNormal.z;
-        vertices[i].norm[3] = vertexNormal.w;
+    NSLog(@"7: (%f, %f, %f)", vertices[7].pos[0], vertices[7].pos[1], vertices[7].pos[2]);
+    NSLog(@"7: (%f, %f)", vertices[7].texCoord[0], vertices[7].texCoord[1]);
+
+    NSLog(@"8: (%f, %f, %f)", vertices[8].pos[0], vertices[8].pos[1], vertices[8].pos[2]);
+    NSLog(@"8: (%f, %f)", vertices[8].texCoord[0], vertices[8].texCoord[1]);
+
+    NSLog(@"9: (%f, %f, %f)", vertices[9].pos[0], vertices[9].pos[1], vertices[9].pos[2]);
+    NSLog(@"9: (%f, %f)", vertices[9].texCoord[0], vertices[9].texCoord[1]);
 
 
-        //vertices[i].texCoord[0] = 0.5f - atan2f(vertices[i].pos[2], vertices[i].pos[0]) / (float)(2.0f * M_PI);
-        //vertices[i].texCoord[1] = 0.5f - asinf(vertices[i].pos[1]) / (float)M_PI;
+    indices[index] = 9;
+    indices[index+1] = 18;
+    indices[index+2] = 19;
 
-        //vertices[i].texCoord[0] = 0.5f - atan2f(vertices[i].pos[1], vertices[i].pos[0]) / (float)(2.0f * M_PI);
-        //vertices[i].texCoord[1] = 0.5f - asinf(vertices[i].pos[2]) / (float)M_PI;
+    index += 3;
 
-        //vertices[i].texCoord[0] = asinf(vertices[i].pos[0])/M_PI + 0.5f;
-        //vertices[i].texCoord[1] = asinf(vertices[i].pos[1])/M_PI + 0.5f;
+    indices[index] = 9;
+    indices[index+1] = 19;
+    indices[index+2] = 10;
 
-        //vertices[i].texCoord[0] = asinf(vertices[i].norm[0])/M_PI + 0.5f;
-        //vertices[i].texCoord[1] = asinf(vertices[i].norm[1])/M_PI + 0.5f;
 
-        //vertices[i].texCoord[2] = 0.0f;
-    }
-*/
+
 
     NFSubset *pSubset = [[[NFSubset alloc] init] autorelease];
     [pSubset allocateVerticesWithNumElts:numVertices];

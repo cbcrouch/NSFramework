@@ -156,7 +156,6 @@
             //
 #if 0
             for (NFSubset *subset in [asset subsetArray]) {
-                //[subset setDrawMode:kDrawLineStrip];
                 [subset setDrawMode:kDrawLineLoop];
             }
 #endif
