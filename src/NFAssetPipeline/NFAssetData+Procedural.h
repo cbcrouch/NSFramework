@@ -16,10 +16,16 @@
 
 - (void) createPlaneOfSize:(NSInteger)size;
 
+
 //
-// TODO: pass in a param for number of slices/strips both vertical and horizontal to use when making the sphere
+// TODO: should also generate an icoshedron sphere (icosphere)
 //
+
+
 - (void) createSolidSphereWithRadius:(float)radius;
+//- (void) createUVSphereWithRadius:(float)radius withStacks:(int)stacks withSlices:(int)slices;
+
+
 
 //
 // TODO: use the following geometries to visualize lights

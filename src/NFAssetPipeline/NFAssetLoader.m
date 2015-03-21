@@ -148,14 +148,15 @@
         break;
 
         case kSolidSphere: {
+
             [asset createSolidSphereWithRadius:1];
-            // NOTE: default draw mode should work
 
             //
             // TODO: wireframe just for debugging purposes, remove when done generating sphere
             //
 #if 0
             for (NFSubset *subset in [asset subsetArray]) {
+                //[subset setDrawMode:kDrawLineStrip];
                 [subset setDrawMode:kDrawLineLoop];
             }
 #endif
@@ -171,6 +172,12 @@
             }
         }
         break;
+
+            //
+            // TODO: would be awesome to be able to pass in an equation, a range for each variable, and number
+            //       of increments per variable and the shape would be generated (would still be useful to have
+            //       some custom defined functions that hardcoded the equation/ranges/slices/etc.)
+            //
 
         default:
             NSAssert(NO, @"ERROR: received unknown type for loading asset");

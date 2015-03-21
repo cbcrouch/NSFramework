@@ -14,8 +14,6 @@ static const char *g_faceType = @encode(NFFace_t);
 @implementation NFAssetData (Procedural)
 
 -(void) createGridOfSize:(NSInteger)size {
-    NFSubset *pSubset = [[[NFSubset alloc] init] autorelease];
-
     // (size * 2) + 1 == number of lines
     // numLines * 2 == number of vertices per grid direction
     // gridDirVertices * 2 == total number of vertices (2 grid directions)
@@ -59,18 +57,15 @@ static const char *g_faceType = @encode(NFFace_t);
         indices[i] = i;
     }
 
+    NFSubset *pSubset = [[[NFSubset alloc] init] autorelease];
     [pSubset allocateVerticesWithNumElts:numVertices];
     [pSubset allocateIndicesWithNumElts:numVertices];
-
     [pSubset loadVertexData:vertices ofSize:(numVertices * sizeof(NFVertex_t))];
     [pSubset loadIndexData:indices ofSize:(numVertices * sizeof(GLushort))];
-
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
 
 -(void) createAxisOfSize:(NSInteger)size {
-    NFSubset *pSubset = [[[NFSubset alloc] init] autorelease];
-
     const NSInteger numVertices = 12;
     NFVertex_t vertices[numVertices];
 
@@ -183,12 +178,11 @@ static const char *g_faceType = @encode(NFFace_t);
         indices[i] = i;
     }
 
+    NFSubset *pSubset = [[[NFSubset alloc] init] autorelease];
     [pSubset allocateVerticesWithNumElts:numVertices];
     [pSubset allocateIndicesWithNumElts:numIndices];
-
     [pSubset loadVertexData:vertices ofSize:(numVertices * sizeof(NFVertex_t))];
     [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
-
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
 
@@ -208,8 +202,6 @@ static const char *g_faceType = @encode(NFFace_t);
 }
 
 - (void) createPlaneOfSize:(NSInteger)size {
-    NFSubset *pSubset = [[[NFSubset alloc] init] autorelease];
-
     const NSInteger numVertices = 4;
     NFVertex_t vertices[numVertices];
 
@@ -301,41 +293,31 @@ static const char *g_faceType = @encode(NFFace_t);
         vertices[i].norm[3] = vertexNormal.w;
     }
 
+    NFSubset *pSubset = [[[NFSubset alloc] init] autorelease];
     [pSubset allocateVerticesWithNumElts:numVertices];
     [pSubset allocateIndicesWithNumElts:numIndices];
-
     [pSubset loadVertexData:vertices ofSize:(numVertices * sizeof(NFVertex_t))];
     [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
-
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
 
 - (void) createSolidSphereWithRadius:(float)radius {
-    const NSInteger verticalSlices = 16;
-    const NSInteger horizontalSlices = 32;
+
+    const NSInteger stacks = 4;
+    const NSInteger slices = 8;
 
     // 8   16 for low resolution
     // 16  32 for medium resolution
     // 32  64 for high resolution
 
-    NFSubset *pSubset = [[[NFSubset alloc] init] autorelease];
-
-    // adding two vertices for the top and bottom points
-    const NSInteger numVertices = 2 + ((verticalSlices-1) * horizontalSlices);
-
-    // top and bottom horizontal slices will consist of only triangles and the remaing slices form quads
-    // from two triangles (3 indices per triangle, 6 per quad)
-    const NSInteger numIndices = (2 * horizontalSlices * 3) + ((verticalSlices - 2) * horizontalSlices * 6);
+    const NSInteger numVertices = (stacks+1) * (slices+1) + 1;
+    const NSInteger numIndices = stacks * slices * 3 * 2;
 
     NFVertex_t vertices[numVertices];
     GLushort indices[numIndices];
 
-
-    //
-    // TODO: would be awesome to be able to pass in an equation, a range for each variable, and number
-    //       of increments per variable and the shape would be generated (would still be useful to have
-    //       some custom defined functions that hardcoded the equation/ranges/slices/etc.)
-    //
+    memset(&vertices, 0, numVertices * sizeof(NFVertex_t));
+    memset(&indices, 0, numIndices * sizeof(GLushort));
 
     // spherical coordinates as mapped to perspective coordiantes (x to the right, y up, +z towards the camera)
     //x = r * sin(phi) * sin(theta);
@@ -348,123 +330,49 @@ static const char *g_faceType = @encode(NFFace_t);
     // phi is vertical angle (inclination angle)
     // theta is horizontal angle (azimuthal angle)
 
-
     float phi = 0.0f;
     float theta = 0.0f;
-    float verticalAngleDelta = M_PI / (float)verticalSlices;
-    float horizontalAngleDelta = (2 * M_PI) / (float)horizontalSlices;
+    float phiDelta = M_PI / (float)stacks;
+    float thetaDelta = (2 * M_PI) / (float)slices;
 
-    // top point of sphere
-    vertices[0].pos[0] = radius * sin(phi) * sin(theta);
-    vertices[0].pos[1] = radius * cos(phi);
-    vertices[0].pos[2] = radius * sin(phi) * cos(theta);
-    vertices[0].pos[3] = 1.0f;
-
-    vertices[0].texCoord[0] = 0.0f;
-    vertices[0].texCoord[1] = 1.0f;
-    vertices[0].texCoord[2] = 0.0f;
-
-    // generate all side vertices
-    int index = 1;
-    for (NSInteger i=0; i<(verticalSlices-1); ++i) {
-        phi += verticalAngleDelta;
-        theta = 0.0f;
-        for (NSInteger j=0; j<horizontalSlices; ++j) {
+    //
+    // NOTE: need to add an extra slice to get a coincident vertex with both tex coord S = 0.0 and 1.0, and
+    //       and adding an extra stack to get the bottom point i.e. would take five vertical vertices to
+    //       make four stacks
+    //
+    int index=0;
+    for (NSInteger i=0; i<stacks+1; ++i) {
+        for (NSInteger j=0; j<slices+1; ++j) {
             vertices[index].pos[0] = radius * sin(phi) * sin(theta);
             vertices[index].pos[1] = radius * cos(phi);
             vertices[index].pos[2] = radius * sin(phi) * cos(theta);
             vertices[index].pos[3] = 1.0f;
 
-            theta += horizontalAngleDelta;
+            vertices[index].texCoord[0] = phi / M_PI;
+            vertices[index].texCoord[1] = theta / (2.0f*M_PI);
+            vertices[index].texCoord[2] = 0.0f;
+
+            theta += thetaDelta;
             ++index;
         }
+
+        phi += phiDelta;
+        theta = 0.0f;
     }
-
-    // bottom point of the sphere
-    phi += verticalAngleDelta;
-    theta = 0.0f;
-    vertices[index].pos[0] = radius * sin(phi) * sin(theta);
-    vertices[index].pos[1] = radius * cos(phi);
-    vertices[index].pos[2] = radius * sin(phi) * cos(theta);
-    vertices[index].pos[3] = 1.0f;
-
-    vertices[index].texCoord[0] = 0.0f;
-    vertices[index].texCoord[1] = 0.0f;
-    vertices[index].texCoord[2] = 0.0f;
-
-
-    // index to cap of the sphere
-    GLushort idx = 1;
-    for (NSInteger i=0; i < 3*horizontalSlices; i+=3) {
-        indices[i]   = 0;
-        indices[i+1] = idx;
-
-        if (idx != horizontalSlices) {
-            indices[i+2] = idx+1;
-        }
-        else {
-            indices[i+2] = 1;
-        }
-
-        ++idx;
-    }
-
-    // index sides
-    NSInteger baseIdx = 3*horizontalSlices;
-    for (NSInteger i=0; i<verticalSlices-2; ++i) {
-        GLushort first = 1 + i*horizontalSlices;
-        GLushort second = 2 + i*horizontalSlices;
-        for (NSInteger j=0; j<horizontalSlices; ++j) {
-            if (j != horizontalSlices-1) {
-                indices[baseIdx] = first;
-                indices[baseIdx+1] = idx;
-                indices[baseIdx+2] = idx+1;
-
-                indices[baseIdx+3] = idx+1;
-                indices[baseIdx+4] = second;
-                indices[baseIdx+5] = first;
-            }
-            else {
-                // final/closing indexing of the horizontal slice
-                indices[baseIdx] = first;
-                indices[baseIdx+1] = idx;
-                indices[baseIdx+2] = 1 + i*horizontalSlices;
-
-                indices[baseIdx+3] = idx;
-                indices[baseIdx+4] = second;
-                indices[baseIdx+5] = 1 + i*horizontalSlices;
-            }
-            ++first;
-            ++second;
-            ++idx;
-            baseIdx += 6;
-        }
-    }
-
-    // index bottom cap of the sphere
-    GLushort first = ((verticalSlices-2) * horizontalSlices) + 1;
-    GLushort second = first+1;
-    for (NSInteger i=baseIdx; i < 3*horizontalSlices + baseIdx; i+=3) {
-        indices[i]   = first;
-        indices[i+1] = index;
-
-        if (second != index) {
-            indices[i+2] = second;
-        }
-        else {
-            indices[i+2] = ((verticalSlices-2) * horizontalSlices) + 1;
-        }
-
-        ++first;
-        ++second;
-    }
-
 
 
     //
-    // TODO: verify that vertex normals are simply unit vectors from the origin to the vertex, if this
-    //       is the case use it over the constructed faces method)
+    // NOTE: this will index the first stack
     //
+    index = 0;
+    for (int i=0; i<slices; ++i) {
+        indices[index] = i;
+        indices[index+1] = i + slices + 1;
+        indices[index+2] = i + slices + 2;
+        index += 3;
+    }
+
+/*
     NSMutableArray* mutFaceArray = [[[NSMutableArray alloc] init] autorelease];
     for (NSInteger i=0; i<numIndices; i+=3) {
         GLushort* pIndices = indices + i;
@@ -473,12 +381,10 @@ static const char *g_faceType = @encode(NFFace_t);
         [mutFaceArray addObject:value];
     }
 
-
     //
     // TODO: provide an method param to specify whether to use spherical texture coordinates,
     //       positional texture coordinates, or normals based texture coordinates
     //
-
 
     NSArray* faceArray = [NSArray arrayWithArray:mutFaceArray];
     for (int i=0; i<numVertices; ++i) {
@@ -489,21 +395,11 @@ static const char *g_faceType = @encode(NFFace_t);
         vertices[i].norm[3] = vertexNormal.w;
 
 
-        //
-        // TODO: correct texture coordinate calculation
-        //
+        //vertices[i].texCoord[0] = 0.5f - atan2f(vertices[i].pos[2], vertices[i].pos[0]) / (float)(2.0f * M_PI);
+        //vertices[i].texCoord[1] = 0.5f - asinf(vertices[i].pos[1]) / (float)M_PI;
 
-        //vertices[i].texCoord[0] = 0.5f + atan2f(vertices[i].pos[2], vertices[i].pos[0]) / (2 * M_PI);
-        //vertices[i].texCoord[1] = 0.5f - asinf(vertices[i].pos[1]) / M_PI;
-
-        //
-        // TODO: swap X and Y to rotate texture back to how it should align with the sphere (after fixing
-        //       the incorrect texture coordiante being calculate around the current x-axis
-        //
-
-        vertices[i].texCoord[0] = 0.5f + atan2f(vertices[i].pos[1], vertices[i].pos[2]) / (2 * M_PI);
-        vertices[i].texCoord[1] = 0.5f - asinf(vertices[i].pos[0]) / M_PI;
-
+        //vertices[i].texCoord[0] = 0.5f - atan2f(vertices[i].pos[1], vertices[i].pos[0]) / (float)(2.0f * M_PI);
+        //vertices[i].texCoord[1] = 0.5f - asinf(vertices[i].pos[2]) / (float)M_PI;
 
         //vertices[i].texCoord[0] = asinf(vertices[i].pos[0])/M_PI + 0.5f;
         //vertices[i].texCoord[1] = asinf(vertices[i].pos[1])/M_PI + 0.5f;
@@ -511,16 +407,11 @@ static const char *g_faceType = @encode(NFFace_t);
         //vertices[i].texCoord[0] = asinf(vertices[i].norm[0])/M_PI + 0.5f;
         //vertices[i].texCoord[1] = asinf(vertices[i].norm[1])/M_PI + 0.5f;
 
-        vertices[i].texCoord[2] = 0.0f;
-
-        GLfloat s = vertices[i].texCoord[0];
-        GLfloat t = vertices[i].texCoord[1];
-        if(s<0.0f || s>1.0f || t<0.0f || t>1.0f) {
-            NSLog(@"texture coord is outside valid range: %f %f", s, t);
-        }
+        //vertices[i].texCoord[2] = 0.0f;
     }
+*/
 
-
+    NFSubset *pSubset = [[[NFSubset alloc] init] autorelease];
     [pSubset allocateVerticesWithNumElts:numVertices];
     [pSubset allocateIndicesWithNumElts:numIndices];
     [pSubset loadVertexData:vertices ofSize:(numVertices * sizeof(NFVertex_t))];
