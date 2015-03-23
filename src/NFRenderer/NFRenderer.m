@@ -158,7 +158,7 @@
     [m_planeData loadResourcesGL];
 
 
-    m_solidSphere = [NFAssetLoader allocAssetDataOfType:kSolidSphere withArgs:nil];
+    m_solidSphere = [NFAssetLoader allocAssetDataOfType:kSolidUVSphere withArgs:nil];
     [m_solidSphere createVertexStateWithProgram:m_hProgram];
     [m_solidSphere loadResourcesGL];
 

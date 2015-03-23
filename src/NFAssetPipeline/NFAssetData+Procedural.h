@@ -21,9 +21,7 @@
 // TODO: should also generate an icoshedron sphere (icosphere)
 //
 
-
-- (void) createSolidSphereWithRadius:(float)radius;
-//- (void) createUVSphereWithRadius:(float)radius withStacks:(int)stacks withSlices:(int)slices;
+- (void) createUVSphereWithRadius:(float)radius withStacks:(int)stacks withSlices:(int)slices;
 
 
 

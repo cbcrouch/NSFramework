@@ -147,9 +147,14 @@
             }
         break;
 
-        case kSolidSphere: {
+        case kSolidUVSphere: {
 
-            [asset createSolidSphereWithRadius:1];
+            // 8   16 for low resolution
+            // 16  32 for medium resolution
+            // 32  64 for high resolution
+
+            [asset createUVSphereWithRadius:1 withStacks:4 withSlices:8];
+
 
             //
             // TODO: wireframe just for debugging purposes, remove when done generating sphere

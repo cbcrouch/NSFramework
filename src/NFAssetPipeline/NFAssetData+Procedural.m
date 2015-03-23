@@ -301,15 +301,7 @@ static const char *g_faceType = @encode(NFFace_t);
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
 
-- (void) createSolidSphereWithRadius:(float)radius {
-
-    const NSInteger stacks = 4;
-    const NSInteger slices = 8;
-
-    // 8   16 for low resolution
-    // 16  32 for medium resolution
-    // 32  64 for high resolution
-
+- (void) createUVSphereWithRadius:(float)radius withStacks:(int)stacks withSlices:(int)slices {
     const NSInteger numVertices = (stacks+1) * (slices+1) + 1;
     const NSInteger numIndices = stacks * slices * 3 * 2;
 
@@ -369,46 +361,74 @@ static const char *g_faceType = @encode(NFFace_t);
     }
 
 
-    //
     // NOTE: this will index the first stack
-    //
     index = 0;
-    for (int i=0; i<slices; ++i) {
+    for (int i=0; i<slices-1; ++i) {
         indices[index] = i;
         indices[index+1] = i + slices + 1;
         indices[index+2] = i + slices + 2;
-
-        NSLog(@"%d %d %d", indices[index], indices[index+1], indices[index+2]);
-
         index += 3;
     }
+    indices[index] = slices;
+    indices[index+1] = 2*slices;
+    indices[index+2] = 2*slices + 1;
+    index += 3;
 
+
+
+    GLushort p0 = slices+1;
+    GLushort p1 = 2 * p0;
+    GLushort p2 = p1 + 1;
+    GLushort p3 = p0 + 1;
+
+    for (int i=0; i<slices; ++i) {
+        indices[index] = p0;
+        indices[index+1] = p1;
+        indices[index+2] = p2;
+        index += 3;
+
+        indices[index] = p0;
+        indices[index+1] = p2;
+        indices[index+2] = p3;
+        index += 3;
+
+        ++p0;
+        ++p1;
+        ++p2;
+        ++p3;
+    }
 
     //
-    // TODO: need to index with vertex 8
+    // TODO: does the last slice need to be modified similar to the top stack to ensure
+    //       that S texture coord hits 1.0 ??
     //
 
-    NSLog(@"7: (%f, %f, %f)", vertices[7].pos[0], vertices[7].pos[1], vertices[7].pos[2]);
-    NSLog(@"7: (%f, %f)", vertices[7].texCoord[0], vertices[7].texCoord[1]);
-
-    NSLog(@"8: (%f, %f, %f)", vertices[8].pos[0], vertices[8].pos[1], vertices[8].pos[2]);
-    NSLog(@"8: (%f, %f)", vertices[8].texCoord[0], vertices[8].texCoord[1]);
-
-    NSLog(@"9: (%f, %f, %f)", vertices[9].pos[0], vertices[9].pos[1], vertices[9].pos[2]);
-    NSLog(@"9: (%f, %f)", vertices[9].texCoord[0], vertices[9].texCoord[1]);
-
-
+/*
+    // first quad of stack
     indices[index] = 9;
     indices[index+1] = 18;
     indices[index+2] = 19;
-
     index += 3;
 
     indices[index] = 9;
     indices[index+1] = 19;
     indices[index+2] = 10;
+    index += 3;
 
 
+    // second quad of stack
+    indices[index] = 10;
+    indices[index+1] = 19;
+    indices[index+2] = 20;
+    index += 3;
+
+    indices[index] = 10;
+    indices[index+1] = 20;
+    indices[index+2] = 11;
+    index += 3;
+ 
+    // ...
+*/
 
 
     NFSubset *pSubset = [[[NFSubset alloc] init] autorelease];

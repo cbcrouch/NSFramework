@@ -16,7 +16,7 @@ typedef NS_ENUM(NSUInteger, ASSET_TYPE) {
     kGridWireframe,
     kAxisWireframe,
 
-    kSolidSphere
+    kSolidUVSphere
 };
 
 @interface NFAssetLoader : NSObject
