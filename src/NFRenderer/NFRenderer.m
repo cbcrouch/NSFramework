@@ -140,7 +140,7 @@
 
     //[m_pAsset applyOriginCenterMatrix];
 
-    [m_pAsset applyUnitScalarMatrix]; // use for teapot
+    //[m_pAsset applyUnitScalarMatrix]; // use for teapot
 
 
     m_axisData = [NFAssetLoader allocAssetDataOfType:kAxisWireframe withArgs:nil];
@@ -200,6 +200,8 @@
     if (self.stepTransforms) {
         [m_pAsset stepTransforms:secsElapsed];
         //[m_pAsset stepTransforms:0.0f];
+
+        [m_solidSphere stepTransforms:secsElapsed];
     }
 
     //

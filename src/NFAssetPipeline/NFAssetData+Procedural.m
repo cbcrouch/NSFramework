@@ -188,10 +188,10 @@ static const char *g_faceType = @encode(NFFace_t);
 
 - (void) loadAxisSurface:(NFSurfaceModel *)surface {
     static unsigned char texture2d[] = {
-        255, 0,   0, 255,   105,  0,  0, 255,  // red and light red
-        0, 255,   0, 255,    0, 105,  0, 255,  // green and light green
-        0,   0, 255, 255,    0,  0, 105, 255,  // blue and light blue
-        255,255,255, 255,    255,255,255,255   // padding to make texture 2x4
+        255, 0,   0, 255,   65,  0,  0, 255,  // red and light red
+        0, 255,   0, 255,    0,105,  0, 255,  // green and light green
+        0,   0, 255, 255,    0,  0, 70, 255,  // blue and light blue
+        255,255,255, 255,  255,255,255, 255   // padding to make texture 2x4
     };
 
     [[surface map_Kd] setWidth:2];
@@ -304,34 +304,24 @@ static const char *g_faceType = @encode(NFFace_t);
 - (void) createUVSphereWithRadius:(float)radius withStacks:(int)stacks withSlices:(int)slices {
     const NSInteger numVertices = (stacks+1) * (slices+1) + 1;
     const NSInteger numIndices = stacks * slices * 3 * 2;
-
     NFVertex_t vertices[numVertices];
     GLushort indices[numIndices];
 
-    memset(&vertices, 0, numVertices * sizeof(NFVertex_t));
-    memset(&indices, 0, numIndices * sizeof(GLushort));
-
     // spherical coordinates as mapped to perspective coordiantes (x to the right, y up, +z towards the camera)
-    //x = r * sin(phi) * sin(theta);
-    //y = r * cos(phi);
-    //z = r * sin(phi) * cos(theta);
-
-    // phi => [0, M_PI]
-    // theta => [0, 2*M_PI]
-
-    // phi is vertical angle (inclination angle)
-    // theta is horizontal angle (azimuthal angle)
+    // x = r * sin(phi) * sin(theta);
+    // y = r * cos(phi);
+    // z = r * sin(phi) * cos(theta);
+    // phi   => [0, M_PI]    inclination (vertical angle)
+    // theta => [0, 2*M_PI]  azimuth (horizontal angle)
 
     float phi = 0.0f;
     float theta = 0.0f;
     float phiDelta = M_PI / (float)stacks;
     float thetaDelta = (2 * M_PI) / (float)slices;
 
-    //
     // NOTE: need to add an extra slice to get a coincident vertex with both tex coord S = 0.0 and 1.0, and
     //       and adding an extra stack to get the bottom point i.e. would take five vertical vertices to
     //       make four stacks
-    //
     int index=0;
     for (NSInteger i=0; i<stacks+1; ++i) {
         for (NSInteger j=0; j<slices+1; ++j) {
@@ -407,17 +397,9 @@ static const char *g_faceType = @encode(NFFace_t);
         //       that S texture coord hits 1.0 ??
         //
 
-
-        //
-        // TODO: need to update p0 and p1 by a multiple of slices
-        //
-        //GLushort sliceInc = (i+1) * slices;
-        //p0 = 2*(sliceInc+1);
-        //p1 = p0 + sliceInc+1;
-
-        p0 = 2*(slices+1);
+        GLushort sliceInc = (i+2) * (slices+1);
+        p0 = sliceInc;
         p1 = p0 + slices+1;
-
         p2 = p1 + 1;
         p3 = p0 + 1;
     }
@@ -444,9 +426,6 @@ static const char *g_faceType = @encode(NFFace_t);
         ++p2;
         index += 3;
     }
-
-
-
 
 
     NFSubset *pSubset = [[[NFSubset alloc] init] autorelease];
