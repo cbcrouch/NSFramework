@@ -168,7 +168,7 @@
 
     // setup OpenGL state that will never change
     //glClearColor(1.0f, 0.0f, 1.0f, 1.0f); // hot pink for debugging
-    glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
+    glClearColor(0.30f, 0.30f, 0.30f, 1.0f);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);

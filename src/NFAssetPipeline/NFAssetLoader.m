@@ -155,6 +155,8 @@
 
             [asset createUVSphereWithRadius:1 withStacks:4 withSlices:8];
 
+            //[asset createUVSphereWithRadius:1 withStacks:8 withSlices:16];
+
 
             //
             // TODO: wireframe just for debugging purposes, remove when done generating sphere

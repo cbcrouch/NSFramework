@@ -188,10 +188,10 @@ static const char *g_faceType = @encode(NFFace_t);
 
 - (void) loadAxisSurface:(NFSurfaceModel *)surface {
     static unsigned char texture2d[] = {
-        255, 0,   0, 255,   64,  0,  0, 255,  // red and light red
-        0, 255,   0, 255,    0, 64,  0, 255,  // green and light green
-        0,   0, 255, 255,    0,  0, 64, 255,  // blue and light blue
-        255,255,255, 255,   255,255,255,255   // padding to make texture 2x4
+        255, 0,   0, 255,   105,  0,  0, 255,  // red and light red
+        0, 255,   0, 255,    0, 105,  0, 255,  // green and light green
+        0,   0, 255, 255,    0,  0, 105, 255,  // blue and light blue
+        255,255,255, 255,    255,255,255,255   // padding to make texture 2x4
     };
 
     [[surface map_Kd] setWidth:2];
@@ -361,7 +361,7 @@ static const char *g_faceType = @encode(NFFace_t);
     }
 
 
-    // NOTE: this will index the first stack
+    // index the first stack
     index = 0;
     for (int i=0; i<slices-1; ++i) {
         indices[index] = i;
@@ -374,61 +374,79 @@ static const char *g_faceType = @encode(NFFace_t);
     indices[index+2] = 2*slices + 1;
     index += 3;
 
-
-
+    // index all stacks up to the bottom one
     GLushort p0 = slices+1;
-    GLushort p1 = 2 * p0;
+    GLushort p1 = p0 + slices+1;
     GLushort p2 = p1 + 1;
     GLushort p3 = p0 + 1;
+    for (int i=0; i<stacks-2; ++i) {
 
+        //NSLog(@"slices:");
+
+        for (int j=0; j<slices; ++j) {
+            indices[index] = p0;
+            indices[index+1] = p1;
+            indices[index+2] = p2;
+            index += 3;
+
+            indices[index] = p0;
+            indices[index+1] = p2;
+            indices[index+2] = p3;
+            index += 3;
+
+            //NSLog(@"[%d, %d, %d]\t[%d, %d, %d]", p0, p1, p2, p0, p2, p3);
+
+            ++p0;
+            ++p1;
+            ++p2;
+            ++p3;
+        }
+
+        //
+        // TODO: does the last slice need to be modified similar to the top stack to ensure
+        //       that S texture coord hits 1.0 ??
+        //
+
+
+        //
+        // TODO: need to update p0 and p1 by a multiple of slices
+        //
+        //GLushort sliceInc = (i+1) * slices;
+        //p0 = 2*(sliceInc+1);
+        //p1 = p0 + sliceInc+1;
+
+        p0 = 2*(slices+1);
+        p1 = p0 + slices+1;
+
+        p2 = p1 + 1;
+        p3 = p0 + 1;
+    }
+
+    // index bottom stack
+    p0 = (slices+1) * (stacks-1);
+    p1 = (slices+1) * stacks;
+    p2 = p0 + 1;
+
+    //
+    // TODO: change loop until slices-1 and manually add last triangle to ensure tex coord of last point
+    //       hits an S coordinate of 1.0
+    //
     for (int i=0; i<slices; ++i) {
         indices[index] = p0;
         indices[index+1] = p1;
         indices[index+2] = p2;
-        index += 3;
 
-        indices[index] = p0;
-        indices[index+1] = p2;
-        indices[index+2] = p3;
-        index += 3;
+        //NSLog(@"slices");
+        //NSLog(@"[%d, %d, %d]", p0, p1, p2);
 
         ++p0;
         ++p1;
         ++p2;
-        ++p3;
+        index += 3;
     }
 
-    //
-    // TODO: does the last slice need to be modified similar to the top stack to ensure
-    //       that S texture coord hits 1.0 ??
-    //
-
-/*
-    // first quad of stack
-    indices[index] = 9;
-    indices[index+1] = 18;
-    indices[index+2] = 19;
-    index += 3;
-
-    indices[index] = 9;
-    indices[index+1] = 19;
-    indices[index+2] = 10;
-    index += 3;
 
 
-    // second quad of stack
-    indices[index] = 10;
-    indices[index+1] = 19;
-    indices[index+2] = 20;
-    index += 3;
-
-    indices[index] = 10;
-    indices[index+1] = 20;
-    indices[index+2] = 11;
-    index += 3;
- 
-    // ...
-*/
 
 
     NFSubset *pSubset = [[[NFSubset alloc] init] autorelease];
