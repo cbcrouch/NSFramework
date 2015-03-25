@@ -330,6 +330,12 @@ static const char *g_faceType = @encode(NFFace_t);
             vertices[index].pos[2] = radius * sin(phi) * cos(theta);
             vertices[index].pos[3] = 1.0f;
 
+            //
+            // TODO: second to last vertex on the top and bottom cap won't get used
+            //       should ideally generate one less top and bottom vertex and evenly
+            //       distribute the texture coordinates
+            //
+
             vertices[index].texCoord[0] = phi / M_PI;
             vertices[index].texCoord[1] = theta / (2.0f*M_PI);
             vertices[index].texCoord[2] = 0.0f;
@@ -350,7 +356,6 @@ static const char *g_faceType = @encode(NFFace_t);
         theta = 0.0f;
     }
 
-
     // index the first stack
     index = 0;
     for (int i=0; i<slices-1; ++i) {
@@ -370,9 +375,6 @@ static const char *g_faceType = @encode(NFFace_t);
     GLushort p2 = p1 + 1;
     GLushort p3 = p0 + 1;
     for (int i=0; i<stacks-2; ++i) {
-
-        //NSLog(@"slices:");
-
         for (int j=0; j<slices; ++j) {
             indices[index] = p0;
             indices[index+1] = p1;
@@ -384,18 +386,11 @@ static const char *g_faceType = @encode(NFFace_t);
             indices[index+2] = p3;
             index += 3;
 
-            //NSLog(@"[%d, %d, %d]\t[%d, %d, %d]", p0, p1, p2, p0, p2, p3);
-
             ++p0;
             ++p1;
             ++p2;
             ++p3;
         }
-
-        //
-        // TODO: does the last slice need to be modified similar to the top stack to ensure
-        //       that S texture coord hits 1.0 ??
-        //
 
         GLushort sliceInc = (i+2) * (slices+1);
         p0 = sliceInc;
@@ -408,25 +403,19 @@ static const char *g_faceType = @encode(NFFace_t);
     p0 = (slices+1) * (stacks-1);
     p1 = (slices+1) * stacks;
     p2 = p0 + 1;
-
-    //
-    // TODO: change loop until slices-1 and manually add last triangle to ensure tex coord of last point
-    //       hits an S coordinate of 1.0
-    //
-    for (int i=0; i<slices; ++i) {
+    for (int i=0; i<slices-1; ++i) {
         indices[index] = p0;
         indices[index+1] = p1;
         indices[index+2] = p2;
-
-        //NSLog(@"slices");
-        //NSLog(@"[%d, %d, %d]", p0, p1, p2);
 
         ++p0;
         ++p1;
         ++p2;
         index += 3;
     }
-
+    indices[index] = p0;
+    indices[index+1] = p1+1;
+    indices[index+2] = p2;
 
     NFSubset *pSubset = [[[NFSubset alloc] init] autorelease];
     [pSubset allocateVerticesWithNumElts:numVertices];

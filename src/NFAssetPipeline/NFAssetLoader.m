@@ -148,25 +148,12 @@
         break;
 
         case kSolidUVSphere: {
-
             // with radius 1.0
             // - 8   16 for low resolution
             // - 16  32 for medium resolution
             // - 32  64 for high resolution
-
-            //[asset createUVSphereWithRadius:1 withStacks:4 withSlices:8];
-
             [asset createUVSphereWithRadius:1 withStacks:32 withSlices:64];
 
-
-            //
-            // TODO: wireframe just for debugging purposes, remove when done generating sphere
-            //
-#if 0
-            for (NFSubset *subset in [asset subsetArray]) {
-                [subset setDrawMode:kDrawLineLoop];
-            }
-#endif
             NFSurfaceModel *surface = [NFSurfaceModel defaultModel];
 
             NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];
