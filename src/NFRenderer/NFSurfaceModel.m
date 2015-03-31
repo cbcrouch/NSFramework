@@ -107,16 +107,8 @@
     NFSurfaceModel *surface = [[[NFSurfaceModel alloc] init] autorelease];
     [surface setName:@"NSGLFramework_defaultSurfaceModel"];
 
-    //
-    // TODO: get a 16x16 default texture working correctly, currently doesn't seem to be indexed right
-    //
 
 #define USE_HARDCODED_TEX 1
-
-    //
-    // TODO: hardcode a 4x4 texture and verify that it is identical to the generated one and the same
-    //       artifacts are present when rendered
-    //
 
     const int width = 4;
     const int height = 4;

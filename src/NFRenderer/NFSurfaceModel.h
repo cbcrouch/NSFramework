@@ -106,7 +106,21 @@
 
 @interface NFSurfaceModel : NSObject
 
+//
+// TOOD: setup an enum to allow for multiple types of default textures
+//
+typedef NS_ENUM(NSUInteger, DEFAULT_SURFACES) {
+    kTestGrid,
+    kTestGridColored,
+    kGray127
+};
+
+//
+// TODO: take a DEFAULT_SURFACES argument and rename to defaultSurfaceModel
+//
 + (NFSurfaceModel *) defaultModel;
+
+
 
 @property (nonatomic, retain) NSString *name;
 

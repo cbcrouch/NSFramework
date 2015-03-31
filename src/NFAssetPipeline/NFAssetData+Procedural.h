@@ -23,6 +23,9 @@
 
 - (void) createUVSphereWithRadius:(float)radius withStacks:(int)stacks withSlices:(int)slices;
 
+//- (void) createCone:(float)radius ofHeight:(float)height;
+//- (void) createCylinder:(float)radius ofHeight:(float)height;
+
 
 
 //

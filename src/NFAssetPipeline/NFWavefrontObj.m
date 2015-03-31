@@ -168,26 +168,57 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
             // - icosahedral mapping
             // - octahedral mapping
 
+            // could also just generate a solid color diffuse texture and provide a UV unwrapped texture
+            // that can be updated externally to the application
+
+            //
+            // TODO: convert xyz to a spherical coordinate and assign texture coordinate based on
+            //       phi and theta divied by their respective ranges M_PI and 2*M_PI
+            //
+
+
+
+            // spherical coordinates as mapped to perspective coordiantes (x to the right, y up, +z towards the camera)
+            // x = r * sin(phi) * sin(theta);
+            // y = r * cos(phi);
+            // z = r * sin(phi) * cos(theta);
+            // phi   => [0, M_PI]    inclination (vertical angle)
+            // theta => [0, 2*M_PI]  azimuth (horizontal angle)
+
+            // theta = acos( y / sqrt(x^2 + y^2 + z^2) )
+            // phi = atan( x/z )
+
+            //float theta = acosf(vertex.y / sqrtf(powf(vertex.x, 2.0f) + powf(vertex.y, 2.0f) + powf(vertex.z, 2.0f)));
+            //float phi = 0.5 + atan2f(vertex.x, vertex.z);
+
+
             GLKVector3 texCoord;
             texCoord.s = 0.5f + atan2f(vertex.z, vertex.x) / (2 * M_PI);
             texCoord.t = 0.5f - asin(vertex.y) / M_PI;
             texCoord.p = 0.0f;
+
+            //texCoord.s = phi / M_PI;
+            //texCoord.t = theta / (2*M_PI);
 
 
             //
             // TODO: verify that these clamps aren't needed
             //
             if (texCoord.s < 0.0f) {
+                NSLog(@"s coord wrapped: %f", texCoord.s);
                 texCoord.s = 0.0f;
             }
             else if (texCoord.s > 1.0f) {
+                NSLog(@"s coord wrapped: %f", texCoord.s);
                 texCoord.s = 1.0f;
             }
 
             if (texCoord.t < 0.0f) {
+                NSLog(@"t coord wrapped: %f", texCoord.t);
                 texCoord.t = 0.0f;
             }
             else if (texCoord.t > 1.0f) {
+                NSLog(@"t coord wrapped: %f", texCoord.t);
                 texCoord.t = 1.0f;
             }
 

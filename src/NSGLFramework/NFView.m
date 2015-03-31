@@ -518,6 +518,13 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     m_mouseLocation = (NSPoint)point;
 }
 
+
+//
+// TODO: scroll wheel to zoom in/out (decrease/increase FOV), will need to provide
+//       an alternative key binding
+//
+
+
 - (void) setupOpenGL {
     //
     // NOTE: requesting an NSOpenGLProfileVersion3_2Core will create an OpenGL 4.1 context

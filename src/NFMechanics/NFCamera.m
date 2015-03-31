@@ -8,6 +8,9 @@
 #import "NFCamera.h"
 
 
+//
+// TODO: use NS_OPTIONS macro for declaring bitmasks rather than using #defines
+//
 #define FORWARD_BIT 0x01
 #define BACK_BIT    0x02
 #define LEFT_BIT    0x04

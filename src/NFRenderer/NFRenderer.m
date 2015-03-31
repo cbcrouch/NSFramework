@@ -97,16 +97,12 @@
         (CGFloat)DEFAULT_VIEWPORT_WIDTH, (CGFloat)DEFAULT_VIEWPORT_HEIGHT);
 
     [self setViewports:[NSArray arrayWithObjects:viewportArray count:MAX_NUM_VIEWPORTS]];
-
     [self loadShaders];
-
-    m_normTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "NormalizedTexexlFetch");
-    m_expTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "ExplicitTexelFetch");
 
     NSString *fileNamePath;
 
-    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
-    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
+    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
+    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
 
     //
@@ -162,8 +158,10 @@
     [m_solidSphere createVertexStateWithProgram:m_hProgram];
     [m_solidSphere loadResourcesGL];
 
+    m_solidSphere.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 2.0f, 1.0f, 0.0f);
+    m_solidSphere.modelMatrix = GLKMatrix4Scale(m_solidSphere.modelMatrix, 0.065f, 0.065f, 0.065f);
 
-    _stepTransforms = YES;
+    _stepTransforms = NO;
 
 
     // setup OpenGL state that will never change
@@ -186,7 +184,6 @@
     [m_axisData release];
     [m_gridData release];
     [m_planeData release];
-
     [m_solidSphere release];
 
     // NOTE: helper method will take care of cleaning up all shaders attached to program
@@ -234,7 +231,7 @@
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_normTexFuncIdx);
 
 
-    //[m_pAsset drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
+    [m_pAsset drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
 
     //[m_gridData drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
 
@@ -265,6 +262,9 @@
     NSString *fragSource = [NFRUtils loadShaderSourceWithName:@"OpenGLModel" ofType:kFragmentShader];
     m_hProgram = [NFRUtils createProgramWithVertexSource:vertSource withFragmentSource:fragSource];
     NSAssert(m_hProgram != 0, @"Failed to create GL shader program");
+
+    m_normTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "NormalizedTexexlFetch");
+    m_expTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "ExplicitTexelFetch");
 
 
 
