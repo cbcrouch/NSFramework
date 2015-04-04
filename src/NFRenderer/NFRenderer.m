@@ -258,13 +258,32 @@
 }
 
 - (void) loadShaders {
+
+    //
+    // TODO: load DefaultModel shader source
+    //
+
+
+    //
+    // TODO: need a create program helper method that just takes one string and then loads all
+    //       shader source files of that name
+    //
+
     NSString *vertSource = [NFRUtils loadShaderSourceWithName:@"OpenGLModel" ofType:kVertexShader];
     NSString *fragSource = [NFRUtils loadShaderSourceWithName:@"OpenGLModel" ofType:kFragmentShader];
+
     m_hProgram = [NFRUtils createProgramWithVertexSource:vertSource withFragmentSource:fragSource];
     NSAssert(m_hProgram != 0, @"Failed to create GL shader program");
 
     m_normTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "NormalizedTexexlFetch");
     m_expTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "ExplicitTexelFetch");
+
+    // setup uniform for model matrix
+    m_modelLoc = glGetUniformLocation(m_hProgram, (const GLchar *)"model\0");
+    NSAssert(m_modelLoc != -1, @"Failed to get MVP uniform location");
+
+    // uniform buffer for view and projection matrix
+    m_hUBO = [NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:m_hProgram];
 
 
 
@@ -274,19 +293,8 @@
     GLuint tempProgram = [NFRUtils createProgramWithVertexSource:vertSource withFragmentSource:fragSource];
     NSAssert(tempProgram != 0, @"Failed to create GL shader program");
 
-
-
     // NOTE: helper method will take care of cleaning up all shaders attached to program
     [NFRUtils destroyProgramWithHandle:tempProgram];
-
-
-
-    // setup uniform for model matrix
-    m_modelLoc = glGetUniformLocation(m_hProgram, (const GLchar *)"model\0");
-    NSAssert(m_modelLoc != -1, @"Failed to get MVP uniform location");
-
-    // uniform buffer for view and projection matrix
-    m_hUBO = [NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:m_hProgram];
 }
 
 //

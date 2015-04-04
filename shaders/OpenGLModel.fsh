@@ -12,8 +12,6 @@
 
 uniform sampler2D texSampler;
 
-//uniform vec4 Ia; // ambient light
-//uniform float I; // light intensity
 
 //
 // TODO: add layout qualifers e.g.:
@@ -29,7 +27,6 @@ in vec3 f_texcoord;
 // TODO: use layout qualifier to allow for program separation linkage e.g.:
 //       (note different names)
 //
-
 //layout (location = 0) in vec4 diffuseAlbedo;
 //layout (location = 1) in vec2 texCoord;
 //layout (location = 2) in vec3 cameraSpaceNormal; // viewVectorNormal
@@ -65,17 +62,12 @@ subroutine(texFunc_t)
 vec4 ExplicitTexelFetch(sampler2D sampler, vec3 coords) {
     ivec2 itexcoord;
 
-    //
-    // TODO: currently only looking at the mantissa bits in order to avoid a denormal float
+    // NOTE: currently only looking at the mantissa bits in order to avoid a denormal float
     //       (need to confirm this is true)
-    //
     itexcoord.x = 0x007fffff & floatBitsToInt(coords.x);
     itexcoord.y = 0x007fffff & floatBitsToInt(coords.y);
-
     return texelFetch(texSampler, itexcoord, 0);
 }
-
-
 
 void main (void) {
     vec3 L = normalize(lightPos - f_vertex.xyz);

@@ -39,6 +39,8 @@
 		23D86B2119192C4A00BCC83B /* NFSurfaceModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 23D86B2019192C4A00BCC83B /* NFSurfaceModel.m */; };
 		23E9873A18DCA71300F76B1A /* NFAssetData.m in Sources */ = {isa = PBXBuildFile; fileRef = 23E9873918DCA71300F76B1A /* NFAssetData.m */; };
 		23E9874018DCAC7000F76B1A /* NFAssetData+Wavefront.m in Sources */ = {isa = PBXBuildFile; fileRef = 23E9873F18DCAC7000F76B1A /* NFAssetData+Wavefront.m */; };
+		23EB03261ACCDA6200084CEF /* DefaultModel.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 23EB03241ACCDA6200084CEF /* DefaultModel.fsh */; };
+		23EB03271ACCDA6200084CEF /* DefaultModel.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 23EB03251ACCDA6200084CEF /* DefaultModel.vsh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -103,6 +105,8 @@
 		23E9873918DCA71300F76B1A /* NFAssetData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFAssetData.m; path = NFRenderer/NFAssetData.m; sourceTree = "<group>"; };
 		23E9873E18DCAC7000F76B1A /* NFAssetData+Wavefront.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NFAssetData+Wavefront.h"; path = "NFAssetPipeline/NFAssetData+Wavefront.h"; sourceTree = "<group>"; };
 		23E9873F18DCAC7000F76B1A /* NFAssetData+Wavefront.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NFAssetData+Wavefront.m"; path = "NFAssetPipeline/NFAssetData+Wavefront.m"; sourceTree = "<group>"; };
+		23EB03241ACCDA6200084CEF /* DefaultModel.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = DefaultModel.fsh; path = ../shaders/DefaultModel.fsh; sourceTree = "<group>"; };
+		23EB03251ACCDA6200084CEF /* DefaultModel.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = DefaultModel.vsh; path = ../shaders/DefaultModel.vsh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -174,6 +178,8 @@
 		233797F51885E21600399EBA /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
+				23EB03241ACCDA6200084CEF /* DefaultModel.fsh */,
+				23EB03251ACCDA6200084CEF /* DefaultModel.vsh */,
 				23469D101976F6C100C965F1 /* WavefrontModel.fsh */,
 				23469D111976F6C100C965F1 /* WavefrontModel.vsh */,
 				233797F61885E23600399EBA /* OpenGLModel.fsh */,
@@ -378,6 +384,8 @@
 				233797FB1885E23600399EBA /* OpenGLModel.vsh in Resources */,
 				233797FA1885E23600399EBA /* OpenGLModel.fsh in Resources */,
 				234E2CCC188382CC00AF8F23 /* InfoPlist.strings in Resources */,
+				23EB03261ACCDA6200084CEF /* DefaultModel.fsh in Resources */,
+				23EB03271ACCDA6200084CEF /* DefaultModel.vsh in Resources */,
 				234E2CDA188382CC00AF8F23 /* Images.xcassets in Resources */,
 				234E2CD2188382CC00AF8F23 /* Credits.rtf in Resources */,
 				23469D131976F6C100C965F1 /* WavefrontModel.vsh in Resources */,

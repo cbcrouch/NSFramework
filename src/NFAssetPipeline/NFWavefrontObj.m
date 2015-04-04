@@ -176,6 +176,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
             //       phi and theta divied by their respective ranges M_PI and 2*M_PI
             //
 
+            // could try octahedral mapping
 
 
             // spherical coordinates as mapped to perspective coordiantes (x to the right, y up, +z towards the camera)
