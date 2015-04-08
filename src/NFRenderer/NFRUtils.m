@@ -30,6 +30,7 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
 
 
 @interface NFRUtils()
++ (NSString *) loadShaderSourceWithName:(NSString *)shaderName ofType:(SHADER_TYPE)type;
 + (void) checkShader:(const GLuint)handle ofType:(SHADER_TYPE)type againstStatus:(SHADER_STATUS)status;
 @end
 
@@ -39,6 +40,51 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
     GLuint hProgram = 0;
     GLuint hVertexShader = 0;
     GLuint hFragShader = 0;
+    const GLchar *vs_source = [vertexSource cStringUsingEncoding:NSASCIIStringEncoding];
+    const GLchar *fs_source = [fragmentSource cStringUsingEncoding:NSASCIIStringEncoding];
+
+    // create vertex shader
+    hVertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(hVertexShader, 1, &vs_source, 0);
+    glCompileShader(hVertexShader);
+#ifdef DEBUG
+    [NFRUtils checkShader:hVertexShader ofType:kVertexShader againstStatus:kCompileStatus];
+    CHECK_GL_ERROR();
+#endif
+
+    // create fragment shader
+    hFragShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(hFragShader, 1, &fs_source, 0);
+    glCompileShader(hFragShader);
+#ifdef DEBUG
+    [NFRUtils checkShader:hFragShader ofType:kFragmentShader againstStatus:kCompileStatus];
+    CHECK_GL_ERROR();
+#endif
+
+    // create shader program
+    hProgram = glCreateProgram();
+    glAttachShader(hProgram, hVertexShader);
+    glAttachShader(hProgram, hFragShader);
+    glLinkProgram(hProgram);
+#ifdef DEBUG
+    [NFRUtils checkShader:hProgram ofType:kProgram againstStatus:kLinkStatus];
+    // NOTE: should not be performing validation check here, validation step is a debug check typically performed
+    //       prior to a draw attempt with a given shader program since the glValidateProgram call checks whether
+    //       the program can execute against the given OpenGL state at the time of the call (it would be meaningless
+    //       to perform the check when initializing the program since the OpenGL state on init is not typically
+    //       configured to be making draw calls)
+    CHECK_GL_ERROR();
+#endif
+
+    return hProgram;
+}
+
++ (GLuint) createProgram:(NSString *)programName {
+    GLuint hProgram = 0;
+    GLuint hVertexShader = 0;
+    GLuint hFragShader = 0;
+    NSString* vertexSource = [NFRUtils loadShaderSourceWithName:programName ofType:kVertexShader];
+    NSString* fragmentSource = [NFRUtils loadShaderSourceWithName:programName ofType:kFragmentShader];
     const GLchar *vs_source = [vertexSource cStringUsingEncoding:NSASCIIStringEncoding];
     const GLchar *fs_source = [fragmentSource cStringUsingEncoding:NSASCIIStringEncoding];
 

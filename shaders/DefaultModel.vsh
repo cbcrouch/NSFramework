@@ -27,5 +27,5 @@ void main() {
     f_normal = mat3(transpose(inverse(model))) * normal;
     f_texcoord = texCoords;
 
-    gl_Position = projection * view *  model * vec4(position, 1.0f);
+    gl_Position = UBO.projection * UBO.view *  model * vec4(position, 1.0f);
 }

@@ -263,16 +263,14 @@
     // TODO: load DefaultModel shader source
     //
 
+    GLuint defaultProgram = [NFRUtils createProgram:@"DefaultModel"];
+    NSAssert(defaultProgram != 0, @"Failed to create GL shader program");
 
-    //
-    // TODO: need a create program helper method that just takes one string and then loads all
-    //       shader source files of that name
-    //
+    [NFRUtils destroyProgramWithHandle:defaultProgram];
 
-    NSString *vertSource = [NFRUtils loadShaderSourceWithName:@"OpenGLModel" ofType:kVertexShader];
-    NSString *fragSource = [NFRUtils loadShaderSourceWithName:@"OpenGLModel" ofType:kFragmentShader];
 
-    m_hProgram = [NFRUtils createProgramWithVertexSource:vertSource withFragmentSource:fragSource];
+
+    m_hProgram = [NFRUtils createProgram:@"OpenGLModel"];
     NSAssert(m_hProgram != 0, @"Failed to create GL shader program");
 
     m_normTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "NormalizedTexexlFetch");
@@ -288,12 +286,8 @@
 
 
     // load the WavefrontModel shader program to ensure that it compiles
-    vertSource = [NFRUtils loadShaderSourceWithName:@"WavefrontModel" ofType:kVertexShader];
-    fragSource = [NFRUtils loadShaderSourceWithName:@"WavefrontModel" ofType:kFragmentShader];
-    GLuint tempProgram = [NFRUtils createProgramWithVertexSource:vertSource withFragmentSource:fragSource];
+    GLuint tempProgram = [NFRUtils createProgram:@"WavefrontModel"];
     NSAssert(tempProgram != 0, @"Failed to create GL shader program");
-
-    // NOTE: helper method will take care of cleaning up all shaders attached to program
     [NFRUtils destroyProgramWithHandle:tempProgram];
 }
 

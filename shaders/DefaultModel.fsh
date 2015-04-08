@@ -9,8 +9,13 @@
 
 
 struct material_t {
+    //
+    // TODO: according to the GLSL spec cannot include sampler2D in a struct (some drivers will allow it)
+    //       will need to remove these to ensure shader will work with more driver/hardware combinations
+    //
     sampler2D diffuse;
     sampler2D specular;
+
     float     shininess;
 };
 

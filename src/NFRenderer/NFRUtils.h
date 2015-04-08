@@ -21,7 +21,6 @@
 #else
 #   define GL(line) line
 #endif
-
 // usage:
 // GL(glClear(GL_COLORS_MASK));
 // GL(pos_loc = glGetAttribLocation(prog, "pos"));
@@ -29,7 +28,15 @@
 
 typedef NS_ENUM(NSUInteger, SHADER_TYPE) {
     kVertexShader,
+
+    //kTessControlShader,
+    //kTessEvaluationShader,
+    //kGeometryShader,
+
     kFragmentShader,
+
+    //kComputeShader,
+
     kProgram
 };
 
@@ -48,8 +55,9 @@ typedef NS_ENUM(NSUInteger, SHADER_TYPE) {
 //       (add some more words about how class methods, particuarly utility methods, work well with this notion
 //       of global state - may want to quote the common mistakes addressing this on the OpenGL wiki)
 
+
 // shader utils
-+ (GLuint) createProgramWithVertexSource:(NSString *)vertexSource withFragmentSource:(NSString *)fragmentSource;
++ (GLuint) createProgram:(NSString *)programName;
 + (void) destroyProgramWithHandle:(GLuint)handle;
 
 
@@ -69,9 +77,5 @@ typedef NS_ENUM(NSUInteger, SHADER_TYPE) {
 + (void) destroyVaoWithHandle:(GLuint)hVAO;
 
 + (void) checkGLError:(const char *)file line:(const int)line function:(const char *)function;
-
-// TODO: should be move to NSResourceManager which will contain class methods for loading raw data and instance
-//       methods for level stream ??
-+ (NSString *) loadShaderSourceWithName:(NSString *)shaderName ofType:(SHADER_TYPE)type;
 
 @end
