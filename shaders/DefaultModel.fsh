@@ -7,7 +7,7 @@
 
 #version 410
 
-
+/*
 struct material_t {
     //
     // TODO: according to the GLSL spec cannot include sampler2D in a struct (some drivers will allow it)
@@ -18,6 +18,7 @@ struct material_t {
 
     float     shininess;
 };
+*/
 
 struct light_t {
     vec3 position;
@@ -27,9 +28,12 @@ struct light_t {
 };
 
 
+uniform sampler2D diffuseMap;
+uniform vec3 specularVec;
+uniform float shininess;
+
 uniform vec3 viewPos;
 
-uniform material_t material;
 uniform light_t light;
 
 in vec3 f_position;
@@ -60,20 +64,20 @@ subroutine uniform lightingFunc LightingFunction;
 
 void main()
 {
-    // Ambient
-    vec3 ambient = light.ambient * vec3(texture(material.diffuse, f_texcoord));
+    // ambient
+    vec3 ambient = light.ambient * vec3(texture(diffuseMap, f_texcoord));
 
-    // Diffuse
+    // diffuse
     vec3 norm = normalize(f_normal);
     vec3 lightDir = normalize(light.position - f_position);
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, f_texcoord));
+    vec3 diffuse = light.diffuse * diff * vec3(texture(diffuseMap, f_texcoord));
 
-    // Specular
+    // specular
     vec3 viewDir = normalize(viewPos - f_position);
     vec3 reflectDir = reflect(-lightDir, norm);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 specular = light.specular * spec * vec3(texture(material.specular, f_texcoord));
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+    vec3 specular = light.specular * spec * specularVec;
 
     color = vec4(ambient + diffuse + specular, 1.0f);
 }

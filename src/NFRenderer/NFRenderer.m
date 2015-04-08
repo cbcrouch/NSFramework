@@ -260,7 +260,7 @@
 - (void) loadShaders {
 
     //
-    // TODO: load DefaultModel shader source
+    // TODO: load DefaultModel uniforms and subroutines
     //
 
     GLuint defaultProgram = [NFRUtils createProgram:@"DefaultModel"];
