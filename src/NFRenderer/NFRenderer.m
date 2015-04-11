@@ -260,13 +260,69 @@
 - (void) loadShaders {
 
     //
-    // TODO: load DefaultModel uniforms and subroutines
+    // TODO: integrate default program into the renderer
     //
-
     GLuint defaultProgram = [NFRUtils createProgram:@"DefaultModel"];
     NSAssert(defaultProgram != 0, @"Failed to create GL shader program");
 
+    //
+    // material struct uniform locations
+    //
+    GLint matAmbientLoc = glGetUniformLocation(defaultProgram, "material.ambient");
+    NSAssert(matAmbientLoc != -1, @"failed to get uniform location");
+
+    GLint matDiffuseLoc = glGetUniformLocation(defaultProgram, "material.diffuse");
+    NSAssert(matDiffuseLoc != -1, @"failed to get uniform location");
+
+    GLint matSpecularLoc = glGetUniformLocation(defaultProgram, "material.specular");
+    NSAssert(matSpecularLoc != -1, @"failed to get uniform location");
+
+    GLint matShineLoc = glGetUniformLocation(defaultProgram, "material.shininess");
+    NSAssert(matShineLoc != -1, @"failed to get uniform location");
+
+    // sample values
+    glUseProgram(defaultProgram);
+    glUniform3f(matAmbientLoc, 1.0f, 0.5f, 0.31f);
+    glUniform3f(matDiffuseLoc, 1.0f, 0.5f, 0.31f);
+    glUniform3f(matSpecularLoc, 0.5f, 0.5f, 0.5f);
+    glUniform1f(matShineLoc, 32.0f);
+    glUseProgram(0);
+
+    //
+    // light struct uniform locations
+    //
+    GLint lightAmbientLoc = glGetUniformLocation(defaultProgram, "light.ambient");
+    NSAssert(lightAmbientLoc != -1, @"failed to get uniform location");
+
+    GLint lightDiffuseLoc = glGetUniformLocation(defaultProgram, "light.diffuse");
+    NSAssert(lightDiffuseLoc != -1, @"failed to get uniform location");
+
+    GLint lightSpecularLoc = glGetUniformLocation(defaultProgram, "light.specular");
+    NSAssert(lightSpecularLoc != -1, @"failed to get uniform location");
+
+    GLint lightPositionLoc = glGetUniformLocation(defaultProgram, "light.position");
+    NSAssert(lightPositionLoc != -1, @"failed to get uniform location");
+
+    //
+    // view position uniform location
+    //
+    GLint viewPositionLoc = glGetUniformLocation(defaultProgram, "viewPos");
+    NSAssert(viewPositionLoc != -1, @"failed to get uniform location");
+
+    //
+    // subroutine indices
+    //
+
+    GLuint lightSubroutine = glGetSubroutineIndex(defaultProgram, GL_FRAGMENT_SHADER, "light_subroutine");
+    NSAssert(lightSubroutine != GL_INVALID_INDEX, @"failed to get subroutine index");
+
+    GLuint phongSubroutine = glGetSubroutineIndex(defaultProgram, GL_FRAGMENT_SHADER, "phong_subroutine");
+    NSAssert(phongSubroutine != GL_INVALID_INDEX, @"failed to get subroutine index");
+
+    CHECK_GL_ERROR();
+
     [NFRUtils destroyProgramWithHandle:defaultProgram];
+
 
 
 
