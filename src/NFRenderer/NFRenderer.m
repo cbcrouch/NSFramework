@@ -22,6 +22,36 @@
 #import <GLKit/GLKit.h>
 
 
+typedef struct materialLocs_t {
+    GLint matAmbientLoc;
+    GLint matDiffuseLoc;
+    GLint matSpecularLoc;
+    GLint matShineLoc;
+} materialLocs_t;
+
+typedef struct lightLocs_t {
+    GLint lightAmbientLoc;
+    GLint lightDiffuseLoc;
+    GLint lightSpecularLoc;
+    GLint lightPositionLoc;
+} lightLocs_t;
+
+typedef struct phongModel_t {
+    // vertex shader inputs
+    GLint modelLoc;
+    GLuint hUBO;
+
+    // fragment shader inputs
+    materialLocs_t matLocs;
+    lightLocs_t lightLocs;
+    GLint viewPositionLoc;
+    GLuint lightSubroutine;
+    GLuint phongSubroutine;
+
+    // program handle
+    GLuint hProgram;
+} phongModel_t;
+
 
 @interface NFViewport : NSObject
 @property (nonatomic, assign) NFViewportId uniqueId;
@@ -51,6 +81,9 @@
     // TODO: this information should be stored in some kind of NFRendererProgram object
     //       or an NFPipeline object (need to determine the easiest and simplist way to encapsulate shaders)
     //
+
+    phongModel_t m_phongModel;
+
     GLint m_modelLoc;
     GLuint m_normTexFuncIdx;
     GLuint m_expTexFuncIdx;
@@ -67,6 +100,8 @@
 
 #pragma mark - NSGLRenderer Implementation
 @implementation NFRenderer
+
+#define USE_PHONG_PROGRAM
 
 - (instancetype) init {
     self = [super init];
@@ -102,7 +137,7 @@
     NSString *fileNamePath;
 
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
-    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
+    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
 
     //
@@ -122,14 +157,19 @@
     //       different primitive mode
     //
 
-    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/suzanne.obj";
+    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/suzanne.obj";
 
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/buddha.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/dragon.obj";
 
+#ifdef USE_PHONG_PROGRAM
+    GLuint hProgram = m_phongModel.hProgram;
+#else
+    GLuint hProgram = m_hProgram;
+#endif
 
     m_pAsset = [NFAssetLoader allocAssetDataOfType:kWavefrontObj withArgs:fileNamePath, nil];
-    [m_pAsset createVertexStateWithProgram:m_hProgram];
+    [m_pAsset createVertexStateWithProgram:hProgram];
     [m_pAsset loadResourcesGL];
 
     //m_pAsset.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 1.0f, 0.0f);
@@ -140,22 +180,22 @@
 
 
     m_axisData = [NFAssetLoader allocAssetDataOfType:kAxisWireframe withArgs:nil];
-    [m_axisData createVertexStateWithProgram:m_hProgram];
+    [m_axisData createVertexStateWithProgram:hProgram];
     [m_axisData loadResourcesGL];
 
 
     m_gridData = [NFAssetLoader allocAssetDataOfType:kGridWireframe withArgs:nil];
-    [m_gridData createVertexStateWithProgram:m_hProgram];
+    [m_gridData createVertexStateWithProgram:hProgram];
     [m_gridData loadResourcesGL];
 
 
     m_planeData = [NFAssetLoader allocAssetDataOfType:kSolidPlane withArgs:nil];
-    [m_planeData createVertexStateWithProgram:m_hProgram];
+    [m_planeData createVertexStateWithProgram:hProgram];
     [m_planeData loadResourcesGL];
 
 
     m_solidSphere = [NFAssetLoader allocAssetDataOfType:kSolidUVSphere withArgs:nil];
-    [m_solidSphere createVertexStateWithProgram:m_hProgram];
+    [m_solidSphere createVertexStateWithProgram:hProgram];
     [m_solidSphere loadResourcesGL];
 
     m_solidSphere.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 2.0f, 1.0f, 0.0f);
@@ -186,14 +226,26 @@
     [m_planeData release];
     [m_solidSphere release];
 
+    [NFRUtils destroyProgramWithHandle:m_phongModel.hProgram];
+
     // NOTE: helper method will take care of cleaning up all shaders attached to program
     [NFRUtils destroyProgramWithHandle:m_hProgram];
 
     [super dealloc];
 }
 
-- (void) updateFrameWithTime:(float)secsElapsed withViewMatrix:(GLKMatrix4)viewMatrix
+- (void) updateFrameWithTime:(float)secsElapsed withViewPosition:(GLKVector3)viewPosition
+              withViewMatrix:(GLKMatrix4)viewMatrix
               withProjection:(GLKMatrix4)projection {
+
+    //
+    // TODO: should not be use shader programs in the frame update, defer it until the draw call
+    //
+    glUseProgram(m_phongModel.hProgram);
+    glUniform3f(m_phongModel.viewPositionLoc, viewPosition.x, viewPosition.y, viewPosition.z);
+    glUseProgram(0);
+    CHECK_GL_ERROR();
+
     if (self.stepTransforms) {
         [m_pAsset stepTransforms:secsElapsed];
         //[m_pAsset stepTransforms:0.0f];
@@ -221,11 +273,24 @@
     //
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+#ifdef USE_PHONG_PROGRAM
+    glUseProgram(m_phongModel.hProgram);
+
+    // cube
+    glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &(m_phongModel.phongSubroutine));
+    [m_pAsset drawWithProgram:m_phongModel.hProgram withModelUniform:m_phongModel.modelLoc];
+
+    // light
+    glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &(m_phongModel.lightSubroutine));
+    [m_solidSphere drawWithProgram:m_phongModel.hProgram withModelUniform:m_phongModel.modelLoc];
+
+    glUseProgram(0);
+#else
     glUseProgram(m_hProgram);
 
     //
     // TODO: need to decouple the drawing methods from the NFAssetData class
-    //       (this will require at least stubbing out the entity control system)
     //
 
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_normTexFuncIdx);
@@ -242,8 +307,10 @@
 
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_expTexFuncIdx);
     [m_axisData drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
-
+    
     glUseProgram(0);
+#endif
+
     CHECK_GL_ERROR();
 }
 
@@ -258,70 +325,82 @@
 }
 
 - (void) loadShaders {
+    //
+    // load default model
+    //
+    m_phongModel.hProgram = [NFRUtils createProgram:@"DefaultModel"];
+    NSAssert(m_phongModel.hProgram != 0, @"Failed to create GL shader program");
 
-    //
-    // TODO: integrate default program into the renderer
-    //
-    GLuint defaultProgram = [NFRUtils createProgram:@"DefaultModel"];
-    NSAssert(defaultProgram != 0, @"Failed to create GL shader program");
+    m_phongModel.modelLoc = glGetUniformLocation(m_phongModel.hProgram, (const GLchar *)"model");
+    NSAssert(m_phongModel.modelLoc != -1, @"failed to get MVP uniform location");
+
+    // uniform buffer for view and projection matrix
+    m_phongModel.hUBO = [NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:m_phongModel.hProgram];
+    NSAssert(m_phongModel.hUBO != 0, @"failed to get uniform buffer handle");
+
 
     //
     // material struct uniform locations
     //
-    GLint matAmbientLoc = glGetUniformLocation(defaultProgram, "material.ambient");
-    NSAssert(matAmbientLoc != -1, @"failed to get uniform location");
+    m_phongModel.matLocs.matAmbientLoc = glGetUniformLocation(m_phongModel.hProgram, "material.ambient");
+    NSAssert(m_phongModel.matLocs.matAmbientLoc != -1, @"failed to get uniform location");
 
-    GLint matDiffuseLoc = glGetUniformLocation(defaultProgram, "material.diffuse");
-    NSAssert(matDiffuseLoc != -1, @"failed to get uniform location");
+    m_phongModel.matLocs.matDiffuseLoc = glGetUniformLocation(m_phongModel.hProgram, "material.diffuse");
+    NSAssert(m_phongModel.matLocs.matDiffuseLoc != -1, @"failed to get uniform location");
 
-    GLint matSpecularLoc = glGetUniformLocation(defaultProgram, "material.specular");
-    NSAssert(matSpecularLoc != -1, @"failed to get uniform location");
+    m_phongModel.matLocs.matSpecularLoc = glGetUniformLocation(m_phongModel.hProgram, "material.specular");
+    NSAssert(m_phongModel.matLocs.matSpecularLoc != -1, @"failed to get uniform location");
 
-    GLint matShineLoc = glGetUniformLocation(defaultProgram, "material.shininess");
-    NSAssert(matShineLoc != -1, @"failed to get uniform location");
+    m_phongModel.matLocs.matShineLoc = glGetUniformLocation(m_phongModel.hProgram, "material.shininess");
+    NSAssert(m_phongModel.matLocs.matShineLoc != -1, @"failed to get uniform location");
 
-    // sample values
-    glUseProgram(defaultProgram);
-    glUniform3f(matAmbientLoc, 1.0f, 0.5f, 0.31f);
-    glUniform3f(matDiffuseLoc, 1.0f, 0.5f, 0.31f);
-    glUniform3f(matSpecularLoc, 0.5f, 0.5f, 0.5f);
-    glUniform1f(matShineLoc, 32.0f);
+    // hardcoded material values (jade)
+    glUseProgram(m_phongModel.hProgram);
+    glUniform3f(m_phongModel.matLocs.matAmbientLoc, 0.135f, 0.2225f, 0.1575f);
+    glUniform3f(m_phongModel.matLocs.matDiffuseLoc, 0.54f, 0.89f, 0.63f);
+    glUniform3f(m_phongModel.matLocs.matSpecularLoc, 0.316228f, 0.316228f, 0.316228f);
+    glUniform1f(m_phongModel.matLocs.matShineLoc, 128.0f * 0.1f);
     glUseProgram(0);
 
     //
     // light struct uniform locations
     //
-    GLint lightAmbientLoc = glGetUniformLocation(defaultProgram, "light.ambient");
-    NSAssert(lightAmbientLoc != -1, @"failed to get uniform location");
+    m_phongModel.lightLocs.lightAmbientLoc = glGetUniformLocation(m_phongModel.hProgram, "light.ambient");
+    NSAssert(m_phongModel.lightLocs.lightAmbientLoc != -1, @"failed to get uniform location");
 
-    GLint lightDiffuseLoc = glGetUniformLocation(defaultProgram, "light.diffuse");
-    NSAssert(lightDiffuseLoc != -1, @"failed to get uniform location");
+    m_phongModel.lightLocs.lightDiffuseLoc = glGetUniformLocation(m_phongModel.hProgram, "light.diffuse");
+    NSAssert(m_phongModel.lightLocs.lightDiffuseLoc != -1, @"failed to get uniform location");
 
-    GLint lightSpecularLoc = glGetUniformLocation(defaultProgram, "light.specular");
-    NSAssert(lightSpecularLoc != -1, @"failed to get uniform location");
+    m_phongModel.lightLocs.lightSpecularLoc = glGetUniformLocation(m_phongModel.hProgram, "light.specular");
+    NSAssert(m_phongModel.lightLocs.lightSpecularLoc != -1, @"failed to get uniform location");
 
-    GLint lightPositionLoc = glGetUniformLocation(defaultProgram, "light.position");
-    NSAssert(lightPositionLoc != -1, @"failed to get uniform location");
+    m_phongModel.lightLocs.lightPositionLoc = glGetUniformLocation(m_phongModel.hProgram, "light.position");
+    NSAssert(m_phongModel.lightLocs.lightPositionLoc != -1, @"failed to get uniform location");
+
+    // hardcoded light values
+    glUseProgram(m_phongModel.hProgram);
+    glUniform3f(m_phongModel.lightLocs.lightAmbientLoc, 0.2f, 0.2f, 0.2f);
+    glUniform3f(m_phongModel.lightLocs.lightDiffuseLoc, 0.5f, 0.5f, 0.5f);
+    glUniform3f(m_phongModel.lightLocs.lightSpecularLoc, 1.0f, 1.0f, 1.0f);
+    glUniform3f(m_phongModel.lightLocs.lightPositionLoc, 2.0f, 1.0f, 0.0f);
+    glUseProgram(0);
 
     //
     // view position uniform location
     //
-    GLint viewPositionLoc = glGetUniformLocation(defaultProgram, "viewPos");
-    NSAssert(viewPositionLoc != -1, @"failed to get uniform location");
+    m_phongModel.viewPositionLoc = glGetUniformLocation(m_phongModel.hProgram, "viewPos");
+    NSAssert(m_phongModel.viewPositionLoc != -1, @"failed to get uniform location");
 
     //
     // subroutine indices
     //
+    m_phongModel.lightSubroutine = glGetSubroutineIndex(m_phongModel.hProgram, GL_FRAGMENT_SHADER, "light_subroutine");
+    NSAssert(m_phongModel.lightSubroutine != GL_INVALID_INDEX, @"failed to get subroutine index");
 
-    GLuint lightSubroutine = glGetSubroutineIndex(defaultProgram, GL_FRAGMENT_SHADER, "light_subroutine");
-    NSAssert(lightSubroutine != GL_INVALID_INDEX, @"failed to get subroutine index");
-
-    GLuint phongSubroutine = glGetSubroutineIndex(defaultProgram, GL_FRAGMENT_SHADER, "phong_subroutine");
-    NSAssert(phongSubroutine != GL_INVALID_INDEX, @"failed to get subroutine index");
+    m_phongModel.phongSubroutine = glGetSubroutineIndex(m_phongModel.hProgram, GL_FRAGMENT_SHADER, "phong_subroutine");
+    NSAssert(m_phongModel.phongSubroutine != GL_INVALID_INDEX, @"failed to get subroutine index");
 
     CHECK_GL_ERROR();
-
-    [NFRUtils destroyProgramWithHandle:defaultProgram];
 
 
 
@@ -333,11 +412,12 @@
     m_expTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "ExplicitTexelFetch");
 
     // setup uniform for model matrix
-    m_modelLoc = glGetUniformLocation(m_hProgram, (const GLchar *)"model\0");
+    m_modelLoc = glGetUniformLocation(m_hProgram, (const GLchar *)"model");
     NSAssert(m_modelLoc != -1, @"Failed to get MVP uniform location");
 
     // uniform buffer for view and projection matrix
     m_hUBO = [NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:m_hProgram];
+    NSAssert(m_hUBO != 0, @"failed to get uniform buffer handle");
 
 
 

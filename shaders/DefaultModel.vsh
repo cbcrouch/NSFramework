@@ -14,18 +14,29 @@ layout(std140) uniform UBOData {
 
 uniform mat4 model;
 
+
+//
+// TODO: cleanup input attributes
+//
+/*
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 normal;
 layout (location = 2) in vec2 texCoords;
+*/
+// make position and normal vec3
+in vec4 v_vertex; // rename v_position
+in vec4 v_normal;
+in vec3 v_texcoord;
+
 
 out vec3 f_normal;
 out vec3 f_position;
 out vec2 f_texcoord;
 
 void main() {
-    f_position = vec3(model * vec4(position, 1.0f));
-    f_normal = mat3(transpose(inverse(model))) * normal;
-    f_texcoord = texCoords;
+    f_position = vec3(model * v_vertex);
+    f_normal = mat3(transpose(inverse(model))) * v_normal.xyz;
+    f_texcoord = v_texcoord.xy;
 
-    gl_Position = UBO.projection * UBO.view *  model * vec4(position, 1.0f);
+    gl_Position = UBO.projection * UBO.view *  model * v_vertex;
 }

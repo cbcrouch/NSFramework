@@ -534,6 +534,11 @@ typedef struct NFVertState_t {
 
     NFVertState_t *pState = self.vertexState;
 
+    //
+    // TODO: should move the shader attribute location handling into the render pipeline object
+    //       and implement getters that would allow the asset draw calls to be handled external
+    //       to the class
+    //
     pState->vertAttrib = glGetAttribLocation(hProgram, "v_vertex\0");
     NSAssert(pState->vertAttrib != -1, @"Failed to bind attribute");
 
@@ -582,6 +587,11 @@ typedef struct NFVertState_t {
         GLuint texId;
         glGenTextures(1, &texId);
         self.textureId = texId;
+
+
+        //
+        // TODO: move the render pipeline texture handling out of the asset data class
+        //
 
         //
         // TODO: use glTextureStorage2D specify texture storage requirements

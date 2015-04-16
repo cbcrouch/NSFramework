@@ -692,8 +692,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     GLKMatrix4 viewMat = self.camera.viewMatrix;
     GLKMatrix4 projMat = self.viewVolume.projection;
-
-    [self.glRenderer updateFrameWithTime:secsElapsed withViewMatrix:viewMat withProjection:projMat];
+    [self.glRenderer updateFrameWithTime:secsElapsed withViewPosition:self.camera.eye
+                          withViewMatrix:viewMat withProjection:projMat];
 
     //
     // TODO: need to prevent rendering a frame prior to the window being placed on the screen

@@ -43,8 +43,15 @@ typedef NSInteger NFViewportId;
 
 - (void) dealloc;
 
-- (void) updateFrameWithTime:(float)secsElapsed withViewMatrix:(GLKMatrix4)viewMatrix
+
+//
+// TODO: group view/projection matrix and view position into a ViewDescription structure
+//       (could probably find a better name)
+//
+- (void) updateFrameWithTime:(float)secsElapsed withViewPosition:(GLKVector3)viewPosition
+              withViewMatrix:(GLKMatrix4)viewMatrix
               withProjection:(GLKMatrix4)projection;
+
 
 - (void) renderFrame;
 

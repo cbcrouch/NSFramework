@@ -25,6 +25,13 @@ uniform vec3 viewPos;
 uniform material_t material;
 uniform light_t light;
 
+
+//
+// TODO: rename to diffuseTexture
+//
+uniform sampler2D texSampler;
+
+
 in vec3 f_position;
 in vec3 f_normal;
 in vec2 f_texcoord;
@@ -51,6 +58,8 @@ vec4 phong_subroutine()
     vec3 lightDir = normalize(light.position - f_position);
     float diff = max(dot(norm, lightDir), 0.0f);
     vec3 diffuse = light.diffuse * (diff * material.diffuse);
+
+    vec4 diffuseTexel = texture(texSampler, f_texcoord);
 
     // specular
     vec3 viewDir = normalize(viewPos - f_position);
