@@ -539,13 +539,13 @@ typedef struct NFVertState_t {
     //       and implement getters that would allow the asset draw calls to be handled external
     //       to the class
     //
-    pState->vertAttrib = glGetAttribLocation(hProgram, "v_vertex\0");
+    pState->vertAttrib = glGetAttribLocation(hProgram, "v_position");
     NSAssert(pState->vertAttrib != -1, @"Failed to bind attribute");
 
-    pState->normAttrib = glGetAttribLocation(hProgram, "v_normal\0");
+    pState->normAttrib = glGetAttribLocation(hProgram, "v_normal");
     NSAssert(pState->normAttrib != -1, @"Failed to bind attribute");
 
-    pState->texAttrib = glGetAttribLocation(hProgram, "v_texcoord\0");
+    pState->texAttrib = glGetAttribLocation(hProgram, "v_texcoord");
     NSAssert(pState->texAttrib != -1, @"Failed to bind attribute");
 
 

@@ -16,17 +16,11 @@ uniform mat4 model;
 
 
 //
-// TODO: cleanup input attributes
+// TODO: make position and normal vec3
 //
-/*
-layout (location = 0) in vec3 position;
-layout (location = 1) in vec3 normal;
-layout (location = 2) in vec2 texCoords;
-*/
-// make position and normal vec3
-in vec4 v_vertex; // rename v_position
-in vec4 v_normal;
-in vec3 v_texcoord;
+layout (location = 0) in vec4 v_position;
+layout (location = 1) in vec4 v_normal;
+layout (location = 2) in vec3 v_texcoord;
 
 
 out vec3 f_normal;
@@ -34,9 +28,9 @@ out vec3 f_position;
 out vec2 f_texcoord;
 
 void main() {
-    f_position = vec3(model * v_vertex);
+    f_position = vec3(model * v_position);
     f_normal = mat3(transpose(inverse(model))) * v_normal.xyz;
     f_texcoord = v_texcoord.xy;
 
-    gl_Position = UBO.projection * UBO.view *  model * v_vertex;
+    gl_Position = UBO.projection * UBO.view *  model * v_position;
 }
