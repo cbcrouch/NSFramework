@@ -19,8 +19,6 @@
 		233798011885E26700399EBA /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 233798001885E26700399EBA /* GLKit.framework */; };
 		233798031885E26F00399EBA /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 233798021885E26F00399EBA /* QuartzCore.framework */; };
 		233FAEB41A9F7FA000AD025B /* NFAssetUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 233FAEB31A9F7FA000AD025B /* NFAssetUtils.m */; };
-		23469D121976F6C100C965F1 /* WavefrontModel.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 23469D101976F6C100C965F1 /* WavefrontModel.fsh */; };
-		23469D131976F6C100C965F1 /* WavefrontModel.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 23469D111976F6C100C965F1 /* WavefrontModel.vsh */; };
 		234E2CC2188382CC00AF8F23 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 234E2CC1188382CC00AF8F23 /* Cocoa.framework */; };
 		234E2CCC188382CC00AF8F23 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 234E2CCA188382CC00AF8F23 /* InfoPlist.strings */; };
 		234E2CCE188382CC00AF8F23 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 234E2CCD188382CC00AF8F23 /* main.m */; };
@@ -73,8 +71,6 @@
 		233798021885E26F00399EBA /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		233FAEB21A9F7FA000AD025B /* NFAssetUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFAssetUtils.h; path = NFAssetPipeline/NFAssetUtils.h; sourceTree = "<group>"; };
 		233FAEB31A9F7FA000AD025B /* NFAssetUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFAssetUtils.m; path = NFAssetPipeline/NFAssetUtils.m; sourceTree = "<group>"; };
-		23469D101976F6C100C965F1 /* WavefrontModel.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = WavefrontModel.fsh; path = ../shaders/WavefrontModel.fsh; sourceTree = "<group>"; };
-		23469D111976F6C100C965F1 /* WavefrontModel.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = WavefrontModel.vsh; path = ../shaders/WavefrontModel.vsh; sourceTree = "<group>"; };
 		234E2CBE188382CC00AF8F23 /* NSGLFramework.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NSGLFramework.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		234E2CC1188382CC00AF8F23 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		234E2CC9188382CC00AF8F23 /* NSGLFramework-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NSGLFramework-Info.plist"; sourceTree = "<group>"; };
@@ -180,8 +176,6 @@
 			children = (
 				23EB03241ACCDA6200084CEF /* DefaultModel.fsh */,
 				23EB03251ACCDA6200084CEF /* DefaultModel.vsh */,
-				23469D101976F6C100C965F1 /* WavefrontModel.fsh */,
-				23469D111976F6C100C965F1 /* WavefrontModel.vsh */,
 				233797F61885E23600399EBA /* OpenGLModel.fsh */,
 				233797F71885E23600399EBA /* OpenGLModel.vsh */,
 			);
@@ -380,7 +374,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				23469D121976F6C100C965F1 /* WavefrontModel.fsh in Resources */,
 				233797FB1885E23600399EBA /* OpenGLModel.vsh in Resources */,
 				233797FA1885E23600399EBA /* OpenGLModel.fsh in Resources */,
 				234E2CCC188382CC00AF8F23 /* InfoPlist.strings in Resources */,
@@ -388,7 +381,6 @@
 				23EB03271ACCDA6200084CEF /* DefaultModel.vsh in Resources */,
 				234E2CDA188382CC00AF8F23 /* Images.xcassets in Resources */,
 				234E2CD2188382CC00AF8F23 /* Credits.rtf in Resources */,
-				23469D131976F6C100C965F1 /* WavefrontModel.vsh in Resources */,
 				234E2CD8188382CC00AF8F23 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

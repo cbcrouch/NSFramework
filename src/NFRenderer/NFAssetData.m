@@ -33,13 +33,15 @@ typedef struct NFVertState_t {
 
 
 
-// rename NFAssetData to NFAssetContainer, NFGeometry, NFRenderComponent ??
+// rename NFAssetData to NFAssetContainer, NFGeometry ??
 
 //
 // TODO: move NFSubset into its own header/source file (also rename NFAssetSubset, NFGeometrySubset)
 //
 @interface NFSubset()
-
+{
+    BOOL m_setupAttribPointers;
+}
 //
 // TODO: will need to integrate the min/max dimension finding into the NFAssetData containing object
 //       and keep the subsets transforms relative
@@ -98,6 +100,8 @@ typedef struct NFVertState_t {
     [self setNumIndices:0];
 
     [self setMode:GL_TRIANGLES];
+
+    m_setupAttribPointers = YES;
 
     return self;
 }
@@ -235,6 +239,12 @@ typedef struct NFVertState_t {
 
     //self.unitScalarMatrix = GLKMatrix4ScaleWithVector4(GLKMatrix4Identity, unitScale);
 }
+
+
+//
+// TODO: fix and cleanup the generation and add some display code for the AABB (axis aligned bounding box)
+//
+
 
 - (void) loadVertexData:(NFVertex_t *)pVertexData ofSize:(size_t)size {
     NSAssert(pVertexData != NULL, @"loadVertexData failed, pVertexData == NULL");
@@ -396,26 +406,29 @@ typedef struct NFVertState_t {
 
     GLKMatrix4 renderMat = GLKMatrix4Multiply(assetModelMat, self.subsetModelMat);
 
-    // update shader uniforms with asset specific data
 
+    //
+    // TODO: need to decople transfrom hierarchy from drawing
+    //
     //glProgramUniformMatrix4fv(hProgram, modelLoc, 1, GL_FALSE, self.subsetModelMat.m);
     glProgramUniformMatrix4fv(hProgram, modelLoc, 1, GL_FALSE, renderMat.m);
 
 
-    glBindBuffer(GL_ARRAY_BUFFER, self.hVBO);
-
     //
-    // TODO: store the offset values in the NFVertState_t structure so that they are only calculated once
+    // TODO: setting up the attribute pointers should only need to be done once per VBO
     //
+    if (m_setupAttribPointers) {
+        glBindBuffer(GL_ARRAY_BUFFER, self.hVBO);
+        glVertexAttribPointer(state.vertAttrib, NFLOATS_POS, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+                              (const GLvoid *)0x00 + offsetof(NFVertex_t, pos));
+        glVertexAttribPointer(state.normAttrib, NFLOATS_NORM, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+                              (const GLvoid *)0x00 + offsetof(NFVertex_t, norm));
+        glVertexAttribPointer(state.texAttrib, NFLOATS_TEX, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+                              (const GLvoid *)0x00 + offsetof(NFVertex_t, texCoord));
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        m_setupAttribPointers = NO;
+    }
 
-    glVertexAttribPointer(state.vertAttrib, NFLOATS_POS, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
-                          (const GLvoid *)0x00 + offsetof(NFVertex_t, pos));
-    glVertexAttribPointer(state.normAttrib, NFLOATS_NORM, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
-                          (const GLvoid *)0x00 + offsetof(NFVertex_t, norm));
-    glVertexAttribPointer(state.texAttrib, NFLOATS_TEX, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
-                          (const GLvoid *)0x00 + offsetof(NFVertex_t, texCoord));
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.hEBO);
     glDrawElements(self.mode, (GLsizei)self.numIndices, GL_UNSIGNED_SHORT, NULL);
@@ -508,6 +521,7 @@ typedef struct NFVertState_t {
         [subset drawWithVertexState:*pState withProgram:hProgram withModelUniform:modelLoc withAssetModelMat:self.modelMatrix];
     }
     glBindVertexArray(0);
+
     glBindTexture(GL_TEXTURE_2D, 0);
     CHECK_GL_ERROR();
 }

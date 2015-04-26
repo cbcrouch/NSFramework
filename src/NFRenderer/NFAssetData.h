@@ -23,10 +23,25 @@
 typedef struct NFVertex_t {
     // NOTE: w component of norm should be 0.0, and 1.0 for position (according to GLSL documentation
     //       for vectors w = 0 and for points w = 1)
+
+    //
+    // TODO: use a vec3 for both position and normal
+    //
     GLfloat pos[4];
     GLfloat norm[4];
     GLfloat texCoord[3];
 } NFVertex_t;
+
+
+//
+// TODO: use the debug vertex to draw the grid lines, axis, and AABBs
+//
+typedef struct NFDebugVertex_t {
+    GLfloat pos[4];
+    GLfloat norm[4];
+    GLfloat color[4];
+} NFDebugVertex_t;
+
 
 typedef struct NFFace_t {
     GLushort indices[3];

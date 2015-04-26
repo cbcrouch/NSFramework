@@ -176,7 +176,10 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
             //       phi and theta divied by their respective ranges M_PI and 2*M_PI
             //
 
-            // could try octahedral mapping, start with cube or spherical environment mapping
+
+            //
+            // TODO: try octahedral mapping, start with cube or spherical environment mapping
+            //
 
 
             // spherical coordinates as mapped to perspective coordiantes (x to the right, y up, +z towards the camera)
@@ -198,8 +201,17 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
             texCoord.t = 0.5f - asin(vertex.y) / M_PI;
             texCoord.p = 0.0f;
 
+
+            //
+            // NOTE: this is the texture coordinate equation used in the UV sphere generation
+            //
             //texCoord.s = phi / M_PI;
             //texCoord.t = theta / (2*M_PI);
+
+            //
+            // TODO: take into account the relative position of the normal along the unit sphere and generate
+            //       coincident vertices along that unit sphere, then perform texture mapping ??
+            //
 
 
             //

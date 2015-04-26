@@ -277,9 +277,49 @@ typedef struct phongModel_t {
 #ifdef USE_PHONG_PROGRAM
     glUseProgram(m_phongModel.hProgram);
 
+
+    m_phongModel.lightSubroutine = glGetSubroutineIndex(m_phongModel.hProgram, GL_FRAGMENT_SHADER, "light_subroutine");
+    NSAssert(m_phongModel.lightSubroutine != GL_INVALID_INDEX, @"failed to get subroutine index");
+
+    m_phongModel.phongSubroutine = glGetSubroutineIndex(m_phongModel.hProgram, GL_FRAGMENT_SHADER, "phong_subroutine");
+    NSAssert(m_phongModel.phongSubroutine != GL_INVALID_INDEX, @"failed to get subroutine index");
+
     // cube
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &(m_phongModel.phongSubroutine));
     [m_pAsset drawWithProgram:m_phongModel.hProgram withModelUniform:m_phongModel.modelLoc];
+
+    //
+    // TODO: move this block of code that displays the available subroutines into the NFRUtils
+    //
+/*
+    int len, numCompS;
+    int maxSub, maxSubU, countActiveSU;
+    char name[256];
+
+    glGetIntegerv(GL_MAX_SUBROUTINES, &maxSub);
+    glGetIntegerv(GL_MAX_SUBROUTINE_UNIFORM_LOCATIONS, &maxSubU);
+    printf("Max Subroutines: %d  Max Subroutine Uniforms: %d\n", maxSub, maxSubU);
+
+    glGetProgramStageiv(m_phongModel.hProgram, GL_FRAGMENT_SHADER, GL_ACTIVE_SUBROUTINE_UNIFORMS, &countActiveSU);
+
+    for (int i=0; i<countActiveSU; ++i) {
+        glGetActiveSubroutineUniformName(m_phongModel.hProgram, GL_FRAGMENT_SHADER, i, 256, &len, name);
+
+        printf("Suroutine Uniform: %d name: %s\n", i,name);
+        glGetActiveSubroutineUniformiv(m_phongModel.hProgram, GL_FRAGMENT_SHADER, i, GL_NUM_COMPATIBLE_SUBROUTINES, &numCompS);
+
+        int *s = (int *)malloc(sizeof(int) * numCompS);
+        glGetActiveSubroutineUniformiv(m_phongModel.hProgram, GL_FRAGMENT_SHADER, i, GL_COMPATIBLE_SUBROUTINES, s);
+        printf("Compatible Subroutines:\n");
+
+        for (int j=0; j < numCompS; ++j) {
+            glGetActiveSubroutineName(m_phongModel.hProgram, GL_FRAGMENT_SHADER, s[j], 256, &len, name);
+            printf("\t%d - %s\n", s[j],name);
+        }
+        printf("\n");
+        free(s);
+    }
+*/
 
     // light
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &(m_phongModel.lightSubroutine));
@@ -305,6 +345,10 @@ typedef struct phongModel_t {
     [m_solidSphere drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
 
 
+    //
+    // TODO: add a debug shader program, will allow for drawing vertices that have an
+    //       associated color
+    //
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_expTexFuncIdx);
     [m_axisData drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
     
@@ -418,13 +462,6 @@ typedef struct phongModel_t {
     // uniform buffer for view and projection matrix
     m_hUBO = [NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:m_hProgram];
     NSAssert(m_hUBO != 0, @"failed to get uniform buffer handle");
-
-
-
-    // load the WavefrontModel shader program to ensure that it compiles
-    GLuint tempProgram = [NFRUtils createProgram:@"WavefrontModel"];
-    NSAssert(tempProgram != 0, @"Failed to create GL shader program");
-    [NFRUtils destroyProgramWithHandle:tempProgram];
 }
 
 //
