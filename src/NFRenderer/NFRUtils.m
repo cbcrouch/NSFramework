@@ -415,4 +415,39 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
 */
 }
 
+//
+// TODO: cleanup and add the displaySubroutines function to NFRUtils
+//
+/*
++ (void) displaySubroutines:(GLuint)hProgram {
+    int len, numCompS;
+    int maxSub, maxSubU, countActiveSU;
+    char name[256];
+
+    glGetIntegerv(GL_MAX_SUBROUTINES, &maxSub);
+    glGetIntegerv(GL_MAX_SUBROUTINE_UNIFORM_LOCATIONS, &maxSubU);
+    printf("Max Subroutines: %d  Max Subroutine Uniforms: %d\n", maxSub, maxSubU);
+
+    glGetProgramStageiv(hProgram, GL_FRAGMENT_SHADER, GL_ACTIVE_SUBROUTINE_UNIFORMS, &countActiveSU);
+
+    for (int i=0; i<countActiveSU; ++i) {
+        glGetActiveSubroutineUniformName(hProgram, GL_FRAGMENT_SHADER, i, 256, &len, name);
+
+        printf("Suroutine Uniform: %d name: %s\n", i,name);
+        glGetActiveSubroutineUniformiv(hProgram, GL_FRAGMENT_SHADER, i, GL_NUM_COMPATIBLE_SUBROUTINES, &numCompS);
+
+        int *s = (int *)malloc(sizeof(int) * numCompS);
+        glGetActiveSubroutineUniformiv(hProgram, GL_FRAGMENT_SHADER, i, GL_COMPATIBLE_SUBROUTINES, s);
+        printf("Compatible Subroutines:\n");
+
+        for (int j=0; j < numCompS; ++j) {
+            glGetActiveSubroutineName(hProgram, GL_FRAGMENT_SHADER, s[j], 256, &len, name);
+            printf("\t%d - %s\n", s[j],name);
+        }
+        printf("\n");
+        free(s);
+    }
+}
+*/
+
 @end

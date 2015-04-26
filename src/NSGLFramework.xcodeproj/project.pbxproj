@@ -13,8 +13,8 @@
 		233797EE1885E1CA00399EBA /* NFWavefrontObj.m in Sources */ = {isa = PBXBuildFile; fileRef = 233797EC1885E1CA00399EBA /* NFWavefrontObj.m */; };
 		233797F31885E1DF00399EBA /* NFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 233797F01885E1DF00399EBA /* NFRenderer.m */; };
 		233797F41885E1DF00399EBA /* NFRUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 233797F21885E1DF00399EBA /* NFRUtils.m */; };
-		233797FA1885E23600399EBA /* OpenGLModel.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 233797F61885E23600399EBA /* OpenGLModel.fsh */; };
-		233797FB1885E23600399EBA /* OpenGLModel.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 233797F71885E23600399EBA /* OpenGLModel.vsh */; };
+		233797FA1885E23600399EBA /* Debug.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 233797F61885E23600399EBA /* Debug.fsh */; };
+		233797FB1885E23600399EBA /* Debug.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 233797F71885E23600399EBA /* Debug.vsh */; };
 		233797FF1885E25F00399EBA /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 233797FE1885E25F00399EBA /* OpenGL.framework */; };
 		233798011885E26700399EBA /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 233798001885E26700399EBA /* GLKit.framework */; };
 		233798031885E26F00399EBA /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 233798021885E26F00399EBA /* QuartzCore.framework */; };
@@ -64,8 +64,8 @@
 		233797F01885E1DF00399EBA /* NFRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFRenderer.m; path = NFRenderer/NFRenderer.m; sourceTree = "<group>"; };
 		233797F11885E1DF00399EBA /* NFRUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFRUtils.h; path = NFRenderer/NFRUtils.h; sourceTree = "<group>"; };
 		233797F21885E1DF00399EBA /* NFRUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFRUtils.m; path = NFRenderer/NFRUtils.m; sourceTree = "<group>"; };
-		233797F61885E23600399EBA /* OpenGLModel.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = OpenGLModel.fsh; path = ../shaders/OpenGLModel.fsh; sourceTree = "<group>"; };
-		233797F71885E23600399EBA /* OpenGLModel.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = OpenGLModel.vsh; path = ../shaders/OpenGLModel.vsh; sourceTree = "<group>"; };
+		233797F61885E23600399EBA /* Debug.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Debug.fsh; path = ../shaders/Debug.fsh; sourceTree = "<group>"; };
+		233797F71885E23600399EBA /* Debug.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Debug.vsh; path = ../shaders/Debug.vsh; sourceTree = "<group>"; };
 		233797FE1885E25F00399EBA /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		233798001885E26700399EBA /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		233798021885E26F00399EBA /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -176,8 +176,8 @@
 			children = (
 				23EB03241ACCDA6200084CEF /* DefaultModel.fsh */,
 				23EB03251ACCDA6200084CEF /* DefaultModel.vsh */,
-				233797F61885E23600399EBA /* OpenGLModel.fsh */,
-				233797F71885E23600399EBA /* OpenGLModel.vsh */,
+				233797F61885E23600399EBA /* Debug.fsh */,
+				233797F71885E23600399EBA /* Debug.vsh */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";
@@ -374,8 +374,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				233797FB1885E23600399EBA /* OpenGLModel.vsh in Resources */,
-				233797FA1885E23600399EBA /* OpenGLModel.fsh in Resources */,
+				233797FB1885E23600399EBA /* Debug.vsh in Resources */,
+				233797FA1885E23600399EBA /* Debug.fsh in Resources */,
 				234E2CCC188382CC00AF8F23 /* InfoPlist.strings in Resources */,
 				23EB03261ACCDA6200084CEF /* DefaultModel.fsh in Resources */,
 				23EB03271ACCDA6200084CEF /* DefaultModel.vsh in Resources */,

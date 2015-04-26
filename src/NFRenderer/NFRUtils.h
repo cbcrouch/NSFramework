@@ -73,6 +73,9 @@ typedef NS_ENUM(NSUInteger, SHADER_TYPE) {
 //+(void) drawBoundingBox:(GLKMatrix4 *)mat;
 
 
+//+ (void) displaySubroutines:(GLuint)hProgram;
+
+
 // VAO utils
 + (void) destroyVaoWithHandle:(GLuint)hVAO;
 

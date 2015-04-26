@@ -101,8 +101,6 @@ typedef struct phongModel_t {
 #pragma mark - NSGLRenderer Implementation
 @implementation NFRenderer
 
-#define USE_PHONG_PROGRAM
-
 - (instancetype) init {
     self = [super init];
     if (self == nil) {
@@ -162,11 +160,7 @@ typedef struct phongModel_t {
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/buddha.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/dragon.obj";
 
-#ifdef USE_PHONG_PROGRAM
     GLuint hProgram = m_phongModel.hProgram;
-#else
-    GLuint hProgram = m_hProgram;
-#endif
 
     m_pAsset = [NFAssetLoader allocAssetDataOfType:kWavefrontObj withArgs:fileNamePath, nil];
     [m_pAsset createVertexStateWithProgram:hProgram];
@@ -273,10 +267,7 @@ typedef struct phongModel_t {
     //
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-#ifdef USE_PHONG_PROGRAM
     glUseProgram(m_phongModel.hProgram);
-
 
     m_phongModel.lightSubroutine = glGetSubroutineIndex(m_phongModel.hProgram, GL_FRAGMENT_SHADER, "light_subroutine");
     NSAssert(m_phongModel.lightSubroutine != GL_INVALID_INDEX, @"failed to get subroutine index");
@@ -288,73 +279,11 @@ typedef struct phongModel_t {
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &(m_phongModel.phongSubroutine));
     [m_pAsset drawWithProgram:m_phongModel.hProgram withModelUniform:m_phongModel.modelLoc];
 
-    //
-    // TODO: move this block of code that displays the available subroutines into the NFRUtils
-    //
-/*
-    int len, numCompS;
-    int maxSub, maxSubU, countActiveSU;
-    char name[256];
-
-    glGetIntegerv(GL_MAX_SUBROUTINES, &maxSub);
-    glGetIntegerv(GL_MAX_SUBROUTINE_UNIFORM_LOCATIONS, &maxSubU);
-    printf("Max Subroutines: %d  Max Subroutine Uniforms: %d\n", maxSub, maxSubU);
-
-    glGetProgramStageiv(m_phongModel.hProgram, GL_FRAGMENT_SHADER, GL_ACTIVE_SUBROUTINE_UNIFORMS, &countActiveSU);
-
-    for (int i=0; i<countActiveSU; ++i) {
-        glGetActiveSubroutineUniformName(m_phongModel.hProgram, GL_FRAGMENT_SHADER, i, 256, &len, name);
-
-        printf("Suroutine Uniform: %d name: %s\n", i,name);
-        glGetActiveSubroutineUniformiv(m_phongModel.hProgram, GL_FRAGMENT_SHADER, i, GL_NUM_COMPATIBLE_SUBROUTINES, &numCompS);
-
-        int *s = (int *)malloc(sizeof(int) * numCompS);
-        glGetActiveSubroutineUniformiv(m_phongModel.hProgram, GL_FRAGMENT_SHADER, i, GL_COMPATIBLE_SUBROUTINES, s);
-        printf("Compatible Subroutines:\n");
-
-        for (int j=0; j < numCompS; ++j) {
-            glGetActiveSubroutineName(m_phongModel.hProgram, GL_FRAGMENT_SHADER, s[j], 256, &len, name);
-            printf("\t%d - %s\n", s[j],name);
-        }
-        printf("\n");
-        free(s);
-    }
-*/
-
     // light
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &(m_phongModel.lightSubroutine));
     [m_solidSphere drawWithProgram:m_phongModel.hProgram withModelUniform:m_phongModel.modelLoc];
 
     glUseProgram(0);
-#else
-    glUseProgram(m_hProgram);
-
-    //
-    // TODO: need to decouple the drawing methods from the NFAssetData class
-    //
-
-    glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_normTexFuncIdx);
-
-
-    [m_pAsset drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
-
-    //[m_gridData drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
-
-    //[m_planeData drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
-
-    [m_solidSphere drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
-
-
-    //
-    // TODO: add a debug shader program, will allow for drawing vertices that have an
-    //       associated color
-    //
-    glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_expTexFuncIdx);
-    [m_axisData drawWithProgram:m_hProgram withModelUniform:m_modelLoc];
-    
-    glUseProgram(0);
-#endif
-
     CHECK_GL_ERROR();
 }
 
@@ -369,9 +298,7 @@ typedef struct phongModel_t {
 }
 
 - (void) loadShaders {
-    //
     // load default model
-    //
     m_phongModel.hProgram = [NFRUtils createProgram:@"DefaultModel"];
     NSAssert(m_phongModel.hProgram != 0, @"Failed to create GL shader program");
 
@@ -382,10 +309,7 @@ typedef struct phongModel_t {
     m_phongModel.hUBO = [NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:m_phongModel.hProgram];
     NSAssert(m_phongModel.hUBO != 0, @"failed to get uniform buffer handle");
 
-
-    //
     // material struct uniform locations
-    //
     m_phongModel.matLocs.matAmbientLoc = glGetUniformLocation(m_phongModel.hProgram, "material.ambient");
     NSAssert(m_phongModel.matLocs.matAmbientLoc != -1, @"failed to get uniform location");
 
@@ -406,9 +330,7 @@ typedef struct phongModel_t {
     glUniform1f(m_phongModel.matLocs.matShineLoc, 128.0f * 0.1f);
     glUseProgram(0);
 
-    //
     // light struct uniform locations
-    //
     m_phongModel.lightLocs.lightAmbientLoc = glGetUniformLocation(m_phongModel.hProgram, "light.ambient");
     NSAssert(m_phongModel.lightLocs.lightAmbientLoc != -1, @"failed to get uniform location");
 
@@ -429,15 +351,11 @@ typedef struct phongModel_t {
     glUniform3f(m_phongModel.lightLocs.lightPositionLoc, 2.0f, 1.0f, 0.0f);
     glUseProgram(0);
 
-    //
     // view position uniform location
-    //
     m_phongModel.viewPositionLoc = glGetUniformLocation(m_phongModel.hProgram, "viewPos");
     NSAssert(m_phongModel.viewPositionLoc != -1, @"failed to get uniform location");
 
-    //
     // subroutine indices
-    //
     m_phongModel.lightSubroutine = glGetSubroutineIndex(m_phongModel.hProgram, GL_FRAGMENT_SHADER, "light_subroutine");
     NSAssert(m_phongModel.lightSubroutine != GL_INVALID_INDEX, @"failed to get subroutine index");
 
@@ -447,13 +365,15 @@ typedef struct phongModel_t {
     CHECK_GL_ERROR();
 
 
-
-
-    m_hProgram = [NFRUtils createProgram:@"OpenGLModel"];
+    //
+    // TODO: get the grid and axis lines drawing with the debug shader
+    //
+/*
+    m_hProgram = [NFRUtils createProgram:@"Debug"];
     NSAssert(m_hProgram != 0, @"Failed to create GL shader program");
 
-    m_normTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "NormalizedTexexlFetch");
-    m_expTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "ExplicitTexelFetch");
+    //m_normTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "NormalizedTexexlFetch");
+    //m_expTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "ExplicitTexelFetch");
 
     // setup uniform for model matrix
     m_modelLoc = glGetUniformLocation(m_hProgram, (const GLchar *)"model");
@@ -462,6 +382,7 @@ typedef struct phongModel_t {
     // uniform buffer for view and projection matrix
     m_hUBO = [NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:m_hProgram];
     NSAssert(m_hUBO != 0, @"failed to get uniform buffer handle");
+*/
 }
 
 //
@@ -478,7 +399,8 @@ typedef struct phongModel_t {
     GLsizeiptr matrixSize = (GLsizeiptr)(16 * sizeof(float));
     GLintptr offset = (GLintptr)matrixSize;
 
-    glBindBuffer(GL_UNIFORM_BUFFER, m_hUBO);
+    //glBindBuffer(GL_UNIFORM_BUFFER, m_hUBO);
+    glBindBuffer(GL_UNIFORM_BUFFER, m_phongModel.hUBO);
 
     // will allocate buffer's internal storage
     glBufferData(GL_UNIFORM_BUFFER, 2 * matrixSize, NULL, GL_STATIC_READ);
