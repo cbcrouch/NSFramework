@@ -325,12 +325,16 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
     glGetActiveUniformBlockiv(handle, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
     glGetActiveUniformBlockiv(handle, blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &numBlocks);
 
+
+
     //
     // TODO: use a static var to start the bindPoint and then increment (if binding points are used for other types in the context will need to handle differently)
     //       ideally will need to better manage as shaders are create/deleted possibly freeing up binding points in the context
     //
-    GLuint bindingPoint = 1;
+    static GLuint bindingPoint = 1;
     NSAssert(bindingPoint < GL_MAX_UNIFORM_BUFFER_BINDINGS, @"Error: binding point >= to GL_MAX_UNIFORM_BUFFER_BINDINGS");
+
+
 
     GLuint hUBO = 0;
 
@@ -383,6 +387,9 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
     free(matStride);
 */
 
+
+    ++bindingPoint;
+    
     CHECK_GL_ERROR();
     return hUBO;
 }

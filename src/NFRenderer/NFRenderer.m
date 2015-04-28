@@ -83,12 +83,6 @@ typedef struct phongModel_t {
     //
 
     phongModel_t m_phongModel;
-
-    GLint m_modelLoc;
-    GLuint m_normTexFuncIdx;
-    GLuint m_expTexFuncIdx;
-    GLuint m_hUBO;
-    GLuint m_hProgram;
 }
 
 @property (nonatomic, retain) NSArray* viewports;
@@ -220,10 +214,8 @@ typedef struct phongModel_t {
     [m_planeData release];
     [m_solidSphere release];
 
-    [NFRUtils destroyProgramWithHandle:m_phongModel.hProgram];
-
     // NOTE: helper method will take care of cleaning up all shaders attached to program
-    [NFRUtils destroyProgramWithHandle:m_hProgram];
+    [NFRUtils destroyProgramWithHandle:m_phongModel.hProgram];
 
     [super dealloc];
 }
@@ -365,24 +357,26 @@ typedef struct phongModel_t {
     CHECK_GL_ERROR();
 
 
+
     //
     // TODO: get the grid and axis lines drawing with the debug shader
     //
-/*
-    m_hProgram = [NFRUtils createProgram:@"Debug"];
-    NSAssert(m_hProgram != 0, @"Failed to create GL shader program");
 
-    //m_normTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "NormalizedTexexlFetch");
-    //m_expTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "ExplicitTexelFetch");
+    GLuint hProgram = [NFRUtils createProgram:@"Debug"];
+    NSAssert(hProgram != 0, @"Failed to create GL shader program");
+
+    //normTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "NormalizedTexexlFetch");
+    //expTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "ExplicitTexelFetch");
 
     // setup uniform for model matrix
-    m_modelLoc = glGetUniformLocation(m_hProgram, (const GLchar *)"model");
-    NSAssert(m_modelLoc != -1, @"Failed to get MVP uniform location");
+    GLint modelLoc = glGetUniformLocation(hProgram, (const GLchar *)"model");
+    NSAssert(modelLoc != -1, @"Failed to get MVP uniform location");
 
     // uniform buffer for view and projection matrix
-    m_hUBO = [NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:m_hProgram];
-    NSAssert(m_hUBO != 0, @"failed to get uniform buffer handle");
-*/
+    GLuint hUBO = [NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:hProgram];
+    NSAssert(hUBO != 0, @"failed to get uniform buffer handle");
+
+    [NFRUtils destroyProgramWithHandle:hProgram];
 }
 
 //

@@ -18,7 +18,8 @@ uniform sampler2D texSampler;
 //
 in vec3 f_position;
 in vec3 f_normal;
-in vec3 f_color;
+
+in vec4 f_color;
 
 out vec4 fragColor;
 
@@ -44,5 +45,5 @@ vec4 ExplicitTexelFetch(sampler2D sampler, vec3 coords) {
 */
 
 void main (void) {
-    fragColor = vec4(1.0f);
+    fragColor = f_color;
 }
