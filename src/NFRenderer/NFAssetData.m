@@ -419,6 +419,15 @@ typedef struct NFVertState_t {
     //
     if (m_setupAttribPointers) {
         glBindBuffer(GL_ARRAY_BUFFER, self.hVBO);
+
+        //
+        // TODO: need to encapsulate these calls in a vertex buffer format and layout abstraction
+        //
+
+        //#define NFLOATS_POS 4
+        //#define NFLOATS_NORM 4
+        //#define NFLOATS_TEX 3
+
         glVertexAttribPointer(state.vertAttrib, NFLOATS_POS, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
                               (const GLvoid *)0x00 + offsetof(NFVertex_t, pos));
         glVertexAttribPointer(state.normAttrib, NFLOATS_NORM, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
@@ -548,6 +557,8 @@ typedef struct NFVertState_t {
 
     NFVertState_t *pState = self.vertexState;
 
+
+
     //
     // TODO: should move the shader attribute location handling into the render pipeline object
     //       and implement getters that would allow the asset draw calls to be handled external
@@ -561,6 +572,8 @@ typedef struct NFVertState_t {
 
     pState->texAttrib = glGetAttribLocation(hProgram, "v_texcoord");
     NSAssert(pState->texAttrib != -1, @"Failed to bind attribute");
+
+
 
 
     // get texture unifrom location

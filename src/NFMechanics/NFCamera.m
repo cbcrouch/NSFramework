@@ -129,11 +129,13 @@
         //_pitch = -M_PI_2 + 0.01f;  // look straight down
         //_pitch = 0.0f;             // look at horizon
 
+
         //
-        // TODO: verify that these offsets/modifiers are what should be used
+        // TODO: should be able to the yaw and pitch using vector operations instead of trig
         //
         _yaw = -M_PI + atan2f(hyp.x, hyp.z);
         _pitch = -atan2(hyp.y, hyp.y) / 2.0f;
+
 
         _cached_eye = _eye;
         _cached_yaw = _yaw;

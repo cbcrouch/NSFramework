@@ -41,6 +41,77 @@ typedef NS_ENUM(NSUInteger, SHADER_TYPE) {
 };
 
 
+//
+// TODO: add a vertex buffer object that encapsulates VBO and possible VAO state
+//
+
+
+// vertices
+// colors
+// normals
+// mapCoords
+
+
+typedef NS_ENUM(NSUInteger, DATA_FORMAT) {
+    kInteger,
+    kUnsignedInt,
+    kFloat,
+    kDouble,
+
+    kVec2i,
+    kVec3i,
+    kVec4i,
+
+    kVec2ui,
+    kVec3ui,
+    kVec4ui,
+
+    kVec2f,
+    kVec3f,
+    kVec4f,
+
+    kVec2d,
+    kVec3d,
+    kVec4d,
+
+
+    //
+    // TODO: add support for arrays
+    //
+
+    // n, m => 2-4
+    // matnxm
+    // matn
+};
+
+
+typedef struct NFBufferDesc_t {
+    DATA_FORMAT format;
+    int stride;
+    int offset;
+} NFBufferDesc_t;
+
+
+
+
+//#define NFLOATS_POS 4
+//#define NFLOATS_NORM 4
+//#define NFLOATS_TEX 3
+
+//
+// NOTE: this is VBO state which is saved in the VAO
+//
+/*
+glVertexAttribPointer(state.vertAttrib, NFLOATS_POS, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+                      (const GLvoid *)0x00 + offsetof(NFVertex_t, pos));
+glVertexAttribPointer(state.normAttrib, NFLOATS_NORM, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+                      (const GLvoid *)0x00 + offsetof(NFVertex_t, norm));
+glVertexAttribPointer(state.texAttrib, NFLOATS_TEX, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+                      (const GLvoid *)0x00 + offsetof(NFVertex_t, texCoord));
+*/
+
+
+
 // NFRUBO_t
 // - blockIndex
 // - blockSize

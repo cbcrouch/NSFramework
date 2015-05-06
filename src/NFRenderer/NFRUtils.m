@@ -329,7 +329,7 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
 
     //
     // TODO: use a static var to start the bindPoint and then increment (if binding points are used for other types in the context will need to handle differently)
-    //       ideally will need to better manage as shaders are create/deleted possibly freeing up binding points in the context
+    //       ideally will need to better manage as shaders are created/deleted possibly freeing up binding points in the context
     //
     static GLuint bindingPoint = 1;
     NSAssert(bindingPoint < GL_MAX_UNIFORM_BUFFER_BINDINGS, @"Error: binding point >= to GL_MAX_UNIFORM_BUFFER_BINDINGS");

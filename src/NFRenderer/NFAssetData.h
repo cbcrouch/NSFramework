@@ -37,8 +37,8 @@ typedef struct NFVertex_t {
 // TODO: use the debug vertex to draw the grid lines, axis, and AABBs
 //
 typedef struct NFDebugVertex_t {
-    GLfloat pos[4];
-    GLfloat norm[4];
+    GLfloat pos[3];
+    GLfloat norm[3];
     GLfloat color[4];
 } NFDebugVertex_t;
 
@@ -88,6 +88,11 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
     kDrawTriangleFan,
     kDrawTriangles
 };
+
+//
+// TODO: best way to draw wireframe polygons is to use glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+//       then use glPolygoMode(GL_FRONT_AND_BACK, GL_FILL) to set back to normal
+//
 
 
 

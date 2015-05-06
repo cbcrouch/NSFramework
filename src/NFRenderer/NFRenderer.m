@@ -52,6 +52,24 @@ typedef struct phongModel_t {
     GLuint hProgram;
 } phongModel_t;
 
+typedef struct debugProgram_t {
+
+    //
+    // TODO: store vertex format description in the shader program object so that can verify
+    //       a vertex buffer will work with a given shader
+    //
+
+    // vertex shader inputs
+    GLint modelLoc;
+    GLuint hUBO;
+
+    // fragment shader inputs
+
+    // program handle
+    GLuint hProgram;
+} debugProgram_t;
+
+
 
 @interface NFViewport : NSObject
 @property (nonatomic, assign) NFViewportId uniqueId;
@@ -83,6 +101,7 @@ typedef struct phongModel_t {
     //
 
     phongModel_t m_phongModel;
+    debugProgram_t m_debugProgram;
 }
 
 @property (nonatomic, retain) NSArray* viewports;
@@ -216,6 +235,7 @@ typedef struct phongModel_t {
 
     // NOTE: helper method will take care of cleaning up all shaders attached to program
     [NFRUtils destroyProgramWithHandle:m_phongModel.hProgram];
+    [NFRUtils destroyProgramWithHandle:m_debugProgram.hProgram];
 
     [super dealloc];
 }
@@ -274,6 +294,20 @@ typedef struct phongModel_t {
     // light
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &(m_phongModel.lightSubroutine));
     [m_solidSphere drawWithProgram:m_phongModel.hProgram withModelUniform:m_phongModel.modelLoc];
+
+
+
+    //
+    // TODO: draw axis guidelines
+    //
+
+    //
+    // TODO: will need to create a vertex description object
+    //
+
+    glUseProgram(m_debugProgram.hProgram);
+
+
 
     glUseProgram(0);
     CHECK_GL_ERROR();
@@ -362,21 +396,19 @@ typedef struct phongModel_t {
     // TODO: get the grid and axis lines drawing with the debug shader
     //
 
-    GLuint hProgram = [NFRUtils createProgram:@"Debug"];
-    NSAssert(hProgram != 0, @"Failed to create GL shader program");
+    m_debugProgram.hProgram = [NFRUtils createProgram:@"Debug"];
+    NSAssert(m_debugProgram.hProgram != 0, @"Failed to create GL shader program");
 
     //normTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "NormalizedTexexlFetch");
     //expTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "ExplicitTexelFetch");
 
     // setup uniform for model matrix
-    GLint modelLoc = glGetUniformLocation(hProgram, (const GLchar *)"model");
-    NSAssert(modelLoc != -1, @"Failed to get MVP uniform location");
+    m_debugProgram.modelLoc = glGetUniformLocation(m_debugProgram.hProgram, (const GLchar *)"model");
+    NSAssert(m_debugProgram.modelLoc != -1, @"Failed to get MVP uniform location");
 
     // uniform buffer for view and projection matrix
-    GLuint hUBO = [NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:hProgram];
-    NSAssert(hUBO != 0, @"failed to get uniform buffer handle");
-
-    [NFRUtils destroyProgramWithHandle:hProgram];
+    m_debugProgram.hUBO = [NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:m_debugProgram.hProgram];
+    NSAssert(m_debugProgram.hUBO != 0, @"failed to get uniform buffer handle");
 }
 
 //
