@@ -42,14 +42,11 @@ typedef NS_ENUM(NSUInteger, SHADER_TYPE) {
 
 
 //
-// TODO: add a vertex buffer object that encapsulates VBO and possible VAO state
+// TOOD: need to move this out of the NFRUtils (which should strictly remain OpenGL utility functions) and
+//       into a renderer abstraction layer
 //
 
-
-// vertices
-// colors
-// normals
-// mapCoords
+// (GT) graphics toolkit
 
 
 typedef NS_ENUM(NSUInteger, DATA_FORMAT) {
@@ -92,23 +89,61 @@ typedef struct NFBufferDesc_t {
 } NFBufferDesc_t;
 
 
-
-
-//#define NFLOATS_POS 4
-//#define NFLOATS_NORM 4
-//#define NFLOATS_TEX 3
+@interface NFRBuffer : NSObject
 
 //
-// NOTE: this is VBO state which is saved in the VAO
+// TODO: buffer flags will roughly map to static/dynamic/streaming/etc. OpenGL buffer flags
 //
-/*
-glVertexAttribPointer(state.vertAttrib, NFLOATS_POS, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
-                      (const GLvoid *)0x00 + offsetof(NFVertex_t, pos));
-glVertexAttribPointer(state.normAttrib, NFLOATS_NORM, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
-                      (const GLvoid *)0x00 + offsetof(NFVertex_t, norm));
-glVertexAttribPointer(state.texAttrib, NFLOATS_TEX, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
-                      (const GLvoid *)0x00 + offsetof(NFVertex_t, texCoord));
-*/
+//- (void) setData:(void*)pData withSize:(size_t)dataSize withOptions:(BUFFER_FLAGS)options;
+
+
+//
+// TODO: should also consider supporting mapped buffers here
+//
+
+@end
+
+
+//
+// TODO: rather than use NFRVertices look into implementing something that works more along the lines
+//       of the MTLRenderCommandEncoder protocol
+//
+
+// if using the render command encoder concept break out the stages a little more to reduce the confusion
+// with calls like setVertexBuffer since it implies you're passing in vertices when actually it can be anything
+
+@interface NFRVertices : NSObject
+
+@property (nonatomic, retain) NFRBuffer *vertexDataBuffer;
+@property (nonatomic, retain) NFRBuffer *indexDataBuffer;
+
+- (void) setPoints:(NFBufferDesc_t)buffDesc;
+- (void) setColors:(NFBufferDesc_t)buffDesc;
+- (void) setNormals:(NFBufferDesc_t)buffDesc;
+- (void) setMapCoords:(NFBufferDesc_t)buffDesc withMapIndex:(NSInteger)mapIndex;
+
+//- (void) setIndices:(NFRBuffer*)indexBuffer ofType:(INDEX_TYPE)type withStride:(NSInteger)stride withOffset:(NSInteger)offset;
+
+@end
+
+
+@interface NFRMesh : NSObject
+
+//@property (nonatomic, retain) NFSurfaceModel *surfaceModel;
+@property (nonatomic, retain) NFRVertices *vertices;
+
+//
+// TODO: will eventually need ability to link to a transform hierarchy, perform vertex skinning/displacement, etc.
+//
+//@property (nonatomic, assign) GLKMatrix4 transform;
+
+//- (void) setGeometryMode:(DRAWING_MODE)drawMode;
+
+@end
+
+
+
+
 
 
 
