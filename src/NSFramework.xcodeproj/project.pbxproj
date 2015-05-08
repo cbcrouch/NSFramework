@@ -73,20 +73,20 @@
 		233798021885E26F00399EBA /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		233FAEB21A9F7FA000AD025B /* NFAssetUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFAssetUtils.h; path = NFAssetPipeline/NFAssetUtils.h; sourceTree = "<group>"; };
 		233FAEB31A9F7FA000AD025B /* NFAssetUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFAssetUtils.m; path = NFAssetPipeline/NFAssetUtils.m; sourceTree = "<group>"; };
-		234E2CBE188382CC00AF8F23 /* NSGLFramework.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NSGLFramework.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		234E2CBE188382CC00AF8F23 /* NSFramework.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NSFramework.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		234E2CC1188382CC00AF8F23 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
-		234E2CC9188382CC00AF8F23 /* NSGLFramework-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NSGLFramework-Info.plist"; sourceTree = "<group>"; };
+		234E2CC9188382CC00AF8F23 /* NSFramework-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NSFramework-Info.plist"; sourceTree = "<group>"; };
 		234E2CCB188382CC00AF8F23 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		234E2CCD188382CC00AF8F23 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		234E2CCF188382CC00AF8F23 /* NSGLFramework-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSGLFramework-Prefix.pch"; sourceTree = "<group>"; };
+		234E2CCF188382CC00AF8F23 /* NSFramework-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSFramework-Prefix.pch"; sourceTree = "<group>"; };
 		234E2CD1188382CC00AF8F23 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
 		234E2CD3188382CC00AF8F23 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		234E2CD4188382CC00AF8F23 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		234E2CD7188382CC00AF8F23 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		234E2CD9188382CC00AF8F23 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		234E2CDF188382CC00AF8F23 /* NSGLFrameworkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NSGLFrameworkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		234E2CDF188382CC00AF8F23 /* NSFrameworkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NSFrameworkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		234E2CE0188382CC00AF8F23 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		234E2CE7188382CC00AF8F23 /* NSGLFrameworkTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NSGLFrameworkTests-Info.plist"; sourceTree = "<group>"; };
+		234E2CE7188382CC00AF8F23 /* NSFrameworkTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NSFrameworkTests-Info.plist"; sourceTree = "<group>"; };
 		234E2CE9188382CC00AF8F23 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		234E2CEB188382CC00AF8F23 /* NSGLFrameworkTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSGLFrameworkTests.m; sourceTree = "<group>"; };
 		2372D23F1AFD0CD2006EB39C /* NFGraphicsToolkit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFGraphicsToolkit.h; path = NFGraphicsToolkit/NFGraphicsToolkit.h; sourceTree = "<group>"; };
@@ -196,7 +196,7 @@
 				2381561D1A16A1030018ECF3 /* NFMechanics */,
 				233797E81885E06C00399EBA /* NFRenderer */,
 				2381561E1A16A10E0018ECF3 /* NFSimulation */,
-				234E2CC7188382CC00AF8F23 /* NSGLFramework */,
+				234E2CC7188382CC00AF8F23 /* NSFramework */,
 				23767231189067F700AE8A5C /* NFUtils */,
 				233797F51885E21600399EBA /* Shaders */,
 				236F33BB1887024700DA708F /* XCTests */,
@@ -208,8 +208,8 @@
 		234E2CBF188382CC00AF8F23 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				234E2CBE188382CC00AF8F23 /* NSGLFramework.app */,
-				234E2CDF188382CC00AF8F23 /* NSGLFrameworkTests.xctest */,
+				234E2CBE188382CC00AF8F23 /* NSFramework.app */,
+				234E2CDF188382CC00AF8F23 /* NSFrameworkTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -226,7 +226,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		234E2CC7188382CC00AF8F23 /* NSGLFramework */ = {
+		234E2CC7188382CC00AF8F23 /* NSFramework */ = {
 			isa = PBXGroup;
 			children = (
 				2306F4091886116E008031BD /* NFView.h */,
@@ -235,6 +235,7 @@
 				234E2CD4188382CC00AF8F23 /* AppDelegate.m */,
 				234E2CC8188382CC00AF8F23 /* Supporting Files */,
 			);
+			name = NSFramework;
 			path = NSGLFramework;
 			sourceTree = "<group>";
 		};
@@ -243,10 +244,10 @@
 			children = (
 				234E2CD9188382CC00AF8F23 /* Images.xcassets */,
 				234E2CD6188382CC00AF8F23 /* MainMenu.xib */,
-				234E2CC9188382CC00AF8F23 /* NSGLFramework-Info.plist */,
+				234E2CC9188382CC00AF8F23 /* NSFramework-Info.plist */,
 				234E2CCA188382CC00AF8F23 /* InfoPlist.strings */,
 				234E2CCD188382CC00AF8F23 /* main.m */,
-				234E2CCF188382CC00AF8F23 /* NSGLFramework-Prefix.pch */,
+				234E2CCF188382CC00AF8F23 /* NSFramework-Prefix.pch */,
 				234E2CD0188382CC00AF8F23 /* Credits.rtf */,
 			);
 			name = "Supporting Files";
@@ -264,7 +265,7 @@
 		234E2CE6188382CC00AF8F23 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				234E2CE7188382CC00AF8F23 /* NSGLFrameworkTests-Info.plist */,
+				234E2CE7188382CC00AF8F23 /* NSFrameworkTests-Info.plist */,
 				234E2CE8188382CC00AF8F23 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
@@ -319,9 +320,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		234E2CBD188382CC00AF8F23 /* NSGLFramework */ = {
+		234E2CBD188382CC00AF8F23 /* NSFramework */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 234E2CEF188382CC00AF8F23 /* Build configuration list for PBXNativeTarget "NSGLFramework" */;
+			buildConfigurationList = 234E2CEF188382CC00AF8F23 /* Build configuration list for PBXNativeTarget "NSFramework" */;
 			buildPhases = (
 				234E2CBA188382CC00AF8F23 /* Sources */,
 				234E2CBB188382CC00AF8F23 /* Frameworks */,
@@ -331,14 +332,14 @@
 			);
 			dependencies = (
 			);
-			name = NSGLFramework;
+			name = NSFramework;
 			productName = NSGLFramework;
-			productReference = 234E2CBE188382CC00AF8F23 /* NSGLFramework.app */;
+			productReference = 234E2CBE188382CC00AF8F23 /* NSFramework.app */;
 			productType = "com.apple.product-type.application";
 		};
-		234E2CDE188382CC00AF8F23 /* NSGLFrameworkTests */ = {
+		234E2CDE188382CC00AF8F23 /* NSFrameworkTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 234E2CF2188382CC00AF8F23 /* Build configuration list for PBXNativeTarget "NSGLFrameworkTests" */;
+			buildConfigurationList = 234E2CF2188382CC00AF8F23 /* Build configuration list for PBXNativeTarget "NSFrameworkTests" */;
 			buildPhases = (
 				234E2CDB188382CC00AF8F23 /* Sources */,
 				234E2CDC188382CC00AF8F23 /* Frameworks */,
@@ -349,9 +350,9 @@
 			dependencies = (
 				234E2CE4188382CC00AF8F23 /* PBXTargetDependency */,
 			);
-			name = NSGLFrameworkTests;
+			name = NSFrameworkTests;
 			productName = NSGLFrameworkTests;
-			productReference = 234E2CDF188382CC00AF8F23 /* NSGLFrameworkTests.xctest */;
+			productReference = 234E2CDF188382CC00AF8F23 /* NSFrameworkTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -368,7 +369,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 234E2CB9188382CC00AF8F23 /* Build configuration list for PBXProject "NSGLFramework" */;
+			buildConfigurationList = 234E2CB9188382CC00AF8F23 /* Build configuration list for PBXProject "NSFramework" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -381,8 +382,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				234E2CBD188382CC00AF8F23 /* NSGLFramework */,
-				234E2CDE188382CC00AF8F23 /* NSGLFrameworkTests */,
+				234E2CBD188382CC00AF8F23 /* NSFramework */,
+				234E2CDE188382CC00AF8F23 /* NSFrameworkTests */,
 			);
 		};
 /* End PBXProject section */
@@ -452,7 +453,7 @@
 /* Begin PBXTargetDependency section */
 		234E2CE4188382CC00AF8F23 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 234E2CBD188382CC00AF8F23 /* NSGLFramework */;
+			target = 234E2CBD188382CC00AF8F23 /* NSFramework */;
 			targetProxy = 234E2CE3188382CC00AF8F23 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -587,10 +588,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "NSGLFramework/NSGLFramework-Prefix.pch";
-				INFOPLIST_FILE = "NSGLFramework/NSGLFramework-Info.plist";
+				GCC_PREFIX_HEADER = "NSGLFramework/NSFramework-Prefix.pch";
+				INFOPLIST_FILE = "NSGLFramework/NSFramework-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = NSFramework;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -603,10 +604,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "NSGLFramework/NSGLFramework-Prefix.pch";
-				INFOPLIST_FILE = "NSGLFramework/NSGLFramework-Info.plist";
+				GCC_PREFIX_HEADER = "NSGLFramework/NSFramework-Prefix.pch";
+				INFOPLIST_FILE = "NSGLFramework/NSFramework-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = NSFramework;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -626,8 +627,8 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "NSGLFrameworkTests/NSGLFrameworkTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				INFOPLIST_FILE = "NSGLFrameworkTests/NSFrameworkTests-Info.plist";
+				PRODUCT_NAME = NSFrameworkTests;
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -644,8 +645,8 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "NSGLFramework/NSGLFramework-Prefix.pch";
-				INFOPLIST_FILE = "NSGLFrameworkTests/NSGLFrameworkTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				INFOPLIST_FILE = "NSGLFrameworkTests/NSFrameworkTests-Info.plist";
+				PRODUCT_NAME = NSFrameworkTests;
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -654,7 +655,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		234E2CB9188382CC00AF8F23 /* Build configuration list for PBXProject "NSGLFramework" */ = {
+		234E2CB9188382CC00AF8F23 /* Build configuration list for PBXProject "NSFramework" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				234E2CED188382CC00AF8F23 /* Debug */,
@@ -663,7 +664,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		234E2CEF188382CC00AF8F23 /* Build configuration list for PBXNativeTarget "NSGLFramework" */ = {
+		234E2CEF188382CC00AF8F23 /* Build configuration list for PBXNativeTarget "NSFramework" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				234E2CF0188382CC00AF8F23 /* Debug */,
@@ -672,7 +673,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		234E2CF2188382CC00AF8F23 /* Build configuration list for PBXNativeTarget "NSGLFrameworkTests" */ = {
+		234E2CF2188382CC00AF8F23 /* Build configuration list for PBXNativeTarget "NSFrameworkTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				234E2CF3188382CC00AF8F23 /* Debug */,
