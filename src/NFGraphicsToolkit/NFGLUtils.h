@@ -1,5 +1,5 @@
 //
-//  NFRUtils.h
+//  NFGLUtils.h
 //  NSGLFramework
 //
 //  Copyright (c) 2015 Casey Crouch. All rights reserved.
@@ -7,18 +7,10 @@
 
 
 
-//
-// TODO: nothing outside of NFGraphicsToolkit should be accessing OpenGL or these OpenGL utilities
-//       (once that's true then remove both NFRUtils files)
-//
-
-// currently only NFRenderer uses NFRUtils
-
-
 
 // check, print, and clear all OpenGL errors
 #ifdef DEBUG
-#   define CHECK_GL_ERROR() [NFRUtils checkGLError:__FILE__ line:__LINE__ function:__FUNCTION__]
+#   define CHECK_GL_ERROR() [NGLUtils checkGLError:__FILE__ line:__LINE__ function:__FUNCTION__]
 #else
 #   define CHECK_GL_ERROR()
 #endif
@@ -26,9 +18,9 @@
 // an OpenGL assert to break on a failure
 #ifdef DEBUG
 #   define GL(line) do { \
-        line; \
-        assert(glGetError() == GL_NO_ERROR); \
-    } while(0);
+line; \
+assert(glGetError() == GL_NO_ERROR); \
+} while(0);
 #else
 #   define GL(line) line
 #endif
@@ -61,7 +53,7 @@ typedef NS_ENUM(NSUInteger, SHADER_TYPE) {
 // - hUBO
 
 
-@interface NFRUtils : NSObject
+@interface NGLUtils : NSObject
 
 // NOTE: using all class methods as the OpenGL state machine is considered global across the application
 //       (add some more words about how class methods, particuarly utility methods, work well with this notion

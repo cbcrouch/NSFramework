@@ -7,7 +7,6 @@
 
 #import "NFAssetData.h"
 #import "NFRenderer.h"
-#import "NFRUtils.h"
 
 //
 // TODO: find out who is including gl.h into the project (might be the display link...), one way around all this
@@ -398,7 +397,7 @@ typedef struct NFVertState_t {
     //       per subset (assuming that changing bound VAOs is cheaper than setting vertex attrib pointers)
     //
 
-    CHECK_GL_ERROR();
+    //CHECK_GL_ERROR();
 }
 
 - (void) drawWithVertexState:(NFVertState_t)state withProgram:(GLuint)hProgram withModelUniform:(GLuint)modelLoc
@@ -532,7 +531,7 @@ typedef struct NFVertState_t {
     glBindVertexArray(0);
 
     glBindTexture(GL_TEXTURE_2D, 0);
-    CHECK_GL_ERROR();
+    //CHECK_GL_ERROR();
 }
 
 - (void) applyUnitScalarMatrix {
@@ -594,7 +593,7 @@ typedef struct NFVertState_t {
 
     glBindVertexArray(0);
 
-    CHECK_GL_ERROR();
+    //CHECK_GL_ERROR();
 }
 
 - (void) loadResourcesGL {
@@ -639,7 +638,7 @@ typedef struct NFVertState_t {
 
     // unbind the VAO and check for errors
     glBindVertexArray(0);
-    CHECK_GL_ERROR();
+    //CHECK_GL_ERROR();
 }
 
 @end
