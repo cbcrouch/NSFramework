@@ -29,7 +29,7 @@
 		234E2CE1188382CC00AF8F23 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 234E2CE0188382CC00AF8F23 /* XCTest.framework */; };
 		234E2CE2188382CC00AF8F23 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 234E2CC1188382CC00AF8F23 /* Cocoa.framework */; };
 		234E2CEA188382CC00AF8F23 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 234E2CE8188382CC00AF8F23 /* InfoPlist.strings */; };
-		234E2CEC188382CC00AF8F23 /* NSGLFrameworkTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 234E2CEB188382CC00AF8F23 /* NSGLFrameworkTests.m */; };
+		234E2CEC188382CC00AF8F23 /* NSFrameworkTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 234E2CEB188382CC00AF8F23 /* NSFrameworkTests.m */; };
 		2372D2411AFD0CD2006EB39C /* NFGraphicsToolkit.m in Sources */ = {isa = PBXBuildFile; fileRef = 2372D2401AFD0CD2006EB39C /* NFGraphicsToolkit.m */; };
 		2372D2441AFD19DF006EB39C /* NFGLUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 2372D2431AFD19DF006EB39C /* NFGLUtils.m */; };
 		238156211A16A1460018ECF3 /* NFSimulation.m in Sources */ = {isa = PBXBuildFile; fileRef = 238156201A16A1460018ECF3 /* NFSimulation.m */; };
@@ -88,7 +88,7 @@
 		234E2CE0188382CC00AF8F23 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		234E2CE7188382CC00AF8F23 /* NSFrameworkTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NSFrameworkTests-Info.plist"; sourceTree = "<group>"; };
 		234E2CE9188382CC00AF8F23 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		234E2CEB188382CC00AF8F23 /* NSGLFrameworkTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSGLFrameworkTests.m; sourceTree = "<group>"; };
+		234E2CEB188382CC00AF8F23 /* NSFrameworkTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSFrameworkTests.m; sourceTree = "<group>"; };
 		2372D23F1AFD0CD2006EB39C /* NFGraphicsToolkit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFGraphicsToolkit.h; path = NFGraphicsToolkit/NFGraphicsToolkit.h; sourceTree = "<group>"; };
 		2372D2401AFD0CD2006EB39C /* NFGraphicsToolkit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFGraphicsToolkit.m; path = NFGraphicsToolkit/NFGraphicsToolkit.m; sourceTree = "<group>"; };
 		2372D2421AFD19DF006EB39C /* NFGLUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFGLUtils.h; path = NFGraphicsToolkit/NFGLUtils.h; sourceTree = "<group>"; };
@@ -253,12 +253,13 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		234E2CE5188382CC00AF8F23 /* NSGLFrameworkTests */ = {
+		234E2CE5188382CC00AF8F23 /* NSFrameworkTests */ = {
 			isa = PBXGroup;
 			children = (
-				234E2CEB188382CC00AF8F23 /* NSGLFrameworkTests.m */,
+				234E2CEB188382CC00AF8F23 /* NSFrameworkTests.m */,
 				234E2CE6188382CC00AF8F23 /* Supporting Files */,
 			);
+			name = NSFrameworkTests;
 			path = NSGLFrameworkTests;
 			sourceTree = "<group>";
 		};
@@ -274,7 +275,7 @@
 		236F33BB1887024700DA708F /* XCTests */ = {
 			isa = PBXGroup;
 			children = (
-				234E2CE5188382CC00AF8F23 /* NSGLFrameworkTests */,
+				234E2CE5188382CC00AF8F23 /* NSFrameworkTests */,
 			);
 			name = XCTests;
 			sourceTree = "<group>";
@@ -444,7 +445,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				234E2CEC188382CC00AF8F23 /* NSGLFrameworkTests.m in Sources */,
+				234E2CEC188382CC00AF8F23 /* NSFrameworkTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

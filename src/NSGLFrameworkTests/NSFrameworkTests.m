@@ -1,17 +1,17 @@
 //
-//  NSGLFrameworkTests.m
-//  NSGLFrameworkTests
+//  NSFrameworkTests.m
+//  NSFrameworkTests
 //
 //  Copyright (c) 2015 Casey Crouch. All rights reserved.
 //
 
 #import <XCTest/XCTest.h>
 
-@interface NSGLFrameworkTests : XCTestCase
+@interface NSFrameworkTests : XCTestCase
 
 @end
 
-@implementation NSGLFrameworkTests
+@implementation NSFrameworkTests
 
 - (void)setUp
 {
