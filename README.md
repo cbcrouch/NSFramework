@@ -1,4 +1,4 @@
-NSGLFramework
+NSFramework
 =============
 
 What is it?
@@ -26,12 +26,12 @@ Building
 
 ### Prerequisites
 
-XCode 6.2
+XCode 6.3
 (XCode Command Line Tools optional but recommended)
 
 ### Getting source
 
-	git clone git://github.com/cbcrouch/NSGLFramework.git
+	git clone git://github.com/cbcrouch/NSFramework.git
 
 ### Building
 
