@@ -5,6 +5,10 @@
 //  Copyright (c) 2015 Casey Crouch. All rights reserved.
 //
 
+//
+// TODO: migrate NFSurfaceModel to NFGraphicsToolkit
+//
+
 
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>

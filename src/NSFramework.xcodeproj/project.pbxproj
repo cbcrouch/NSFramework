@@ -235,8 +235,7 @@
 				234E2CD4188382CC00AF8F23 /* AppDelegate.m */,
 				234E2CC8188382CC00AF8F23 /* Supporting Files */,
 			);
-			name = NSFramework;
-			path = NSGLFramework;
+			path = NSFramework;
 			sourceTree = "<group>";
 		};
 		234E2CC8188382CC00AF8F23 /* Supporting Files */ = {
@@ -259,8 +258,7 @@
 				234E2CEB188382CC00AF8F23 /* NSFrameworkTests.m */,
 				234E2CE6188382CC00AF8F23 /* Supporting Files */,
 			);
-			name = NSFrameworkTests;
-			path = NSGLFrameworkTests;
+			path = NSFrameworkTests;
 			sourceTree = "<group>";
 		};
 		234E2CE6188382CC00AF8F23 /* Supporting Files */ = {
@@ -589,8 +587,8 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "NSGLFramework/NSFramework-Prefix.pch";
-				INFOPLIST_FILE = "NSGLFramework/NSFramework-Info.plist";
+				GCC_PREFIX_HEADER = "NSFramework/NSFramework-Prefix.pch";
+				INFOPLIST_FILE = "NSFramework/NSFramework-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_NAME = NSFramework;
 				WRAPPER_EXTENSION = app;
@@ -605,8 +603,8 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "NSGLFramework/NSFramework-Prefix.pch";
-				INFOPLIST_FILE = "NSGLFramework/NSFramework-Info.plist";
+				GCC_PREFIX_HEADER = "NSFramework/NSFramework-Prefix.pch";
+				INFOPLIST_FILE = "NSFramework/NSFramework-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_NAME = NSFramework;
 				WRAPPER_EXTENSION = app;

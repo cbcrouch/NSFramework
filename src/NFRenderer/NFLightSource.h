@@ -7,6 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+//
+// TODO: migrate NFLightSource to NFGraphicsToolkit
+//
+
 
 @interface NFLightSource : NSObject
 
