@@ -614,19 +614,19 @@
 		234E2CF3188382CC00AF8F23 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/NSGLFramework.app/Contents/MacOS/NSGLFramework";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/NSFramework.app/Contents/MacOS/NSFramework";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "NSGLFramework/NSGLFramework-Prefix.pch";
+				GCC_PREFIX_HEADER = "NSFramework/NSFramework-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "NSGLFrameworkTests/NSFrameworkTests-Info.plist";
+				INFOPLIST_FILE = "NSFrameworkTests/NSFrameworkTests-Info.plist";
 				PRODUCT_NAME = NSFrameworkTests;
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
@@ -636,15 +636,15 @@
 		234E2CF4188382CC00AF8F23 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/NSGLFramework.app/Contents/MacOS/NSGLFramework";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/NSFramework.app/Contents/MacOS/NSFramework";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "NSGLFramework/NSGLFramework-Prefix.pch";
-				INFOPLIST_FILE = "NSGLFrameworkTests/NSFrameworkTests-Info.plist";
+				GCC_PREFIX_HEADER = "NSFramework/NSFramework-Prefix.pch";
+				INFOPLIST_FILE = "NSFrameworkTests/NSFrameworkTests-Info.plist";
 				PRODUCT_NAME = NSFrameworkTests;
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
