@@ -8,13 +8,6 @@
 #import <Foundation/Foundation.h>
 
 
-
-
-//
-// TOOD: need to move this out of the NFRUtils (which should strictly remain OpenGL utility functions) and
-//       into a renderer abstraction layer
-//
-
 // (GT) graphics toolkit
 
 
@@ -112,6 +105,80 @@ typedef struct NFBufferDesc_t {
 
 
 
+
+@interface GTVertexAttributeDescriptor : NSObject
+typedef NS_ENUM(NSUInteger, GTVertexFormat) {
+    kGTVertexFormatInvalid = 0,
+    kGTVertexFormatInt     = 1,
+    kGTVertexFormatUInt    = 2,
+    kGTVertexFormatFloat   = 3,
+    kGTVertexFormatDouble  = 4,
+    kGTVertexFormatInt2    = 5,
+    kGTVertexFormatInt3    = 6,
+    kGTVertexFormatInt4    = 7,
+    kGTVertexFormatUInt2   = 8,
+    kGTVertexFormatUInt3   = 9,
+    kGTVertexFormatUInt4   = 10,
+    kGTVertexFormatFloat2  = 11,
+    kGTVertexFormatFloat3  = 12,
+    kGTVertexFormatFloat4  = 13,
+    kGTVertexFormatDouble2 = 14,
+    kGTVertexFormatDouble3 = 15,
+    kGTVertexFormatDouble4 = 16
+    //
+    // TODO: add support for matrices
+    //
+    // (n, m = 2 -> 4)
+    // matnxm
+    // matn
+};
+@property (nonatomic, assign) GTVertexFormat format;
+@property (nonatomic, assign) NSUInteger offset;
+@property (nonatomic, assign) NSUInteger bufferIndex;
+@end
+
+@interface GTVertexDescriptorArray : NSObject
+
+//
+// TODO: implement
+//
+
+@end
+
+
+@interface GTVertexBufferLayoutDescriptor : NSObject
+typedef NS_ENUM(NSUInteger, GTVertexStepFunction) {
+    kGTVertexStepFunctionConstant = 0,
+    kGTVertexStepFunctionPerVertex = 1,
+    kGTVertexStepFunctionPerInstance = 2
+};
+@property (nonatomic, assign) GTVertexStepFunction stepFunction;
+@property (nonatomic, assign) NSUInteger stepRate;
+@property (nonatomic, assign) NSUInteger stride;
+@end
+
+
+@interface GTVertexBufferLayoutDescriptorArray : NSObject
+
+//
+// TODO: implement
+//
+
+@end
+
+
+
+
+@interface GTVertexDescriptor : NSObject
+
++ (GTVertexDescriptor *) vertexDescriptor;
+
+- (void) reset;
+
+@property (readonly) GTVertexDescriptorArray *attributes;
+@property (readonly) GTVertexBufferLayoutDescriptorArray *layouts;
+
+@end
 
 
 

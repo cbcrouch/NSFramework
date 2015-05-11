@@ -547,16 +547,21 @@ typedef struct NFVertState_t {
 }
 
 
+
 //
-// TODO: rename (and possibly) refactor this method, it will have to be called everytime the program
-//       changes for drawing the asset
+// TODO: createVertexStateWithProgram and loadResourcesGL should be eliminated, there should be no OpenGL
+//       calls in NFAssetData they need to all be handled through NFGraphicsToolkit
 //
+
 - (void) createVertexStateWithProgram:(GLuint)hProgram {
+
+
+    //
+    // TODO: start with implementing the render pipeline object and move the NFVertState_t to it
+    //
+
     // get shader attirbutes
-
     NFVertState_t *pState = self.vertexState;
-
-
 
     //
     // TODO: should move the shader attribute location handling into the render pipeline object
@@ -571,7 +576,6 @@ typedef struct NFVertState_t {
 
     pState->texAttrib = glGetAttribLocation(hProgram, "v_texcoord");
     NSAssert(pState->texAttrib != -1, @"Failed to bind attribute");
-
 
 
 

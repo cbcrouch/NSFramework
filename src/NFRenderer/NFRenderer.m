@@ -176,8 +176,16 @@ typedef struct debugProgram_t {
     GLuint hProgram = m_phongModel.hProgram;
 
     m_pAsset = [NFAssetLoader allocAssetDataOfType:kWavefrontObj withArgs:fileNamePath, nil];
+
+
+
+    //
+    // TODO: eliminate the need to have these two methods and remove all OpenGL calls from NFAssetData
+    //
     [m_pAsset createVertexStateWithProgram:hProgram];
     [m_pAsset loadResourcesGL];
+
+
 
     //m_pAsset.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 1.0f, 0.0f);
 
