@@ -526,19 +526,35 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
 
 - (void) setupOpenGL {
-    //
-    // NOTE: requesting an NSOpenGLProfileVersion3_2Core will create an OpenGL 4.1 context
-    //
+
     NSOpenGLPixelFormatAttribute attribs[] = {
         NSOpenGLPFAAccelerated,
         NSOpenGLPFADoubleBuffer,
-        NSOpenGLPFADepthSize, (NSOpenGLPixelFormatAttribute)24, // should give an 8-bit stencil buffer
-        NSOpenGLPFAOpenGLProfile, (NSOpenGLPixelFormatAttribute)NSOpenGLProfileVersion3_2Core,
+
+        //
+        // TODO: is there a way to specify pixel format e.g. RGBA (32bit) Uint ??
+        //
+
+        NSOpenGLPFAColorSize, (NSOpenGLPixelFormatAttribute)24,
+        NSOpenGLPFAAlphaSize, (NSOpenGLPixelFormatAttribute)8,
+        NSOpenGLPFADepthSize, (NSOpenGLPixelFormatAttribute)32,
+        NSOpenGLPFAStencilSize, (NSOpenGLPixelFormatAttribute)8,
+
+        NSOpenGLPFAOpenGLProfile, (NSOpenGLPixelFormatAttribute)NSOpenGLProfileVersion4_1Core,
         (NSOpenGLPixelFormatAttribute)0
     };
 
     NSOpenGLPixelFormat *pf = [[[NSOpenGLPixelFormat alloc] initWithAttributes:attribs] autorelease];
     NSAssert(pf != nil, @"Error: could not create an OpenGL compatible pixel format");
+
+
+    //
+    // TODO: determine the actual frame buffer RGBA format that is created given the pixel format attributes
+    //
+    //struct _CGLPixelFormatObject *pfobj = pf.CGLPixelFormatObj;
+    // kCGLRGB888Bit
+    // kCGLARGB8888Bit
+
 
     NSOpenGLContext *context = [[[NSOpenGLContext alloc] initWithFormat:pf shareContext:nil] autorelease];
     NSAssert(context != nil, @"Failed to create an OpenGL context");

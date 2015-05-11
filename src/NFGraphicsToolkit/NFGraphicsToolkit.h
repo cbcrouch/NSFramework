@@ -11,98 +11,22 @@
 // (GT) graphics toolkit
 
 
-typedef NS_ENUM(NSUInteger, DATA_FORMAT) {
-    kInteger,
-    kUnsignedInt,
-    kFloat,
-    kDouble,
-
-    kVec2i,
-    kVec3i,
-    kVec4i,
-
-    kVec2ui,
-    kVec3ui,
-    kVec4ui,
-
-    kVec2f,
-    kVec3f,
-    kVec4f,
-
-    kVec2d,
-    kVec3d,
-    kVec4d,
+//
+// TODO: break out into several files
+//
 
 
-    //
-    // TODO: add support for arrays
-    //
+//
+// TODO: expand number of pixel formats used
+//
+typedef NS_ENUM(NSUInteger, GTPixelFormat) {
+    kGTPixelFormatInvalid = 0,
 
-    // n, m => 2-4
-    // matnxm
-    // matn
+    kGTPixelFormatRGBA8Uint,
+
+    kGTPixelFormatDepth32Float,
+    kGTPixelFormatStencil8
 };
-
-
-typedef struct NFBufferDesc_t {
-    DATA_FORMAT format;
-    int stride;
-    int offset;
-} NFBufferDesc_t;
-
-
-@interface NFRBuffer : NSObject
-
-//
-// TODO: buffer flags will roughly map to static/dynamic/streaming/etc. OpenGL buffer flags
-//
-//- (void) setData:(void*)pData withSize:(size_t)dataSize withOptions:(BUFFER_FLAGS)options;
-
-
-//
-// TODO: should also consider supporting mapped buffers here
-//
-
-@end
-
-
-//
-// TODO: rather than use NFRVertices look into implementing something that works more along the lines
-//       of the MTLRenderCommandEncoder protocol
-//
-
-// if using the render command encoder concept break out the stages a little more to reduce the confusion
-// with calls like setVertexBuffer since it implies you're passing in vertices when actually it can be anything
-
-@interface NFRVertices : NSObject
-
-@property (nonatomic, retain) NFRBuffer *vertexDataBuffer;
-@property (nonatomic, retain) NFRBuffer *indexDataBuffer;
-
-- (void) setPoints:(NFBufferDesc_t)buffDesc;
-- (void) setColors:(NFBufferDesc_t)buffDesc;
-- (void) setNormals:(NFBufferDesc_t)buffDesc;
-- (void) setMapCoords:(NFBufferDesc_t)buffDesc withMapIndex:(NSInteger)mapIndex;
-
-//- (void) setIndices:(NFRBuffer*)indexBuffer ofType:(INDEX_TYPE)type withStride:(NSInteger)stride withOffset:(NSInteger)offset;
-
-@end
-
-
-@interface NFRMesh : NSObject
-
-//@property (nonatomic, retain) NFSurfaceModel *surfaceModel;
-@property (nonatomic, retain) NFRVertices *vertices;
-
-//
-// TODO: will eventually need ability to link to a transform hierarchy, perform vertex skinning/displacement, etc.
-//
-//@property (nonatomic, assign) GLKMatrix4 transform;
-
-//- (void) setGeometryMode:(DRAWING_MODE)drawMode;
-
-@end
-
 
 
 
@@ -138,13 +62,9 @@ typedef NS_ENUM(NSUInteger, GTVertexFormat) {
 @end
 
 @interface GTVertexDescriptorArray : NSObject
-
-//
-// TODO: implement
-//
-
+- (GTVertexAttributeDescriptor *) objectAtIndexedSubscript:(NSUInteger)index;
+- (void) setObject:(GTVertexAttributeDescriptor *)attributeDesc atIndexedSubscript:(NSUInteger)index;
 @end
-
 
 @interface GTVertexBufferLayoutDescriptor : NSObject
 typedef NS_ENUM(NSUInteger, GTVertexStepFunction) {
@@ -157,29 +77,187 @@ typedef NS_ENUM(NSUInteger, GTVertexStepFunction) {
 @property (nonatomic, assign) NSUInteger stride;
 @end
 
-
 @interface GTVertexBufferLayoutDescriptorArray : NSObject
-
-//
-// TODO: implement
-//
-
+- (GTVertexBufferLayoutDescriptor *) objectAtIndexedSubscript:(NSUInteger)index;
+- (void) setObject:(GTVertexBufferLayoutDescriptor *)bufferDesc atIndexedSubscript:(NSUInteger)index;
 @end
 
-
-
-
 @interface GTVertexDescriptor : NSObject
-
 + (GTVertexDescriptor *) vertexDescriptor;
 
 - (void) reset;
 
 @property (readonly) GTVertexDescriptorArray *attributes;
 @property (readonly) GTVertexBufferLayoutDescriptorArray *layouts;
+@end
+
+
+
+@interface GTRenderPipelineColorAttachmentDescriptor : NSObject
+typedef NS_ENUM(NSUInteger, GTBlendOperation) {
+    kGTBlendOperationAdd             = 0,
+    kGTBlendOperationSubtract        = 1,
+    kGTBlendOperationReverseSubtract = 2,
+    kGTBlendOperationMin             = 3,
+    kGTBlendOperationMax             = 4
+};
+
+typedef NS_ENUM(NSUInteger, GTBlendFactor) {
+    kGTBlendFactorZero = 0,
+    kGTBlendFactorOne = 1,
+    kGTBlendFactorSourceColor = 2,
+    kGTBlendFactorOneMinusSourceColor = 3,
+    kGTBlendFactorSourceAlpha = 4,
+    kGTBlendFactorOneMinusSourceAlpha = 5,
+    kGTBlendFactorDestinationColor = 6,
+    kGTBlendFactorOneMinusDestinationColor = 7,
+    kGTBlendFactorDestinationAlpha = 8,
+    kGTBlendFactorOneMinusDestinationAlpha = 9,
+    kGTBlendFactorSourceAlphaSaturated = 10,
+    kGTBlendFactorBlendColor = 11,
+    kGTBlendFactorOneMinusBlendColor = 12,
+    kGTBlendFactorBlendAlpha = 13,
+    kGTBlendFactorOneMinusBlendAlpha = 14
+};
+
+typedef NS_ENUM(NSUInteger, GTColorWriteMask) {
+    kGTColorWriteMaskNone  = 0,
+    kGTColorWriteMaskRed   = 0x1 << 3,
+    kGTColorWriteMaskGreen = 0x1 << 2,
+    kGTColorWriteMaskBlue  = 0x1 << 1,
+    kGTColorWriteMaskAlpha = 0x1 << 0,
+    kGTColorWriteMaskAll   = 0xf
+};
+
+@property (nonatomic, assign) GTPixelFormat pixelFormat;
+@property (nonatomic, assign) GTColorWriteMask writeMask;
+
+@property (nonatomic, assign, getter=isBlendingEnabled) BOOL blendingEnabled;
+@property (nonatomic, assign) GTBlendOperation alphaBlendOperation;
+@property (nonatomic, assign) GTBlendOperation rgbBlendOperation;
+
+@property (nonatomic, assign) GTBlendFactor destinationAlphaBlendFactor;
+@property (nonatomic, assign) GTBlendFactor destinationRGBBlendFactor;
+@property (nonatomic, assign) GTBlendFactor sourceAlphaBlendFactor;
+@property (nonatomic, assign) GTBlendFactor sourceRGBBlendFactor;
+@end
+
+@interface GTRenderPipelineColorAttachmentDescriptorArray : NSObject
+- (GTRenderPipelineColorAttachmentDescriptor *) objectAtIndexedSubscript:(NSUInteger)index;
+- (void) setObject:(GTRenderPipelineColorAttachmentDescriptor *)bufferDesc atIndexedSubscript:(NSUInteger)index;
+@end
+
+
+
+
+@protocol GTFunction
+typedef NS_ENUM(NSUInteger, GTFunctionType) {
+    kGTFunctionTypeVertex = 1,
+    kGTFunctionTypeFragment = 2,
+    kGTFunctionTypeKernel = 3
+};
+
+@property (nonatomic, readonly) NSString *name;
+@property (nonatomic, readonly) GTFunctionType functionType;
+
+//@property (nonatomic, readonly) id< GTDevice > device;
+
+@property (nonatomic, readonly) NSArray *vertexAttributes;
+@end
+
+
+
+
+// forward declare protocols
+@protocol GTDevice;
+
+
+@protocol GTLibrary
+typedef NS_ENUM(NSUInteger, GTLibraryError) {
+    kGTLibraryErrorUnsupported    = 1,
+    kGTLibraryErrorInternal       = 2,
+    kGTLibraryErrorCompileFailure = 3,
+    kGTLibraryErrorCompileWarning = 4
+};
+
+typedef NS_ENUM(NSUInteger, GTRenderPipelineError) {
+    kGTRenderPipelineErrorInternal     = 1,
+    kGTRenderPipelineErrorUnsupported  = 2,
+    kGTRenderPipelineErrorInvalidInput = 3
+};
+
+- (id<GTFunction>) newFunctionWithName:(NSString *)functionName;
+
+@property (nonatomic, readonly) NSArray *functionNames;
+
+@property (nonatomic, readonly) id<GTDevice> device;
+@property (nonatomic, copy) NSString *label;
+@end
+
+
+
+//
+// TODO: implement GTDevice protocol
+//
+
+@protocol GTDevice
+
+typedef NS_ENUM(NSUInteger, GTFeatureSet) {
+    kGTFeatureSet_v1 = 0
+};
+
+typedef NS_ENUM(NSUInteger, GTPipelineOption) {
+    kGTPipelineOptionNone           = 0,
+    kGTPipelineOptionArgumentInfo   = 1,
+    kGTPipelineOptionBufferTypeInfo = 2
+};
+
+@property (nonatomic, readonly) NSString *name;
+
+- (BOOL) supportsFeatureSet:(GTFeatureSet)featureSet;
+
+- (id<GTLibrary>) newDefaultLibrary;
+//...
+
+//https://developer.apple.com/library/prerelease/ios/documentation/Metal/Reference/MTLDevice_Ref/index.html#//apple_ref/occ/intfm/MTLDevice/newLibraryWithFile:error:
+
 
 @end
 
+
+
+
+
+
+
+
+
+
+@interface GTRenderPipelineDescriptor : NSObject
+
+- (void) reset;
+
+//
+// TODO: is the color attachment roughly an OpenGL FBO with a singular color attachment and
+//       multiple color attachments handled through multiple FBOs ??
+//
+@property (readonly) GTRenderPipelineColorAttachmentDescriptorArray *colorAttachments;
+@property (nonatomic, assign) GTPixelFormat depthAttachmentPixelFormat;
+@property (nonatomic, assign) GTPixelFormat stencilAttachmentPixelFormat;
+
+@property (nonatomic, retain, readwrite) id< GTFunction > fragmentFunction;
+@property (nonatomic, retain, readwrite) id< GTFunction > vertexFunction;
+@property (nonatomic, copy) GTVertexDescriptor *vertexDescriptor;
+
+@property (nonatomic, readwrite, getter=isRasterizationEnabled) BOOL rasterizationEnabled;
+
+@property (nonatomic, readwrite, getter=isAlphaToCoverageEnabled) BOOL alphaToCoverageEnabled;
+@property (nonatomic, readwrite, getter=isAlphaToOneEnabled) BOOL alphaToOneEnabled;
+@property (nonatomic, readwrite) NSUInteger sampleCount;
+
+@property (nonatomic, copy) NSString *lable;
+
+@end
 
 
 
