@@ -195,10 +195,64 @@ typedef NS_ENUM(NSUInteger, GTRenderPipelineError) {
 @end
 
 
+//
+// TODO: will need to implement compile options to finish GTDevice
+//
+//@interface GTCompileOptions : NSObject
+//@end
 
+
+@protocol GTCommandQueue
 //
-// TODO: implement GTDevice protocol
+// TODO: implement
 //
+@end
+
+
+
+
+// NFGTResources.h
+// - GTBuffer
+// - GTResource
+// - GTResourceOptions
+// - GTTexture
+// - GTSamplerState
+
+
+
+
+@protocol GTBuffer
+//
+// TODO: implement
+//
+@end
+
+@protocol GTResource
+typedef NS_ENUM(NSUInteger, GTPurgeableState) {
+    kGTPurgeableStateKeepCurrent = 1,
+    kGTPurgeableStateNonVolatile = 2,
+    kGTPurgeableStateVolatile = 3,
+    kGTPurgeableStateEmpty = 4
+};
+
+typedef NS_ENUM(NSUInteger, GTCPUCacheMode) {
+    kGTCPUCacheModeDefaultCache  = 0,
+    kGTCPUCacheModeWriteCombined = 1
+};
+
+typedef NS_ENUM(NSUInteger, GTResourceOptions) {
+    kGTResourceOptionCPUCacheModeDefault = kGTCPUCacheModeDefaultCache,
+    kGTResourceOptionCPUCacheModeWriteCombined = kGTCPUCacheModeWriteCombined
+};
+
+@property (nonatomic, readonly) GTCPUCacheMode cpuCacheMode;
+
+@property (nonatomic, readonly) id<GTDevice> device;
+@property (nonatomic, copy) NSString *label;
+
+- (GTPurgeableState) setPurgeableState:(GTPurgeableState)state;
+@end
+
 
 @protocol GTDevice
 
@@ -217,14 +271,73 @@ typedef NS_ENUM(NSUInteger, GTPipelineOption) {
 - (BOOL) supportsFeatureSet:(GTFeatureSet)featureSet;
 
 - (id<GTLibrary>) newDefaultLibrary;
-//...
+- (id<GTLibrary>) newLibraryWithFile:(NSString *)filepath withError:(NSError **)error;
 
-//https://developer.apple.com/library/prerelease/ios/documentation/Metal/Reference/MTLDevice_Ref/index.html#//apple_ref/occ/intfm/MTLDevice/newLibraryWithFile:error:
+//
+// TODO: implement
+//
+//- (void) newLibraryWithSource:(NSString *)source options:(GTCompileOptions *)options
+//            completionHandler:(void (^)(id<GTLibrary> library, NSError *error))completionHandler;
 
+//- (id<GTLibrary>) newLibraryWithSource:(NSString *)source options:(GTCompileOptions *)options error:(NSError **)error;
+
+//- (id<GTLibrary>) newLibraryWithData:(dispatch_data_t)data error:(NSError **)error;
+
+
+- (id<GTCommandQueue>) newCommandQueue;
+- (id<GTCommandQueue>) newCommandQueueWithMaxCommandBufferCount:(NSUInteger)maxCommandBufferCount;
+
+
+- (id<GTBuffer>) newBufferWithLength:(NSUInteger)length options:(GTResourceOptions)options;
+- (id<GTBuffer>) newBufferWithData:(const void *)pointer length:(NSUInteger)length options:(GTResourceOptions)options;
+- (id<GTBuffer>) newBufferWithBytesNoCopy:(void *)pointer length:(NSUInteger)length options:(GTResourceOptions)options
+                              deallocator:(void (^)(void *pointer, NSUInteger length))deallocator;
+
+
+//
+// TODO: implement texture and sampler classes
+//
+//- (id<GTTexture>) newTextureWithDescriptor:(GTTextureDescriptor *)descriptor;
+//- (id<GTSamplerState>) newSamplerStateWithDescriptor:(GTSamplerDescriptor *)descriptor;
+
+//- (id<GTDepthStencilState>) newDepthStencilStateWithDescriptor:(GTDepthStencilDescriptor *)descriptor;
+
+//- (void) newRenderPipelineStateWithDescriptor:(GTRenderPipelineDescriptor *)descriptor
+//                            completionHandler:(void (^)(id<GTRenderPipelineState> renderPipelineState, NSError *error))completionHandler;
+//- (void) newRenderPipelineStateWithDescriptor:(GTRenderPipelineDescriptor *)descriptor options:(GTPipelineOption)options
+//                            completionHandler:(void (^)(id<GTRenderPipelineState> renderPipelineState, GTRenderPipelineReflection *reflection, NSError *error))completionHandler;
+//- (id<GTRenderPipelineState>) newRenderPipelineStateWithDescriptor:(GTRenderPipelineDescriptor *)descriptor error:(NSError **)error;
+//- (id<GTRenderPipelineState>) newRenderPipelineStateWithDescriptor:(GTRenderPipelineDescriptor *)descriptor
+//                                                           options:(GTPipelineOption)options
+//                                                        reflection:(GTRenderPipelineReflection **)reflection
+//                                                             error:(NSError **)error;
+
+
+
+//
+// TODO: determine if it is possible to support compute using OpenCL
+//
+/*
+- (void) newComputePipelineStateWithFunction:(id<GTFunction>)function
+                          completionHandler:(void (^)(id<GTComputePipelineState> computePipelineState,
+                                                      NSError *error))completionHandler;
+
+- (void) newComputePipelineStateWithFunction:(id<GTFunction>)function
+                                    options:(GTPipelineOption)options
+                          completionHandler:(void (^)(id<GTComputePipelineState> computePipelineState,
+                                                      GTComputePipelineReflection *reflection,
+                                                      NSError *error))completionHandler;
+
+- (id<GTComputePipelineState>) newComputePipelineStateWithFunction:(id<GTFunction>)function
+                                                             error:(NSError **)error;
+
+- (id<GTComputePipelineState>) newComputePipelineStateWithFunction:(id<GTFunction>)function
+                                                           options:(GTPipelineOption)options
+                                                        reflection:(GTComputePipelineReflection **)reflection
+                                                             error:(NSError **)error;
+*/
 
 @end
-
-
 
 
 
