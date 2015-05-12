@@ -35,6 +35,7 @@
 		238156211A16A1460018ECF3 /* NFSimulation.m in Sources */ = {isa = PBXBuildFile; fileRef = 238156201A16A1460018ECF3 /* NFSimulation.m */; };
 		238156241A16A1A10018ECF3 /* NFCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 238156231A16A1A10018ECF3 /* NFCamera.m */; };
 		2389D3B219A1909100DD6908 /* NFLightSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2389D3B119A1909100DD6908 /* NFLightSource.m */; };
+		238B5BC01B025EC1000D8D63 /* NFGTResources.m in Sources */ = {isa = PBXBuildFile; fileRef = 238B5BBF1B025EC1000D8D63 /* NFGTResources.m */; };
 		23A8095E1901BF340062445D /* NFAssetData+Procedural.m in Sources */ = {isa = PBXBuildFile; fileRef = 23A8095D1901BF340062445D /* NFAssetData+Procedural.m */; };
 		23D86B2119192C4A00BCC83B /* NFSurfaceModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 23D86B2019192C4A00BCC83B /* NFSurfaceModel.m */; };
 		23E9873A18DCA71300F76B1A /* NFAssetData.m in Sources */ = {isa = PBXBuildFile; fileRef = 23E9873918DCA71300F76B1A /* NFAssetData.m */; };
@@ -99,6 +100,8 @@
 		238156231A16A1A10018ECF3 /* NFCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFCamera.m; path = NFMechanics/NFCamera.m; sourceTree = "<group>"; };
 		2389D3B019A1909100DD6908 /* NFLightSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFLightSource.h; path = NFRenderer/NFLightSource.h; sourceTree = "<group>"; };
 		2389D3B119A1909100DD6908 /* NFLightSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFLightSource.m; path = NFRenderer/NFLightSource.m; sourceTree = "<group>"; };
+		238B5BBE1B025EC1000D8D63 /* NFGTResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFGTResources.h; path = NFGraphicsToolkit/NFGTResources.h; sourceTree = "<group>"; };
+		238B5BBF1B025EC1000D8D63 /* NFGTResources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFGTResources.m; path = NFGraphicsToolkit/NFGTResources.m; sourceTree = "<group>"; };
 		23A8095C1901BF340062445D /* NFAssetData+Procedural.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NFAssetData+Procedural.h"; path = "NFAssetPipeline/NFAssetData+Procedural.h"; sourceTree = "<group>"; };
 		23A8095D1901BF340062445D /* NFAssetData+Procedural.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NFAssetData+Procedural.m"; path = "NFAssetPipeline/NFAssetData+Procedural.m"; sourceTree = "<group>"; };
 		23D86B1F19192C4A00BCC83B /* NFSurfaceModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFSurfaceModel.h; path = NFRenderer/NFSurfaceModel.h; sourceTree = "<group>"; };
@@ -281,10 +284,12 @@
 		2372D23E1AFD0A62006EB39C /* NFGraphicsToolKit */ = {
 			isa = PBXGroup;
 			children = (
-				2372D23F1AFD0CD2006EB39C /* NFGraphicsToolkit.h */,
-				2372D2401AFD0CD2006EB39C /* NFGraphicsToolkit.m */,
 				2372D2421AFD19DF006EB39C /* NFGLUtils.h */,
 				2372D2431AFD19DF006EB39C /* NFGLUtils.m */,
+				2372D23F1AFD0CD2006EB39C /* NFGraphicsToolkit.h */,
+				2372D2401AFD0CD2006EB39C /* NFGraphicsToolkit.m */,
+				238B5BBE1B025EC1000D8D63 /* NFGTResources.h */,
+				238B5BBF1B025EC1000D8D63 /* NFGTResources.m */,
 			);
 			name = NFGraphicsToolKit;
 			sourceTree = "<group>";
@@ -436,6 +441,7 @@
 				233797F41885E1DF00399EBA /* NFRUtils.m in Sources */,
 				233FAEB41A9F7FA000AD025B /* NFAssetUtils.m in Sources */,
 				23D86B2119192C4A00BCC83B /* NFSurfaceModel.m in Sources */,
+				238B5BC01B025EC1000D8D63 /* NFGTResources.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

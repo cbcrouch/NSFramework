@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "NFGTResources.h"
+
 
 // (GT) graphics toolkit
 
@@ -208,50 +210,6 @@ typedef NS_ENUM(NSUInteger, GTRenderPipelineError) {
 //
 @end
 
-
-
-
-// NFGTResources.h
-// - GTBuffer
-// - GTResource
-// - GTResourceOptions
-// - GTTexture
-// - GTSamplerState
-
-
-
-
-@protocol GTBuffer
-//
-// TODO: implement
-//
-@end
-
-@protocol GTResource
-typedef NS_ENUM(NSUInteger, GTPurgeableState) {
-    kGTPurgeableStateKeepCurrent = 1,
-    kGTPurgeableStateNonVolatile = 2,
-    kGTPurgeableStateVolatile = 3,
-    kGTPurgeableStateEmpty = 4
-};
-
-typedef NS_ENUM(NSUInteger, GTCPUCacheMode) {
-    kGTCPUCacheModeDefaultCache  = 0,
-    kGTCPUCacheModeWriteCombined = 1
-};
-
-typedef NS_ENUM(NSUInteger, GTResourceOptions) {
-    kGTResourceOptionCPUCacheModeDefault = kGTCPUCacheModeDefaultCache,
-    kGTResourceOptionCPUCacheModeWriteCombined = kGTCPUCacheModeWriteCombined
-};
-
-@property (nonatomic, readonly) GTCPUCacheMode cpuCacheMode;
-
-@property (nonatomic, readonly) id<GTDevice> device;
-@property (nonatomic, copy) NSString *label;
-
-- (GTPurgeableState) setPurgeableState:(GTPurgeableState)state;
-@end
 
 
 @protocol GTDevice

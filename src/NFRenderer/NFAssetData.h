@@ -20,6 +20,11 @@
 #define NFLOATS_NORM 4
 #define NFLOATS_TEX 3
 
+
+//
+// TODO: should really stop being so lazy and split out the interleaved vertices
+//
+
 typedef struct NFVertex_t {
     // NOTE: w component of norm should be 0.0, and 1.0 for position (according to GLSL documentation
     //       for vectors w = 0 and for points w = 1)
