@@ -90,6 +90,7 @@
 		234E2CE7188382CC00AF8F23 /* NSFrameworkTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NSFrameworkTests-Info.plist"; sourceTree = "<group>"; };
 		234E2CE9188382CC00AF8F23 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		234E2CEB188382CC00AF8F23 /* NSFrameworkTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSFrameworkTests.m; sourceTree = "<group>"; };
+		235BDC4F1B02E5940077EB3A /* NFGTDataTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFGTDataTypes.h; path = NFGraphicsToolkit/NFGTDataTypes.h; sourceTree = "<group>"; };
 		2372D23F1AFD0CD2006EB39C /* NFGraphicsToolkit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFGraphicsToolkit.h; path = NFGraphicsToolkit/NFGraphicsToolkit.h; sourceTree = "<group>"; };
 		2372D2401AFD0CD2006EB39C /* NFGraphicsToolkit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFGraphicsToolkit.m; path = NFGraphicsToolkit/NFGraphicsToolkit.m; sourceTree = "<group>"; };
 		2372D2421AFD19DF006EB39C /* NFGLUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFGLUtils.h; path = NFGraphicsToolkit/NFGLUtils.h; sourceTree = "<group>"; };
@@ -286,6 +287,7 @@
 			children = (
 				2372D2421AFD19DF006EB39C /* NFGLUtils.h */,
 				2372D2431AFD19DF006EB39C /* NFGLUtils.m */,
+				235BDC4F1B02E5940077EB3A /* NFGTDataTypes.h */,
 				2372D23F1AFD0CD2006EB39C /* NFGraphicsToolkit.h */,
 				2372D2401AFD0CD2006EB39C /* NFGraphicsToolkit.m */,
 				238B5BBE1B025EC1000D8D63 /* NFGTResources.h */,

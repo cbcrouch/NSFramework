@@ -22,7 +22,8 @@
 
 
 //
-// TODO: should really stop being so lazy and split out the interleaved vertices
+// TODO: should really stop being so lazy and split out the interleaved vertices (use 2 VB/IB pairs,
+//       first just position [for depth only pass], second position and other interleaved data)
 //
 
 typedef struct NFVertex_t {

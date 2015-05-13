@@ -8,21 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
+#import "NFGTDataTypes.h"
+
 @protocol GTDevice;
-
-
-//
-// TODO: need to implement:
-//
-// - GTTexture
-// - GTSamplerState
-
-
-@protocol GTBuffer
-//
-// TODO: implement
-//
-@end
 
 @protocol GTResource
 typedef NS_ENUM(NSUInteger, GTPurgeableState) {
@@ -50,6 +38,40 @@ typedef NS_ENUM(NSUInteger, GTResourceOptions) {
 - (GTPurgeableState) setPurgeableState:(GTPurgeableState)state;
 @end
 
+
+
+
+@protocol GTBuffer
+//
+// TODO: implement
+//
+@end
+
+
+
+@protocol GTTexture
+
+typedef NS_ENUM(NSUInteger, GTTextureType) {
+    GTTextureType1D = 0,
+    GTTextureType1DArray = 1,
+    GTTextureType2D = 2,
+    GTTextureType2DArray = 3,
+    GTTextureType2DMultisample = 4,
+    GTTextureTypeCube = 5,
+    GTTextureType3D = 7
+};
+
+//
+
+@end
+
+
+
+@protocol GTSamplerState
+
+//
+
+@end
 
 
 
