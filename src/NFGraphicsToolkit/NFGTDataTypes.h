@@ -5,6 +5,15 @@
 //  Copyright (c) 2015 Casey Crouch. All rights reserved.
 //
 
+typedef NS_ENUM(NSUInteger, GTPixelFormat) {
+    kGTPixelFormatInvalid = 0,
+
+    kGTPixelFormatRGBA8Uint,
+
+    kGTPixelFormatDepth32Float,
+    kGTPixelFormatStencil8
+};
+
 typedef struct { double red; double green; double blue; double alpha; } GTClearColor;
 
 typedef struct { NSUInteger x; NSUInteger y; NSUInteger z; } GTOrigin;

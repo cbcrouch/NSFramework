@@ -7,28 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "NFGTDataTypes.h"
 #import "NFGTResources.h"
-
-
-// (GT) graphics toolkit
-
-
-//
-// TODO: break out into several files
-//
-
-
-//
-// TODO: expand number of pixel formats used
-//
-typedef NS_ENUM(NSUInteger, GTPixelFormat) {
-    kGTPixelFormatInvalid = 0,
-
-    kGTPixelFormatRGBA8Uint,
-
-    kGTPixelFormatDepth32Float,
-    kGTPixelFormatStencil8
-};
 
 
 
