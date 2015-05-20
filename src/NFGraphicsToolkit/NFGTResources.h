@@ -13,7 +13,7 @@
 @protocol GTDevice;
 
 
-@protocol GTResource
+@protocol GTResource <NSObject>
 typedef NS_ENUM(NSUInteger, GTPurgeableState) {
     kGTPurgeableStateKeepCurrent = 1,
     kGTPurgeableStateNonVolatile = 2,
@@ -92,37 +92,52 @@ typedef NS_ENUM(NSUInteger, GTTextureType) {
 
 
 
-@interface GTTextureDescriptor : NSObject <NSCopying>
+@interface GTTextureDescriptor <NSObject, NSCopying>
+@property (nonatomic, assign) GTTextureType textureType;
+@property (nonatomic, assign) GTPixelFormat pixelFormat;
+@property (nonatomic, assign) NSUInteger width;
+@property (nonatomic, assign) NSUInteger height;
+@property (nonatomic, assign) NSUInteger depth;
+@property (nonatomic, assign) NSUInteger mipmapLevelCount;
+@property (nonatomic, assign) NSUInteger arrayLength;
+@property (nonatomic, assign) NSUInteger sampleCount;
+@property (nonatomic, assign) GTResourceOptions resourceOptions;
+
++ (GTTextureDescriptor *) texture2DDescriptorWithPixelFormat:(GTPixelFormat)pixelFormat
+                                                       width:(NSUInteger)width
+                                                      height:(NSUInteger)height
+                                                   mipmapped:(BOOL)mipmapped;
+
++ (GTTextureDescriptor *) textureCubeDescriptorWithPixelFormat:(GTPixelFormat)pixelFormat
+                                                          size:(NSUInteger)size
+                                                     mipmapped:(BOOL)mipmapped;
+@end
+
+
+@protocol GTSamplerState <NSObject>
+@property (nonatomic, readonly) id<GTDevice> device;
+@property (nonatomic, readonly) NSString* label;
+@end
+
+
+
+@protocol GTSamplerDescriptor <NSObject, NSCopying>
 
 //
-// TODO: implement next
+// TODO: implement
 //
 
 @end
 
-@protocol GTSamplerState
 
-//
-
-@end
-
-
-
-//
-// TODO: need to audit the other classes and protocols to make sure they
-//       all conform to and extend the correct protocols and classes
-//
 
 @protocol GTBuffer <GTResource>
-
 // the logical size of the buffer (in bytes), allocated size may be larger due to alignment requirements
 @property (nonatomic, readonly) NSUInteger length;
 
 - (id<GTTexture>) newTextureWithDescriptor:(GTTextureDescriptor *)descriptor offset:(NSUInteger)offset
                                bytesPerRow:(NSUInteger)bytesPerRow;
-
 - (void *) contents;
-
 @end
 
 

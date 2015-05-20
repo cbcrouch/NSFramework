@@ -11,8 +11,7 @@
 #import "NFGTResources.h"
 
 
-
-@interface GTVertexAttributeDescriptor : NSObject
+@interface GTVertexAttributeDescriptor <NSObject, NSCopying>
 typedef NS_ENUM(NSUInteger, GTVertexFormat) {
     kGTVertexFormatInvalid = 0,
     kGTVertexFormatInt     = 1,
@@ -43,12 +42,12 @@ typedef NS_ENUM(NSUInteger, GTVertexFormat) {
 @property (nonatomic, assign) NSUInteger bufferIndex;
 @end
 
-@interface GTVertexDescriptorArray : NSObject
+@interface GTVertexDescriptorArray <NSObject>
 - (GTVertexAttributeDescriptor *) objectAtIndexedSubscript:(NSUInteger)index;
 - (void) setObject:(GTVertexAttributeDescriptor *)attributeDesc atIndexedSubscript:(NSUInteger)index;
 @end
 
-@interface GTVertexBufferLayoutDescriptor : NSObject
+@interface GTVertexBufferLayoutDescriptor <NSObject>
 typedef NS_ENUM(NSUInteger, GTVertexStepFunction) {
     kGTVertexStepFunctionConstant = 0,
     kGTVertexStepFunctionPerVertex = 1,
@@ -59,12 +58,12 @@ typedef NS_ENUM(NSUInteger, GTVertexStepFunction) {
 @property (nonatomic, assign) NSUInteger stride;
 @end
 
-@interface GTVertexBufferLayoutDescriptorArray : NSObject
+@interface GTVertexBufferLayoutDescriptorArray <NSObject>
 - (GTVertexBufferLayoutDescriptor *) objectAtIndexedSubscript:(NSUInteger)index;
 - (void) setObject:(GTVertexBufferLayoutDescriptor *)bufferDesc atIndexedSubscript:(NSUInteger)index;
 @end
 
-@interface GTVertexDescriptor : NSObject
+@interface GTVertexDescriptor <NSObject, NSCopying>
 + (GTVertexDescriptor *) vertexDescriptor;
 
 - (void) reset;
@@ -73,9 +72,7 @@ typedef NS_ENUM(NSUInteger, GTVertexStepFunction) {
 @property (readonly) GTVertexBufferLayoutDescriptorArray *layouts;
 @end
 
-
-
-@interface GTRenderPipelineColorAttachmentDescriptor : NSObject
+@interface GTRenderPipelineColorAttachmentDescriptor <NSObject, NSCopying>
 typedef NS_ENUM(NSUInteger, GTBlendOperation) {
     kGTBlendOperationAdd             = 0,
     kGTBlendOperationSubtract        = 1,
@@ -124,15 +121,13 @@ typedef NS_ENUM(NSUInteger, GTColorWriteMask) {
 @property (nonatomic, assign) GTBlendFactor sourceRGBBlendFactor;
 @end
 
-@interface GTRenderPipelineColorAttachmentDescriptorArray : NSObject
+@interface GTRenderPipelineColorAttachmentDescriptorArray <NSObject>
 - (GTRenderPipelineColorAttachmentDescriptor *) objectAtIndexedSubscript:(NSUInteger)index;
 - (void) setObject:(GTRenderPipelineColorAttachmentDescriptor *)bufferDesc atIndexedSubscript:(NSUInteger)index;
 @end
 
 
-
-
-@protocol GTFunction
+@protocol GTFunction <NSObject>
 typedef NS_ENUM(NSUInteger, GTFunctionType) {
     kGTFunctionTypeVertex = 1,
     kGTFunctionTypeFragment = 2,
@@ -148,13 +143,11 @@ typedef NS_ENUM(NSUInteger, GTFunctionType) {
 @end
 
 
-
-
 // forward declare protocols
 @protocol GTDevice;
 
 
-@protocol GTLibrary
+@protocol GTLibrary <NSObject>
 typedef NS_ENUM(NSUInteger, GTLibraryError) {
     kGTLibraryErrorUnsupported    = 1,
     kGTLibraryErrorInternal       = 2,
@@ -177,14 +170,16 @@ typedef NS_ENUM(NSUInteger, GTRenderPipelineError) {
 @end
 
 
+
 //
 // TODO: will need to implement compile options to finish GTDevice
 //
-//@interface GTCompileOptions : NSObject
+//@interface GTCompileOptions <NSObject, NSCopying>
 //@end
 
 
-@protocol GTCommandQueue
+
+@protocol GTCommandQueue <NSObject>
 //
 // TODO: implement
 //
@@ -192,7 +187,7 @@ typedef NS_ENUM(NSUInteger, GTRenderPipelineError) {
 
 
 
-@protocol GTDevice
+@protocol GTDevice <NSObject>
 
 typedef NS_ENUM(NSUInteger, GTFeatureSet) {
     kGTFeatureSet_v1 = 0
@@ -280,11 +275,7 @@ typedef NS_ENUM(NSUInteger, GTPipelineOption) {
 
 
 
-
-
-
-
-@interface GTRenderPipelineDescriptor : NSObject
+@interface GTRenderPipelineDescriptor <NSObject, NSCopying>
 
 - (void) reset;
 
