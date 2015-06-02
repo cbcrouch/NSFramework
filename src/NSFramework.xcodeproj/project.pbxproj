@@ -30,6 +30,7 @@
 		234E2CE2188382CC00AF8F23 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 234E2CC1188382CC00AF8F23 /* Cocoa.framework */; };
 		234E2CEA188382CC00AF8F23 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 234E2CE8188382CC00AF8F23 /* InfoPlist.strings */; };
 		234E2CEC188382CC00AF8F23 /* NSFrameworkTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 234E2CEB188382CC00AF8F23 /* NSFrameworkTests.m */; };
+		2368BE0F1B1D33E300E79F28 /* NFGTCommands.m in Sources */ = {isa = PBXBuildFile; fileRef = 2368BE0E1B1D33E300E79F28 /* NFGTCommands.m */; };
 		2372D2411AFD0CD2006EB39C /* NFGraphicsToolkit.m in Sources */ = {isa = PBXBuildFile; fileRef = 2372D2401AFD0CD2006EB39C /* NFGraphicsToolkit.m */; };
 		2372D2441AFD19DF006EB39C /* NFGLUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 2372D2431AFD19DF006EB39C /* NFGLUtils.m */; };
 		238156211A16A1460018ECF3 /* NFSimulation.m in Sources */ = {isa = PBXBuildFile; fileRef = 238156201A16A1460018ECF3 /* NFSimulation.m */; };
@@ -91,6 +92,8 @@
 		234E2CE9188382CC00AF8F23 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		234E2CEB188382CC00AF8F23 /* NSFrameworkTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSFrameworkTests.m; sourceTree = "<group>"; };
 		235BDC4F1B02E5940077EB3A /* NFGTDataTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFGTDataTypes.h; path = NFGraphicsToolkit/NFGTDataTypes.h; sourceTree = "<group>"; };
+		2368BE0D1B1D33E300E79F28 /* NFGTCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFGTCommands.h; path = NFGraphicsToolkit/NFGTCommands.h; sourceTree = "<group>"; };
+		2368BE0E1B1D33E300E79F28 /* NFGTCommands.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFGTCommands.m; path = NFGraphicsToolkit/NFGTCommands.m; sourceTree = "<group>"; };
 		2372D23F1AFD0CD2006EB39C /* NFGraphicsToolkit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFGraphicsToolkit.h; path = NFGraphicsToolkit/NFGraphicsToolkit.h; sourceTree = "<group>"; };
 		2372D2401AFD0CD2006EB39C /* NFGraphicsToolkit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFGraphicsToolkit.m; path = NFGraphicsToolkit/NFGraphicsToolkit.m; sourceTree = "<group>"; };
 		2372D2421AFD19DF006EB39C /* NFGLUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFGLUtils.h; path = NFGraphicsToolkit/NFGLUtils.h; sourceTree = "<group>"; };
@@ -292,6 +295,8 @@
 				2372D2401AFD0CD2006EB39C /* NFGraphicsToolkit.m */,
 				238B5BBE1B025EC1000D8D63 /* NFGTResources.h */,
 				238B5BBF1B025EC1000D8D63 /* NFGTResources.m */,
+				2368BE0D1B1D33E300E79F28 /* NFGTCommands.h */,
+				2368BE0E1B1D33E300E79F28 /* NFGTCommands.m */,
 			);
 			name = NFGraphicsToolKit;
 			sourceTree = "<group>";
@@ -443,6 +448,7 @@
 				233797F41885E1DF00399EBA /* NFRUtils.m in Sources */,
 				233FAEB41A9F7FA000AD025B /* NFAssetUtils.m in Sources */,
 				23D86B2119192C4A00BCC83B /* NFSurfaceModel.m in Sources */,
+				2368BE0F1B1D33E300E79F28 /* NFGTCommands.m in Sources */,
 				238B5BC01B025EC1000D8D63 /* NFGTResources.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

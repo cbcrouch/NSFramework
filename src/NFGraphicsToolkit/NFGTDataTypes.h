@@ -5,6 +5,21 @@
 //  Copyright (c) 2015 Casey Crouch. All rights reserved.
 //
 
+
+// constants
+
+typedef NS_ENUM(NSUInteger, GTCompareFunction) {
+    GTCompareFunctionNever = 0,
+    GTCompareFunctionLess = 1,
+    GTCompareFunctionEqual = 2,
+    GTCompareFunctionLessEqual = 3,
+    GTCompareFunctionGreater = 4,
+    GTCompareFunctionNotEqual = 5,
+    GTCompareFunctionGreaterEqual = 6,
+    GTCompareFunctionAlways = 7
+};
+
+
 typedef NS_ENUM(NSUInteger, GTPixelFormat) {
     kGTPixelFormatInvalid = 0,
 
@@ -13,6 +28,8 @@ typedef NS_ENUM(NSUInteger, GTPixelFormat) {
     kGTPixelFormatDepth32Float,
     kGTPixelFormatStencil8
 };
+
+// data types
 
 typedef struct { double red; double green; double blue; double alpha; } GTClearColor;
 

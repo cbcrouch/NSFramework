@@ -2,7 +2,6 @@
 //  NFGTResources.h
 //  NSFramework
 //
-//  Created by cbcrouch on 5/12/15.
 //  Copyright (c) 2015 Casey Crouch. All rights reserved.
 //
 
@@ -120,13 +119,39 @@ typedef NS_ENUM(NSUInteger, GTTextureType) {
 @end
 
 
+@interface GTSamplerDescriptor : NSObject <NSObject, NSCopying>
+typedef NS_ENUM(NSUInteger, GTSamplerAddressMode) {
+    GTSamplerAddressModeClampToEdge = 0,
+    GTSamplerAddressModeRepeat = 2,
+    GTSamplerAddressModeMirrorRepeat = 3,
+    GTSamplerAddressModeClampToZero = 4
+};
 
-@protocol GTSamplerDescriptor <NSObject, NSCopying>
+typedef NS_ENUM(NSUInteger, GTSamplerMinMagFilter) {
+    GTSamplerMinMagFilterNearest = 0,
+    GTSamplerMinMagFilterLinear = 1
+};
 
-//
-// TODO: implement
-//
+typedef NS_ENUM(NSUInteger, GTSamplerMipFilter) {
+    GTSamplerMipFilterNotMipmapped = 0,
+    GTSamplerMipFilterNearest = 1,
+    GTSamplerMipFilterLinear = 2
+};
 
+@property (nonatomic, copy) NSString* label;
+
+@property(nonatomic, assign) GTSamplerAddressMode rAddressMode;
+@property(nonatomic, assign) GTSamplerAddressMode sAddressMode;
+@property(nonatomic, assign) GTSamplerAddressMode tAddressMode;
+
+@property(nonatomic, assign) GTSamplerMinMagFilter minFilter;
+@property(nonatomic, assign) GTSamplerMinMagFilter magFilter;
+@property(nonatomic, assign) GTSamplerMipFilter mipFilter;
+
+@property(nonatomic, assign) float lodMinClamp;
+@property(nonatomic, assign) float lodMaxClamp;
+@property(nonatomic, assign) NSUInteger maxAnisotropy;
+@property(nonatomic, assign) BOOL normalizedCoordinates;
 @end
 
 

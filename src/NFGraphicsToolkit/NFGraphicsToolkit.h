@@ -9,6 +9,7 @@
 
 #import "NFGTDataTypes.h"
 #import "NFGTResources.h"
+#import "NFGTCommands.h"
 
 
 @interface GTVertexAttributeDescriptor <NSObject, NSCopying>
@@ -171,19 +172,112 @@ typedef NS_ENUM(NSUInteger, GTRenderPipelineError) {
 
 
 
-//
-// TODO: will need to implement compile options to finish GTDevice
-//
-//@interface GTCompileOptions <NSObject, NSCopying>
-//@end
 
-
-
-@protocol GTCommandQueue <NSObject>
-//
-// TODO: implement
-//
+@protocol GTDepthStencilState <NSObject>
+@property (nonatomic, readonly) id<GTDevice> device;
+@property (nonatomic, readonly) NSString* label;
 @end
+
+
+
+
+@interface GTStencilDescriptor : NSObject <NSObject, NSCopying>
+
+typedef NS_ENUM(NSUInteger, GTStencilOperation) {
+    GTStencilOperationKeep = 0,
+    GTStencilOperationZero = 1,
+    GTStencilOperationReplace = 2,
+    GTStencilOperationIncrementClamp = 3,
+    GTStencilOperationDecrementClamp = 4,
+    GTStencilOperationInvert = 5,
+    GTStencilOperationIncrementWrap = 6,
+    GTStencilOperationDecrementWrap = 7
+};
+
+@property (nonatomic, assign) GTStencilOperation stencilFailureOperation;
+@property (nonatomic, assign) GTStencilOperation depthFailureOperation;
+@property (nonatomic, assign) GTStencilOperation depthStencilPassOperation;
+
+@property (nonatomic, assign) GTCompareFunction stencilCompareFunction;
+
+@property (nonatomic, assign) uint32_t readMask;
+@property (nonatomic, assign) uint32_t writeMask;
+
+@end
+
+
+
+//
+// TODO: documentation lists the class as inheriting from NSObject as well as conforming
+//       to the NSObject protocol, need to investigate if there is some benefit to
+//       doing this in ObjC or if it's redundant to both inherit and conform to NSObject
+//
+@interface GTDepthStencilDescriptor : NSObject <NSObject, NSCopying>
+
+@property (nonatomic, copy) NSString* label;
+
+@property (nonatomic) GTCompareFunction depthCompareFunction;
+@property (nonatomic, assign, getter=isDepthWriteEnabled) BOOL depthWriteEnabled;
+
+@property (nonatomic, copy) GTStencilDescriptor* backFaceStencil;
+@property (nonatomic, copy) GTStencilDescriptor* frontFaceStencil;
+
+@end
+
+
+
+
+@interface GTRenderPipelineDescriptor : NSObject <NSObject, NSCopying>
+
+@property (nonatomic, copy) NSString* label;
+
+@property (nonatomic, readonly) GTRenderPipelineColorAttachmentDescriptorArray* colorAttachments;
+@property (nonatomic, assign) GTPixelFormat depthAttachmentPixelFormat;
+@property (nonatomic, assign) GTPixelFormat stencilAttachmentPixelFormat;
+
+@property (nonatomic, strong, readonly) id<GTFunction> fragmentFunction;
+@property (nonatomic, strong, readonly) id<GTFunction> vertexFunction;
+@property (nonatomic, copy) GTVertexDescriptor* vertexDescriptor;
+
+@property (nonatomic, readwrite, assign, getter=isRasterizationEnabled) BOOL rasterizationEnabled;
+
+@property (nonatomic, readwrite, assign, getter=isAlphaToCoverageEnabled) BOOL alphaToCoverageEnabled;
+@property (nonatomic, readwrite, assign, getter=isAlphaToOneEnabled) BOOL alphaToOneEnabled;
+@property (nonatomic, readwrite, assign) NSUInteger sampleCount;
+
+- (void) reset;
+
+@end
+
+
+
+
+@protocol GTRenderPipelineState <NSObject>
+
+@property (nonatomic, readonly) NSString* label;
+@property (nonatomic, readonly) id<GTDevice> device;
+
+@end
+
+
+
+@interface GTRenderPipelineReflection : NSObject <NSObject>
+
+@property (nonatomic, readonly) NSArray* vertexArguments;
+@property (nonatomic, readonly) NSArray* fragmentArguments;
+
+@end
+
+
+
+
+@interface GTCompileOptions : NSObject <NSObject, NSCopying>
+
+@property (nonatomic, readwrite) BOOL fastMathEnabled;
+@property (nonatomic, readwrite, copy) NSDictionary* preprocessorMacros;
+
+@end
+
 
 
 
@@ -206,44 +300,37 @@ typedef NS_ENUM(NSUInteger, GTPipelineOption) {
 - (id<GTLibrary>) newDefaultLibrary;
 - (id<GTLibrary>) newLibraryWithFile:(NSString *)filepath withError:(NSError **)error;
 
-//
-// TODO: implement
-//
-//- (void) newLibraryWithSource:(NSString *)source options:(GTCompileOptions *)options
-//            completionHandler:(void (^)(id<GTLibrary> library, NSError *error))completionHandler;
+- (void) newLibraryWithSource:(NSString *)source options:(GTCompileOptions *)options
+            completionHandler:(void (^)(id<GTLibrary> library, NSError *error))completionHandler;
 
-//- (id<GTLibrary>) newLibraryWithSource:(NSString *)source options:(GTCompileOptions *)options error:(NSError **)error;
+- (id<GTLibrary>) newLibraryWithSource:(NSString *)source options:(GTCompileOptions *)options error:(NSError **)error;
 
-//- (id<GTLibrary>) newLibraryWithData:(dispatch_data_t)data error:(NSError **)error;
-
+- (id<GTLibrary>) newLibraryWithData:(dispatch_data_t)data error:(NSError **)error;
 
 - (id<GTCommandQueue>) newCommandQueue;
 - (id<GTCommandQueue>) newCommandQueueWithMaxCommandBufferCount:(NSUInteger)maxCommandBufferCount;
-
 
 - (id<GTBuffer>) newBufferWithLength:(NSUInteger)length options:(GTResourceOptions)options;
 - (id<GTBuffer>) newBufferWithData:(const void *)pointer length:(NSUInteger)length options:(GTResourceOptions)options;
 - (id<GTBuffer>) newBufferWithBytesNoCopy:(void *)pointer length:(NSUInteger)length options:(GTResourceOptions)options
                               deallocator:(void (^)(void *pointer, NSUInteger length))deallocator;
 
+- (id<GTTexture>) newTextureWithDescriptor:(GTTextureDescriptor *)descriptor;
+- (id<GTSamplerState>) newSamplerStateWithDescriptor:(GTSamplerDescriptor *)descriptor;
 
-//
-// TODO: implement texture and sampler classes
-//
-//- (id<GTTexture>) newTextureWithDescriptor:(GTTextureDescriptor *)descriptor;
-//- (id<GTSamplerState>) newSamplerStateWithDescriptor:(GTSamplerDescriptor *)descriptor;
+- (id<GTDepthStencilState>) newDepthStencilStateWithDescriptor:(GTDepthStencilDescriptor *)descriptor;
 
-//- (id<GTDepthStencilState>) newDepthStencilStateWithDescriptor:(GTDepthStencilDescriptor *)descriptor;
+- (void) newRenderPipelineStateWithDescriptor:(GTRenderPipelineDescriptor *)descriptor
+                            completionHandler:(void (^)(id<GTRenderPipelineState> renderPipelineState, NSError *error))completionHandler;
 
-//- (void) newRenderPipelineStateWithDescriptor:(GTRenderPipelineDescriptor *)descriptor
-//                            completionHandler:(void (^)(id<GTRenderPipelineState> renderPipelineState, NSError *error))completionHandler;
-//- (void) newRenderPipelineStateWithDescriptor:(GTRenderPipelineDescriptor *)descriptor options:(GTPipelineOption)options
-//                            completionHandler:(void (^)(id<GTRenderPipelineState> renderPipelineState, GTRenderPipelineReflection *reflection, NSError *error))completionHandler;
-//- (id<GTRenderPipelineState>) newRenderPipelineStateWithDescriptor:(GTRenderPipelineDescriptor *)descriptor error:(NSError **)error;
-//- (id<GTRenderPipelineState>) newRenderPipelineStateWithDescriptor:(GTRenderPipelineDescriptor *)descriptor
-//                                                           options:(GTPipelineOption)options
-//                                                        reflection:(GTRenderPipelineReflection **)reflection
-//                                                             error:(NSError **)error;
+- (void) newRenderPipelineStateWithDescriptor:(GTRenderPipelineDescriptor *)descriptor options:(GTPipelineOption)options
+                            completionHandler:(void (^)(id<GTRenderPipelineState> renderPipelineState, GTRenderPipelineReflection *reflection, NSError *error))completionHandler;
+
+- (id<GTRenderPipelineState>) newRenderPipelineStateWithDescriptor:(GTRenderPipelineDescriptor *)descriptor error:(NSError **)error;
+- (id<GTRenderPipelineState>) newRenderPipelineStateWithDescriptor:(GTRenderPipelineDescriptor *)descriptor
+                                                           options:(GTPipelineOption)options
+                                                        reflection:(GTRenderPipelineReflection **)reflection
+                                                             error:(NSError **)error;
 
 
 
@@ -272,34 +359,6 @@ typedef NS_ENUM(NSUInteger, GTPipelineOption) {
 
 @end
 
-
-
-
-@interface GTRenderPipelineDescriptor <NSObject, NSCopying>
-
-- (void) reset;
-
-//
-// TODO: is the color attachment roughly an OpenGL FBO with a singular color attachment and
-//       multiple color attachments handled through multiple FBOs ??
-//
-@property (readonly) GTRenderPipelineColorAttachmentDescriptorArray *colorAttachments;
-@property (nonatomic, assign) GTPixelFormat depthAttachmentPixelFormat;
-@property (nonatomic, assign) GTPixelFormat stencilAttachmentPixelFormat;
-
-@property (nonatomic, retain, readwrite) id< GTFunction > fragmentFunction;
-@property (nonatomic, retain, readwrite) id< GTFunction > vertexFunction;
-@property (nonatomic, copy) GTVertexDescriptor *vertexDescriptor;
-
-@property (nonatomic, readwrite, getter=isRasterizationEnabled) BOOL rasterizationEnabled;
-
-@property (nonatomic, readwrite, getter=isAlphaToCoverageEnabled) BOOL alphaToCoverageEnabled;
-@property (nonatomic, readwrite, getter=isAlphaToOneEnabled) BOOL alphaToOneEnabled;
-@property (nonatomic, readwrite) NSUInteger sampleCount;
-
-@property (nonatomic, copy) NSString *lable;
-
-@end
 
 
 
