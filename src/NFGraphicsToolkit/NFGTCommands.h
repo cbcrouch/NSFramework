@@ -122,11 +122,118 @@ typedef NS_ENUM(NSUInteger, GTTriangleFillMode) {
 
 
 
+
+@interface GTRenderPassAttachmentDescriptor : NSObject <NSObject, NSCopying>
+
+typedef NS_ENUM(NSUInteger, GTLoadAction) {
+    kGTLoadActionDontCare = 0,
+    kGTLoadActionLoad = 1,
+    kGTLoadActionClear = 2
+};
+
+typedef NS_ENUM(NSUInteger, GTStoreAction) {
+    kGTStoreActionDontCare = 0,
+    kGTStoreActionStore = 1,
+    kGTStoreActionMultisampleResolve = 2
+};
+
+@property (nonatomic, strong) id<GTTexture> texture;
+@property (nonatomic, assign) NSUInteger level;
+@property (nonatomic, assign) NSUInteger slice;
+@property (nonatomic, assign) NSUInteger depthPlane;
+
+@property (nonatomic, assign) GTLoadAction loadAction;
+@property (nonatomic, assign) GTStoreAction storeAction;
+
+@property (nonatomic, strong) id<GTTexture> resolveTexture;
+@property (nonatomic, assign) NSUInteger resolveLevel;
+@property (nonatomic, assign) NSUInteger resolveSlice;
+@property (nonatomic, assign) NSUInteger resolveDepthPlane;
+
+@end
+
+
+@interface GTRenderPassColorAttachmentDescriptor : GTRenderPassAttachmentDescriptor <NSObject, NSCopying>
+@property (nonatomic) GTClearColor clearColor;
+@end
+
+
+@interface GTRenderPassDepthAttachmentDescriptor : GTRenderPassAttachmentDescriptor <NSObject, NSCopying>
+@property (nonatomic) double clearDepth;
+@end
+
+@interface GTRenderPassStencilAttachmentDescriptor : GTRenderPassAttachmentDescriptor <NSObject, NSCopying>
+@property (nonatomic) uint32_t clearStencil;
+@end
+
+
+
+@interface GTRenderPassColorAttachmentDescriptorArray : NSObject <NSObject>
+- (GTRenderPassColorAttachmentDescriptor*) objectAtIndexedSubscript:(NSUInteger)attachmentIndex;
+- (void) setObject:(GTRenderPassColorAttachmentDescriptor*)attachment atIndexedSubscript:(NSUInteger)attachmentIndex;
+@end
+
+
+
+@interface GTRenderPassDescriptor : NSObject <NSObject, NSCopying>
+
+@property (nonatomic, readonly) GTRenderPassColorAttachmentDescriptorArray* colorAttachments;
+
+@property (nonatomic, copy) GTRenderPassDepthAttachmentDescriptor* depthAttachment;
+@property (nonatomic, copy) GTRenderPassStencilAttachmentDescriptor* stencilAttachment;
+
+@property (nonatomic, strong) id<GTBuffer> visibilityResultBuffer;
+
++ (GTRenderPassDescriptor*) renderPassDescriptor;
+
+@end
+
+
+
+
+// https://developer.apple.com/library/prerelease/ios/documentation/Metal/Reference/MTLCommandBuffer_Ref/index.html
+
 @protocol GTCommandBuffer <NSObject>
+
+typedef NS_ENUM(NSUInteger, GTCommandBufferStatus) {
+    kGTCommandBufferStatusNotEnqueued = 0,
+    kGTCommandBufferStatusEnqueued = 1,
+    kGTCommandBufferStatusCommitted = 2,
+    kGTCommandBufferStatusScheduled = 3,
+    kGTCommandBufferStatusCompleted = 4,
+    kGTCommandBufferStatusError = 5
+};
+
+typedef NS_ENUM(NSUInteger, GTCommandBufferError) {
+    kGTCommandBufferErrorNone = 0,
+    kGTCommandBufferErrorInternal = 1,
+    kGTCommandBufferErrorTimeout = 2,
+    kGTCommandBufferErrorPageFault = 3,
+    kGTCommandBufferErrorBlacklisted = 4,
+    kGTCommandBufferErrorNotPermitted = 7,
+    kGTCommandBufferErrorOutOfMemory = 8,
+    kGTCommandBufferErrorInvalidResource = 9
+};
+
+typedef void (^GTCommandBufferHandler)(id <GTCommandBuffer> buffer);
+
 
 //
 // TODO: implement
 //
+
+// creating command encoders
+- (id<GTRenderCommandEncoder>) renderCommandEncoderWithDescriptor:(GTRenderPassDescriptor *)renderPassDescriptor;
+
+
+
+// scheduling and executing commands
+
+// monitoring command buffere execution
+
+// determing whether to keep strong references to associated objects
+
+// identifying the command buffer
 
 @end
 
