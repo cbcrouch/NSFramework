@@ -128,24 +128,25 @@ typedef NS_ENUM(NSUInteger, GTColorWriteMask) {
 @end
 
 
+
+//
+// TODO: implement these two classes (GTFunction and GTLibrary) first by using existing
+//       OpenGL shader compilation and loading utility functions
+//
+
 @protocol GTFunction <NSObject>
 typedef NS_ENUM(NSUInteger, GTFunctionType) {
     kGTFunctionTypeVertex = 1,
-    kGTFunctionTypeFragment = 2,
-    kGTFunctionTypeKernel = 3
+    kGTFunctionTypeFragment = 2
+    //kGTFunctionTypeKernel = 3 // compute not yet supported
 };
 
 @property (nonatomic, readonly) NSString *name;
 @property (nonatomic, readonly) GTFunctionType functionType;
-
-//@property (nonatomic, readonly) id< GTDevice > device;
-
+@property (nonatomic, readonly) id< GTDevice > device;
 @property (nonatomic, readonly) NSArray *vertexAttributes;
 @end
 
-
-// forward declare protocols
-@protocol GTDevice;
 
 
 @protocol GTLibrary <NSObject>
@@ -162,13 +163,15 @@ typedef NS_ENUM(NSUInteger, GTRenderPipelineError) {
     kGTRenderPipelineErrorInvalidInput = 3
 };
 
-- (id<GTFunction>) newFunctionWithName:(NSString *)functionName;
+- (id<GTFunction>) newFunctionWithName:(NSString*)functionName;
 
-@property (nonatomic, readonly) NSArray *functionNames;
-
+@property (nonatomic, copy) NSString* label;
 @property (nonatomic, readonly) id<GTDevice> device;
-@property (nonatomic, copy) NSString *label;
+@property (nonatomic, readonly) NSArray* functionNames;
+
 @end
+
+
 
 
 

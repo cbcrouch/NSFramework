@@ -15,6 +15,7 @@
 @protocol GTBuffer;
 @protocol GTSamplerState;
 @protocol GTTexture;
+@protocol GTCommandQueue;
 
 
 @protocol GTCommandEncoder <NSObject>
@@ -190,8 +191,64 @@ typedef NS_ENUM(NSUInteger, GTStoreAction) {
 
 
 
+@protocol GTBlitCommandEncoder <GTCommandEncoder>
 
-// https://developer.apple.com/library/prerelease/ios/documentation/Metal/Reference/MTLCommandBuffer_Ref/index.html
+- (void) copyFromBuffer:(id<GTBuffer>)sourceBuffer
+           sourceOffset:(NSUInteger)sourceOffset
+               toBuffer:(id<GTBuffer>)destinationBuffer
+      destinationOffset:(NSUInteger)destinationOffset
+                   size:(NSUInteger)size;
+
+- (void) copyFromBuffer:(id<GTBuffer>)sourceBuffer
+           sourceOffset:(NSUInteger)sourceOffset
+      sourceBytesPerRow:(NSUInteger)sourceBytesPerRow
+    sourceBytesPerImage:(NSUInteger)sourceBytesPerImage
+             sourceSize:(GTSize)sourceSize
+              toTexture:(id<GTTexture>)destinationTexture
+       destinationSlice:(NSUInteger)destinationSlice
+       destinationLevel:(NSUInteger)destinationLevel
+      destinationOrigin:(GTOrigin)destinationOrigin;
+
+- (void) copyFromTexture:(id<GTTexture>)sourceTexture
+             sourceSlice:(NSUInteger)sourceSlice
+             sourceLevel:(NSUInteger)sourceLevel
+            sourceOrigin:(GTOrigin)sourceOrigin
+              sourceSize:(GTSize)sourceSize
+               toTexture:(id<GTTexture>)destinationTexture
+        destinationSlice:(NSUInteger)destinationSlice
+        destinationLevel:(NSUInteger)destinationLevel
+       destinationOrigin:(GTOrigin)destinationOrigin;
+
+- (void) copyFromTexture:(id<GTTexture>)sourceTexture
+             sourceSlice:(NSUInteger)sourceSlice
+             sourceLevel:(NSUInteger)sourceLevel
+            sourceOrigin:(GTOrigin)sourceOrigin
+              sourceSize:(GTSize)sourceSize
+                toBuffer:(id<GTBuffer>)destinationBuffer
+       destinationOffset:(NSUInteger)destinationOffset
+  destinationBytesPerRow:(NSUInteger)destinationBytesPerRow
+destinationBytesPerImage:(NSUInteger)destinationBytesPerImage;
+
+- (void) fillBuffer:(id<GTBuffer>)buffer range:(NSRange)range value:(uint8_t)value;
+- (void) generateMipmapsForTexture:(id<GTTexture>)tex;
+
+@end
+
+
+@protocol GTParallelRenderCommandEncoder <GTCommandEncoder>
+
+- (id<GTRenderCommandEncoder>) renderCommandEncoder;
+
+@end
+
+
+
+@protocol GTDrawable <NSObject>
+- (void) present;
+- (void) presentAtTime:(CFTimeInterval)presentationTime;
+@end
+
+
 
 @protocol GTCommandBuffer <NSObject>
 
@@ -217,23 +274,33 @@ typedef NS_ENUM(NSUInteger, GTCommandBufferError) {
 
 typedef void (^GTCommandBufferHandler)(id <GTCommandBuffer> buffer);
 
+// monitoring command buffere execution
+@property (nonatomic, readonly) GTCommandBufferStatus status;
+@property (nonatomic, readonly) NSError *error;
 
-//
-// TODO: implement
-//
+// determing whether to keep strong references to associated objects
+@property (nonatomic, readonly) BOOL retainedReferences;
+
+// identifying the command buffer
+@property(nonatomic, readonly) id<GTDevice> device;
+@property(nonatomic, readonly) id<GTCommandQueue> commandQueue;
+@property(nonatomic, copy) NSString *label;
 
 // creating command encoders
 - (id<GTRenderCommandEncoder>) renderCommandEncoderWithDescriptor:(GTRenderPassDescriptor *)renderPassDescriptor;
-
-
+//- (id<GTComputeCommandEncoder>) computeCommandEncoder; // compute not yet supported
+- (id<GTBlitCommandEncoder>) blitCommandEncoder;
+- (id<GTParallelRenderCommandEncoder>) parallelRenderCommandEncoderWithDescriptor:(GTRenderPassDescriptor *)renderPassDescriptor;
 
 // scheduling and executing commands
-
-// monitoring command buffere execution
-
-// determing whether to keep strong references to associated objects
-
-// identifying the command buffer
+- (void) enqueue;
+- (void) commit;
+- (void) addScheduledHandler:(GTCommandBufferHandler)block;
+- (void) addCompletedHandler:(GTCommandBufferHandler)block;
+- (void) presentDrawable:(id<GTDrawable>)drawable;
+- (void) presentDrawable:(id<GTDrawable>)drawable atTime:(CFTimeInterval)presentationTime;
+- (void) waitUntilScheduled;
+- (void) waitUntilCompleted;
 
 @end
 
