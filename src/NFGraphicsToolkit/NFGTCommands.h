@@ -315,11 +315,3 @@ typedef void (^GTCommandBufferHandler)(id <GTCommandBuffer> buffer);
 - (id<GTCommandBuffer>) commandBufferWithUnretainedReferences;
 
 @end
-
-
-
-
-
-@interface NFGTCommands : NSObject
-
-@end

@@ -173,14 +173,10 @@ typedef NS_ENUM(NSUInteger, GTRenderPipelineError) {
 
 
 
-
-
-
 @protocol GTDepthStencilState <NSObject>
 @property (nonatomic, readonly) id<GTDevice> device;
 @property (nonatomic, readonly) NSString* label;
 @end
-
 
 
 
@@ -359,13 +355,5 @@ typedef NS_ENUM(NSUInteger, GTPipelineOption) {
                                                         reflection:(GTComputePipelineReflection **)reflection
                                                              error:(NSError **)error;
 */
-
-@end
-
-
-
-
-
-@interface NFGraphicsToolkit : NSObject
 
 @end

@@ -7,6 +7,3 @@
 
 #import "NFGTCommands.h"
 
-@implementation NFGTCommands
-
-@end

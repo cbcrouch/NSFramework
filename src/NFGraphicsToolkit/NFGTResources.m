@@ -7,6 +7,3 @@
 
 #import "NFGTResources.h"
 
-@implementation NFGTResources
-
-@end

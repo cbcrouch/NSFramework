@@ -164,11 +164,3 @@ typedef NS_ENUM(NSUInteger, GTSamplerMipFilter) {
                                bytesPerRow:(NSUInteger)bytesPerRow;
 - (void *) contents;
 @end
-
-
-
-
-
-@interface NFGTResources : NSObject
-
-@end
