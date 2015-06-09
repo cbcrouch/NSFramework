@@ -29,12 +29,99 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
 //static GLuint g_bindingPoint = 1; // must be smaller than GL_MAX_UNIFORM_BUFFER_BINDINGS
 
 
+
+@interface NFRPhongProgram : NSObject <NFRProgram>
+//
+// TODO: make these properties
+//
+//    GLint vertAttrib;
+//    GLint normAttrib;
+//    GLint texAttrib;
+
+@property (nonatomic, readwrite, assign) GLuint hProgram;
+
+@end
+
+@implementation NFRPhongProgram
+
+@synthesize hProgram = _hProgram;
+
+- (void) setStateWithVAO:(GLint)hVAO withVBO:(GLint)hVBO {
+    //
+    // TODO: implement
+    //
+}
+
+@end
+
+
+@interface NFRDebugProgram : NSObject <NFRProgram>
+//
+// TODO: make these properties
+//
+//    GLint vertAttrib;
+//    GLint normAttrib;
+//    GLint colorAttrib;
+
+@property (nonatomic, readwrite, assign) GLuint hProgram;
+
+@end
+
+@implementation NFRDebugProgram
+
+@synthesize hProgram = _hProgram;
+
+- (void) setStateWithVAO:(GLint)hVAO withVBO:(GLint)hVBO {
+    //
+    // TODO: implement
+    //
+}
+
+@end
+
+
+
+
 @interface NFRUtils()
 + (NSString *) loadShaderSourceWithName:(NSString *)shaderName ofType:(SHADER_TYPE)type;
 + (void) checkShader:(const GLuint)handle ofType:(SHADER_TYPE)type againstStatus:(SHADER_STATUS)status;
 @end
 
 @implementation NFRUtils
+
+
+
++ (id<NFRProgram>) createProgramObject:(NSString *)programName {
+
+    //
+    // TODO: implement
+    //
+
+    if ([programName isEqualToString:@"DefaultModel"]) {
+
+        //id<NFRProgram> programObj = [[[NFRPhongProgram alloc] init] autorelease];
+
+        NFRPhongProgram* programObj = [[[NFRPhongProgram alloc] init] autorelease];
+
+        //
+        // TODO: how to call a method on the specific implementation of a protocol ??
+        //
+        //GLuint hProg = [NFRUtils createProgramObject:programName];
+        //[programObj setHProgram:hProg];
+
+        return programObj;
+    }
+    else if ([programName isEqualToString:@"Debug"]) {
+        //
+    }
+    else {
+        NSLog(@"WARNING: NFRUtils createProgramObject attempted to load an unknown program, returning nil");
+    }
+
+    return nil;
+}
+
+
 
 + (GLuint) createProgramWithVertexSource:(NSString *)vertexSource withFragmentSource:(NSString *)fragmentSource {
     GLuint hProgram = 0;

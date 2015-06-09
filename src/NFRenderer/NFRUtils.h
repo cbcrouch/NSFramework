@@ -51,8 +51,6 @@ typedef NS_ENUM(NSUInteger, SHADER_TYPE) {
     kProgram
 };
 
-
-
 // NFRUBO_t
 // - blockIndex
 // - blockSize
@@ -61,11 +59,42 @@ typedef NS_ENUM(NSUInteger, SHADER_TYPE) {
 // - hUBO
 
 
+
+//
+// TODO: create a sampler class
+//
+
+
+//
+// TODO: implement a shader program protocol
+//
+
+@protocol NFRProgram <NSObject>
+
+@property (nonatomic, readonly) GLuint hProgram;
+
+//
+// TODO: should be upgraded to take a VBO array
+//
+- (void) setStateWithVAO:(GLint)hVAO withVBO:(GLint)hVBO;
+
+@end
+
+
+
+
 @interface NFRUtils : NSObject
 
 // NOTE: using all class methods as the OpenGL state machine is considered global across the application
 //       (add some more words about how class methods, particuarly utility methods, work well with this notion
 //       of global state - may want to quote the common mistakes addressing this on the OpenGL wiki)
+
+
+//
+// TODO: implement and use createProgramObject
+//
++ (id<NFRProgram>) createProgramObject:(NSString *)programName;
+
 
 
 // shader utils

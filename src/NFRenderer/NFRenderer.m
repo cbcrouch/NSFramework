@@ -194,9 +194,14 @@ typedef struct debugProgram_t {
     //[m_pAsset applyUnitScalarMatrix]; // use for teapot
 
 
+/*
     m_axisData = [NFAssetLoader allocAssetDataOfType:kAxisWireframe withArgs:nil];
-    [m_axisData createVertexStateWithProgram:hProgram];
+
+    //[m_axisData createVertexStateWithProgram:hProgram];
+    [m_axisData createVertexStateWithProgram:m_debugProgram.hProgram];
+
     [m_axisData loadResourcesGL];
+*/
 
 
     m_gridData = [NFAssetLoader allocAssetDataOfType:kGridWireframe withArgs:nil];
@@ -289,11 +294,16 @@ typedef struct debugProgram_t {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glUseProgram(m_phongModel.hProgram);
 
-    m_phongModel.lightSubroutine = glGetSubroutineIndex(m_phongModel.hProgram, GL_FRAGMENT_SHADER, "light_subroutine");
-    NSAssert(m_phongModel.lightSubroutine != GL_INVALID_INDEX, @"failed to get subroutine index");
+    static BOOL doOnce = YES;
+    if (doOnce) {
+        m_phongModel.lightSubroutine = glGetSubroutineIndex(m_phongModel.hProgram, GL_FRAGMENT_SHADER, "light_subroutine");
+        NSAssert(m_phongModel.lightSubroutine != GL_INVALID_INDEX, @"failed to get subroutine index");
 
-    m_phongModel.phongSubroutine = glGetSubroutineIndex(m_phongModel.hProgram, GL_FRAGMENT_SHADER, "phong_subroutine");
-    NSAssert(m_phongModel.phongSubroutine != GL_INVALID_INDEX, @"failed to get subroutine index");
+        m_phongModel.phongSubroutine = glGetSubroutineIndex(m_phongModel.hProgram, GL_FRAGMENT_SHADER, "phong_subroutine");
+        NSAssert(m_phongModel.phongSubroutine != GL_INVALID_INDEX, @"failed to get subroutine index");
+
+        doOnce = NO;
+    }
 
     // cube
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &(m_phongModel.phongSubroutine));
@@ -309,12 +319,9 @@ typedef struct debugProgram_t {
     // TODO: draw axis guidelines
     //
 
-    //
-    // TODO: will need to create a vertex description object
-    //
-
     glUseProgram(m_debugProgram.hProgram);
 
+    //[m_axisData drawWithProgram:m_debugProgram.hProgram withModelUniform:m_debugProgram.modelLoc];
 
 
     glUseProgram(0);

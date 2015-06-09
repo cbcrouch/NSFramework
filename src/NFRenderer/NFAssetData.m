@@ -20,10 +20,7 @@
 #import <GLKit/GLKit.h>
 
 
-//
-// TODO: need to make a comprehensive collection of state objects that are bundled together
-//       into a parent pipeline object
-//
+
 typedef struct NFVertState_t {
     GLint vertAttrib;
     GLint normAttrib;
@@ -31,8 +28,6 @@ typedef struct NFVertState_t {
 } NFVertState_t;
 
 
-
-// rename NFAssetData to NFAssetContainer, NFGeometry ??
 
 //
 // TODO: move NFSubset into its own header/source file (also rename NFAssetSubset, NFGeometrySubset)
@@ -423,16 +418,13 @@ typedef struct NFVertState_t {
         // TODO: need to encapsulate these calls in a vertex buffer format and layout abstraction
         //
 
-        //#define NFLOATS_POS 4
-        //#define NFLOATS_NORM 4
-        //#define NFLOATS_TEX 3
-
         glVertexAttribPointer(state.vertAttrib, NFLOATS_POS, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
                               (const GLvoid *)0x00 + offsetof(NFVertex_t, pos));
         glVertexAttribPointer(state.normAttrib, NFLOATS_NORM, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
                               (const GLvoid *)0x00 + offsetof(NFVertex_t, norm));
         glVertexAttribPointer(state.texAttrib, NFLOATS_TEX, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
                               (const GLvoid *)0x00 + offsetof(NFVertex_t, texCoord));
+
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         m_setupAttribPointers = NO;
     }
@@ -447,6 +439,10 @@ typedef struct NFVertState_t {
 
 //
 //
+//
+
+//
+// TODO: rename NFAssetData to NFAssetContainer, NFGeometry ??
 //
 
 @interface NFAssetData()
@@ -553,8 +549,11 @@ typedef struct NFVertState_t {
 //       calls in NFAssetData they need to all be handled through NFGraphicsToolkit
 //
 
+//
+// TODO: create a program object that contains enough information to determine which shader type OR
+//       pass the VAO and a VBO array to the shader object to configure OpenGL state
+//
 - (void) createVertexStateWithProgram:(GLuint)hProgram {
-
 
     //
     // TODO: start with implementing the render pipeline object and move the NFVertState_t to it
@@ -563,6 +562,7 @@ typedef struct NFVertState_t {
     // get shader attirbutes
     NFVertState_t *pState = self.vertexState;
 
+    
     //
     // TODO: should move the shader attribute location handling into the render pipeline object
     //       and implement getters that would allow the asset draw calls to be handled external
@@ -582,6 +582,8 @@ typedef struct NFVertState_t {
     // get texture unifrom location
     self.textureUniform = glGetUniformLocation(hProgram, (const GLchar *)"texSampler\0");
     NSAssert(self.textureUniform != -1, @"Failed to get texture uniform location");
+
+
 
     // create VAO
     GLuint vao;
