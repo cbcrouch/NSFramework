@@ -38,6 +38,38 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
 //    GLint normAttrib;
 //    GLint texAttrib;
 
+/*
+typedef struct materialLocs_t {
+    GLint matAmbientLoc;
+    GLint matDiffuseLoc;
+    GLint matSpecularLoc;
+    GLint matShineLoc;
+} materialLocs_t;
+
+typedef struct lightLocs_t {
+    GLint lightAmbientLoc;
+    GLint lightDiffuseLoc;
+    GLint lightSpecularLoc;
+    GLint lightPositionLoc;
+} lightLocs_t;
+
+typedef struct phongModel_t {
+    // vertex shader inputs
+    GLint modelLoc;
+    GLuint hUBO;
+
+    // fragment shader inputs
+    materialLocs_t matLocs;
+    lightLocs_t lightLocs;
+    GLint viewPositionLoc;
+    GLuint lightSubroutine;
+    GLuint phongSubroutine;
+
+    // program handle
+    GLuint hProgram;
+} phongModel_t;
+*/
+
 @property (nonatomic, readwrite, assign) GLuint hProgram;
 
 @end
@@ -62,6 +94,19 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
 //    GLint vertAttrib;
 //    GLint normAttrib;
 //    GLint colorAttrib;
+
+/*
+typedef struct debugProgram_t {
+    // vertex shader inputs
+    GLint modelLoc;
+    GLuint hUBO;
+
+    // fragment shader inputs
+
+    // program handle
+    GLuint hProgram;
+} debugProgram_t;
+*/
 
 @property (nonatomic, readwrite, assign) GLuint hProgram;
 
@@ -93,26 +138,25 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
 
 + (id<NFRProgram>) createProgramObject:(NSString *)programName {
 
-    //
-    // TODO: implement
-    //
-
     if ([programName isEqualToString:@"DefaultModel"]) {
-
-        //id<NFRProgram> programObj = [[[NFRPhongProgram alloc] init] autorelease];
-
         NFRPhongProgram* programObj = [[[NFRPhongProgram alloc] init] autorelease];
+        [programObj setHProgram:[NFRUtils createProgram:programName]];
 
         //
-        // TODO: how to call a method on the specific implementation of a protocol ??
+        // TODO: get vertex attribute handles and perform UBO setup
         //
-        //GLuint hProg = [NFRUtils createProgramObject:programName];
-        //[programObj setHProgram:hProg];
 
         return programObj;
     }
     else if ([programName isEqualToString:@"Debug"]) {
+        NFRDebugProgram* programObj = [[[NFRDebugProgram alloc] init] autorelease];
+        [programObj setHProgram:[NFRUtils createProgram:programName]];
+
         //
+        // TODO: get vertex attribute handles and perform UBO setup
+        //
+
+        return programObj;
     }
     else {
         NSLog(@"WARNING: NFRUtils createProgramObject attempted to load an unknown program, returning nil");
