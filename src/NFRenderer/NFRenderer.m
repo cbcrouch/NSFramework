@@ -7,6 +7,7 @@
 
 #import "NFRenderer.h"
 #import "NFRUtils.h"
+#import "NFRProgram.h"
 
 //
 // TODO: move NFAssetLoader module test code into NFSimulation module once it has been stubbed out
@@ -102,6 +103,10 @@ typedef struct debugProgram_t {
 
     phongModel_t m_phongModel;
     debugProgram_t m_debugProgram;
+
+
+    id<NFRProgram> m_phongObject;
+    id<NFRProgram> m_debugObject;
 }
 
 @property (nonatomic, retain) NSArray* viewports;
@@ -145,6 +150,13 @@ typedef struct debugProgram_t {
     [self setViewports:[NSArray arrayWithObjects:viewportArray count:MAX_NUM_VIEWPORTS]];
     [self loadShaders];
 
+
+
+    m_phongObject = [NFRProgram createProgramObject:@"DefaultModel"];
+    m_debugObject = [NFRProgram createProgramObject:@"Debug"];
+
+
+
     NSString *fileNamePath;
 
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
@@ -172,6 +184,7 @@ typedef struct debugProgram_t {
 
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/buddha.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/dragon.obj";
+
 
     GLuint hProgram = m_phongModel.hProgram;
 
@@ -414,9 +427,6 @@ typedef struct debugProgram_t {
     m_debugProgram.hProgram = [NFRUtils createProgram:@"Debug"];
     NSAssert(m_debugProgram.hProgram != 0, @"Failed to create GL shader program");
 
-    //normTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "NormalizedTexexlFetch");
-    //expTexFuncIdx = glGetSubroutineIndex(m_hProgram, GL_FRAGMENT_SHADER, "ExplicitTexelFetch");
-
     // setup uniform for model matrix
     m_debugProgram.modelLoc = glGetUniformLocation(m_debugProgram.hProgram, (const GLchar *)"model");
     NSAssert(m_debugProgram.modelLoc != -1, @"Failed to get MVP uniform location");
@@ -435,7 +445,7 @@ typedef struct debugProgram_t {
     // TODO: while not yet implemented should consider using some additional utility
     //       methods for simplfying UBOs assuming they can be made worth while
     //
-    //+ (void) setUniformBuffer:(GLuint)hUBO withData:(NSArray *)dataArray inProgrm:(GLuint)handle;
+    //+ (void) setUniformBuffer:(GLuint)hUBO withData:(NSArray *)dataArray inProgram:(GLuint)handle;
 
     GLsizeiptr matrixSize = (GLsizeiptr)(16 * sizeof(float));
     GLintptr offset = (GLintptr)matrixSize;
