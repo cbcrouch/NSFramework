@@ -1,0 +1,64 @@
+//
+//  NFCommonTypes.h
+//  NSFramework
+//
+//  Copyright (c) 2015 Casey Crouch. All rights reserved.
+//
+
+#ifndef NSFramework_NFCommonTypes_h
+#define NSFramework_NFCommonTypes_h
+
+
+#define NFLOATS_POS 4
+#define NFLOATS_NORM 4
+#define NFLOATS_TEX 3
+
+//
+// TODO: should really stop being so lazy and split out the interleaved vertices (use 2 VB/IB pairs,
+//       first just position [for depth only pass], second position and other interleaved data)
+//
+
+//
+// TODO: need to get a better handle on common data types and make sure they align
+//       with OpenGL data types
+//
+
+typedef struct NFVertex_t {
+    // NOTE: w component of norm should be 0.0, and 1.0 for position (according to GLSL documentation
+    //       for vectors w = 0 and for points w = 1)
+
+    //
+    // TODO: use a vec3 for both position and normal
+    //
+    float pos[4];
+    float norm[4];
+    float texCoord[3];
+} NFVertex_t;
+
+
+//
+// TODO: use the debug vertex to draw the grid lines, axis, and AABBs
+//
+typedef struct NFDebugVertex_t {
+    float pos[3];
+    float norm[3];
+    float color[4];
+} NFDebugVertex_t;
+
+
+typedef struct NFFace_t {
+    unsigned short indices[3];
+
+    //
+    // TODO: in order to perform @encode on a struct it appears that all its members must be
+    //       primitive data types, verify that this is correct and not a bug
+    //
+    //GLKVector4 normal;
+    float normal[4];
+
+    float area;
+} NFFace_t;
+
+
+
+#endif

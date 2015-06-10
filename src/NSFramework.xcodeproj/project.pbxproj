@@ -88,6 +88,7 @@
 		234E2CE7188382CC00AF8F23 /* NSFrameworkTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NSFrameworkTests-Info.plist"; sourceTree = "<group>"; };
 		234E2CE9188382CC00AF8F23 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		234E2CEB188382CC00AF8F23 /* NSFrameworkTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSFrameworkTests.m; sourceTree = "<group>"; };
+		235E326A1B27D5B3002AF5C7 /* NFCommonTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFCommonTypes.h; path = NFUtils/NFCommonTypes.h; sourceTree = "<group>"; };
 		2377618E1B2758AE00855E48 /* NFRProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFRProgram.h; path = NFRenderer/NFRProgram.h; sourceTree = "<group>"; };
 		2377618F1B2758AE00855E48 /* NFRProgram.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFRProgram.m; path = NFRenderer/NFRProgram.m; sourceTree = "<group>"; };
 		2381561F1A16A1460018ECF3 /* NFSimulation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFSimulation.h; path = NFSimulation/NFSimulation.h; sourceTree = "<group>"; };
@@ -279,6 +280,7 @@
 		23767231189067F700AE8A5C /* NFUtils */ = {
 			isa = PBXGroup;
 			children = (
+				235E326A1B27D5B3002AF5C7 /* NFCommonTypes.h */,
 				232BDD961A15A17500BB8A6C /* NFUtils.h */,
 				232BDD971A15A17500BB8A6C /* NFUtils.m */,
 			);

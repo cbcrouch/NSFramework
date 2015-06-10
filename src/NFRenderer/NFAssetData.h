@@ -8,60 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
 
+#import "NFCommonTypes.h"
 #import "NFSurfaceModel.h"
-
-
-//
-// TODO: move vertex/face definitions into NFRCommonTypes.h or something similar so that other
-//       modules don't have to include the NFAssetData
-//
-
-#define NFLOATS_POS 4
-#define NFLOATS_NORM 4
-#define NFLOATS_TEX 3
-
-
-//
-// TODO: should really stop being so lazy and split out the interleaved vertices (use 2 VB/IB pairs,
-//       first just position [for depth only pass], second position and other interleaved data)
-//
-
-typedef struct NFVertex_t {
-    // NOTE: w component of norm should be 0.0, and 1.0 for position (according to GLSL documentation
-    //       for vectors w = 0 and for points w = 1)
-
-    //
-    // TODO: use a vec3 for both position and normal
-    //
-    GLfloat pos[4];
-    GLfloat norm[4];
-    GLfloat texCoord[3];
-} NFVertex_t;
-
-
-//
-// TODO: use the debug vertex to draw the grid lines, axis, and AABBs
-//
-typedef struct NFDebugVertex_t {
-    GLfloat pos[3];
-    GLfloat norm[3];
-    GLfloat color[4];
-} NFDebugVertex_t;
-
-
-typedef struct NFFace_t {
-    GLushort indices[3];
-
-    //
-    // TODO: in order to perform @encode on a struct it appears that all its members must be
-    //       primitive data types, verify that this is correct and not a bug
-    //
-    //GLKVector4 normal;
-    GLfloat normal[4];
-
-    GLfloat area;
-} NFFace_t;
-
 
 
 //

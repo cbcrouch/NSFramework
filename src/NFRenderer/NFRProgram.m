@@ -6,6 +6,8 @@
 //
 
 #import "NFRProgram.h"
+
+#import "NFCommonTypes.h"
 #import "NFRUtils.h"
 
 
@@ -149,37 +151,28 @@ typedef struct phongLightUniform_t {
 @synthesize hProgram = _hProgram;
 
 - (void) setStateWithVAO:(GLint)hVAO withVBO:(GLint)hVBO {
-    //
-    // TODO: implement
-    //
-/*
-    glBindVertexArray(self.hVAO);
+
+    glBindVertexArray(hVAO);
 
     // NOTE: the vert attributes bound to the VAO (and associated with the active VBO)
-    glEnableVertexAttribArray(pState->vertAttrib);
-    glEnableVertexAttribArray(pState->normAttrib);
-    glEnableVertexAttribArray(pState->texAttrib);
+    glEnableVertexAttribArray(self.vertexAttribute);
+    glEnableVertexAttribArray(self.normalAttribute);
+    glEnableVertexAttribArray(self.texCoordAttribute);
 
-    glBindVertexArray(0);
 
-    //
-    // NOTE: may still need VAO bound at this point
-    //
-    glBindBuffer(GL_ARRAY_BUFFER, self.hVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, hVBO);
 
-    //
-    // TODO: need to encapsulate these calls in a vertex buffer format and layout abstraction
-    //
-
-    glVertexAttribPointer(state.vertAttrib, NFLOATS_POS, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+    glVertexAttribPointer(self.vertexAttribute, NFLOATS_POS, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
                           (const GLvoid *)0x00 + offsetof(NFVertex_t, pos));
-    glVertexAttribPointer(state.normAttrib, NFLOATS_NORM, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+    glVertexAttribPointer(self.normalAttribute, NFLOATS_NORM, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
                           (const GLvoid *)0x00 + offsetof(NFVertex_t, norm));
-    glVertexAttribPointer(state.texAttrib, NFLOATS_TEX, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+    glVertexAttribPointer(self.texCoordAttribute, NFLOATS_TEX, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
                           (const GLvoid *)0x00 + offsetof(NFVertex_t, texCoord));
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-*/
+
+    glBindVertexArray(0);
+
 }
 
 - (void) updateViewMatrix:(GLKMatrix4)viewMatrix projectionMatrix:(GLKMatrix4)projection {
