@@ -12,17 +12,17 @@
 @interface NFRPhongProgram : NSObject <NFRProgram>
 
 typedef struct phongMaterialUniform_t {
-    GLint matAmbientLoc;
-    GLint matDiffuseLoc;
-    GLint matSpecularLoc;
-    GLint matShineLoc;
+    GLint ambientLoc;
+    GLint diffuseLoc;
+    GLint specularLoc;
+    GLint shineLoc;
 } phongMaterialUniform_t;
 
 typedef struct phongLightUniform_t {
-    GLint lightAmbientLoc;
-    GLint lightDiffuseLoc;
-    GLint lightSpecularLoc;
-    GLint lightPositionLoc;
+    GLint ambientLoc;
+    GLint diffuseLoc;
+    GLint specularLoc;
+    GLint positionLoc;
 } phongLightUniform_t;
 
 @property (nonatomic, assign) GLint vertexAttribute;
@@ -36,6 +36,8 @@ typedef struct phongLightUniform_t {
 @property (nonatomic, assign) GLint viewPositionLocation;
 @property (nonatomic, assign) GLuint lightSubroutine;
 @property (nonatomic, assign) GLuint phongSubroutine;
+
+@property (nonatomic, assign) GLuint hUBO;
 
 @property (nonatomic, readwrite, assign) GLuint hProgram;
 
@@ -57,74 +59,86 @@ typedef struct phongLightUniform_t {
 @synthesize lightSubroutine = _lightSubroutine;
 @synthesize phongSubroutine = _phongSubroutine;
 
+@synthesize hUBO = _hUBO;
+
 - (void) loadProgramInputPoints {
+    // shader attributes
+    [self setVertexAttribute:glGetAttribLocation(self.hProgram, "v_position")];
+    NSAssert(self.vertexAttribute != -1, @"Failed to bind attribute");
 
-    //
-    // TODO: get and set all the program input points
-    //
+    [self setNormalAttribute:glGetAttribLocation(self.hProgram, "v_normal")];
+    NSAssert(self.normalAttribute != -1, @"Failed to bind attribute");
 
-    [self setModelMatrixLocation:glGetUniformLocation(self.hProgram, (const GLchar *)"model")];
-    NSAssert(self.modelMatrixLocation != -1, @"failed to get model matrix uniform location");
-
-
-#if 0
-    // uniform buffer for view and projection matrix
-    m_phongModel.hUBO = [NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:m_phongModel.hProgram];
-    NSAssert(m_phongModel.hUBO != 0, @"failed to get uniform buffer handle");
+    [self setTexCoordAttribute:glGetAttribLocation(self.hProgram, "v_texcoord")];
+    NSAssert(self.texCoordAttribute != -1, @"Failed to bind attribute");
 
     // material struct uniform locations
-    m_phongModel.matLocs.matAmbientLoc = glGetUniformLocation(m_phongModel.hProgram, "material.ambient");
-    NSAssert(m_phongModel.matLocs.matAmbientLoc != -1, @"failed to get uniform location");
+    phongMaterialUniform_t phongMat;
 
-    m_phongModel.matLocs.matDiffuseLoc = glGetUniformLocation(m_phongModel.hProgram, "material.diffuse");
-    NSAssert(m_phongModel.matLocs.matDiffuseLoc != -1, @"failed to get uniform location");
+    phongMat.ambientLoc = glGetUniformLocation(self.hProgram, "material.ambient");
+    NSAssert(phongMat.ambientLoc != -1, @"failed to get uniform location");
 
-    m_phongModel.matLocs.matSpecularLoc = glGetUniformLocation(m_phongModel.hProgram, "material.specular");
-    NSAssert(m_phongModel.matLocs.matSpecularLoc != -1, @"failed to get uniform location");
+    phongMat.diffuseLoc = glGetUniformLocation(self.hProgram, "material.diffuse");
+    NSAssert(phongMat.diffuseLoc != -1, @"failed to get uniform location");
 
-    m_phongModel.matLocs.matShineLoc = glGetUniformLocation(m_phongModel.hProgram, "material.shininess");
-    NSAssert(m_phongModel.matLocs.matShineLoc != -1, @"failed to get uniform location");
+    phongMat.specularLoc = glGetUniformLocation(self.hProgram, "material.specular");
+    NSAssert(phongMat.specularLoc != -1, @"failed to get uniform location");
+
+    phongMat.shineLoc = glGetUniformLocation(self.hProgram, "material.shininess");
+    NSAssert(phongMat.shineLoc != -1, @"failed to get uniform location");
+
+    [self setMaterialUniforms:phongMat];
 
     // hardcoded material values (jade)
-    glUseProgram(m_phongModel.hProgram);
-    glUniform3f(m_phongModel.matLocs.matAmbientLoc, 0.135f, 0.2225f, 0.1575f);
-    glUniform3f(m_phongModel.matLocs.matDiffuseLoc, 0.54f, 0.89f, 0.63f);
-    glUniform3f(m_phongModel.matLocs.matSpecularLoc, 0.316228f, 0.316228f, 0.316228f);
-    glUniform1f(m_phongModel.matLocs.matShineLoc, 128.0f * 0.1f);
+    glUseProgram(self.hProgram);
+    glUniform3f(phongMat.ambientLoc, 0.135f, 0.2225f, 0.1575f);
+    glUniform3f(phongMat.diffuseLoc, 0.54f, 0.89f, 0.63f);
+    glUniform3f(phongMat.specularLoc, 0.316228f, 0.316228f, 0.316228f);
+    glUniform1f(phongMat.shineLoc, 128.0f * 0.1f);
     glUseProgram(0);
 
     // light struct uniform locations
-    m_phongModel.lightLocs.lightAmbientLoc = glGetUniformLocation(m_phongModel.hProgram, "light.ambient");
-    NSAssert(m_phongModel.lightLocs.lightAmbientLoc != -1, @"failed to get uniform location");
+    phongLightUniform_t phongLight;
+    phongLight.ambientLoc = glGetUniformLocation(self.hProgram, "light.ambient");
+    NSAssert(phongLight.ambientLoc != -1, @"failed to get uniform location");
 
-    m_phongModel.lightLocs.lightDiffuseLoc = glGetUniformLocation(m_phongModel.hProgram, "light.diffuse");
-    NSAssert(m_phongModel.lightLocs.lightDiffuseLoc != -1, @"failed to get uniform location");
+    phongLight.diffuseLoc = glGetUniformLocation(self.hProgram, "light.diffuse");
+    NSAssert(phongLight.diffuseLoc != -1, @"failed to get uniform location");
 
-    m_phongModel.lightLocs.lightSpecularLoc = glGetUniformLocation(m_phongModel.hProgram, "light.specular");
-    NSAssert(m_phongModel.lightLocs.lightSpecularLoc != -1, @"failed to get uniform location");
+    phongLight.specularLoc = glGetUniformLocation(self.hProgram, "light.specular");
+    NSAssert(phongLight.specularLoc != -1, @"failed to get uniform location");
 
-    m_phongModel.lightLocs.lightPositionLoc = glGetUniformLocation(m_phongModel.hProgram, "light.position");
-    NSAssert(m_phongModel.lightLocs.lightPositionLoc != -1, @"failed to get uniform location");
+    phongLight.positionLoc = glGetUniformLocation(self.hProgram, "light.position");
+    NSAssert(phongLight.positionLoc != -1, @"failed to get uniform location");
+
+    [self setLightUniforms:phongLight];
 
     // hardcoded light values
-    glUseProgram(m_phongModel.hProgram);
-    glUniform3f(m_phongModel.lightLocs.lightAmbientLoc, 0.2f, 0.2f, 0.2f);
-    glUniform3f(m_phongModel.lightLocs.lightDiffuseLoc, 0.5f, 0.5f, 0.5f);
-    glUniform3f(m_phongModel.lightLocs.lightSpecularLoc, 1.0f, 1.0f, 1.0f);
-    glUniform3f(m_phongModel.lightLocs.lightPositionLoc, 2.0f, 1.0f, 0.0f);
+    glUseProgram(self.hProgram);
+    glUniform3f(phongLight.ambientLoc, 0.2f, 0.2f, 0.2f);
+    glUniform3f(phongLight.diffuseLoc, 0.5f, 0.5f, 0.5f);
+    glUniform3f(phongLight.specularLoc, 1.0f, 1.0f, 1.0f);
+    glUniform3f(phongLight.positionLoc, 2.0f, 1.0f, 0.0f);
     glUseProgram(0);
 
+    // model matrix uniform location
+    [self setModelMatrixLocation:glGetUniformLocation(self.hProgram, (const GLchar *)"model")];
+    NSAssert(self.modelMatrixLocation != -1, @"failed to get model matrix uniform location");
+
     // view position uniform location
-    m_phongModel.viewPositionLoc = glGetUniformLocation(m_phongModel.hProgram, "viewPos");
-    NSAssert(m_phongModel.viewPositionLoc != -1, @"failed to get uniform location");
+    [self setViewPositionLocation:glGetUniformLocation(self.hProgram, "viewPos")];
+    NSAssert(self.viewPositionLocation != -1, @"failed to get uniform location");
 
     // subroutine indices
-    m_phongModel.lightSubroutine = glGetSubroutineIndex(m_phongModel.hProgram, GL_FRAGMENT_SHADER, "light_subroutine");
-    NSAssert(m_phongModel.lightSubroutine != GL_INVALID_INDEX, @"failed to get subroutine index");
+    [self setLightSubroutine:glGetSubroutineIndex(self.hProgram, GL_FRAGMENT_SHADER, "light_subroutine")];
+    NSAssert(self.lightSubroutine != GL_INVALID_INDEX, @"failed to get subroutine index");
 
-    m_phongModel.phongSubroutine = glGetSubroutineIndex(m_phongModel.hProgram, GL_FRAGMENT_SHADER, "phong_subroutine");
-    NSAssert(m_phongModel.phongSubroutine != GL_INVALID_INDEX, @"failed to get subroutine index");
-#endif
+    [self setPhongSubroutine:glGetSubroutineIndex(self.hProgram, GL_FRAGMENT_SHADER, "phong_subroutine")];
+    NSAssert(self.phongSubroutine != GL_INVALID_INDEX, @"failed to get subroutine index");
+
+    // uniform buffer for view and projection matrix
+    [self setHUBO:[NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:self.hProgram]];
+    NSAssert(self.hUBO != 0, @"failed to get uniform buffer handle");
 }
 
 

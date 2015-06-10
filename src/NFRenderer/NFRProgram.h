@@ -18,6 +18,11 @@
 //
 - (void) setStateWithVAO:(GLint)hVAO withVBO:(GLint)hVBO;
 
+//
+// TODO: add another function for updating state (the above function should be just for
+//       initializing state which should be a one time call)
+//
+
 - (void) updateViewMatrix:(GLKMatrix4)viewMatrix projectionMatrix:(GLKMatrix4)projection;
 
 @end

@@ -546,28 +546,17 @@ typedef struct NFVertState_t {
 
 //
 // TODO: createVertexStateWithProgram and loadResourcesGL should be eliminated, there should be no OpenGL
-//       calls in NFAssetData they need to all be handled through NFGraphicsToolkit
-//
-
-//
-// TODO: create a program object that contains enough information to determine which shader type OR
-//       pass the VAO and a VBO array to the shader object to configure OpenGL state
+//       calls in NFAssetData they need to all be handled through NFRenderer (NFAssetData should be moved
+//       out into the entity module)
 //
 - (void) createVertexStateWithProgram:(GLuint)hProgram {
 
     //
-    // TODO: start with implementing the render pipeline object and move the NFVertState_t to it
+    // TODO: move all these calls into NFRProgram
     //
-
     // get shader attirbutes
     NFVertState_t *pState = self.vertexState;
 
-    
-    //
-    // TODO: should move the shader attribute location handling into the render pipeline object
-    //       and implement getters that would allow the asset draw calls to be handled external
-    //       to the class
-    //
     pState->vertAttrib = glGetAttribLocation(hProgram, "v_position");
     NSAssert(pState->vertAttrib != -1, @"Failed to bind attribute");
 
@@ -598,8 +587,6 @@ typedef struct NFVertState_t {
     glEnableVertexAttribArray(pState->texAttrib);
 
     glBindVertexArray(0);
-
-    //CHECK_GL_ERROR();
 }
 
 - (void) loadResourcesGL {
