@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "NFAssetData.h"
+#import "NFCommonTypes.h"
 #import "NFSurfaceModel.h"
 
 

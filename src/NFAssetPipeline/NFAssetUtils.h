@@ -9,11 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
 
-//
-// TODO: would be better to have a common defs file that defined NFVertex_t and NFFace_t so
-//       that NFAssetData class doesn't need to be imported everywhere
-//
-#import "NFAssetData.h"
+#import "NFCommonTypes.h"
 
 
 @interface NFAssetUtils : NSObject
