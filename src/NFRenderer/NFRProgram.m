@@ -152,43 +152,123 @@ typedef struct phongLightUniform_t {
     //
     // TODO: implement
     //
+/*
+    glBindVertexArray(self.hVAO);
+
+    // NOTE: the vert attributes bound to the VAO (and associated with the active VBO)
+    glEnableVertexAttribArray(pState->vertAttrib);
+    glEnableVertexAttribArray(pState->normAttrib);
+    glEnableVertexAttribArray(pState->texAttrib);
+
+    glBindVertexArray(0);
+
+    //
+    // NOTE: may still need VAO bound at this point
+    //
+    glBindBuffer(GL_ARRAY_BUFFER, self.hVBO);
+
+    //
+    // TODO: need to encapsulate these calls in a vertex buffer format and layout abstraction
+    //
+
+    glVertexAttribPointer(state.vertAttrib, NFLOATS_POS, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+                          (const GLvoid *)0x00 + offsetof(NFVertex_t, pos));
+    glVertexAttribPointer(state.normAttrib, NFLOATS_NORM, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+                          (const GLvoid *)0x00 + offsetof(NFVertex_t, norm));
+    glVertexAttribPointer(state.texAttrib, NFLOATS_TEX, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+                          (const GLvoid *)0x00 + offsetof(NFVertex_t, texCoord));
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+*/
 }
 
 - (void) updateViewMatrix:(GLKMatrix4)viewMatrix projectionMatrix:(GLKMatrix4)projection {
+
     //
-    // TODO: implement
+    // TODO: while not yet implemented should consider using some additional utility methods
+    //       for simplfying UBOs to avoid redundant code between shader program implementations
     //
+
+
+/*
+    static const char* matrixType = @encode(GLKMatrix4);
+    NSMutableArray* matrixArray = [[[NSMutableArray alloc] init] autorelease];
+    [matrixArray addObject:[NSValue value:&viewMatrix withObjCType:matrixType]];
+    [matrixArray addObject:[NSValue value:&projection withObjCType:matrixType]];
+
+    //
+    // TODO: this has not been tested
+    //
+    [NFRUtils setUniformBuffer:self.hUBO withData:matrixArray];
+*/
+
+
+    GLsizeiptr matrixSize = (GLsizeiptr)(16 * sizeof(float));
+    GLintptr offset = (GLintptr)matrixSize;
+
+    glBindBuffer(GL_UNIFORM_BUFFER, self.hUBO);
+
+    // will allocate buffer's internal storage
+    glBufferData(GL_UNIFORM_BUFFER, 2 * matrixSize, NULL, GL_STATIC_READ);
+
+    // transfer view and projection matrix data to uniform buffer
+    glBufferSubData(GL_UNIFORM_BUFFER, (GLintptr)0, matrixSize, viewMatrix.m);
+    glBufferSubData(GL_UNIFORM_BUFFER, offset, matrixSize, projection.m);
+
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    CHECK_GL_ERROR();
 }
 
 @end
 
 
 @interface NFRDebugProgram : NSObject <NFRProgram>
-//
-// TODO: make these properties
-//
-//    GLint vertAttrib;
-//    GLint normAttrib;
-//    GLint colorAttrib;
 
-/*
- typedef struct debugProgram_t {
- // vertex shader inputs
- GLint modelLoc;
- GLuint hUBO;
+@property (nonatomic, assign) GLint vertexAttribute;
+@property (nonatomic, assign) GLint normalAttribute;
+@property (nonatomic, assign) GLint colorAttribute;
 
- // fragment shader inputs
+@property (nonatomic, assign) GLint modelMatrixLocation;
 
- // program handle
- GLuint hProgram;
- } debugProgram_t;
- */
+@property (nonatomic, assign) GLuint hUBO;
 
 @property (nonatomic, readwrite, assign) GLuint hProgram;
+
+- (void) loadProgramInputPoints;
 
 @end
 
 @implementation NFRDebugProgram
+
+@synthesize vertexAttribute = _vertexAttribute;
+@synthesize normalAttribute = _normalAttribute;
+@synthesize colorAttribute = _colorAttribute;
+
+@synthesize modelMatrixLocation = _modelMatrixLocation;
+
+@synthesize hUBO = _hUBO;
+
+
+- (void) loadProgramInputPoints {
+    // shader attributes
+    [self setVertexAttribute:glGetAttribLocation(self.hProgram, "v_position")];
+    NSAssert(self.vertexAttribute != -1, @"Failed to bind attribute");
+
+    [self setNormalAttribute:glGetAttribLocation(self.hProgram, "v_normal")];
+    NSAssert(self.normalAttribute != -1, @"Failed to bind attribute");
+
+    [self setColorAttribute:glGetAttribLocation(self.hProgram, "v_color")];
+    NSAssert(self.colorAttribute != -1, @"Failed to bind attribute");
+
+    // setup uniform for model matrix
+    [self setModelMatrixLocation:glGetUniformLocation(self.hProgram, (const GLchar *)"model")];
+    NSAssert(self.modelMatrixLocation != -1, @"Failed to get model matrix uniform location");
+
+    // uniform buffer for view and projection matrix
+    [self setHUBO:[NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:self.hProgram]];
+    NSAssert(self.hUBO != 0, @"failed to get uniform buffer handle");
+}
+
 
 @synthesize hProgram = _hProgram;
 
@@ -199,9 +279,20 @@ typedef struct phongLightUniform_t {
 }
 
 - (void) updateViewMatrix:(GLKMatrix4)viewMatrix projectionMatrix:(GLKMatrix4)projection {
-    //
-    // TODO: implement
-    //
+    GLsizeiptr matrixSize = (GLsizeiptr)(16 * sizeof(float));
+    GLintptr offset = (GLintptr)matrixSize;
+
+    glBindBuffer(GL_UNIFORM_BUFFER, self.hUBO);
+
+    // will allocate buffer's internal storage
+    glBufferData(GL_UNIFORM_BUFFER, 2 * matrixSize, NULL, GL_STATIC_READ);
+
+    // transfer view and projection matrix data to uniform buffer
+    glBufferSubData(GL_UNIFORM_BUFFER, (GLintptr)0, matrixSize, viewMatrix.m);
+    glBufferSubData(GL_UNIFORM_BUFFER, offset, matrixSize, projection.m);
+
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    CHECK_GL_ERROR();
 }
 
 @end
@@ -223,23 +314,10 @@ typedef struct phongLightUniform_t {
     else if ([programName isEqualToString:@"Debug"]) {
         NFRDebugProgram* programObj = [[[NFRDebugProgram alloc] init] autorelease];
         [programObj setHProgram:[NFRUtils createProgram:programName]];
+        [programObj loadProgramInputPoints];
 
         NSLog(@"NFRProgram created and loaded Debug shader");
 
-        //
-        // TODO: get vertex attribute handles and perform UBO setup
-        //
-
-        /*
-         // setup uniform for model matrix
-         m_debugProgram.modelLoc = glGetUniformLocation(m_debugProgram.hProgram, (const GLchar *)"model");
-         NSAssert(m_debugProgram.modelLoc != -1, @"Failed to get MVP uniform location");
-
-         // uniform buffer for view and projection matrix
-         m_debugProgram.hUBO = [NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:m_debugProgram.hProgram];
-         NSAssert(m_debugProgram.hUBO != 0, @"failed to get uniform buffer handle");
-         */
-        
         return programObj;
     }
     else {

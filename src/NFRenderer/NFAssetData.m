@@ -444,7 +444,6 @@ typedef struct NFVertState_t {
 //
 // TODO: rename NFAssetData to NFAssetContainer, NFGeometry ??
 //
-
 @interface NFAssetData()
 
 @property (nonatomic, assign) GLuint hVAO;

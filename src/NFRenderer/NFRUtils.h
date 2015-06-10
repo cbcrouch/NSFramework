@@ -80,7 +80,10 @@ typedef NS_ENUM(NSUInteger, SHADER_TYPE) {
 + (GLuint) createUniformBufferNamed:(NSString *)bufferName inProgrm:(GLuint)handle;
 + (void) destroyUniformBufferHandle:(GLuint)handle;
 
-+ (void) setUniformBuffer:(GLuint)hUBO withData:(NSArray *)dataArray inProgrm:(GLuint)handle;
+//
+// TODO: this currently only works with GLKMatrix4 elements, it should be made more generic if possible
+//
++ (void) setUniformBuffer:(GLuint)hUBO withData:(NSArray *)dataArray;
 
 
 //

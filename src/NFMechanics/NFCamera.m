@@ -326,6 +326,11 @@
     self.look = look;
     self.up = up;
 
+    //
+    // TODO: explicitly define a coordinate system (left or right-handed) though should note that the
+    //       Wavefront obj file format specifies vertices in a right-handed coordinate system
+    //
+
     // NOTE: it would appear that GLK is using a UVN based coordinate system under-the-hood
     _viewMatrix = GLKMatrix4MakeLookAt(eye.x, eye.y, eye.z,
                                        look.x, look.y, look.z,

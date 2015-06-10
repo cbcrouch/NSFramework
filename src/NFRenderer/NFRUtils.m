@@ -12,6 +12,8 @@
 #define GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
 #import <OpenGL/gl3.h>
 
+#import <GLKit/GLKit.h>
+
 #ifdef DEBUG
 #define VALIDATE_PROGRAM(PROGRAM_HANDLE) [NSGLRenderer checkShader:PROGRAM_HANDLE ofType:kProgram againstStatus:kValidateStatus]
 #else
@@ -326,14 +328,12 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
     glGetActiveUniformBlockiv(handle, blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &numBlocks);
 
 
-
     //
     // TODO: use a static var to start the bindPoint and then increment (if binding points are used for other types in the context will need to handle differently)
     //       ideally will need to better manage as shaders are created/deleted possibly freeing up binding points in the context
     //
     static GLuint bindingPoint = 1;
     NSAssert(bindingPoint < GL_MAX_UNIFORM_BUFFER_BINDINGS, @"Error: binding point >= to GL_MAX_UNIFORM_BUFFER_BINDINGS");
-
 
 
     GLuint hUBO = 0;
@@ -387,7 +387,6 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
     free(matStride);
 */
 
-
     ++bindingPoint;
     
     CHECK_GL_ERROR();
@@ -400,26 +399,34 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
     //
 }
 
-+ (void) setUniformBuffer:(GLuint)hUBO withData:(NSArray *)dataArray inProgrm:(GLuint)handle {
++ (void) setUniformBuffer:(GLuint)hUBO withData:(NSArray *)dataArray {
+
+    //
+    // TODO: this currently only works with GLKMatrix4 elements, it should be made more generic if possible
+    //
     //GLint blockSize;
     //GLint numBlocks;
     //glGetActiveUniformBlockiv(handle, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
     //glGetActiveUniformBlockiv(handle, blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &numBlocks);
 
-    //GLsizeiptr elementSize = (GLsizeiptr)(blockSize / numBlocks);
-    //GLintptr offset = (GLintptr)elementSize;
 
-    //
-    //
-    //
-    
-/*
-    // TODO: loop through numBlocks and set buffer sub data from an array in set UBO data function
+    GLsizeiptr matrixSize = (GLsizeiptr)(16 * sizeof(float));
+    GLintptr offset = (GLintptr)matrixSize;
 
-    // transfer view and projection matrix data to uniform buffer
-    glBufferSubData(GL_UNIFORM_BUFFER, (GLintptr)0, elementSize, m_viewVolume.view.m);
-    glBufferSubData(GL_UNIFORM_BUFFER, offset, elementSize, m_viewVolume.projection.m);
-*/
+    glBindBuffer(GL_UNIFORM_BUFFER, hUBO);
+
+    // will allocate buffer's internal storage
+    glBufferData(GL_UNIFORM_BUFFER, [dataArray count] * matrixSize, NULL, GL_STATIC_READ);
+
+    GLKMatrix4 matrix;
+    for (int i=0; i<[dataArray count]; ++i) {
+        NSValue* valueObj = [dataArray objectAtIndex:i];
+        [valueObj getValue:&matrix];
+        glBufferSubData(GL_UNIFORM_BUFFER, (GLintptr)(i * offset), matrixSize, matrix.m);
+    }
+
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    CHECK_GL_ERROR();
 }
 
 //

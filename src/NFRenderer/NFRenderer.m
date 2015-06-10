@@ -418,8 +418,6 @@ typedef struct debugProgram_t {
 
     CHECK_GL_ERROR();
 
-
-
     //
     // TODO: get the grid and axis lines drawing with the debug shader
     //
@@ -436,21 +434,10 @@ typedef struct debugProgram_t {
     NSAssert(m_debugProgram.hUBO != 0, @"failed to get uniform buffer handle");
 }
 
-//
-// TODO: explicitly define a coordinate system (left or right-handed) though should note that the
-//       Wavefront obj file format specifies vertices in a right-handed coordinate system
-//
 - (void) updateUboWithViewMatrix:(GLKMatrix4)viewMatrix withProjection:(GLKMatrix4)projection {
-    //
-    // TODO: while not yet implemented should consider using some additional utility
-    //       methods for simplfying UBOs assuming they can be made worth while
-    //
-    //+ (void) setUniformBuffer:(GLuint)hUBO withData:(NSArray *)dataArray inProgram:(GLuint)handle;
-
     GLsizeiptr matrixSize = (GLsizeiptr)(16 * sizeof(float));
     GLintptr offset = (GLintptr)matrixSize;
 
-    //glBindBuffer(GL_UNIFORM_BUFFER, m_hUBO);
     glBindBuffer(GL_UNIFORM_BUFFER, m_phongModel.hUBO);
 
     // will allocate buffer's internal storage
