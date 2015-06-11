@@ -151,7 +151,6 @@ typedef struct phongLightUniform_t {
 @synthesize hProgram = _hProgram;
 
 - (void) setStateWithVAO:(GLint)hVAO withVBO:(GLint)hVBO {
-
     glBindVertexArray(hVAO);
 
     // NOTE: the vert attributes bound to the VAO (and associated with the active VBO)
@@ -162,11 +161,11 @@ typedef struct phongLightUniform_t {
 
     glBindBuffer(GL_ARRAY_BUFFER, hVBO);
 
-    glVertexAttribPointer(self.vertexAttribute, NFLOATS_POS, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+    glVertexAttribPointer(self.vertexAttribute, ARRAY_COUNT(NFVertex_t, pos), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
                           (const GLvoid *)0x00 + offsetof(NFVertex_t, pos));
-    glVertexAttribPointer(self.normalAttribute, NFLOATS_NORM, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+    glVertexAttribPointer(self.normalAttribute, ARRAY_COUNT(NFVertex_t, norm), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
                           (const GLvoid *)0x00 + offsetof(NFVertex_t, norm));
-    glVertexAttribPointer(self.texCoordAttribute, NFLOATS_TEX, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+    glVertexAttribPointer(self.texCoordAttribute, ARRAY_COUNT(NFVertex_t, texCoord), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
                           (const GLvoid *)0x00 + offsetof(NFVertex_t, texCoord));
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -266,9 +265,27 @@ typedef struct phongLightUniform_t {
 @synthesize hProgram = _hProgram;
 
 - (void) setStateWithVAO:(GLint)hVAO withVBO:(GLint)hVBO {
-    //
-    // TODO: implement
-    //
+
+    glBindVertexArray(hVAO);
+
+    // NOTE: the vert attributes bound to the VAO (and associated with the active VBO)
+    glEnableVertexAttribArray(self.vertexAttribute);
+    glEnableVertexAttribArray(self.normalAttribute);
+    glEnableVertexAttribArray(self.colorAttribute);
+
+
+    glBindBuffer(GL_ARRAY_BUFFER, hVBO);
+
+    glVertexAttribPointer(self.vertexAttribute, ARRAY_COUNT(NFDebugVertex_t, pos), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+                          (const GLvoid *)0x00 + offsetof(NFDebugVertex_t, pos));
+    glVertexAttribPointer(self.normalAttribute, ARRAY_COUNT(NFDebugVertex_t, norm), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+                          (const GLvoid *)0x00 + offsetof(NFDebugVertex_t, norm));
+    glVertexAttribPointer(self.colorAttribute, ARRAY_COUNT(NFDebugVertex_t, color), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+                          (const GLvoid *)0x00 + offsetof(NFDebugVertex_t, color));
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(0);
 }
 
 - (void) updateViewMatrix:(GLKMatrix4)viewMatrix projectionMatrix:(GLKMatrix4)projection {

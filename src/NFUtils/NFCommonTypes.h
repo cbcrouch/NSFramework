@@ -9,9 +9,11 @@
 #define NSFramework_NFCommonTypes_h
 
 
-#define NFLOATS_POS 4
-#define NFLOATS_NORM 4
-#define NFLOATS_TEX 3
+//
+// TODO: #define OFFSET_OF to offsetof macro ?? (using all caps and underscore will help it standout as a macro)
+//
+#define ARRAY_COUNT(t, d) (sizeof(((t*)0x0)->d) / sizeof(((t*)0x0)->d[0]))
+
 
 //
 // TODO: should really stop being so lazy and split out the interleaved vertices (use 2 VB/IB pairs,

@@ -418,11 +418,11 @@ typedef struct NFVertState_t {
         // TODO: need to encapsulate these calls in a vertex buffer format and layout abstraction
         //
 
-        glVertexAttribPointer(state.vertAttrib, NFLOATS_POS, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+        glVertexAttribPointer(state.vertAttrib, ARRAY_COUNT(NFVertex_t, pos), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
                               (const GLvoid *)0x00 + offsetof(NFVertex_t, pos));
-        glVertexAttribPointer(state.normAttrib, NFLOATS_NORM, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+        glVertexAttribPointer(state.normAttrib, ARRAY_COUNT(NFVertex_t, norm), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
                               (const GLvoid *)0x00 + offsetof(NFVertex_t, norm));
-        glVertexAttribPointer(state.texAttrib, NFLOATS_TEX, GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+        glVertexAttribPointer(state.texAttrib, ARRAY_COUNT(NFVertex_t, texCoord), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
                               (const GLvoid *)0x00 + offsetof(NFVertex_t, texCoord));
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
