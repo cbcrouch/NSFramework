@@ -234,6 +234,20 @@ typedef struct phongLightUniform_t {
     CHECK_GL_ERROR();
 }
 
+- (void)activateSubroutine:(NSString *)subroutine {
+    if ([subroutine isEqualToString:@"PhongSubroutine"]) {
+        GLuint phongSubroutine = self.phongSubroutine;
+        glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &(phongSubroutine));
+    }
+    else if ([subroutine isEqualToString:@"LightSubroutine"]) {
+        GLuint lightSubroutine = self.lightSubroutine;
+        glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &(lightSubroutine));
+    }
+    else {
+        NSLog(@"WARNING: NFRPhongProgram recieved unknown subroutine name in activeSubroutine method, no subroutine bound");
+    }
+}
+
 @end
 
 
@@ -364,18 +378,12 @@ typedef struct phongLightUniform_t {
         NFRPhongProgram* programObj = [[[NFRPhongProgram alloc] init] autorelease];
         [programObj setHProgram:[NFRUtils createProgram:programName]];
         [programObj loadProgramInputPoints];
-
-        NSLog(@"NFRProgram created and loaded DefaultModel shader");
-
         return programObj;
     }
     else if ([programName isEqualToString:@"Debug"]) {
         NFRDebugProgram* programObj = [[[NFRDebugProgram alloc] init] autorelease];
         [programObj setHProgram:[NFRUtils createProgram:programName]];
         [programObj loadProgramInputPoints];
-
-        NSLog(@"NFRProgram created and loaded Debug shader");
-
         return programObj;
     }
     else {

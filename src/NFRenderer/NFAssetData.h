@@ -108,6 +108,6 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
 // TODO: the NFAssetData and NFSubset bind functions really need a better name
 //
 - (void) bindAssetToProgramObj:(id<NFRProgram>)programObj;
-- (void) drawWithProgramObject:(id<NFRProgram>)programObj;
+- (void) drawWithProgramObject:(id<NFRProgram>)programObj withSubroutine:(NSString*)subroutine;
 
 @end

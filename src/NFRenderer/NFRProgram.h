@@ -11,14 +11,49 @@
 
 
 
-//
-// TODO: implement the following classes:
-//
-// - NFRBuffer
-// - NFRBufferAttributes (similiar to vertex attributes concept in other APIs)
-// - NFRTexture
-// - NFRSampler
+@interface NFRBufferAttributes : NSObject
 
+// VAO handle
+
+@end
+
+
+@interface NFRBuffer : NSObject
+
+//
+// TODO: should this be a strong or weak reference ???
+//
+@property (nonatomic, weak) NFRBufferAttributes* bufferAttributes;
+
+// data pointer
+// data size
+// data type
+// number elements
+
+@end
+
+
+@interface NFRTexture : NSObject
+
+// data pointer
+// data size
+// texture format
+// width
+// height
+
+@end
+
+
+@interface NFRSampler : NSObject
+
+// wrap s
+// wrap t
+// mag filter
+// min filter
+
+// mip maps
+
+@end
 
 
 
@@ -39,12 +74,13 @@
 - (void) updateModelMatrix:(GLKMatrix4)modelMatrix;
 - (void) updateViewMatrix:(GLKMatrix4)viewMatrix projectionMatrix:(GLKMatrix4)projection;
 
-//
-// TODO: need a mechanism for selecting which shader subroutines to use
-//
 
-//glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &(phongSubroutine));
-//glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &(lightSubroutine));
+@optional
+
+//
+// TODO: replace this method with a better mechanism for selecting/abstracting shader subroutines
+//
+- (void) activateSubroutine:(NSString*)subroutine;
 
 @end
 

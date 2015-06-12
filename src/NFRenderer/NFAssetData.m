@@ -396,6 +396,7 @@ typedef struct NFVertState_t {
 
 - (void) drawWithProgram:(id<NFRProgram>)programObj withAssetModelMatrix:(GLKMatrix4)assetModelMatrix {
     GLKMatrix4 renderMat = GLKMatrix4Multiply(assetModelMatrix, self.subsetModelMat);
+
     [programObj updateModelMatrix:renderMat];
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.hEBO);
@@ -636,9 +637,7 @@ typedef struct NFVertState_t {
     }
 }
 
-
-
-- (void) drawWithProgramObject:(id<NFRProgram>)programObj {
+- (void) drawWithProgramObject:(id<NFRProgram>)programObj withSubroutine:(NSString*)subroutine {
     //
     // TODO: need to test and abstract out the texture/sampler logic into a NFRTexture and NFRSampler class
     //
@@ -647,15 +646,33 @@ typedef struct NFVertState_t {
     glBindTexture(GL_TEXTURE_2D, self.textureId);
     glUniform1i(self.textureUniform, 0); // GL_TEXTURE0
 
+
+    //
+    // TODO: temporary set the program subroutine here
+    //
+    if ([programObj respondsToSelector:@selector(activateSubroutine:)]) {
+        [programObj activateSubroutine:subroutine];
+    }
+
+
     //
     // TODO: the VAO needs to be bound when issuing a draw call, this needs to be better abstracted so that the
     //       NFAssetData doesn't need to deal with VAO handles
     //
     glBindVertexArray(self.hVAO);
 
+
+    //
+    // TODO: somehow the asset and light's matrices are getting combined
+    //
+
+
     for (NFSubset *subset in self.subsetArray) {
-        [subset drawWithProgram:programObj withAssetModelMatrix:self.modelMatrix];
+        //[subset drawWithProgram:programObj withAssetModelMatrix:self.modelMatrix];
+
+        [subset drawWithProgram:programObj withAssetModelMatrix:GLKMatrix4Identity];
     }
+
 
     glBindVertexArray(0);
 

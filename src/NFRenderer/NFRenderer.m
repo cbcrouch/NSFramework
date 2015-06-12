@@ -86,6 +86,10 @@ typedef struct debugProgram_t {
 
 
 
+#define USE_PROGRAM_OBJECT 0
+
+
+
 #pragma mark - NSGLRenderer Interface
 @interface NFRenderer()
 {
@@ -152,8 +156,8 @@ typedef struct debugProgram_t {
 
 
 
-    m_phongObject = [NFRProgram createProgramObject:@"DefaultModel"];
-    m_debugObject = [NFRProgram createProgramObject:@"Debug"];
+    m_phongObject = [[NFRProgram createProgramObject:@"DefaultModel"] retain];
+    m_debugObject = [[NFRProgram createProgramObject:@"Debug"] retain];
 
 
 
@@ -190,16 +194,16 @@ typedef struct debugProgram_t {
 
     m_pAsset = [NFAssetLoader allocAssetDataOfType:kWavefrontObj withArgs:fileNamePath, nil];
 
-
+#if USE_PROGRAM_OBJECT
     [m_pAsset bindAssetToProgramObj:m_phongObject];
 
-
+#else
     //
     // TODO: eliminate the need to have these two methods and remove all OpenGL calls from NFAssetData
     //
     [m_pAsset createVertexStateWithProgram:hProgram];
     [m_pAsset loadResourcesGL];
-
+#endif
 
 
     //m_pAsset.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 1.0f, 0.0f);
@@ -328,9 +332,21 @@ typedef struct debugProgram_t {
         doOnce = NO;
     }
 
-    // cube
+
+    // asset
+
+#if USE_PROGRAM_OBJECT
+
+    [m_pAsset drawWithProgramObject:m_phongObject withSubroutine:@"PhongSubroutine"];
+
+#else
+
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &(m_phongModel.phongSubroutine));
     [m_pAsset drawWithProgram:m_phongModel.hProgram withModelUniform:m_phongModel.modelLoc];
+
+#endif
+
+
 
     // light
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &(m_phongModel.lightSubroutine));
