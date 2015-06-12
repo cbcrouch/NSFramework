@@ -72,7 +72,6 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
 - (void) loadVertexData:(NFVertex_t *)pVertexData ofSize:(size_t)size;
 - (void) loadIndexData:(GLushort *)pIndexData ofSize:(size_t)size;
 
-
 - (void) bindSubsetToProgramObj:(id<NFRProgram>)programObj withVAO:(GLuint)hVAO;
 
 @end
@@ -96,12 +95,6 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
 //
 - (void) applyUnitScalarMatrix;
 - (void) applyOriginCenterMatrix;
-
-
-- (void) drawWithProgram:(GLuint)hProgram withModelUniform:(GLuint)modelLoc;
-
-- (void) createVertexStateWithProgram:(GLuint)hProgram;
-- (void) loadResourcesGL;
 
 
 //

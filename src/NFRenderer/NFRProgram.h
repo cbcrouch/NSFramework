@@ -56,6 +56,13 @@
 @end
 
 
+@interface NFRRenderRequest : NSObject
+
+// collection of textures/sampler, buffers, etc. to draw
+
+@end
+
+
 
 @protocol NFRProgram <NSObject>
 
