@@ -13,17 +13,22 @@
 
 @property (nonatomic, readonly) GLuint hProgram;
 
-//
-// TODO: should be upgraded to take a VBO / model matrix array to support hierarchical data
-//
-- (void) setStateWithVAO:(GLint)hVAO withVBO:(GLint)hVBO;
 
 //
-// TODO: add another function for updating state (the above function should be just for
-//       initializing state which should be a one time call)
+// TODO: implement these functions
 //
 
+//- (void) configureInputState:(GLint)hVAO;
+
+//- (void) configureVertexBufferLayout:(GLint)hVBO;
+
+//- (void) updateVertexBuffer:(GLint)hVBO numVertices:(GLuint)numVertices dataPtr:(void*)pData;
+//- (void) updateIndexBuffer:(GLint)hEBO numIndices:(GLuint)numIndices dataPtr:(void*)pData;
+
+
+//- (void) updateModelMatrix:(GLKMatrix4)modelMatrix;
 - (void) updateViewMatrix:(GLKMatrix4)viewMatrix projectionMatrix:(GLKMatrix4)projection;
+
 
 @end
 

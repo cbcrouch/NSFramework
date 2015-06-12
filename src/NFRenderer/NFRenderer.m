@@ -191,6 +191,8 @@ typedef struct debugProgram_t {
     m_pAsset = [NFAssetLoader allocAssetDataOfType:kWavefrontObj withArgs:fileNamePath, nil];
 
 
+    [m_pAsset bindAssetToProgramObj:m_phongObject];
+
 
     //
     // TODO: eliminate the need to have these two methods and remove all OpenGL calls from NFAssetData
@@ -205,6 +207,21 @@ typedef struct debugProgram_t {
     //[m_pAsset applyOriginCenterMatrix];
 
     //[m_pAsset applyUnitScalarMatrix]; // use for teapot
+
+
+
+    m_solidSphere = [NFAssetLoader allocAssetDataOfType:kSolidUVSphere withArgs:nil];
+
+
+    [m_solidSphere bindAssetToProgramObj:m_phongObject];
+
+    [m_solidSphere createVertexStateWithProgram:hProgram];
+    [m_solidSphere loadResourcesGL];
+
+
+    m_solidSphere.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 2.0f, 1.0f, 0.0f);
+    m_solidSphere.modelMatrix = GLKMatrix4Scale(m_solidSphere.modelMatrix, 0.065f, 0.065f, 0.065f);
+
 
 
 /*
@@ -226,13 +243,6 @@ typedef struct debugProgram_t {
     [m_planeData createVertexStateWithProgram:hProgram];
     [m_planeData loadResourcesGL];
 
-
-    m_solidSphere = [NFAssetLoader allocAssetDataOfType:kSolidUVSphere withArgs:nil];
-    [m_solidSphere createVertexStateWithProgram:hProgram];
-    [m_solidSphere loadResourcesGL];
-
-    m_solidSphere.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 2.0f, 1.0f, 0.0f);
-    m_solidSphere.modelMatrix = GLKMatrix4Scale(m_solidSphere.modelMatrix, 0.065f, 0.065f, 0.065f);
 
     _stepTransforms = NO;
 

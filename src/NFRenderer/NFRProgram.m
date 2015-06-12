@@ -150,6 +150,7 @@ typedef struct phongLightUniform_t {
 
 @synthesize hProgram = _hProgram;
 
+/*
 - (void) setStateWithVAO:(GLint)hVAO withVBO:(GLint)hVBO {
     glBindVertexArray(hVAO);
 
@@ -173,6 +174,7 @@ typedef struct phongLightUniform_t {
     glBindVertexArray(0);
 
 }
+*/
 
 - (void) updateViewMatrix:(GLKMatrix4)viewMatrix projectionMatrix:(GLKMatrix4)projection {
 
@@ -264,6 +266,7 @@ typedef struct phongLightUniform_t {
 
 @synthesize hProgram = _hProgram;
 
+/*
 - (void) setStateWithVAO:(GLint)hVAO withVBO:(GLint)hVBO {
 
     glBindVertexArray(hVAO);
@@ -287,6 +290,7 @@ typedef struct phongLightUniform_t {
 
     glBindVertexArray(0);
 }
+*/
 
 - (void) updateViewMatrix:(GLKMatrix4)viewMatrix projectionMatrix:(GLKMatrix4)projection {
     GLsizeiptr matrixSize = (GLsizeiptr)(16 * sizeof(float));

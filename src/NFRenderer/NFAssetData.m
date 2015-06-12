@@ -6,7 +6,7 @@
 //
 
 #import "NFAssetData.h"
-#import "NFRenderer.h"
+
 
 //
 // TODO: find out who is including gl.h into the project (might be the display link...), one way around all this
@@ -350,9 +350,6 @@ typedef struct NFVertState_t {
 
 
     self.subsetModelMat = GLKMatrix4Identity;
-
-
-
 }
 
 - (void) loadIndexData:(GLushort *)pIndexData ofSize:(size_t)size {
@@ -361,9 +358,30 @@ typedef struct NFVertState_t {
     memcpy(self.indices, pIndexData, size);
 }
 
-//
-// TODO: state should be constant (and would probably be better to pass a pointer)
-//
+
+
+- (void) bindSubsetToProgramObj:(id<NFRProgram>)programObj {
+    // create vertex buffer object
+    GLuint vbo;
+    glGenBuffers(1, &vbo);
+    self.hVBO = vbo;
+
+    //[programObj configureVertexBufferLayout:self.hVBO];
+
+
+    // create element buffer object
+    GLuint ebo;
+    glGenBuffers(1, &ebo);
+    self.hEBO = ebo;
+
+    
+    // load data into buffers
+    //[programObj updateVertexBuffer:self.hVBO numVertices:self.numVertices dataPtr:(void*)self.vertices];
+    //[programObj updateIndexBuffer:self.hEBO numIndices:self.numIndices dataPtr:(void*)self.indices];
+}
+
+
+
 - (void) loadResourcesWithVertexState:(NFVertState_t)state {
     //
     // NOTE: VAO should already be bound when this method is called
@@ -391,13 +409,11 @@ typedef struct NFVertState_t {
     // TODO: to avoid having to set the vertex attrib pointers on each draw call may want to have a VAO
     //       per subset (assuming that changing bound VAOs is cheaper than setting vertex attrib pointers)
     //
-
-    //CHECK_GL_ERROR();
 }
 
 - (void) drawWithVertexState:(NFVertState_t)state withProgram:(GLuint)hProgram withModelUniform:(GLuint)modelLoc
-           withAssetModelMat:(GLKMatrix4)assetModelMat{
-
+           withAssetModelMat:(GLKMatrix4)assetModelMat {
+    
     GLKMatrix4 renderMat = GLKMatrix4Multiply(assetModelMat, self.subsetModelMat);
 
 
@@ -548,6 +564,57 @@ typedef struct NFVertState_t {
 //       calls in NFAssetData they need to all be handled through NFRenderer (NFAssetData should be moved
 //       out into the entity module)
 //
+
+
+- (void) bindAssetToProgramObj:(id<NFRProgram>)programObj {
+    // create VAO
+    GLuint vao;
+    glGenVertexArrays(1, &(vao));
+    self.hVAO = vao;
+
+
+    //[programObj configureInputState:self.hVAO];
+
+
+    //
+    // TODO: should only perform texture setup if the asset and shader both support it
+    //
+    // get texture unifrom location
+    self.textureUniform = glGetUniformLocation(programObj.hProgram, (const GLchar *)"texSampler\0");
+    NSAssert(self.textureUniform != -1, @"Failed to get texture uniform location");
+
+
+    glBindVertexArray(self.hVAO);
+
+    for (NFSubset *subset in self.subsetArray) {
+        [subset bindSubsetToProgramObj:programObj];
+
+        NFSurfaceModel *surface = [subset surfaceModel];
+        NFDataMap *diffuseMap = [surface map_Kd];
+
+        GLuint texId;
+        glGenTextures(1, &texId);
+        self.textureId = texId;
+
+        //
+        // TODO: use glTextureStorage2D specify texture storage requirements
+        //       since for most cases they should be known
+        //
+
+        glBindTexture(GL_TEXTURE_2D, self.textureId);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexImage2D(GL_TEXTURE_2D, 0, [diffuseMap format], [diffuseMap width], [diffuseMap height], 0,
+                     [diffuseMap format], [diffuseMap type], [diffuseMap data]);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    glBindVertexArray(0);
+}
+
+
 - (void) createVertexStateWithProgram:(GLuint)hProgram {
 
     //
@@ -566,11 +633,9 @@ typedef struct NFVertState_t {
     NSAssert(pState->texAttrib != -1, @"Failed to bind attribute");
 
 
-
     // get texture unifrom location
     self.textureUniform = glGetUniformLocation(hProgram, (const GLchar *)"texSampler\0");
     NSAssert(self.textureUniform != -1, @"Failed to get texture uniform location");
-
 
 
     // create VAO
@@ -580,7 +645,6 @@ typedef struct NFVertState_t {
 
     glBindVertexArray(self.hVAO);
 
-    // NOTE: the vert attributes bound to the VAO (and associated with the active VBO)
     glEnableVertexAttribArray(pState->vertAttrib);
     glEnableVertexAttribArray(pState->normAttrib);
     glEnableVertexAttribArray(pState->texAttrib);
@@ -596,9 +660,6 @@ typedef struct NFVertState_t {
         NFVertState_t *pState = self.vertexState;
         [subset loadResourcesWithVertexState:*pState];
 
-        //
-        // TODO: use load surface model method once it has been written
-        //
         NFSurfaceModel *surface = [subset surfaceModel];
         NFDataMap *diffuseMap = [surface map_Kd];
 
@@ -606,31 +667,22 @@ typedef struct NFVertState_t {
         glGenTextures(1, &texId);
         self.textureId = texId;
 
-
-        //
-        // TODO: move the render pipeline texture handling out of the asset data class
-        //
-
         //
         // TODO: use glTextureStorage2D specify texture storage requirements
         //       since for most cases they should be known
         //
-
         glBindTexture(GL_TEXTURE_2D, self.textureId);
-
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
         glTexImage2D(GL_TEXTURE_2D, 0, [diffuseMap format], [diffuseMap width], [diffuseMap height], 0,
                      [diffuseMap format], [diffuseMap type], [diffuseMap data]);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    // unbind the VAO and check for errors
+    // unbind the VAO
     glBindVertexArray(0);
-    //CHECK_GL_ERROR();
 }
 
 @end
