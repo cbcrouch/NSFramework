@@ -73,7 +73,7 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
 - (void) loadIndexData:(GLushort *)pIndexData ofSize:(size_t)size;
 
 
-- (void) bindSubsetToProgramObj:(id<NFRProgram>)programObj;
+- (void) bindSubsetToProgramObj:(id<NFRProgram>)programObj withVAO:(GLuint)hVAO;
 
 @end
 
@@ -108,6 +108,6 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
 // TODO: the NFAssetData and NFSubset bind functions really need a better name
 //
 - (void) bindAssetToProgramObj:(id<NFRProgram>)programObj;
-
+- (void) drawWithProgramObject:(id<NFRProgram>)programObj;
 
 @end

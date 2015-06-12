@@ -141,6 +141,8 @@ typedef struct phongLightUniform_t {
     // uniform buffer for view and projection matrix
     [self setHUBO:[NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:self.hProgram]];
     NSAssert(self.hUBO != 0, @"failed to get uniform buffer handle");
+
+    CHECK_GL_ERROR();
 }
 
 
@@ -150,8 +152,7 @@ typedef struct phongLightUniform_t {
 
 @synthesize hProgram = _hProgram;
 
-/*
-- (void) setStateWithVAO:(GLint)hVAO withVBO:(GLint)hVBO {
+- (void) configureInputState:(GLint)hVAO {
     glBindVertexArray(hVAO);
 
     // NOTE: the vert attributes bound to the VAO (and associated with the active VBO)
@@ -159,7 +160,12 @@ typedef struct phongLightUniform_t {
     glEnableVertexAttribArray(self.normalAttribute);
     glEnableVertexAttribArray(self.texCoordAttribute);
 
+    glBindVertexArray(0);
+    CHECK_GL_ERROR();
+}
 
+- (void) configureVertexBufferLayout:(GLint)hVBO withVAO:(GLint)hVAO {
+    glBindVertexArray(hVAO);
     glBindBuffer(GL_ARRAY_BUFFER, hVBO);
 
     glVertexAttribPointer(self.vertexAttribute, ARRAY_COUNT(NFVertex_t, pos), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
@@ -170,20 +176,35 @@ typedef struct phongLightUniform_t {
                           (const GLvoid *)0x00 + offsetof(NFVertex_t, texCoord));
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
     glBindVertexArray(0);
-
+    CHECK_GL_ERROR();
 }
-*/
+
+- (void) updateVertexBuffer:(GLint)hVBO numVertices:(GLuint)numVertices dataPtr:(void*)pData {
+    glBindBuffer(GL_ARRAY_BUFFER, hVBO);
+    glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(NFVertex_t), pData, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    CHECK_GL_ERROR();
+}
+
+- (void) updateIndexBuffer:(GLint)hEBO numIndices:(GLuint)numIndices dataPtr:(void*)pData {
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hEBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(GLushort), pData, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    CHECK_GL_ERROR();
+}
+
+- (void) updateModelMatrix:(GLKMatrix4)modelMatrix {
+    glProgramUniformMatrix4fv(self.hProgram, self.modelMatrixLocation, 1, GL_FALSE, modelMatrix.m);
+    CHECK_GL_ERROR();
+}
 
 - (void) updateViewMatrix:(GLKMatrix4)viewMatrix projectionMatrix:(GLKMatrix4)projection {
 
     //
-    // TODO: while not yet implemented should consider using some additional utility methods
+    // TODO: while not yet implemented should consider using some additional utility method(s)
     //       for simplfying UBOs to avoid redundant code between shader program implementations
     //
-
-
 /*
     static const char* matrixType = @encode(GLKMatrix4);
     NSMutableArray* matrixArray = [[[NSMutableArray alloc] init] autorelease];
@@ -191,7 +212,7 @@ typedef struct phongLightUniform_t {
     [matrixArray addObject:[NSValue value:&projection withObjCType:matrixType]];
 
     //
-    // TODO: this has not been tested
+    // TODO: this utility method has not been tested
     //
     [NFRUtils setUniformBuffer:self.hUBO withData:matrixArray];
 */
@@ -261,14 +282,14 @@ typedef struct phongLightUniform_t {
     // uniform buffer for view and projection matrix
     [self setHUBO:[NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:self.hProgram]];
     NSAssert(self.hUBO != 0, @"failed to get uniform buffer handle");
+
+    CHECK_GL_ERROR();
 }
 
 
 @synthesize hProgram = _hProgram;
 
-/*
-- (void) setStateWithVAO:(GLint)hVAO withVBO:(GLint)hVBO {
-
+- (void) configureInputState:(GLint)hVAO {
     glBindVertexArray(hVAO);
 
     // NOTE: the vert attributes bound to the VAO (and associated with the active VBO)
@@ -276,21 +297,44 @@ typedef struct phongLightUniform_t {
     glEnableVertexAttribArray(self.normalAttribute);
     glEnableVertexAttribArray(self.colorAttribute);
 
+    glBindVertexArray(0);
+    CHECK_GL_ERROR();
+}
 
+- (void) configureVertexBufferLayout:(GLint)hVBO withVAO:(GLint)hVAO {
+    glBindVertexArray(hVAO);
     glBindBuffer(GL_ARRAY_BUFFER, hVBO);
 
-    glVertexAttribPointer(self.vertexAttribute, ARRAY_COUNT(NFDebugVertex_t, pos), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
-                          (const GLvoid *)0x00 + offsetof(NFDebugVertex_t, pos));
-    glVertexAttribPointer(self.normalAttribute, ARRAY_COUNT(NFDebugVertex_t, norm), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
-                          (const GLvoid *)0x00 + offsetof(NFDebugVertex_t, norm));
-    glVertexAttribPointer(self.colorAttribute, ARRAY_COUNT(NFDebugVertex_t, color), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
-                          (const GLvoid *)0x00 + offsetof(NFDebugVertex_t, color));
+    glVertexAttribPointer(self.vertexAttribute, ARRAY_COUNT(NFVertex_t, pos), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+                          (const GLvoid *)0x00 + offsetof(NFVertex_t, pos));
+    glVertexAttribPointer(self.normalAttribute, ARRAY_COUNT(NFVertex_t, norm), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+                          (const GLvoid *)0x00 + offsetof(NFVertex_t, norm));
+    glVertexAttribPointer(self.colorAttribute, ARRAY_COUNT(NFVertex_t, texCoord), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+                          (const GLvoid *)0x00 + offsetof(NFVertex_t, texCoord));
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
     glBindVertexArray(0);
+    CHECK_GL_ERROR();
 }
-*/
+
+- (void) updateVertexBuffer:(GLint)hVBO numVertices:(GLuint)numVertices dataPtr:(void*)pData {
+    glBindBuffer(GL_ARRAY_BUFFER, hVBO);
+    glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(NFDebugVertex_t), pData, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    CHECK_GL_ERROR();
+}
+
+- (void) updateIndexBuffer:(GLint)hEBO numIndices:(GLuint)numIndices dataPtr:(void*)pData {
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hEBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(GLushort), pData, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    CHECK_GL_ERROR();
+}
+
+- (void) updateModelMatrix:(GLKMatrix4)modelMatrix {
+    glProgramUniformMatrix4fv(self.hProgram, self.modelMatrixLocation, 1, GL_FALSE, modelMatrix.m);
+    CHECK_GL_ERROR();
+}
 
 - (void) updateViewMatrix:(GLKMatrix4)viewMatrix projectionMatrix:(GLKMatrix4)projection {
     GLsizeiptr matrixSize = (GLsizeiptr)(16 * sizeof(float));

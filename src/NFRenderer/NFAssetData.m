@@ -67,6 +67,10 @@ typedef struct NFVertState_t {
 - (void) drawWithVertexState:(NFVertState_t)state withProgram:(GLuint)hProgram withModelUniform:(GLuint)modelLoc
            withAssetModelMat:(GLKMatrix4)assetModelMat;
 
+
+- (void) drawWithProgram:(id<NFRProgram>)programObj withAssetModelMatrix:(GLKMatrix4)assetModelMatrix;
+
+
 //
 // TODO: rename something like calcUnitLengthTransform and add a calcBoundingBox method
 //
@@ -360,24 +364,43 @@ typedef struct NFVertState_t {
 
 
 
-- (void) bindSubsetToProgramObj:(id<NFRProgram>)programObj {
+- (void) bindSubsetToProgramObj:(id<NFRProgram>)programObj withVAO:(GLuint)hVAO {
+
+    //
+    // TODO: might be best to create an NFRBuffer (VBO/EBO) and NFRBufferGroup (VAO) classes
+    //       to abstract away OpenGL calls (NFRBufferGroup needs a better name or needs to be
+    //       refactored - VAOs are hard to abstract cleanly, maybe use NFRBufferAttributes with
+    //       each NFRBuffer containing a weak reference to)
+    //
+
     // create vertex buffer object
     GLuint vbo;
     glGenBuffers(1, &vbo);
     self.hVBO = vbo;
-
-    //[programObj configureVertexBufferLayout:self.hVBO];
-
 
     // create element buffer object
     GLuint ebo;
     glGenBuffers(1, &ebo);
     self.hEBO = ebo;
 
-    
+
+    [programObj configureVertexBufferLayout:self.hVBO withVAO:hVAO];
+
+    //
+    // TODO: with num vertices/indices need to align GL types with types used by NSFramework
+    //
     // load data into buffers
-    //[programObj updateVertexBuffer:self.hVBO numVertices:self.numVertices dataPtr:(void*)self.vertices];
-    //[programObj updateIndexBuffer:self.hEBO numIndices:self.numIndices dataPtr:(void*)self.indices];
+    [programObj updateVertexBuffer:self.hVBO numVertices:(GLuint)self.numVertices dataPtr:(void*)self.vertices];
+    [programObj updateIndexBuffer:self.hEBO numIndices:(GLuint)self.numIndices dataPtr:(void*)self.indices];
+}
+
+- (void) drawWithProgram:(id<NFRProgram>)programObj withAssetModelMatrix:(GLKMatrix4)assetModelMatrix {
+    GLKMatrix4 renderMat = GLKMatrix4Multiply(assetModelMatrix, self.subsetModelMat);
+    [programObj updateModelMatrix:renderMat];
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.hEBO);
+    glDrawElements(self.mode, (GLsizei)self.numIndices, GL_UNSIGNED_SHORT, NULL);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 
@@ -497,7 +520,8 @@ typedef struct NFVertState_t {
 - (void) dealloc {
     //
     // TODO: should disable all vertex attirbs when deleting the VAO just in case the OpenGL
-    //       implementation doesn't properly clean them up when said VAO is deleted
+    //       implementation doesn't properly clean them up when said VAO is deleted (move this
+    //       cleanup code into the NFRProgram dealloc method)
     //
 /*
     glDisableVertexAttribArray(m_WavefrontVAO.texAttrib);
@@ -535,14 +559,15 @@ typedef struct NFVertState_t {
     glUniform1i(self.textureUniform, 0); // GL_TEXTURE0
 
     glBindVertexArray(self.hVAO);
+
     for (NFSubset *subset in self.subsetArray) {
         NFVertState_t *pState = self.vertexState;
         [subset drawWithVertexState:*pState withProgram:hProgram withModelUniform:modelLoc withAssetModelMat:self.modelMatrix];
     }
+
     glBindVertexArray(0);
 
     glBindTexture(GL_TEXTURE_2D, 0);
-    //CHECK_GL_ERROR();
 }
 
 - (void) applyUnitScalarMatrix {
@@ -572,8 +597,9 @@ typedef struct NFVertState_t {
     glGenVertexArrays(1, &(vao));
     self.hVAO = vao;
 
+    NSLog(@"NFAssetData bindAssetToProgramObj called");
 
-    //[programObj configureInputState:self.hVAO];
+    [programObj configureInputState:self.hVAO];
 
 
     //
@@ -584,10 +610,8 @@ typedef struct NFVertState_t {
     NSAssert(self.textureUniform != -1, @"Failed to get texture uniform location");
 
 
-    glBindVertexArray(self.hVAO);
-
     for (NFSubset *subset in self.subsetArray) {
-        [subset bindSubsetToProgramObj:programObj];
+        [subset bindSubsetToProgramObj:programObj withVAO:self.hVAO];
 
         NFSurfaceModel *surface = [subset surfaceModel];
         NFDataMap *diffuseMap = [surface map_Kd];
@@ -610,9 +634,34 @@ typedef struct NFVertState_t {
                      [diffuseMap format], [diffuseMap type], [diffuseMap data]);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
+}
+
+
+
+- (void) drawWithProgramObject:(id<NFRProgram>)programObj {
+    //
+    // TODO: need to test and abstract out the texture/sampler logic into a NFRTexture and NFRSampler class
+    //
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, self.textureId);
+    glUniform1i(self.textureUniform, 0); // GL_TEXTURE0
+
+    //
+    // TODO: the VAO needs to be bound when issuing a draw call, this needs to be better abstracted so that the
+    //       NFAssetData doesn't need to deal with VAO handles
+    //
+    glBindVertexArray(self.hVAO);
+
+    for (NFSubset *subset in self.subsetArray) {
+        [subset drawWithProgram:programObj withAssetModelMatrix:self.modelMatrix];
+    }
 
     glBindVertexArray(0);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
+
 
 
 - (void) createVertexStateWithProgram:(GLuint)hProgram {
