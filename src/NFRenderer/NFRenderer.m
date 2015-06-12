@@ -86,7 +86,7 @@ typedef struct debugProgram_t {
 
 
 
-#define USE_PROGRAM_OBJECT 0
+#define USE_PROGRAM_OBJECT 1
 
 
 
@@ -190,8 +190,6 @@ typedef struct debugProgram_t {
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/dragon.obj";
 
 
-    GLuint hProgram = m_phongModel.hProgram;
-
     m_pAsset = [NFAssetLoader allocAssetDataOfType:kWavefrontObj withArgs:fileNamePath, nil];
 
 #if USE_PROGRAM_OBJECT
@@ -201,7 +199,7 @@ typedef struct debugProgram_t {
     //
     // TODO: eliminate the need to have these two methods and remove all OpenGL calls from NFAssetData
     //
-    [m_pAsset createVertexStateWithProgram:hProgram];
+    [m_pAsset createVertexStateWithProgram:m_phongModel.hProgram];
     [m_pAsset loadResourcesGL];
 #endif
 
@@ -213,15 +211,14 @@ typedef struct debugProgram_t {
     //[m_pAsset applyUnitScalarMatrix]; // use for teapot
 
 
-
     m_solidSphere = [NFAssetLoader allocAssetDataOfType:kSolidUVSphere withArgs:nil];
 
-
+#if USE_PROGRAM_OBJECT
     [m_solidSphere bindAssetToProgramObj:m_phongObject];
-
-    [m_solidSphere createVertexStateWithProgram:hProgram];
+#else
+    [m_solidSphere createVertexStateWithProgram:m_phongModel.hProgram];
     [m_solidSphere loadResourcesGL];
-
+#endif
 
     m_solidSphere.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 2.0f, 1.0f, 0.0f);
     m_solidSphere.modelMatrix = GLKMatrix4Scale(m_solidSphere.modelMatrix, 0.065f, 0.065f, 0.065f);
@@ -230,14 +227,12 @@ typedef struct debugProgram_t {
 
 /*
     m_axisData = [NFAssetLoader allocAssetDataOfType:kAxisWireframe withArgs:nil];
-
-    //[m_axisData createVertexStateWithProgram:hProgram];
-    [m_axisData createVertexStateWithProgram:m_debugProgram.hProgram];
-
+    [m_axisData createVertexStateWithProgram:hProgram];
     [m_axisData loadResourcesGL];
 */
 
 
+/*
     m_gridData = [NFAssetLoader allocAssetDataOfType:kGridWireframe withArgs:nil];
     [m_gridData createVertexStateWithProgram:hProgram];
     [m_gridData loadResourcesGL];
@@ -246,7 +241,7 @@ typedef struct debugProgram_t {
     m_planeData = [NFAssetLoader allocAssetDataOfType:kSolidPlane withArgs:nil];
     [m_planeData createVertexStateWithProgram:hProgram];
     [m_planeData loadResourcesGL];
-
+*/
 
     _stepTransforms = NO;
 
@@ -284,14 +279,6 @@ typedef struct debugProgram_t {
               withViewMatrix:(GLKMatrix4)viewMatrix
               withProjection:(GLKMatrix4)projection {
 
-    //
-    // TODO: should not be use shader programs in the frame update, defer it until the draw call
-    //
-    glUseProgram(m_phongModel.hProgram);
-    glUniform3f(m_phongModel.viewPositionLoc, viewPosition.x, viewPosition.y, viewPosition.z);
-    glUseProgram(0);
-    CHECK_GL_ERROR();
-
     if (self.stepTransforms) {
         [m_pAsset stepTransforms:secsElapsed];
         //[m_pAsset stepTransforms:0.0f];
@@ -303,7 +290,40 @@ typedef struct debugProgram_t {
     // TODO: need to either send in a dirty flag or cache the values and compare so that the
     //       renderer is not updating the UBO every frame
     //
+
+#if USE_PROGRAM_OBJECT
+
+    //
+    // TODO: this does not appear to be working correctly
+    //
+
+    // view and projection matrices match as well as view position
+
+    // asset and subset model matrices also match
+
+
+    //
+    // TODO: most likely there is something wrong with how the UBO is being handled either with
+    //       the OpenGL calls or internal to the program object
+    //
+
+    [m_phongObject updateViewPosition:viewPosition];
+    [m_phongObject updateViewMatrix:viewMatrix projectionMatrix:projection];
+
+#else
+
+    //
+    // TODO: should not be use shader programs in the frame update, defer it until the draw call
+    //
+    glUseProgram(m_phongModel.hProgram);
+    glUniform3f(m_phongModel.viewPositionLoc, viewPosition.x, viewPosition.y, viewPosition.z);
+    glUseProgram(0);
+    CHECK_GL_ERROR();
+
     [self updateUboWithViewMatrix:viewMatrix withProjection:projection];
+
+#endif
+
 }
 
 //
@@ -319,6 +339,13 @@ typedef struct debugProgram_t {
     //
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+#if USE_PROGRAM_OBJECT
+
+    glUseProgram(m_phongObject.hProgram);
+
+#else
+
     glUseProgram(m_phongModel.hProgram);
 
     static BOOL doOnce = YES;
@@ -331,6 +358,8 @@ typedef struct debugProgram_t {
 
         doOnce = NO;
     }
+
+#endif
 
 
     // asset
@@ -349,9 +378,17 @@ typedef struct debugProgram_t {
 
 
     // light
+
+#if USE_PROGRAM_OBJECT
+
+    [m_solidSphere drawWithProgramObject:m_phongObject withSubroutine:@"LightSubroutine"];
+
+#else
+
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &(m_phongModel.lightSubroutine));
     [m_solidSphere drawWithProgram:m_phongModel.hProgram withModelUniform:m_phongModel.modelLoc];
 
+#endif
 
 
     //
@@ -444,9 +481,6 @@ typedef struct debugProgram_t {
 
     CHECK_GL_ERROR();
 
-    //
-    // TODO: get the grid and axis lines drawing with the debug shader
-    //
 
     m_debugProgram.hProgram = [NFRUtils createProgram:@"Debug"];
     NSAssert(m_debugProgram.hProgram != 0, @"Failed to create GL shader program");
@@ -458,6 +492,8 @@ typedef struct debugProgram_t {
     // uniform buffer for view and projection matrix
     m_debugProgram.hUBO = [NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:m_debugProgram.hProgram];
     NSAssert(m_debugProgram.hUBO != 0, @"failed to get uniform buffer handle");
+
+    CHECK_GL_ERROR();
 }
 
 - (void) updateUboWithViewMatrix:(GLKMatrix4)viewMatrix withProjection:(GLKMatrix4)projection {

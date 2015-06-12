@@ -248,6 +248,13 @@ typedef struct phongLightUniform_t {
     }
 }
 
+- (void) updateViewPosition:(GLKVector3)viewPosition {
+    glUseProgram(self.hProgram);
+    glUniform3f(self.viewPositionLocation, viewPosition.x, viewPosition.y, viewPosition.z);
+    glUseProgram(0);
+    CHECK_GL_ERROR();
+}
+
 @end
 
 

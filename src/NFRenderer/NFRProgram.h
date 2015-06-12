@@ -82,6 +82,8 @@
 //
 - (void) activateSubroutine:(NSString*)subroutine;
 
+- (void) updateViewPosition:(GLKVector3)viewPosition;
+
 @end
 
 

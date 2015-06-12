@@ -386,6 +386,7 @@ typedef struct NFVertState_t {
 
     [programObj configureVertexBufferLayout:self.hVBO withVAO:hVAO];
 
+
     //
     // TODO: with num vertices/indices need to align GL types with types used by NSFramework
     //
@@ -396,7 +397,6 @@ typedef struct NFVertState_t {
 
 - (void) drawWithProgram:(id<NFRProgram>)programObj withAssetModelMatrix:(GLKMatrix4)assetModelMatrix {
     GLKMatrix4 renderMat = GLKMatrix4Multiply(assetModelMatrix, self.subsetModelMat);
-
     [programObj updateModelMatrix:renderMat];
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.hEBO);
@@ -662,15 +662,8 @@ typedef struct NFVertState_t {
     glBindVertexArray(self.hVAO);
 
 
-    //
-    // TODO: somehow the asset and light's matrices are getting combined
-    //
-
-
     for (NFSubset *subset in self.subsetArray) {
-        //[subset drawWithProgram:programObj withAssetModelMatrix:self.modelMatrix];
-
-        [subset drawWithProgram:programObj withAssetModelMatrix:GLKMatrix4Identity];
+        [subset drawWithProgram:programObj withAssetModelMatrix:self.modelMatrix];
     }
 
 
