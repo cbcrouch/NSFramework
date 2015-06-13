@@ -52,7 +52,7 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
 
 
 
-@interface NFSubset : NSObject
+@interface NFAssetSubset : NSObject
 
 @property (nonatomic, assign) DRAWING_MODE drawMode;
 

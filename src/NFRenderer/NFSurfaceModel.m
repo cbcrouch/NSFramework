@@ -21,14 +21,13 @@
 - (instancetype) init {
     self = [super init];
     if (self != nil) {
-        [self setWidth:0];
-        [self setWidth:0];
-        [self setHeight:0];
-        [self setFormat:GL_INVALID_ENUM];
-        [self setType:GL_INVALID_ENUM];
-        [self setSize:0];
-        [self setRowByteSize:0];
-        [self setData:NULL];
+        _width = 0;
+        _height = 0;
+        _format = GL_INVALID_ENUM;
+        _type = GL_INVALID_ENUM;
+        _size = 0;
+        _rowByteSize = 0;
+        _data = NULL;
     }
     return self;
 }

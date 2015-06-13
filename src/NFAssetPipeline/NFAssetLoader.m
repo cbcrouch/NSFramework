@@ -84,7 +84,7 @@
             for (WFGroup *group in [[wavefrontObj object] groups]) {
                 // NOTE: subsets are 1-1 with the groups, this code will need to be udpated
                 //       when support for multiple objects is added
-                NFSubset *subset = [[asset subsetArray] objectAtIndex:subsetIndex];
+                NFAssetSubset *subset = [[asset subsetArray] objectAtIndex:subsetIndex];
                 subset.surfaceModel = findSurfaceModel([group materialName]);
                 ++subsetIndex;
             }
@@ -102,7 +102,7 @@
 
             asset.surfaceModelArray = surfaceModels;
 
-            for (NFSubset *subset in [asset subsetArray]) {
+            for (NFAssetSubset *subset in [asset subsetArray]) {
                 subset.surfaceModel = [surfaceModels objectAtIndex:0];
             }
         }
@@ -110,7 +110,7 @@
 
         case kGridWireframe: {
             [asset createGridOfSize:4];
-            for (NFSubset *subset in [asset subsetArray]) {
+            for (NFAssetSubset *subset in [asset subsetArray]) {
                 [subset setDrawMode:kDrawLines];
             }
 
@@ -121,7 +121,7 @@
 
             asset.surfaceModelArray = surfaceModels;
 
-            for (NFSubset *subset in [asset subsetArray]) {
+            for (NFAssetSubset *subset in [asset subsetArray]) {
                 subset.surfaceModel = [surfaceModels objectAtIndex:0];
             }
         }
@@ -129,7 +129,7 @@
 
         case kAxisWireframe:
             [asset createAxisOfSize:10];
-            for (NFSubset *subset in [asset subsetArray]) {
+            for (NFAssetSubset *subset in [asset subsetArray]) {
                 [subset setDrawMode:kDrawLines];
             }
 
@@ -142,7 +142,7 @@
 
             asset.surfaceModelArray = surfaceModels;
 
-            for (NFSubset *subset in [asset subsetArray]) {
+            for (NFAssetSubset *subset in [asset subsetArray]) {
                 subset.surfaceModel = [surfaceModels objectAtIndex:0];
             }
         break;
@@ -161,7 +161,7 @@
 
             asset.surfaceModelArray = surfaceModels;
 
-            for (NFSubset *subset in [asset subsetArray]) {
+            for (NFAssetSubset *subset in [asset subsetArray]) {
                 subset.surfaceModel = [surfaceModels objectAtIndex:0];
             }
         }

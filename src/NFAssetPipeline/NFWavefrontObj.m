@@ -466,25 +466,10 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
         return nil;
     }
 
-    //
-    // TODO: need to clean up this comment and probably move some where else, perhaps include a text file
-    //       with the project on the coding convention used
-    //
+    _activeObject = nil;
+    _activeGroup = nil;
 
-    // in general, you should use accessor methods or dot syntax for property access even if you’re accessing an
-    // object’s properties from within its own implementation, in which case you should use self
-    // the exception to this rule is when writing initialization, deallocation or custom accessor methods
-
-    [self setActiveObject:nil];
-    [self setActiveGroup:nil];
-
-    [self setObject:[[[WFObject alloc] init] autorelease]];
-
-    //
-    // TODO: for modern objective C compliance should be returning an instanceType
-    //       instead of an id for better type checking and consistency
-    //
-
+    _object = [[[WFObject alloc] init] autorelease];
     return self;
 }
 

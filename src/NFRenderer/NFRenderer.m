@@ -64,6 +64,11 @@
         return nil;
     }
 
+    //
+    // NOTE: currently the renderer init is what is driving much of the debug and test code, most of this
+    //       will eventually be moved or removed
+    //
+
     NSLog(@"GL_RENDERER:  %s", glGetString(GL_RENDERER));
     NSLog(@"GL_VENDOR:    %s", glGetString(GL_VENDOR));
     NSLog(@"GL_VERSION:   %s", glGetString(GL_VERSION));

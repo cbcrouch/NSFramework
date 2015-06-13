@@ -20,11 +20,7 @@
 #import <GLKit/GLKit.h>
 
 
-
-//
-// TODO: move NFSubset into its own header/source file (also rename NFAssetSubset, NFGeometrySubset)
-//
-@interface NFSubset()
+@interface NFAssetSubset()
 
 //
 // TODO: will need to integrate the min/max dimension finding into the NFAssetData containing object
@@ -39,13 +35,10 @@
 //
 @property (nonatomic, assign) GLKVector3 minDimensions;
 @property (nonatomic, assign) GLKVector3 maxDimensions;
-//
-// TODO: rename to min/maxBounds or min/maxCoordinates ??
-//
 
 
-@property (nonatomic, assign) NFVertex_t *vertices;
-@property (nonatomic, assign) GLushort *indices;
+@property (nonatomic, assign) NFVertex_t* vertices;
+@property (nonatomic, assign) GLushort* indices;
 @property (nonatomic, assign) NSInteger numVertices;
 @property (nonatomic, assign) NSInteger numIndices;
 
@@ -63,7 +56,7 @@
 
 @end
 
-@implementation NFSubset
+@implementation NFAssetSubset
 
 - (instancetype) init {
     self = [super init];
@@ -71,18 +64,15 @@
         return nil;
     }
 
-    //
-    // TODO: these should all be set using _subsetModelMat = ... etc.
-    //
-    [self setDrawMode:kDrawTriangles];
-    [self setSubsetModelMat:GLKMatrix4Identity];
+    _drawMode = kDrawTriangles;
+    _subsetModelMat = GLKMatrix4Identity;
 
-    [self setVertices:NULL];
-    [self setIndices:NULL];
-    [self setNumVertices:0];
-    [self setNumIndices:0];
+    _vertices = NULL;
+    _indices = NULL;
+    _numVertices = 0;
+    _numIndices = 0;
 
-    [self setMode:GL_TRIANGLES];
+    _mode = GL_TRIANGLES;
     return self;
 }
 
@@ -386,9 +376,6 @@
 //
 //
 
-//
-// TODO: rename NFAssetData to NFAssetContainer, NFGeometry, NFEntity ??
-//
 @interface NFAssetData()
 
 @property (nonatomic, assign) GLuint hVAO;
@@ -410,10 +397,8 @@
         return nil;
     }
 
-    [(NFAssetData *)self setSubsetArray:nil];
-
+    _subsetArray = nil;
     _modelMatrix = GLKMatrix4Identity;
-
     return self;
 }
 
@@ -468,7 +453,7 @@
     NSAssert(self.textureUniform != -1, @"Failed to get texture uniform location");
 
 
-    for (NFSubset *subset in self.subsetArray) {
+    for (NFAssetSubset *subset in self.subsetArray) {
         [subset bindSubsetToProgramObj:programObj withVAO:self.hVAO];
 
         NFSurfaceModel *surface = [subset surfaceModel];
@@ -518,7 +503,7 @@
     //
     glBindVertexArray(self.hVAO);
 
-    for (NFSubset *subset in self.subsetArray) {
+    for (NFAssetSubset *subset in self.subsetArray) {
         [subset drawWithProgram:programObj withAssetModelMatrix:self.modelMatrix];
     }
 

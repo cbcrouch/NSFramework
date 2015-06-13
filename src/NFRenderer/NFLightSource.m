@@ -26,34 +26,34 @@
         // set OpenGL default values
         float tempArray[] = {0.0f, 0.0f, 0.0f, 1.0f};
 
-        [self setAmbient:convertCfloatArrayToNS(tempArray)];
+        _ambient = convertCfloatArrayToNS(tempArray);
 
         tempArray[0] = 0.0f;
         tempArray[1] = 0.0f;
         tempArray[2] = 1.0f;
         tempArray[3] = 0.0f;
 
-        [self setPosition:convertCfloatArrayToNS(tempArray)];
+        _position = convertCfloatArrayToNS(tempArray);
 
         tempArray[0] = 1.0f;
         tempArray[1] = 1.0f;
         tempArray[2] = 1.0f;
         tempArray[3] = 1.0f;
 
-        [self setDiffuse:convertCfloatArrayToNS(tempArray)];
-        [self setSpecular:convertCfloatArrayToNS(tempArray)];
+        _diffuse = convertCfloatArrayToNS(tempArray);
+        _specular = convertCfloatArrayToNS(tempArray);
 
         tempArray[0] = 0.0f;
         tempArray[1] = 0.0f;
         tempArray[2] = -1.0f;
 
-        [self setSpotDirection:convertCfloatArrayToNS(tempArray)];
+        _spotDirection = convertCfloatArrayToNS(tempArray);
 
-        [self setSpotExponent:0.0f];
-        [self setSpotCutoff:M_PI];
-        [self setConstantAttenuation:1.0f];
-        [self setLinearAttenuation:0.0f];
-        [self setQuadraticAttenuation:0.0f];
+        _spotExponent = 0.0f;
+        _spotCutoff = M_PI;
+        _constantAttenuation = 1.0f;
+        _linearAttenuation = 0.0f;
+        _quadraticAttenuation = 0.0f;
     }
 
     return self;

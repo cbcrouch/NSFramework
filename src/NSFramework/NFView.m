@@ -610,6 +610,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     m_verticalAngle = self.camera.pitch;
     m_horizontalAngle = self.camera.yaw;
 
+    [self.camera setLookWithYaw:m_horizontalAngle withPitch:m_verticalAngle];
+
     m_input = YES;
 }
 

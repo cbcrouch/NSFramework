@@ -13,9 +13,9 @@
     // build subset array
     NSMutableArray *tempArray = [[[NSMutableArray alloc] initWithCapacity:numSubsets] autorelease];
 
-    NFSubset *subset;
+    NFAssetSubset *subset;
     for (int i=0; i<numSubsets; ++i) {
-        subset = [[[NFSubset alloc] init] autorelease];
+        subset = [[[NFAssetSubset alloc] init] autorelease];
         [tempArray addObject:subset];
     }
 
@@ -28,7 +28,7 @@
 }
 
 - (void) addSubsetWithIndices:(NSMutableArray *)indices ofObject:(WFObject *)wfObj atIndex:(NSUInteger)idx {
-    NFSubset *subset = [self.subsetArray objectAtIndex:idx];
+    NFAssetSubset *subset = [self.subsetArray objectAtIndex:idx];
 
     NSMutableArray *uniqueArray = [[[NSMutableArray alloc] init] autorelease];
     [uniqueArray addObjectsFromArray:[[NSSet setWithArray:indices] allObjects]];

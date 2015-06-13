@@ -57,7 +57,7 @@ static const char *g_faceType = @encode(NFFace_t);
         indices[i] = i;
     }
 
-    NFSubset *pSubset = [[[NFSubset alloc] init] autorelease];
+    NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
     [pSubset allocateVerticesWithNumElts:numVertices];
     [pSubset allocateIndicesWithNumElts:numVertices];
     [pSubset loadVertexData:vertices ofSize:(numVertices * sizeof(NFVertex_t))];
@@ -178,7 +178,7 @@ static const char *g_faceType = @encode(NFFace_t);
         indices[i] = i;
     }
 
-    NFSubset *pSubset = [[[NFSubset alloc] init] autorelease];
+    NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
     [pSubset allocateVerticesWithNumElts:numVertices];
     [pSubset allocateIndicesWithNumElts:numIndices];
     [pSubset loadVertexData:vertices ofSize:(numVertices * sizeof(NFVertex_t))];
@@ -293,7 +293,7 @@ static const char *g_faceType = @encode(NFFace_t);
         vertices[i].norm[3] = vertexNormal.w;
     }
 
-    NFSubset *pSubset = [[[NFSubset alloc] init] autorelease];
+    NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
     [pSubset allocateVerticesWithNumElts:numVertices];
     [pSubset allocateIndicesWithNumElts:numIndices];
     [pSubset loadVertexData:vertices ofSize:(numVertices * sizeof(NFVertex_t))];
@@ -417,7 +417,7 @@ static const char *g_faceType = @encode(NFFace_t);
     indices[index+1] = p1+1;
     indices[index+2] = p2;
 
-    NFSubset *pSubset = [[[NFSubset alloc] init] autorelease];
+    NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
     [pSubset allocateVerticesWithNumElts:numVertices];
     [pSubset allocateIndicesWithNumElts:numIndices];
     [pSubset loadVertexData:vertices ofSize:(numVertices * sizeof(NFVertex_t))];

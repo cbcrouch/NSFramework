@@ -141,9 +141,8 @@
         _cached_yaw = _yaw;
         _cached_pitch = _pitch;
 
-        [self setCurrentFlags:0x00];
-        [self setTranslationSpeed:GLKVector4Make(0.025f, 0.0f, 0.025f, 0.0f)];
-        [self setLookWithYaw:_yaw withPitch:_pitch];
+        _currentFlags = 0x00;
+        _translationSpeed = GLKVector4Make(0.025f, 0.0f, 0.025f, 0.0f);
     }
 
     return self;
