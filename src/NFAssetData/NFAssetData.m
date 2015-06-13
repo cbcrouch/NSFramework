@@ -446,8 +446,10 @@
 
 
     //
-    // TODO: should only perform texture setup if the asset and shader both support it
+    // TODO: should only perform texture setup if the asset and shader both support it, need to focus
+    //       on removing/moving texture code out of the asset data
     //
+
     // get texture unifrom location
     self.textureUniform = glGetUniformLocation(programObj.hProgram, (const GLchar *)"texSampler\0");
     NSAssert(self.textureUniform != -1, @"Failed to get texture uniform location");
