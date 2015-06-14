@@ -8,12 +8,12 @@
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
 
-
+@protocol NFRProgram;
 
 
 @interface NFRBufferAttributes : NSObject
 
-// VAO handle
+// VAO handle ??
 
 @end
 
@@ -33,32 +33,55 @@
 @end
 
 
-@interface NFRTexture : NSObject
+@interface NFRGeometry : NSObject
 
-// data pointer
-// data size
-// texture format
-// width
-// height
+@property (nonatomic, weak) NFRBuffer* vertexBuffer;
+@property (nonatomic, weak) NFRBuffer* indexBuffer;
 
 @end
 
 
-@interface NFRSampler : NSObject
+// init code for texture
+/*
+glGenTextures(1, &texId);
+self.textureId = texId;
 
-// wrap s
-// wrap t
-// mag filter
-// min filter
+glBindTexture(GL_TEXTURE_2D, self.textureId);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+glTexImage2D(GL_TEXTURE_2D, 0, [diffuseMap format], [diffuseMap width], [diffuseMap height], 0,
+             [diffuseMap format], [diffuseMap type], [diffuseMap data]);
+glBindTexture(GL_TEXTURE_2D, 0);
+*/
 
-// mip maps
 
-@end
+// draw code for texture
+/*
+glActiveTexture(GL_TEXTURE0);
+glBindTexture(GL_TEXTURE_2D, self.textureId);
+glUniform1i(self.textureUniform, 0); // GL_TEXTURE0
+
+// issue draw calls on vertex data
+
+glBindTexture(GL_TEXTURE_2D, 0);
+*/
 
 
 @interface NFRRenderRequest : NSObject
 
 // collection of textures/sampler, buffers, etc. to draw
+
+@property (nonatomic, weak) id<NFRProgram> program;
+
+//
+// TODO: the render request should sync the render data types to an OpenGL object cache
+//       internal to the render request module ??
+//
+
+@property (nonatomic, strong) NSArray* dataMapArray;
+@property (nonatomic, strong) NSArray* geometryArray;
 
 @end
 
@@ -83,6 +106,12 @@
 
 
 @optional
+
+
+//
+// TODO: add an optional NFRTexture array ???
+//
+
 
 //
 // TODO: replace this method with a better mechanism for selecting/abstracting shader subroutines

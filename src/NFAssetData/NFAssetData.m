@@ -102,11 +102,15 @@
         [subset bindSubsetToProgramObj:programObj withVAO:self.hVAO];
 
         NFSurfaceModel *surface = [subset surfaceModel];
-        NFDataMap *diffuseMap = [surface map_Kd];
+        NFRDataMap *diffuseMap = [surface map_Kd];
 
+        //
+        // TODO: texture ids need to be generated per data map
+        //
         GLuint texId;
         glGenTextures(1, &texId);
         self.textureId = texId;
+
 
         //
         // TODO: use glTextureStorage2D specify texture storage requirements

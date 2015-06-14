@@ -7,95 +7,6 @@
 
 #import "NFSurfaceModel.h"
 
-#define GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
-#import <OpenGL/gl3.h>
-
-@interface NFDataMap()
-@property (nonatomic, assign, readwrite) GLsizei size;
-@property (nonatomic, assign, readwrite) GLuint rowByteSize;
-@property (nonatomic, assign, readwrite) GLubyte *data;
-@end
-
-@implementation NFDataMap
-
-- (instancetype) init {
-    self = [super init];
-    if (self != nil) {
-        _width = 0;
-        _height = 0;
-        _format = GL_INVALID_ENUM;
-        _type = GL_INVALID_ENUM;
-        _size = 0;
-        _rowByteSize = 0;
-        _data = NULL;
-    }
-    return self;
-}
-
-- (void) dealloc {
-    if ([self data] != NULL) {
-        free([self data]);
-    }
-    [super dealloc];
-}
-
-- (void) loadWithData:(GLubyte *)pData ofSize:(CGRect)rect ofType:(GLenum)type withFormat:(GLenum)format {
-    [self setWidth:CGRectGetWidth(rect)];
-    [self setHeight:CGRectGetHeight(rect)];
-    [self setFormat:format];
-    [self setType:type];
-
-    //
-    // TODO: add support for additional types and formats
-    //
-
-    NSInteger typeSize = 0;
-    switch (type) {
-        case GL_UNSIGNED_BYTE:
-            typeSize = sizeof(GLubyte);
-            break;
-
-        default:
-            NSAssert(NO, @"ERROR: NFDataMap can NOT load data with an unknown type");
-            break;
-    }
-
-    NSInteger componentsPerElt = 0;
-    switch (format) {
-        case GL_RGBA:
-            componentsPerElt = 4;
-            break;
-
-        case GL_RGB:
-            componentsPerElt = 3;
-            break;
-
-        default:
-            NSAssert(NO, @"ERROR: NFDataMap can NOT load data with an unknown format");
-            break;
-    }
-
-    [self setRowByteSize:rect.size.width * typeSize * componentsPerElt];
-    [self setSize:rect.size.height * [self rowByteSize]];
-
-    GLubyte *pDataCopy = (GLubyte *)malloc([self size]);
-    NSAssert(pDataCopy != NULL, @"ERROR: failed to allocate image data buffer");
-
-    memcpy(pDataCopy, pData, [self size]);
-    [self setData:pDataCopy];
-}
-
-@end
-
-
-
-@interface NFDataSampler()
-// private properties
-@end
-
-@implementation NFDataSampler
-@end
-
 
 @interface NFSurfaceModel()
 @end
@@ -160,7 +71,7 @@
     }
 #endif
 
-    NFDataMap *diffuse = [[[NFDataMap alloc] init] autorelease];
+    NFRDataMap *diffuse = [[[NFRDataMap alloc] init] autorelease];
 
     CGRect rect = CGRectMake(0.0, 0.0, (float)width, (float)height);
     [diffuse loadWithData:DefaultTexture ofSize:rect ofType:GL_UNSIGNED_BYTE withFormat:GL_RGBA];
@@ -186,98 +97,98 @@
 @synthesize map_disp = _map_disp;
 @synthesize map_decalT = _map_decalT;
 
-- (NFDataMap *) map_Ka {
+- (NFRDataMap *) map_Ka {
     if(_map_Ka == nil) {
-        _map_Ka = [[[NFDataMap alloc] init] autorelease];
+        _map_Ka = [[[NFRDataMap alloc] init] autorelease];
     }
     return _map_Ka;
 }
 
-- (NFDataMap *) map_Kd {
+- (NFRDataMap *) map_Kd {
     if(_map_Kd == nil) {
-        _map_Kd = [[[NFDataMap alloc] init] autorelease];
+        _map_Kd = [[[NFRDataMap alloc] init] autorelease];
     }
     return _map_Kd;
 }
 
-- (NFDataMap *) map_Ks {
+- (NFRDataMap *) map_Ks {
     if(_map_Ks == nil) {
-        _map_Ks = [[[NFDataMap alloc] init] autorelease];
+        _map_Ks = [[[NFRDataMap alloc] init] autorelease];
     }
     return _map_Ks;
 }
 
-- (NFDataMap *) map_Ns {
+- (NFRDataMap *) map_Ns {
     if(_map_Ns == nil) {
-        _map_Ns = [[[NFDataMap alloc] init] autorelease];
+        _map_Ns = [[[NFRDataMap alloc] init] autorelease];
     }
     return _map_Ns;
 }
 
-- (NFDataMap *) map_Tr {
+- (NFRDataMap *) map_Tr {
     if(_map_Tr == nil) {
-        _map_Tr = [[[NFDataMap alloc] init] autorelease];
+        _map_Tr = [[[NFRDataMap alloc] init] autorelease];
     }
     return _map_Tr;
 }
 
-- (NFDataMap *) map_bump {
+- (NFRDataMap *) map_bump {
     if(_map_bump == nil) {
-        _map_bump = [[[NFDataMap alloc] init] autorelease];
+        _map_bump = [[[NFRDataMap alloc] init] autorelease];
     }
     return _map_bump;
 }
 
-- (NFDataMap *) map_disp {
+- (NFRDataMap *) map_disp {
     if(_map_disp == nil) {
-        _map_disp = [[[NFDataMap alloc] init] autorelease];
+        _map_disp = [[[NFRDataMap alloc] init] autorelease];
     }
     return _map_disp;
 }
 
-- (NFDataMap *) map_decalT {
+- (NFRDataMap *) map_decalT {
     if(_map_decalT == nil) {
-        _map_decalT = [[[NFDataMap alloc] init] autorelease];
+        _map_decalT = [[[NFRDataMap alloc] init] autorelease];
     }
     return _map_decalT;
 }
 
-- (void) setMap_Ka:(NFDataMap *)map_Ka {
+- (void) setMap_Ka:(NFRDataMap *)map_Ka {
     CGRect rect = CGRectMake(0.0, 0.0, map_Ka.width, map_Ka.height);
     [self.map_Ka loadWithData:map_Ka.data ofSize:rect ofType:map_Ka.type withFormat:map_Ka.format];
 }
 
-- (void) setMap_Kd:(NFDataMap *)map_Kd {
+- (void) setMap_Kd:(NFRDataMap *)map_Kd {
     CGRect rect = CGRectMake(0.0, 0.0, map_Kd.width, map_Kd.height);
     [self.map_Kd loadWithData:map_Kd.data ofSize:rect ofType:map_Kd.type withFormat:map_Kd.format];
 }
 
-- (void) setMap_Ks:(NFDataMap *)map_Ks {
+- (void) setMap_Ks:(NFRDataMap *)map_Ks {
     CGRect rect = CGRectMake(0.0, 0.0, map_Ks.width, map_Ks.height);
     [self.map_Ks loadWithData:map_Ks.data ofSize:rect ofType:map_Ks.type withFormat:map_Ks.format];
 }
 
-- (void) setMap_Ns:(NFDataMap *)map_Ns {
+- (void) setMap_Ns:(NFRDataMap *)map_Ns {
     CGRect rect = CGRectMake(0.0, 0.0, map_Ns.width, map_Ns.height);
     [self.map_Ns loadWithData:map_Ns.data ofSize:rect ofType:map_Ns.type withFormat:map_Ns.format];
 }
 
-- (void) setMap_Tr:(NFDataMap *)map_Tr {
+- (void) setMap_Tr:(NFRDataMap *)map_Tr {
     CGRect rect = CGRectMake(0.0, 0.0, map_Tr.width, map_Tr.height);
     [self.map_Tr loadWithData:map_Tr.data ofSize:rect ofType:map_Tr.type withFormat:map_Tr.format];
 }
 
-- (void) setMap_bump:(NFDataMap *)map_bump {
+- (void) setMap_bump:(NFRDataMap *)map_bump {
     CGRect rect = CGRectMake(0.0, 0.0, map_bump.width, map_bump.height);
     [self.map_bump loadWithData:map_bump.data ofSize:rect ofType:map_bump.type withFormat:map_bump.format];
 }
 
-- (void) setMap_disp:(NFDataMap *)map_disp {
+- (void) setMap_disp:(NFRDataMap *)map_disp {
     CGRect rect = CGRectMake(0.0, 0.0, map_disp.width, map_disp.height);
     [self.map_disp loadWithData:map_disp.data ofSize:rect ofType:map_disp.type withFormat:map_disp.format];
 }
 
-- (void) setMap_decalT:(NFDataMap *)map_decalT {
+- (void) setMap_decalT:(NFRDataMap *)map_decalT {
     CGRect rect = CGRectMake(0.0, 0.0, map_decalT.width, map_decalT.height);
     [self.map_decalT loadWithData:map_decalT.data ofSize:rect ofType:map_decalT.type withFormat:map_decalT.format];
 }

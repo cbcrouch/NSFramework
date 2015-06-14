@@ -425,7 +425,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 // parseParamArray
 
 - (void) parseMaterialFile:(NSString *)file;
-- (NFDataMap *) parseTextureFile:(NSString *)file;
+- (NFRDataMap *) parseTextureFile:(NSString *)file;
 
 @end
 
@@ -854,7 +854,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     }
 }
 
-- (NFDataMap *) parseTextureFile:(NSString *)file {
+- (NFRDataMap *) parseTextureFile:(NSString *)file {
     // NOTE: not using the GLK texture loader class since I want to store the texture in both
     //       my own OpenGL specific format and as an NSImage for displaying in a utility window
 
@@ -961,7 +961,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
     [nsimage release];
 
-    NFDataMap *dataMap = [[[NFDataMap alloc] init] autorelease];
+    NFRDataMap *dataMap = [[[NFRDataMap alloc] init] autorelease];
     [dataMap loadWithData:pData ofSize:mapSize ofType:type withFormat:format];
 
     NSAssert(pData != NULL, @"ERROR: image data buffer pointer was set to NULL prior to freeing memory");
