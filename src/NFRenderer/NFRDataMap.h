@@ -7,6 +7,52 @@
 
 #import <Foundation/Foundation.h>
 
+
+
+// http://www.opengl.org/wiki/Sampler_Object
+
+
+@interface NFRDataSampler : NSObject
+
+//
+// TODO: should class relevant enums be moved inside of the interface ?? what
+//       advantage/difference does this provide in ObjC ?? or is it convention ??
+//
+typedef NS_ENUM(NSUInteger, DATA_MAP_FILTER) {
+    kFilterNearest,
+    kFilterLinear,
+    kFilterNearestMipMapNearest,
+    kFilterLinearMipMapNearest,
+    kFilterNearestMipMapLinear,
+    kFilterLinearMipmapLinear
+};
+
+@property (nonatomic, assign) DATA_MAP_FILTER magFilter;
+@property (nonatomic, assign) DATA_MAP_FILTER minFilter;
+
+// wrap s
+// wrap t
+
+//
+// TODO: add support for generating mipmaps
+//
+
+// anisotropic filtering
+
+// LOD range
+
+// LOD bias
+
+// comparison mode
+
+// edge value sampling
+
+// seamless cubemap per fetching
+
+@end
+
+
+
 //
 // TODO: should expand NFDataMap to support cube map textures, array textures, and buffer textures
 //
@@ -34,59 +80,10 @@
 
 @property (nonatomic, assign, readonly) GLsizei size;
 @property (nonatomic, assign, readonly) GLuint rowByteSize;
-@property (nonatomic, assign, readonly) GLubyte *data;
+@property (nonatomic, assign, readonly) GLubyte* data;
+
+@property (nonatomic, retain) NFRDataSampler* sampler;
 
 - (void) loadWithData:(GLubyte *)pData ofSize:(CGRect)rect ofType:(GLenum)type withFormat:(GLenum)format;
-
-@end
-
-
-// http://www.opengl.org/wiki/Sampler_Object
-
-@interface NFRDataSampler : NSObject
-
-//
-// TODO: need a good enum for selecting which GLSL texture access function to use
-//
-// texture lookup function (either texel fetch or texture)
-// texel fetch uses explicit coordinates where as texture uses normalized coordinates and handles filtering
-
-// enum TEXEL_FETCH_MODE
-// kTexelFetchNormalized // default
-// kTexelFetchExplicit
-
-
-// wrap s
-// wrap t
-// mag filter
-// min filter
-
-//
-// TODO: add support for generating mipmaps
-//
-
-
-// filtering
-
-// - GL_NEAREST
-// - GL_LINEAR
-// - GL_NEAREST_MIPMAP_NEAREST
-// - GL_LINEAR_MIPMAP_NEAREST
-// - GL_NEAREST_MIPMAP_LINEAR
-// - GL_LINEAR_MIPMAP_LINEAR
-
-// anisotropic filtering
-
-// LOD range
-
-// LOD bias
-
-// comparison mode
-
-// edge value sampling
-
-// border color (shouldn't expose or use)
-
-// seamless cubemap per fetching
 
 @end

@@ -83,11 +83,11 @@ uniform gl_LightProducts gl_BackLightProduct[gl_MaxLights];
 
 @interface NFLightGroup : NSObject
 
-//@property (nonatomic, strong) NSMutableArray *lights;
+//@property (nonatomic, retain) NSMutableArray *lights;
 
-//@property (nonatomic, strong) NSMutableArray *lightModelProducts;
+//@property (nonatomic, retain) NSMutableArray *lightModelProducts;
 
-//@property (nonatomic, strong) NSMutableArray *lightProducts;
+//@property (nonatomic, retain) NSMutableArray *lightProducts;
 
 //- (void) calculateProductsFromSurfaces:(NSMutableArray *) surfaces;
 

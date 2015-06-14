@@ -8,21 +8,22 @@
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
 
+#import "NFRDataMap.h"
+
 @protocol NFRProgram;
 
 
 @interface NFRBufferAttributes : NSObject
 
-// VAO handle ??
+// VAO handle
+
+// store values for glVertexAttribPointer
 
 @end
 
 
 @interface NFRBuffer : NSObject
 
-//
-// TODO: should this be a strong or weak reference ???
-//
 @property (nonatomic, weak) NFRBufferAttributes* bufferAttributes;
 
 // data pointer
@@ -35,38 +36,20 @@
 
 @interface NFRGeometry : NSObject
 
-@property (nonatomic, weak) NFRBuffer* vertexBuffer;
-@property (nonatomic, weak) NFRBuffer* indexBuffer;
+//
+// TODO: consider making buffers weak properties and when traversing the
+//       geometry array in the render request remove geometry objects whose
+//       buffer objects are no longer valid
+//
+
+@property (nonatomic, retain) NFRBuffer* vertexBuffer;
+@property (nonatomic, retain) NFRBuffer* indexBuffer;
+
+@property (nonatomic, retain) NSArray* dataMapArray;
 
 @end
 
 
-// init code for texture
-/*
-glGenTextures(1, &texId);
-self.textureId = texId;
-
-glBindTexture(GL_TEXTURE_2D, self.textureId);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-glTexImage2D(GL_TEXTURE_2D, 0, [diffuseMap format], [diffuseMap width], [diffuseMap height], 0,
-             [diffuseMap format], [diffuseMap type], [diffuseMap data]);
-glBindTexture(GL_TEXTURE_2D, 0);
-*/
-
-
-// draw code for texture
-/*
-glActiveTexture(GL_TEXTURE0);
-glBindTexture(GL_TEXTURE_2D, self.textureId);
-glUniform1i(self.textureUniform, 0); // GL_TEXTURE0
-
-// issue draw calls on vertex data
-
-glBindTexture(GL_TEXTURE_2D, 0);
-*/
 
 
 @interface NFRRenderRequest : NSObject
@@ -80,8 +63,34 @@ glBindTexture(GL_TEXTURE_2D, 0);
 //       internal to the render request module ??
 //
 
-@property (nonatomic, strong) NSArray* dataMapArray;
-@property (nonatomic, strong) NSArray* geometryArray;
+@property (nonatomic, retain) NSArray* geometryArray;
+
+// init code for texture
+/*
+ glGenTextures(1, &texId);
+ self.textureId = texId;
+
+ glBindTexture(GL_TEXTURE_2D, self.textureId);
+ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+ glTexImage2D(GL_TEXTURE_2D, 0, [diffuseMap format], [diffuseMap width], [diffuseMap height], 0,
+ [diffuseMap format], [diffuseMap type], [diffuseMap data]);
+ glBindTexture(GL_TEXTURE_2D, 0);
+ */
+
+
+// draw code for texture
+/*
+ glActiveTexture(GL_TEXTURE0);
+ glBindTexture(GL_TEXTURE_2D, self.textureId);
+ glUniform1i(self.textureUniform, 0); // GL_TEXTURE0
+
+ // issue draw calls on vertex data
+
+ glBindTexture(GL_TEXTURE_2D, 0);
+ */
 
 @end
 

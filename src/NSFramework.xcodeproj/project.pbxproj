@@ -275,14 +275,14 @@
 		234E853C1B2BAD3F009B34BF /* NFAssetData */ = {
 			isa = PBXGroup;
 			children = (
-				235F39641B2D968600B3CBA5 /* NFSurfaceModel.h */,
-				235F39651B2D968600B3CBA5 /* NFSurfaceModel.m */,
-				234E85401B2BAE20009B34BF /* NFLightSource.h */,
-				234E85411B2BAE20009B34BF /* NFLightSource.m */,
 				234E853D1B2BAD82009B34BF /* NFAssetData.h */,
 				234E853E1B2BAD82009B34BF /* NFAssetData.m */,
 				234E85431B2BAF91009B34BF /* NFAssetSubset.h */,
 				234E85441B2BAF91009B34BF /* NFAssetSubset.m */,
+				234E85401B2BAE20009B34BF /* NFLightSource.h */,
+				234E85411B2BAE20009B34BF /* NFLightSource.m */,
+				235F39641B2D968600B3CBA5 /* NFSurfaceModel.h */,
+				235F39651B2D968600B3CBA5 /* NFSurfaceModel.m */,
 			);
 			name = NFAssetData;
 			sourceTree = "<group>";
