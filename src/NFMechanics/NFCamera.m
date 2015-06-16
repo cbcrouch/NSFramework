@@ -108,34 +108,26 @@
 }
 
 - (instancetype) init {
+    //
+    // TODO: load defaults from a config file
+    //
+    return [self initWithEyePosition:GLKVector3Make(4.0f, 2.0f, 4.0f)
+                      withLookVector:GLKVector3Make(0.0f, 0.0f, 0.0f)
+                        withUpVector:GLKVector3Make(0.0f, 1.0f, 0.0f)];
+}
+
+- (instancetype) initWithEyePosition:(GLKVector3)eye withLookVector:(GLKVector3)look withUpVector:(GLKVector3)up {
     self = [super init];
     if (self != nil) {
-
-        //
-        // TODO: read default values from an engine config file
-        //
-        _eye = GLKVector3Make(4.0f, 2.0f, 4.0f);
-        _look = GLKVector3Make(0.0f, 0.0f, 0.0f);
-        _up = GLKVector3Make(0.0f, 1.0f, 0.0f);
+        _eye = eye;
+        _look = look;
+        _up = up;
 
         GLKVector3 hyp = GLKVector3Subtract(_eye, _look);
         hyp = GLKVector3Normalize(hyp);
 
-        //_yaw = M_PI;    // look to -Z
-        //_yaw = -M_PI;   // look to -Z
-        //_yaw = 0.0f;    // look to +Z
-
-        //_pitch = M_PI_2 - 0.01f;   // look straight up
-        //_pitch = -M_PI_2 + 0.01f;  // look straight down
-        //_pitch = 0.0f;             // look at horizon
-
-
-        //
-        // TODO: should be able to the yaw and pitch using vector operations instead of trig
-        //
         _yaw = -M_PI + atan2f(hyp.x, hyp.z);
         _pitch = -atan2(hyp.y, hyp.y) / 2.0f;
-
 
         _cached_eye = _eye;
         _cached_yaw = _yaw;
@@ -144,36 +136,6 @@
         _currentFlags = 0x00;
         _translationSpeed = GLKVector4Make(0.025f, 0.0f, 0.025f, 0.0f);
     }
-
-    return self;
-}
-
-- (instancetype) initWithEyePosition:(GLKVector3)eye withLookVector:(GLKVector3)look withUpVector:(GLKVector3)up {
-    self = [super init];
-    if (self != nil) {
-
-        _eye = eye;
-        _look = look;
-        _up = up;
-
-        GLKVector3 hyp = GLKVector3Subtract(_eye, _look);
-        hyp = GLKVector3Normalize(hyp);
-
-        //
-        // TODO: verify that these offsets/modifiers are what should be used
-        //
-        _yaw = -M_PI + atan2f(hyp.x, hyp.z);
-        _pitch = -atan2(hyp.y, hyp.y) / 2.0f;
-
-        _cached_eye = _eye;
-        _cached_yaw = _yaw;
-        _cached_pitch = _pitch;
-
-        [self setCurrentFlags:0x00];
-        [self setTranslationSpeed:GLKVector4Make(0.025f, 0.0f, 0.025f, 0.0f)];
-        [self setLookWithYaw:_yaw withPitch:_pitch];
-    }
-    
     return self;
 }
 

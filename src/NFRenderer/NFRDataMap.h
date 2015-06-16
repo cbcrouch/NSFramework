@@ -14,6 +14,7 @@
 
 @interface NFRDataSampler : NSObject
 
+
 //
 // TODO: should class relevant enums be moved inside of the interface ?? what
 //       advantage/difference does this provide in ObjC ?? or is it convention ??
@@ -26,6 +27,7 @@ typedef NS_ENUM(NSUInteger, DATA_MAP_FILTER) {
     kFilterNearestMipMapLinear,
     kFilterLinearMipmapLinear
 };
+
 
 @property (nonatomic, assign) DATA_MAP_FILTER magFilter;
 @property (nonatomic, assign) DATA_MAP_FILTER minFilter;

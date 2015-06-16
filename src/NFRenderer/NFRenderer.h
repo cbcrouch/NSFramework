@@ -38,7 +38,7 @@ typedef NSInteger NFViewportId;
 //       area of screen being rendered into and the camera width/heigh is the
 //       pixel resolution of the rendered image
 //
-//- (instancetype) initWithWidth:(NSInteger)width withHeight(NSInteger)height;
+//- (instancetype) initWithWidth:(NSInteger)width withHeight(NSInteger)height NS_DESIGNATED_INITIALIZER;
 //- (instancetype) initWithViewport:(NSRect)viewportRect;
 
 - (void) dealloc;

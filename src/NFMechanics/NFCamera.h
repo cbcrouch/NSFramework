@@ -93,7 +93,8 @@ typedef NS_ENUM(NSUInteger, CAMERA_DIRECTION_STATE) {
 @property (nonatomic, assign, readonly) float yaw;
 @property (nonatomic, assign, readonly) float pitch;
 
-- (instancetype) initWithEyePosition:(GLKVector3)eye withLookVector:(GLKVector3)look withUpVector:(GLKVector3)up;
+
+- (instancetype) initWithEyePosition:(GLKVector3)eye withLookVector:(GLKVector3)look withUpVector:(GLKVector3)up NS_DESIGNATED_INITIALIZER;
 
 // NOTE: yaw and pitch angles are absolute angles in spherical coordinates
 - (void) setLookWithYaw:(float)yawAngle withPitch:(float)pitchAngle;
