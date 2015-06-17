@@ -186,6 +186,10 @@ static const char *g_faceType = @encode(NFFace_t);
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
 
+
+//
+// TODO: debug assets should not have a surface model
+//
 - (void) loadAxisSurface:(NFSurfaceModel *)surface {
     static unsigned char texture2d[] = {
         255, 0,   0, 255,   65,  0,  0, 255,  // red and light red
@@ -200,6 +204,7 @@ static const char *g_faceType = @encode(NFFace_t);
     CGRect size = CGRectMake(0.0, 0.0, surface.map_Kd.width, surface.map_Kd.height);
     [surface.map_Kd loadWithData:texture2d ofSize:size ofType:surface.map_Kd.type withFormat:surface.map_Kd.format];
 }
+
 
 - (void) createPlaneOfSize:(NSInteger)size {
     const NSInteger numVertices = 4;

@@ -11,6 +11,146 @@
 #import "NFRUtils.h"
 
 
+@interface NFRDataMapGL : NSObject
+
+@property (nonatomic, assign, readonly) GLuint textureID;
+@property (nonatomic, retain) NFRDataSampler* sampler;
+
+@property (nonatomic, assign, readonly, getter=isTextureValid) BOOL validTexture;
+
+- (void) syncDataMap:(NFRDataMap*)dataMap;
+
+- (void) activateTexture;
+- (void) deactivateTexture;
+
+@end
+
+
+@interface NFRDataMapGL()
+@property (nonatomic, assign, readwrite) GLuint textureID;
+@property (nonatomic, assign, readwrite) BOOL validTexture;
+@end
+
+@implementation NFRDataMapGL
+
+@synthesize textureID = _textureID;
+
+- (instancetype) init {
+    self = [super init];
+    if (self) {
+        _validTexture = NO;
+    }
+    return self;
+}
+
+- (void) dealloc {
+    if (self.isTextureValid) {
+        GLuint texId = self.textureID;
+        glDeleteTextures(1, &(texId));
+    }
+    [super dealloc];
+}
+
+- (void) syncDataMap:(NFRDataMap*)dataMap {
+    GLuint texId;
+    glGenTextures(1, &texId);
+    self.textureID = texId;
+
+    glBindTexture(GL_TEXTURE_2D, self.textureID);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, [dataMap format], [dataMap width], [dataMap height], 0,
+                 [dataMap format], [dataMap type], [dataMap data]);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    [self setValidTexture:YES];
+}
+
+- (void) activateTexture {
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, self.textureID);
+
+    //
+    // TODO: integrate with the shader program class
+    //
+    //glUniform1i(self.textureUniform, 0); // GL_TEXTURE0
+}
+
+- (void) deactivateTexture {
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+@end
+
+
+
+
+@interface NFRGeometry()
+@property (nonatomic, retain) NSArray* glDataMapArray;
+@end
+
+
+@implementation NFRGeometry
+
+@synthesize vertexBuffer = _vertexBuffer;
+@synthesize indexBuffer = _indexBuffer;
+@synthesize dataMapArray = _dataMapArray;
+
+@synthesize glDataMapArray = _glDataMapArray;
+
+//
+// TODO: implement a method to convert the data map array into the corresponding
+//       OpenGL objects
+//
+
+/*
+- (void) syncBufferGL {
+    // create vertex buffer object
+    GLuint vbo;
+    glGenBuffers(1, &vbo);
+    self.hVBO = vbo;
+
+    // create element buffer object
+    GLuint ebo;
+    glGenBuffers(1, &ebo);
+    self.hEBO = ebo;
+
+    [programObj configureVertexBufferLayout:self.hVBO withVAO:hVAO];
+
+    //
+    // TODO: with num vertices/indices need to align GL types with types used by NSFramework
+    //
+    // load data into buffers
+    [programObj updateVertexBuffer:self.hVBO numVertices:(GLuint)self.numVertices dataPtr:(void*)self.vertices];
+    [programObj updateIndexBuffer:self.hEBO numIndices:(GLuint)self.numIndices dataPtr:(void*)self.indices];
+}
+*/
+
+/*
+- (void) updateVertexBuffer:(GLint)hVBO numVertices:(GLuint)numVertices dataPtr:(void*)pData {
+    glBindBuffer(GL_ARRAY_BUFFER, hVBO);
+    glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(NFVertex_t), pData, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    CHECK_GL_ERROR();
+}
+
+- (void) updateIndexBuffer:(GLint)hEBO numIndices:(GLuint)numIndices dataPtr:(void*)pData {
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hEBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(GLushort), pData, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    CHECK_GL_ERROR();
+}
+*/
+
+@end
+
+
+
+
+
+
 @interface NFRPhongProgram : NSObject <NFRProgram>
 
 typedef struct phongMaterialUniform_t {

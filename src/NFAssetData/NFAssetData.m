@@ -107,29 +107,30 @@
         [subset bindSubsetToProgramObj:programObj withVAO:self.hVAO];
 
         NFSurfaceModel *surface = [subset surfaceModel];
-        NFRDataMap *diffuseMap = [surface map_Kd];
+        if (surface) {
+            NFRDataMap *diffuseMap = [surface map_Kd];
 
-        //
-        // TODO: texture ids need to be generated per data map
-        //
-        GLuint texId;
-        glGenTextures(1, &texId);
-        self.textureId = texId;
+            //
+            // TODO: integrate the data map into the NFRGeometry object
+            //
+            GLuint texId;
+            glGenTextures(1, &texId);
+            self.textureId = texId;
 
+            //
+            // TODO: use glTextureStorage2D specify texture storage requirements
+            //       since for most cases they should be known
+            //
 
-        //
-        // TODO: use glTextureStorage2D specify texture storage requirements
-        //       since for most cases they should be known
-        //
-
-        glBindTexture(GL_TEXTURE_2D, self.textureId);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexImage2D(GL_TEXTURE_2D, 0, [diffuseMap format], [diffuseMap width], [diffuseMap height], 0,
-                     [diffuseMap format], [diffuseMap type], [diffuseMap data]);
-        glBindTexture(GL_TEXTURE_2D, 0);
+            glBindTexture(GL_TEXTURE_2D, self.textureId);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexImage2D(GL_TEXTURE_2D, 0, [diffuseMap format], [diffuseMap width], [diffuseMap height], 0,
+                         [diffuseMap format], [diffuseMap type], [diffuseMap data]);
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
     }
 }
 
