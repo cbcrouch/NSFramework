@@ -85,6 +85,36 @@
     glGenVertexArrays(1, &(vao));
     self.hVAO = vao;
 
+
+
+    //
+    // TODO: rough usage code
+    //
+    NFRBufferAttributes* bufferAttribs = [[[NFRBufferAttributes alloc] initWithFormat:kVertexFormatDefault] autorelease];
+
+    NFRBuffer* vertexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeVertex usingAttributes:bufferAttribs] autorelease];
+    NFRBuffer* indexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeIndex usingAttributes:bufferAttribs] autorelease];
+
+    [vertexBuffer loadData:NULL ofType:kBufferDataTypeNFVertex_t numberOfElements:0];
+    [indexBuffer loadData:NULL ofType:kBufferDataTypeUShort numberOfElements:0];
+
+    NFRGeometry* geometry = [[[NFRGeometry alloc] init] autorelease];
+    [geometry setVertexBuffer:vertexBuffer];
+    [geometry setIndexBuffer:indexBuffer];
+
+    //
+    // TODO: need to debug why these aren't working correctly
+    //
+    //[programObj configureVertexInput:bufferAttribs];
+    //[programObj configureVertexBufferLayout:vertexBuffer withAttributes:bufferAttribs];
+
+
+    //
+    // TODO: will either want a geometry subset or geometry hierarchy structure object to apply transform hierarchies to
+    //
+
+
+
     [programObj configureInputState:self.hVAO];
 
 

@@ -24,9 +24,7 @@ typedef NS_ENUM(NSUInteger, NFR_VERTEX_FORMAT) {
 @property (nonatomic, assign, readonly) GLuint hVAO;
 @property (nonatomic, assign, readonly) NFR_VERTEX_FORMAT format;
 
-//
-// TODO: prevent a nake init from getting called for now
-//
+- (instancetype) init __attribute__((unavailable("ERROR: format must be provided upon initialization")));
 - (instancetype) initWithFormat:(NFR_VERTEX_FORMAT)format;
 
 @end
@@ -45,27 +43,26 @@ typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
     kBufferDataTypeNFDebugVertex_t
 };
 
+@property (nonatomic, retain, readonly) NFRBufferAttributes* bufferAttributes;
+
 @property (nonatomic, assign, readonly) NFR_BUFFER_TYPE bufferType;
 @property (nonatomic, assign, readonly) NFR_BUFFER_DATA_TYPE bufferDataType;
 @property (nonatomic, assign, readonly) NSUInteger numberOfElements;
 @property (nonatomic, assign, readonly) size_t bufferDataSize;
 @property (nonatomic, assign, readonly) void* bufferDataPointer;
 
-//
-// TODO: prevent a naked init from getting called for now
-//
-- (instancetype) initWithType:(NFR_BUFFER_TYPE)type;
+- (instancetype) init __attribute__((unavailable("ERROR: type and attributes must be provided upon initialization")));
+- (instancetype) initWithType:(NFR_BUFFER_TYPE)type usingAttributes:(NFRBufferAttributes*)bufferAttributes;
+
+- (void) loadData:(void*)pData ofType:(NFR_BUFFER_DATA_TYPE)dataType numberOfElements:(NSUInteger)numElements;
 
 @end
 
 
 @interface NFRGeometry : NSObject
 
-@property (nonatomic, retain) NFRBufferAttributes* bufferAttributes;
-
 @property (nonatomic, retain) NFRBuffer* vertexBuffer;
 @property (nonatomic, retain) NFRBuffer* indexBuffer;
-
 @property (nonatomic, retain) NFSurfaceModel* surfaceModel;
 
 @property (nonatomic, retain, readonly) NSDictionary* textureDictionary;
@@ -73,29 +70,21 @@ typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
 @end
 
 
-@interface NFRRenderRequest : NSObject
-
-// collection of textures/sampler, buffers, etc. to draw
-
-@property (nonatomic, weak) id<NFRProgram> program;
-
-//
-// TODO: the render request should sync the render data types to an OpenGL object cache
-//       internal to the render request module ??
-//
-@property (nonatomic, retain) NSArray* geometryArray;
-
-@end
-
-
-
 @protocol NFRProgram <NSObject>
 
 @property (nonatomic, readonly) GLuint hProgram;
 
-- (void) configureInputState:(GLint)hVAO;
 
+- (void) configureInputState:(GLint)hVAO;
 - (void) configureVertexBufferLayout:(GLint)hVBO withVAO:(GLint)hVAO;
+
+//
+// TODO: implement these two methods to have the same behavior as the above two methods
+//
+- (void) configureVertexInput:(NFRBufferAttributes*)bufferAttributes;
+- (void) configureVertexBufferLayout:(NFRBuffer*)vertexBuffer withAttributes:(NFRBufferAttributes*)bufferAttributes;
+
+
 
 //
 // TODO: update buffer class should take a size and buffer type so they can be collapsed into one call
@@ -109,12 +98,6 @@ typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
 
 @optional
 
-
-//
-// TODO: add an optional NFRTexture array ???
-//
-
-
 //
 // TODO: replace this method with a better mechanism for selecting/abstracting shader subroutines
 //
@@ -127,4 +110,12 @@ typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
 
 @interface NFRProgram : NSObject
 + (id<NFRProgram>) createProgramObject:(NSString *)programName;
+@end
+
+
+@interface NFRRenderRequest : NSObject
+
+@property (nonatomic, retain) id<NFRProgram> program;
+@property (nonatomic, retain) NSArray* geometryArray;
+
 @end

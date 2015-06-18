@@ -43,6 +43,9 @@
 
 
 @interface NFRBuffer()
+
+@property (nonatomic, retain, readwrite) NFRBufferAttributes* bufferAttributes;
+
 @property (nonatomic, assign, readwrite) NFR_BUFFER_TYPE bufferType;
 @property (nonatomic, assign, readwrite) NFR_BUFFER_DATA_TYPE bufferDataType;
 @property (nonatomic, assign, readwrite) NSUInteger numberOfElements;
@@ -55,6 +58,8 @@
 
 @implementation NFRBuffer
 
+@synthesize bufferAttributes = _bufferAttributes;
+
 @synthesize bufferType = _bufferType;
 @synthesize bufferDataType = _bufferDataType;
 @synthesize numberOfElements = _numberOfElements;
@@ -63,11 +68,13 @@
 
 @synthesize bufferHandle = _bufferHandle;
 
-- (instancetype) initWithType:(NFR_BUFFER_TYPE)type {
+- (instancetype) initWithType:(NFR_BUFFER_TYPE)type usingAttributes:(NFRBufferAttributes*)bufferAttributes {
     self = [super init];
     if (self != nil) {
-
-        switch (type) {
+        _bufferType = type;
+        _bufferAttributes = bufferAttributes;
+        glBindVertexArray(_bufferAttributes.hVAO);
+        switch (_bufferType) {
             case kBufferTypeVertex: {
                 // create vertex buffer object
                 GLuint vbo;
@@ -86,6 +93,8 @@
                 NSLog(@"WARNING: NFRBuffer initialized with unknown buffer type, no OpenGL buffer handle created");
                 break;
         }
+        glBindVertexArray(0);
+        CHECK_GL_ERROR();
     }
     return self;
 }
@@ -94,6 +103,43 @@
     GLuint hBuffer = self.bufferHandle;
     glDeleteBuffers(1, &hBuffer);
     [super dealloc];
+}
+
+- (void) loadData:(void*)pData ofType:(NFR_BUFFER_DATA_TYPE)dataType numberOfElements:(NSUInteger)numElements {
+    [self setBufferDataPointer:pData];
+    [self setBufferDataType:dataType];
+    [self setNumberOfElements:numElements];
+
+    GLsizeiptr elementSize;
+    GLenum glBufferType;
+    switch (dataType) {
+        case kBufferDataTypeNFVertex_t:
+            elementSize = sizeof(NFVertex_t);
+            glBufferType = GL_ARRAY_BUFFER;
+            break;
+
+        case kBufferDataTypeNFDebugVertex_t:
+            elementSize = sizeof(NFDebugVertex_t);
+            glBufferType = GL_ARRAY_BUFFER;
+            break;
+
+        case kBufferDataTypeUShort:
+            elementSize = sizeof(GLushort);
+            glBufferType = GL_ELEMENT_ARRAY_BUFFER;
+            break;
+
+        default:
+            elementSize = 0;
+            glBufferType = GL_INVALID_ENUM;
+            break;
+    }
+
+    [self setBufferDataSize:numElements*elementSize];
+
+    glBindBuffer(glBufferType, self.bufferHandle);
+    glBufferData(glBufferType, numElements * elementSize, pData, GL_STATIC_DRAW);
+    glBindBuffer(glBufferType, 0);
+    CHECK_GL_ERROR();
 }
 
 @end
@@ -218,6 +264,7 @@
 
 
     // for the drawing code, program will need access to the texture dictionary
+    // (should be able to draw no problem without a surface model or any textures)
 /*
     for (id key in textureDictionary) {
         NFRDataMapGL* textureGL = [textureDictionary objectForKey:key];
@@ -236,8 +283,6 @@
 }
 
 @end
-
-
 
 
 
@@ -433,6 +478,36 @@ typedef struct phongLightUniform_t {
     CHECK_GL_ERROR();
 }
 
+
+
+- (void) configureVertexInput:(NFRBufferAttributes*)bufferAttributes {
+    glBindVertexArray(bufferAttributes.hVAO);
+
+    // NOTE: the vert attributes bound to the VAO (and associated with the active VBO)
+    glEnableVertexAttribArray(self.vertexAttribute);
+    glEnableVertexAttribArray(self.normalAttribute);
+    glEnableVertexAttribArray(self.texCoordAttribute);
+
+    glBindVertexArray(0);
+    CHECK_GL_ERROR();
+}
+
+- (void) configureVertexBufferLayout:(NFRBuffer*)vertexBuffer withAttributes:(NFRBufferAttributes*)bufferAttributes {
+    glBindVertexArray(bufferAttributes.hVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer.bufferHandle);
+
+    glVertexAttribPointer(self.vertexAttribute, ARRAY_COUNT(NFVertex_t, pos), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+                          (const GLvoid *)0x00 + offsetof(NFVertex_t, pos));
+    glVertexAttribPointer(self.normalAttribute, ARRAY_COUNT(NFVertex_t, norm), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+                          (const GLvoid *)0x00 + offsetof(NFVertex_t, norm));
+    glVertexAttribPointer(self.texCoordAttribute, ARRAY_COUNT(NFVertex_t, texCoord), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
+                          (const GLvoid *)0x00 + offsetof(NFVertex_t, texCoord));
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    CHECK_GL_ERROR();
+}
+
 //
 //
 //
@@ -554,6 +629,8 @@ typedef struct phongLightUniform_t {
 
 @synthesize hProgram = _hProgram;
 
+
+
 - (void) configureInputState:(GLint)hVAO {
     glBindVertexArray(hVAO);
 
@@ -570,17 +647,50 @@ typedef struct phongLightUniform_t {
     glBindVertexArray(hVAO);
     glBindBuffer(GL_ARRAY_BUFFER, hVBO);
 
-    glVertexAttribPointer(self.vertexAttribute, ARRAY_COUNT(NFVertex_t, pos), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
-                          (const GLvoid *)0x00 + offsetof(NFVertex_t, pos));
-    glVertexAttribPointer(self.normalAttribute, ARRAY_COUNT(NFVertex_t, norm), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
-                          (const GLvoid *)0x00 + offsetof(NFVertex_t, norm));
-    glVertexAttribPointer(self.colorAttribute, ARRAY_COUNT(NFVertex_t, texCoord), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
-                          (const GLvoid *)0x00 + offsetof(NFVertex_t, texCoord));
+    glVertexAttribPointer(self.vertexAttribute, ARRAY_COUNT(NFDebugVertex_t, pos), GL_FLOAT, GL_FALSE, sizeof(NFDebugVertex_t),
+                          (const GLvoid *)0x00 + offsetof(NFDebugVertex_t, pos));
+    glVertexAttribPointer(self.normalAttribute, ARRAY_COUNT(NFDebugVertex_t, norm), GL_FLOAT, GL_FALSE, sizeof(NFDebugVertex_t),
+                          (const GLvoid *)0x00 + offsetof(NFDebugVertex_t, norm));
+    glVertexAttribPointer(self.colorAttribute, ARRAY_COUNT(NFDebugVertex_t, color), GL_FLOAT, GL_FALSE, sizeof(NFDebugVertex_t),
+                          (const GLvoid *)0x00 + offsetof(NFDebugVertex_t, color));
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
     CHECK_GL_ERROR();
 }
+
+
+
+- (void) configureVertexInput:(NFRBufferAttributes*)bufferAttributes {
+    glBindVertexArray(bufferAttributes.hVAO);
+
+    // NOTE: the vert attributes bound to the VAO (and associated with the active VBO)
+    glEnableVertexAttribArray(self.vertexAttribute);
+    glEnableVertexAttribArray(self.normalAttribute);
+    glEnableVertexAttribArray(self.colorAttribute);
+
+    glBindVertexArray(0);
+    CHECK_GL_ERROR();
+}
+
+- (void) configureVertexBufferLayout:(NFRBuffer*)vertexBuffer withAttributes:(NFRBufferAttributes*)bufferAttributes {
+    glBindVertexArray(bufferAttributes.hVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer.bufferHandle);
+
+    glVertexAttribPointer(self.vertexAttribute, ARRAY_COUNT(NFDebugVertex_t, pos), GL_FLOAT, GL_FALSE, sizeof(NFDebugVertex_t),
+                          (const GLvoid *)0x00 + offsetof(NFDebugVertex_t, pos));
+    glVertexAttribPointer(self.normalAttribute, ARRAY_COUNT(NFDebugVertex_t, norm), GL_FLOAT, GL_FALSE, sizeof(NFDebugVertex_t),
+                          (const GLvoid *)0x00 + offsetof(NFDebugVertex_t, norm));
+    glVertexAttribPointer(self.colorAttribute, ARRAY_COUNT(NFDebugVertex_t, color), GL_FLOAT, GL_FALSE, sizeof(NFDebugVertex_t),
+                          (const GLvoid *)0x00 + offsetof(NFDebugVertex_t, color));
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    CHECK_GL_ERROR();
+}
+
+
+
 
 - (void) updateVertexBuffer:(GLint)hVBO numVertices:(GLuint)numVertices dataPtr:(void*)pData {
     glBindBuffer(GL_ARRAY_BUFFER, hVBO);
