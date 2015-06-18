@@ -95,7 +95,7 @@
             [asset createPlaneOfSize:4];
             // NOTE: default draw mode should work
 
-            NFSurfaceModel *surface = [NFSurfaceModel defaultModel];
+            NFSurfaceModel *surface = [NFSurfaceModel defaultSurfaceModel];
 
             NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];
             [surfaceModels addObject:surface];
@@ -155,7 +155,7 @@
             // - 32  64 for high resolution
             [asset createUVSphereWithRadius:1 withStacks:32 withSlices:64];
 
-            NFSurfaceModel *surface = [NFSurfaceModel defaultModel];
+            NFSurfaceModel *surface = [NFSurfaceModel defaultSurfaceModel];
 
             NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];
             [surfaceModels addObject:surface];

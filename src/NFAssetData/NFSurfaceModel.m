@@ -13,7 +13,7 @@
 
 @implementation NFSurfaceModel
 
-+ (NFSurfaceModel *) defaultModel {
++ (NFSurfaceModel *) defaultSurfaceModel {
     NFSurfaceModel *surface = [[[NFSurfaceModel alloc] init] autorelease];
     [surface setName:@"NSGLFramework_defaultSurfaceModel"];
 

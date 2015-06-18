@@ -607,7 +607,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
                 // TODO: only do this once but will need to hold onto the defaultSurface pointer
                 //       so the material name can be set
                 //
-                NFSurfaceModel *defaultSurface = [NFSurfaceModel defaultModel];
+                NFSurfaceModel *defaultSurface = [NFSurfaceModel defaultSurfaceModel];
                 [[self materialsArray] addObject:defaultSurface];
 
                 self.activeGroup.materialName = defaultSurface.name;

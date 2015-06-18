@@ -11,6 +11,96 @@
 #import "NFRUtils.h"
 
 
+
+@interface NFRBufferAttributes()
+@property (nonatomic, assign, readwrite) GLuint hVAO;
+@end
+
+@implementation NFRBufferAttributes
+
+@synthesize hVAO = _hVAO;
+
+- (instancetype) initWithFormat:(NFR_VERTEX_FORMAT)format {
+    self = [super init];
+    if (self != nil) {
+        GLuint vao;
+        glGenVertexArrays(1, &vao);
+        _hVAO = vao;
+        _format = format;
+    }
+
+    return nil;
+}
+
+- (void) dealloc {
+    GLuint vao = _hVAO;
+    glDeleteVertexArrays(1, &vao);
+    [super dealloc];
+}
+
+@end
+
+
+
+@interface NFRBuffer()
+@property (nonatomic, assign, readwrite) NFR_BUFFER_TYPE bufferType;
+@property (nonatomic, assign, readwrite) NFR_BUFFER_DATA_TYPE bufferDataType;
+@property (nonatomic, assign, readwrite) NSUInteger numberOfElements;
+@property (nonatomic, assign, readwrite) size_t bufferDataSize;
+@property (nonatomic, assign, readwrite) void* bufferDataPointer;
+
+@property (nonatomic, assign) GLuint bufferHandle;
+@end
+
+
+@implementation NFRBuffer
+
+@synthesize bufferType = _bufferType;
+@synthesize bufferDataType = _bufferDataType;
+@synthesize numberOfElements = _numberOfElements;
+@synthesize bufferDataSize = _bufferDataSize;
+@synthesize bufferDataPointer = _bufferDataPointer;
+
+@synthesize bufferHandle = _bufferHandle;
+
+- (instancetype) initWithType:(NFR_BUFFER_TYPE)type {
+    self = [super init];
+    if (self != nil) {
+
+        switch (type) {
+            case kBufferTypeVertex: {
+                // create vertex buffer object
+                GLuint vbo;
+                glGenBuffers(1, &vbo);
+                self.bufferHandle = vbo;
+            } break;
+
+            case kBufferTypeIndex: {
+                // create element buffer object
+                GLuint ebo;
+                glGenBuffers(1, &ebo);
+                self.bufferHandle = ebo;
+            } break;
+                
+            default:
+                NSLog(@"WARNING: NFRBuffer initialized with unknown buffer type, no OpenGL buffer handle created");
+                break;
+        }
+    }
+    return self;
+}
+
+- (void) dealloc {
+    GLuint hBuffer = self.bufferHandle;
+    glDeleteBuffers(1, &hBuffer);
+    [super dealloc];
+}
+
+@end
+
+
+
+
 @interface NFRDataMapGL : NSObject
 
 @property (nonatomic, assign, readonly) GLuint textureID;
@@ -20,7 +110,7 @@
 
 - (void) syncDataMap:(NFRDataMap*)dataMap;
 
-- (void) activateTexture;
+- (void) activateTexture:(GLint)textureUnitNum withUniformLocation:(GLint)uniformLocation;
 - (void) deactivateTexture;
 
 @end
@@ -65,21 +155,20 @@
                  [dataMap format], [dataMap type], [dataMap data]);
     glBindTexture(GL_TEXTURE_2D, 0);
 
+    CHECK_GL_ERROR();
     [self setValidTexture:YES];
 }
 
-- (void) activateTexture {
-    glActiveTexture(GL_TEXTURE0);
+- (void) activateTexture:(GLint)textureUnitNum withUniformLocation:(GLint)uniformLocation {
+    glActiveTexture(textureUnitNum);
     glBindTexture(GL_TEXTURE_2D, self.textureID);
-
-    //
-    // TODO: integrate with the shader program class
-    //
-    //glUniform1i(self.textureUniform, 0); // GL_TEXTURE0
+    glUniform1i(uniformLocation, textureUnitNum);
+    CHECK_GL_ERROR();
 }
 
 - (void) deactivateTexture {
     glBindTexture(GL_TEXTURE_2D, 0);
+    CHECK_GL_ERROR();
 }
 
 @end
@@ -88,7 +177,7 @@
 
 
 @interface NFRGeometry()
-@property (nonatomic, retain) NSArray* glDataMapArray;
+@property (nonatomic, retain, readwrite) NSDictionary* textureDictionary;
 @end
 
 
@@ -96,53 +185,55 @@
 
 @synthesize vertexBuffer = _vertexBuffer;
 @synthesize indexBuffer = _indexBuffer;
-@synthesize dataMapArray = _dataMapArray;
+@synthesize surfaceModel = _surfaceModel;
+@synthesize textureDictionary = _textureDictionary;
 
-@synthesize glDataMapArray = _glDataMapArray;
+- (NSDictionary*) textureDictionary {
+    if (_textureDictionary == nil) {
+        _textureDictionary = [[[NSDictionary alloc] init] autorelease];
+    }
+    return _textureDictionary;
+}
+
 
 //
 // TODO: implement a method to convert the data map array into the corresponding
 //       OpenGL objects
 //
-
-/*
-- (void) syncBufferGL {
-    // create vertex buffer object
-    GLuint vbo;
-    glGenBuffers(1, &vbo);
-    self.hVBO = vbo;
-
-    // create element buffer object
-    GLuint ebo;
-    glGenBuffers(1, &ebo);
-    self.hEBO = ebo;
-
-    [programObj configureVertexBufferLayout:self.hVBO withVAO:hVAO];
-
+- (void) syncDataMapArray {
     //
-    // TODO: with num vertices/indices need to align GL types with types used by NSFramework
+    // TODO: iteratre through each data map and convert it into a NFRDataMapGL
     //
-    // load data into buffers
-    [programObj updateVertexBuffer:self.hVBO numVertices:(GLuint)self.numVertices dataPtr:(void*)self.vertices];
-    [programObj updateIndexBuffer:self.hEBO numIndices:(GLuint)self.numIndices dataPtr:(void*)self.indices];
-}
-*/
+    NFRDataMap *diffuseMap = [self.surfaceModel map_Kd];
 
+    NFRDataMapGL* mapGL = [[[NFRDataMapGL alloc] init] autorelease];
+    [mapGL syncDataMap:diffuseMap];
+
+
+    NSString* uniformName = @"diffuseTexture";
+
+
+    // make sure that the textureDictionary will hold onto the mapGL reference
+    [self.textureDictionary insertValue:mapGL inPropertyWithKey:uniformName];
+
+
+    // for the drawing code, program will need access to the texture dictionary
 /*
-- (void) updateVertexBuffer:(GLint)hVBO numVertices:(GLuint)numVertices dataPtr:(void*)pData {
-    glBindBuffer(GL_ARRAY_BUFFER, hVBO);
-    glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(NFVertex_t), pData, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    CHECK_GL_ERROR();
-}
+    for (id key in textureDictionary) {
+        NFRDataMapGL* textureGL = [textureDictionary objectForKey:key];
+        // pass uniform location and texture unit num based on key string
+        [textureGL activateTexture:GL_TEXTURE0 withUniformLocation:program.textureUniform];
+    }
 
-- (void) updateIndexBuffer:(GLint)hEBO numIndices:(GLuint)numIndices dataPtr:(void*)pData {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(GLushort), pData, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    CHECK_GL_ERROR();
-}
+    // draw..
+
+    // if debug then deactivate all textures
+    for (id key in textureDictionary) {
+        NFRDataMapGL* textureGL = [textureDictionary objectForKey:key];
+        [textureGL deactivateTexture];
+    }
 */
+}
 
 @end
 
@@ -292,6 +383,10 @@ typedef struct phongLightUniform_t {
 
 @synthesize hProgram = _hProgram;
 
+
+//
+// TODO: pass in an NFRBufferAttributes object and consider storing the attirbutes in the object itself
+//
 - (void) configureInputState:(GLint)hVAO {
     glBindVertexArray(hVAO);
 
@@ -304,6 +399,10 @@ typedef struct phongLightUniform_t {
     CHECK_GL_ERROR();
 }
 
+
+//
+// TODO: these functions should not be a part of the program object
+//
 - (void) configureVertexBufferLayout:(GLint)hVBO withVAO:(GLint)hVAO {
     glBindVertexArray(hVAO);
     glBindBuffer(GL_ARRAY_BUFFER, hVBO);
@@ -333,6 +432,11 @@ typedef struct phongLightUniform_t {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     CHECK_GL_ERROR();
 }
+
+//
+//
+//
+
 
 - (void) updateModelMatrix:(GLKMatrix4)modelMatrix {
     glProgramUniformMatrix4fv(self.hProgram, self.modelMatrixLocation, 1, GL_FALSE, modelMatrix.m);

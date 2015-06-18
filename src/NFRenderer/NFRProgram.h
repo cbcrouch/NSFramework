@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
 
+#import "NFSurfaceModel.h"
 #import "NFRDataMap.h"
 
 @protocol NFRProgram;
@@ -15,37 +16,59 @@
 
 @interface NFRBufferAttributes : NSObject
 
-// VAO handle
+typedef NS_ENUM(NSUInteger, NFR_VERTEX_FORMAT) {
+    kVertexFormatDefault,
+    kVertexFormatDebug
+};
 
-// store values for glVertexAttribPointer
+@property (nonatomic, assign, readonly) GLuint hVAO;
+@property (nonatomic, assign, readonly) NFR_VERTEX_FORMAT format;
+
+//
+// TODO: prevent a nake init from getting called for now
+//
+- (instancetype) initWithFormat:(NFR_VERTEX_FORMAT)format;
 
 @end
 
 
 @interface NFRBuffer : NSObject
 
-@property (nonatomic, weak) NFRBufferAttributes* bufferAttributes;
+typedef NS_ENUM(NSUInteger, NFR_BUFFER_TYPE) {
+    kBufferTypeVertex,
+    kBufferTypeIndex
+};
 
-// data pointer
-// data size
-// data type
-// number elements
+typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
+    kBufferDataTypeUShort,
+    kBufferDataTypeNFVertex_t,
+    kBufferDataTypeNFDebugVertex_t
+};
+
+@property (nonatomic, assign, readonly) NFR_BUFFER_TYPE bufferType;
+@property (nonatomic, assign, readonly) NFR_BUFFER_DATA_TYPE bufferDataType;
+@property (nonatomic, assign, readonly) NSUInteger numberOfElements;
+@property (nonatomic, assign, readonly) size_t bufferDataSize;
+@property (nonatomic, assign, readonly) void* bufferDataPointer;
+
+//
+// TODO: prevent a naked init from getting called for now
+//
+- (instancetype) initWithType:(NFR_BUFFER_TYPE)type;
 
 @end
 
 
 @interface NFRGeometry : NSObject
 
-//
-// TODO: consider making buffers weak properties and when traversing the
-//       geometry array in the render request remove geometry objects whose
-//       buffer objects are no longer valid
-//
+@property (nonatomic, retain) NFRBufferAttributes* bufferAttributes;
 
 @property (nonatomic, retain) NFRBuffer* vertexBuffer;
 @property (nonatomic, retain) NFRBuffer* indexBuffer;
 
-@property (nonatomic, retain) NSArray* dataMapArray;
+@property (nonatomic, retain) NFSurfaceModel* surfaceModel;
+
+@property (nonatomic, retain, readonly) NSDictionary* textureDictionary;
 
 @end
 
