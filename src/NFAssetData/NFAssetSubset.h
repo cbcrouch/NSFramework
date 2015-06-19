@@ -29,6 +29,11 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
 
 @interface NFAssetSubset : NSObject
 
+@property (nonatomic, assign) NFVertex_t* vertices;
+@property (nonatomic, assign) GLushort* indices;
+@property (nonatomic, assign) NSInteger numVertices;
+@property (nonatomic, assign) NSInteger numIndices;
+
 @property (nonatomic, assign) DRAWING_MODE drawMode;
 
 @property (nonatomic, assign) GLenum mode;

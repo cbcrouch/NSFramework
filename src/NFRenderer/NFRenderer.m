@@ -49,6 +49,8 @@
 
     id<NFRProgram> m_phongObject;
     id<NFRProgram> m_debugObject;
+
+    NFRRenderRequest* m_renderRequest;
 }
 
 @property (nonatomic, retain) NSArray* viewports;
@@ -94,6 +96,19 @@
 
     m_phongObject = [[NFRProgram createProgramObject:@"DefaultModel"] retain];
     m_debugObject = [[NFRProgram createProgramObject:@"Debug"] retain];
+
+
+    // render request should be a part of the NFRenderer
+    m_renderRequest = [[[NFRRenderRequest alloc] init] retain];
+    [m_renderRequest setProgram:m_phongObject];
+
+    //
+    // TODO: the NFAssetData class will need a method to return a completely constructed geometry object
+    //       (asset data object will own the geometry object so that it can update it)
+    //
+    //[m_renderRequest addGeometry:geometry];
+
+
 
 
     NSString *fileNamePath;
@@ -166,6 +181,13 @@
     glEnable(GL_CULL_FACE);
     CHECK_GL_ERROR();
 
+
+    //
+    // TODO: add the remaining asset geometry objects to the render request
+    //
+    [m_renderRequest addGeometry:m_pAsset.geometry];
+
+
     return self;
 }
 
@@ -216,6 +238,7 @@
     //       to draw into a frame buffer before it is ready
     //
 
+#if 1
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     glUseProgram(m_phongObject.hProgram);
@@ -226,14 +249,13 @@
     // light
     [m_solidSphere drawWithProgramObject:m_phongObject withSubroutine:@"LightSubroutine"];
 
-
-    //
-    // TODO: draw axis guidelines
-    //
-
-
     glUseProgram(0);
     CHECK_GL_ERROR();
+#else
+
+    [m_renderRequest process];
+
+#endif
 }
 
 - (void) resizeToRect:(CGRect)rect {

@@ -238,7 +238,7 @@
 
 - (NSMutableDictionary*) textureDictionary {
     if (_textureDictionary == nil) {
-        _textureDictionary = [[[NSMutableDictionary alloc] init] autorelease];
+        _textureDictionary = [[[NSMutableDictionary alloc] init] retain];
     }
     return _textureDictionary;
 }
@@ -262,27 +262,11 @@
     [self.textureDictionary setObject:mapGL forKey:uniformName];
 }
 
-
-// for the drawing code, program will need access to the texture dictionary
-// (should be able to draw no problem without a surface model or any textures)
-/*
-    for (id key in textureDictionary) {
-        NFRDataMapGL* textureGL = [textureDictionary objectForKey:key];
-        // pass uniform location and texture unit num based on key string
-        [textureGL activateTexture:GL_TEXTURE0 withUniformLocation:program.textureUniform];
-    }
-
-    // draw..
-
-    // if debug then deactivate all textures
-    for (id key in textureDictionary) {
-        NFRDataMapGL* textureGL = [textureDictionary objectForKey:key];
-        [textureGL deactivateTexture];
-    }
-*/
+//
+// TODO: implement dealloc function to decrement the container retain counts
+//
 
 @end
-
 
 
 
@@ -292,23 +276,32 @@
 
 - (NSMutableArray*) geometryArray {
     if (_geometryArray == nil) {
-        _geometryArray = [[[NSMutableArray alloc] init] autorelease];
+        _geometryArray = [[[NSMutableArray alloc] init] retain];
     }
     return _geometryArray;
 }
 
 - (void) addGeometry:(NFRGeometry*)geometry {
+    if (_geometryArray == nil) {
+        _geometryArray = [[[NSMutableArray alloc] init] retain];
+    }
     [_geometryArray addObject:geometry];
 }
 
 - (void) process {
+    //
+    // TODO: geometry array for some reason is nil
+    //
     for (NFRGeometry* geo in self.geometryArray) {
         [self.program drawGeometry:geo];
     }
 }
 
-@end
+//
+// TODO: implement dealloc function to decrement the container retain counts
+//
 
+@end
 
 
 
@@ -542,6 +535,15 @@ typedef struct phongLightUniform_t {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glUseProgram(self.hProgram);
 
+
+    //
+    // TODO: need a better way of handling subroutines
+    //
+    if ([self respondsToSelector:@selector(activateSubroutine:)]) {
+        [self activateSubroutine:@"PhongSubroutine"];
+    }
+
+
     for (id key in geometry.textureDictionary) {
         NFRDataMapGL* textureGL = [geometry.textureDictionary objectForKey:key];
 
@@ -551,7 +553,12 @@ typedef struct phongLightUniform_t {
         [textureGL activateTexture:GL_TEXTURE0 withUniformLocation:self.materialUniforms.diffuseLoc];
     }
 
+
+    //
+    // TODO: buffer attributes has a bad handle
+    //
     glBindVertexArray(geometry.vertexBuffer.bufferAttributes.hVAO);
+
 
     [self updateModelMatrix:geometry.modelMatrix];
 

@@ -44,8 +44,12 @@ typedef struct NFLight_t {
 
 @property (nonatomic, assign) GLKMatrix4 modelMatrix;
 
-@property (nonatomic, retain) NSArray *subsetArray;
-@property (nonatomic, retain) NSArray *surfaceModelArray;
+@property (nonatomic, retain) NSArray* subsetArray;
+@property (nonatomic, retain) NSArray* surfaceModelArray;
+
+
+@property (nonatomic, retain) NFRGeometry* geometry;
+
 
 - (instancetype) init;
 - (void) dealloc;

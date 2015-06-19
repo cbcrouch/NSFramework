@@ -32,11 +32,6 @@
 @property (nonatomic, assign) GLKVector3 maxDimensions;
 
 
-@property (nonatomic, assign) NFVertex_t* vertices;
-@property (nonatomic, assign) GLushort* indices;
-@property (nonatomic, assign) NSInteger numVertices;
-@property (nonatomic, assign) NSInteger numIndices;
-
 //
 // TODO: remove all OpenGL primitives
 //

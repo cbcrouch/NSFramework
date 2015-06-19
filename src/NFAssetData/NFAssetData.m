@@ -90,16 +90,13 @@
     //
     // TODO: rough usage code
     //
-    NFRBufferAttributes* bufferAttribs = [[[NFRBufferAttributes alloc] initWithFormat:kVertexFormatDefault] autorelease];
+    NFRBufferAttributes* bufferAttribs = [[[NFRBufferAttributes alloc] initWithFormat:kVertexFormatDefault] retain];
 
-    NFRBuffer* vertexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeVertex usingAttributes:bufferAttribs] autorelease];
-    NFRBuffer* indexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeIndex usingAttributes:bufferAttribs] autorelease];
-
-    [vertexBuffer loadData:NULL ofType:kBufferDataTypeNFVertex_t numberOfElements:0];
-    [indexBuffer loadData:NULL ofType:kBufferDataTypeUShort numberOfElements:0];
+    NFRBuffer* vertexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeVertex usingAttributes:bufferAttribs] retain];
+    NFRBuffer* indexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeIndex usingAttributes:bufferAttribs] retain];
 
     NSAssert([self.subsetArray count] == 1, @"ERROR: NFRGeometry object currently only supports one asset subset");
-    NFRGeometry* geometry = [[[NFRGeometry alloc] init] autorelease];
+    NFRGeometry* geometry = [[[NFRGeometry alloc] init] retain];
     [geometry setVertexBuffer:vertexBuffer];
     [geometry setIndexBuffer:indexBuffer];
 
@@ -116,28 +113,16 @@
         //
         GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.modelMatrix, subset.subsetModelMat);
         [geometry setModelMatrix:renderModelMat];
+
+        [vertexBuffer loadData:subset.vertices ofType:kBufferDataTypeNFVertex_t numberOfElements:subset.numVertices];
+        [indexBuffer loadData:subset.indices ofType:kBufferDataTypeUShort numberOfElements:subset.numIndices];
     }
     [geometry syncSurfaceModel];
 
     [programObj configureVertexInput:bufferAttribs];
     [programObj configureVertexBufferLayout:vertexBuffer withAttributes:bufferAttribs];
 
-    //
-    // TODO: in theory should be able to draw the geometry object at this point
-    //
-
-    // render request should be a part of the NFRenderer
-    NFRRenderRequest* renderRequest = [[[NFRRenderRequest alloc] init] autorelease];
-    [renderRequest setProgram:programObj];
-
-    //
-    // TODO: the NFAssetData class will need a method to return a completely constructed geometry object
-    //       (asset data object will own the geometry object so that it can update it)
-    //
-    [renderRequest addGeometry:geometry];
-
-    //[renderRequest process];
-
+    [self setGeometry:geometry];
 
     
 
