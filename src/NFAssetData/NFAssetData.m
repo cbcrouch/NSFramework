@@ -102,11 +102,8 @@
     [geometry setVertexBuffer:vertexBuffer];
     [geometry setIndexBuffer:indexBuffer];
 
-    //
-    // TODO: need to debug why these aren't working correctly
-    //
-    //[programObj configureVertexInput:bufferAttribs];
-    //[programObj configureVertexBufferLayout:vertexBuffer withAttributes:bufferAttribs];
+    [programObj configureVertexInput:bufferAttribs];
+    [programObj configureVertexBufferLayout:vertexBuffer withAttributes:bufferAttribs];
 
 
     //

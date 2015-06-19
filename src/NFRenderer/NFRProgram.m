@@ -29,7 +29,7 @@
         _format = format;
     }
 
-    return nil;
+    return self;
 }
 
 - (void) dealloc {
@@ -490,8 +490,8 @@ typedef struct phongLightUniform_t {
 
     glBindVertexArray(0);
     CHECK_GL_ERROR();
-}
 
+}
 - (void) configureVertexBufferLayout:(NFRBuffer*)vertexBuffer withAttributes:(NFRBufferAttributes*)bufferAttributes {
     glBindVertexArray(bufferAttributes.hVAO);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer.bufferHandle);
