@@ -98,18 +98,52 @@
     [vertexBuffer loadData:NULL ofType:kBufferDataTypeNFVertex_t numberOfElements:0];
     [indexBuffer loadData:NULL ofType:kBufferDataTypeUShort numberOfElements:0];
 
+    NSAssert([self.subsetArray count] == 1, @"ERROR: NFRGeometry object currently only supports one asset subset");
     NFRGeometry* geometry = [[[NFRGeometry alloc] init] autorelease];
     [geometry setVertexBuffer:vertexBuffer];
     [geometry setIndexBuffer:indexBuffer];
 
+    for (NFAssetSubset *subset in self.subsetArray) {
+        NFSurfaceModel *surface = [subset surfaceModel];
+        if (surface) {
+            [geometry setSurfaceModel:surface];
+        }
+
+        [geometry setMode:subset.mode];
+
+        //
+        // TODO: will need to make sure that this matrix gets updated every frame
+        //
+        GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.modelMatrix, subset.subsetModelMat);
+        [geometry setModelMatrix:renderModelMat];
+    }
+    [geometry syncSurfaceModel];
+
     [programObj configureVertexInput:bufferAttribs];
     [programObj configureVertexBufferLayout:vertexBuffer withAttributes:bufferAttribs];
 
+    //
+    // TODO: in theory should be able to draw the geometry object at this point
+    //
+
+    // render request should be a part of the NFRenderer
+    NFRRenderRequest* renderRequest = [[[NFRRenderRequest alloc] init] autorelease];
+    [renderRequest setProgram:programObj];
+
+    //
+    // TODO: the NFAssetData class will need a method to return a completely constructed geometry object
+    //       (asset data object will own the geometry object so that it can update it)
+    //
+    [renderRequest addGeometry:geometry];
+
+    //[renderRequest process];
+
+
+    
 
     //
     // TODO: will either want a geometry subset or geometry hierarchy structure object to apply transform hierarchies to
     //
-
 
 
     [programObj configureInputState:self.hVAO];

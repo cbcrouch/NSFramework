@@ -65,7 +65,12 @@ typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
 @property (nonatomic, retain) NFRBuffer* indexBuffer;
 @property (nonatomic, retain) NFSurfaceModel* surfaceModel;
 
-@property (nonatomic, retain, readonly) NSDictionary* textureDictionary;
+@property (nonatomic, assign) GLenum mode;
+@property (nonatomic, assign) GLKMatrix4 modelMatrix;
+
+@property (nonatomic, retain, readonly) NSMutableDictionary* textureDictionary;
+
+- (void) syncSurfaceModel;
 
 @end
 
@@ -92,6 +97,9 @@ typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
 - (void) updateVertexBuffer:(GLint)hVBO numVertices:(GLuint)numVertices dataPtr:(void*)pData;
 - (void) updateIndexBuffer:(GLint)hEBO numIndices:(GLuint)numIndices dataPtr:(void*)pData;
 
+
+- (void) drawGeometry:(NFRGeometry*)geometry;
+
 - (void) updateModelMatrix:(GLKMatrix4)modelMatrix;
 - (void) updateViewMatrix:(GLKMatrix4)viewMatrix projectionMatrix:(GLKMatrix4)projection;
 
@@ -116,6 +124,9 @@ typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
 @interface NFRRenderRequest : NSObject
 
 @property (nonatomic, retain) id<NFRProgram> program;
-@property (nonatomic, retain) NSArray* geometryArray;
+@property (nonatomic, retain) NSMutableArray* geometryArray;
+
+- (void) addGeometry:(NFRGeometry*)geometry;
+- (void) process;
 
 @end

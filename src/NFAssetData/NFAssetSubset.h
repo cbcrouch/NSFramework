@@ -31,6 +31,7 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
 
 @property (nonatomic, assign) DRAWING_MODE drawMode;
 
+@property (nonatomic, assign) GLenum mode;
 @property (nonatomic, assign) GLKMatrix4 subsetModelMat;
 
 @property (nonatomic, assign) GLKMatrix4 unitScalarMatrix;

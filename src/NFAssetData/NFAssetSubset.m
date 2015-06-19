@@ -37,9 +37,11 @@
 @property (nonatomic, assign) NSInteger numVertices;
 @property (nonatomic, assign) NSInteger numIndices;
 
+//
+// TODO: remove all OpenGL primitives
+//
 @property (nonatomic, assign) GLuint hVBO;
 @property (nonatomic, assign) GLuint hEBO;
-@property (nonatomic, assign) GLenum mode;
 
 
 //

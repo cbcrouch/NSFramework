@@ -223,7 +223,7 @@
 
 
 @interface NFRGeometry()
-@property (nonatomic, retain, readwrite) NSDictionary* textureDictionary;
+@property (nonatomic, retain, readwrite) NSMutableDictionary* textureDictionary;
 @end
 
 
@@ -232,21 +232,22 @@
 @synthesize vertexBuffer = _vertexBuffer;
 @synthesize indexBuffer = _indexBuffer;
 @synthesize surfaceModel = _surfaceModel;
+@synthesize mode = _mode;
+@synthesize modelMatrix = _modelMatrix;
 @synthesize textureDictionary = _textureDictionary;
 
-- (NSDictionary*) textureDictionary {
+- (NSMutableDictionary*) textureDictionary {
     if (_textureDictionary == nil) {
-        _textureDictionary = [[[NSDictionary alloc] init] autorelease];
+        _textureDictionary = [[[NSMutableDictionary alloc] init] autorelease];
     }
     return _textureDictionary;
 }
 
+- (void) syncSurfaceModel {
+    //
+    // TODO: implement full support of the surface model
+    //
 
-//
-// TODO: implement a method to convert the data map array into the corresponding
-//       OpenGL objects
-//
-- (void) syncDataMapArray {
     //
     // TODO: iteratre through each data map and convert it into a NFRDataMapGL
     //
@@ -255,16 +256,15 @@
     NFRDataMapGL* mapGL = [[[NFRDataMapGL alloc] init] autorelease];
     [mapGL syncDataMap:diffuseMap];
 
-
     NSString* uniformName = @"diffuseTexture";
 
-
     // make sure that the textureDictionary will hold onto the mapGL reference
-    [self.textureDictionary insertValue:mapGL inPropertyWithKey:uniformName];
+    [self.textureDictionary setObject:mapGL forKey:uniformName];
+}
 
 
-    // for the drawing code, program will need access to the texture dictionary
-    // (should be able to draw no problem without a surface model or any textures)
+// for the drawing code, program will need access to the texture dictionary
+// (should be able to draw no problem without a surface model or any textures)
 /*
     for (id key in textureDictionary) {
         NFRDataMapGL* textureGL = [textureDictionary objectForKey:key];
@@ -280,6 +280,31 @@
         [textureGL deactivateTexture];
     }
 */
+
+@end
+
+
+
+
+@implementation NFRRenderRequest
+
+@synthesize geometryArray = _geometryArray;
+
+- (NSMutableArray*) geometryArray {
+    if (_geometryArray == nil) {
+        _geometryArray = [[[NSMutableArray alloc] init] autorelease];
+    }
+    return _geometryArray;
+}
+
+- (void) addGeometry:(NFRGeometry*)geometry {
+    [_geometryArray addObject:geometry];
+}
+
+- (void) process {
+    for (NFRGeometry* geo in self.geometryArray) {
+        [self.program drawGeometry:geo];
+    }
 }
 
 @end
@@ -513,6 +538,43 @@ typedef struct phongLightUniform_t {
 //
 
 
+- (void) drawGeometry:(NFRGeometry*)geometry {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glUseProgram(self.hProgram);
+
+    for (id key in geometry.textureDictionary) {
+        NFRDataMapGL* textureGL = [geometry.textureDictionary objectForKey:key];
+
+        //
+        // TODO: pass uniform location and texture unit num based on key string
+        //
+        [textureGL activateTexture:GL_TEXTURE0 withUniformLocation:self.materialUniforms.diffuseLoc];
+    }
+
+    glBindVertexArray(geometry.vertexBuffer.bufferAttributes.hVAO);
+
+    [self updateModelMatrix:geometry.modelMatrix];
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geometry.indexBuffer.bufferHandle);
+    glDrawElements(geometry.mode, (GLsizei)geometry.indexBuffer.numberOfElements, GL_UNSIGNED_SHORT, NULL);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(0);
+
+    //
+    // TODO: if debug then deactivate all textures
+    //
+    for (id key in geometry.textureDictionary) {
+        NFRDataMapGL* textureGL = [geometry.textureDictionary objectForKey:key];
+        [textureGL deactivateTexture];
+    }
+
+    glUseProgram(0);
+    CHECK_GL_ERROR();
+}
+
+
+
 - (void) updateModelMatrix:(GLKMatrix4)modelMatrix {
     glProgramUniformMatrix4fv(self.hProgram, self.modelMatrixLocation, 1, GL_FALSE, modelMatrix.m);
     CHECK_GL_ERROR();
@@ -705,6 +767,14 @@ typedef struct phongLightUniform_t {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     CHECK_GL_ERROR();
 }
+
+
+- (void) drawGeometry:(NFRGeometry*)geometry {
+    //
+    // TODO: implement
+    //
+}
+
 
 - (void) updateModelMatrix:(GLKMatrix4)modelMatrix {
     glProgramUniformMatrix4fv(self.hProgram, self.modelMatrixLocation, 1, GL_FALSE, modelMatrix.m);
