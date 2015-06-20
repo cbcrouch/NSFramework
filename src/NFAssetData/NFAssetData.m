@@ -10,6 +10,13 @@
 
 @implementation NFAssetData
 
+- (NFRGeometry*) geometry {
+    if (_geometry == nil) {
+        _geometry = [[[NFRGeometry alloc] init] autorelease];
+    }
+    return _geometry;
+}
+
 - (instancetype) init {
     self = [super init];
     if (self == nil) {
@@ -70,43 +77,34 @@
 
 - (void) generateRenderables {
     //
-    // TODO: need to setup proper ownership and refence release for NFR objects
+    // TODO: will either want a geometry subset or geometry hierarchy structure object to apply transform hierarchies to
     //
-    NFRBufferAttributes* bufferAttribs = [[[NFRBufferAttributes alloc] initWithFormat:kVertexFormatDefault] retain];
-
-    NFRBuffer* vertexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeVertex usingAttributes:bufferAttribs] retain];
-    NFRBuffer* indexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeIndex usingAttributes:bufferAttribs] retain];
-
     NSAssert([self.subsetArray count] == 1, @"ERROR: NFRGeometry object currently only supports one asset subset");
-    NFRGeometry* geometry = [[[NFRGeometry alloc] init] retain];
 
-    //
-    // TODO: these set calls should increment the reference count if not using ARC so that the objects can be
-    //       declared autorelease when created (geometry dealloc will have to release them)
-    //
-    [geometry setVertexBuffer:vertexBuffer];
-    [geometry setIndexBuffer:indexBuffer];
+    NFRBufferAttributes* bufferAttribs = [[[NFRBufferAttributes alloc] initWithFormat:kVertexFormatDefault] autorelease];
+
+    NFRBuffer* vertexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeVertex usingAttributes:bufferAttribs] autorelease];
+    NFRBuffer* indexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeIndex usingAttributes:bufferAttribs] autorelease];
+
+    [self.geometry setVertexBuffer:vertexBuffer];
+    [self.geometry setIndexBuffer:indexBuffer];
 
     for (NFAssetSubset *subset in self.subsetArray) {
         NFSurfaceModel *surface = [subset surfaceModel];
         if (surface) {
-            [geometry setSurfaceModel:surface];
+            [self.geometry setSurfaceModel:surface];
         }
 
-        [geometry setMode:subset.mode];
+        [self.geometry setMode:subset.mode];
 
         GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.modelMatrix, subset.subsetModelMat);
-        [geometry setModelMatrix:renderModelMat];
+        [self.geometry setModelMatrix:renderModelMat];
 
         [vertexBuffer loadData:subset.vertices ofType:kBufferDataTypeNFVertex_t numberOfElements:subset.numVertices];
         [indexBuffer loadData:subset.indices ofType:kBufferDataTypeUShort numberOfElements:subset.numIndices];
     }
-    [geometry syncSurfaceModel];
 
-    //
-    // TODO: will either want a geometry subset or geometry hierarchy structure object to apply transform hierarchies to
-    //
-    [self setGeometry:geometry];
+    [self.geometry syncSurfaceModel];
 }
 
 - (void) bindToProgram:(id<NFRProgram>)programObj {

@@ -73,6 +73,7 @@
     if (self != nil) {
         _bufferType = type;
         _bufferAttributes = bufferAttributes;
+        [_bufferAttributes retain];
         glBindVertexArray(_bufferAttributes.hVAO);
         switch (_bufferType) {
             case kBufferTypeVertex: {
@@ -100,6 +101,7 @@
 }
 
 - (void) dealloc {
+    [_bufferAttributes release];
     GLuint hBuffer = self.bufferHandle;
     glDeleteBuffers(1, &hBuffer);
     [super dealloc];
