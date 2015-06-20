@@ -86,23 +86,11 @@ typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
 
 @property (nonatomic, readonly) GLuint hProgram;
 
-
-- (void) configureInputState:(GLint)hVAO;
-- (void) configureVertexBufferLayout:(GLint)hVBO withVAO:(GLint)hVAO;
-
 //
 // TODO: implement these two methods to have the same behavior as the above two methods
 //
 - (void) configureVertexInput:(NFRBufferAttributes*)bufferAttributes;
 - (void) configureVertexBufferLayout:(NFRBuffer*)vertexBuffer withAttributes:(NFRBufferAttributes*)bufferAttributes;
-
-
-
-//
-// TODO: update buffer class should take a size and buffer type so they can be collapsed into one call
-//
-- (void) updateVertexBuffer:(GLint)hVBO numVertices:(GLuint)numVertices dataPtr:(void*)pData;
-- (void) updateIndexBuffer:(GLint)hEBO numIndices:(GLuint)numIndices dataPtr:(void*)pData;
 
 
 - (void) drawGeometry:(NFRGeometry*)geometry;

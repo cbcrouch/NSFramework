@@ -134,12 +134,6 @@
 
 
     m_pAsset = [NFAssetLoader allocAssetDataOfType:kWavefrontObj withArgs:fileNamePath, nil];
-
-    //
-    // NOTE: this is what sets up the NFRGeometry object
-    //
-    //[m_pAsset bindAssetToProgramObj:m_phongObject];
-
     [m_pAsset generateRenderablesForProgram:m_phongObject];
 
     //m_pAsset.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 1.0f, 0.0f);
@@ -148,7 +142,7 @@
 
 
     m_solidSphere = [NFAssetLoader allocAssetDataOfType:kSolidUVSphere withArgs:nil];
-    //[m_solidSphere bindAssetToProgramObj:m_phongObject];
+
 
     //
     // TODO: solid sphere should be tied to the location of the light rather than hardcoded
@@ -228,33 +222,15 @@
 //       (viewport will be set/bound ahead of time for the renderer instance)
 //
 - (void) renderFrame {
-
     //
     // TODO: when in DEBUG mode check to verify that the frame buffer is valid, under some
     //       circumstances when first starting up the application the renderer can attempt
     //       to draw into a frame buffer before it is ready
     //
 
-#if 0
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-    glUseProgram(m_phongObject.hProgram);
-
-    // asset
-    [m_pAsset drawWithProgramObject:m_phongObject withSubroutine:@"PhongSubroutine"];
-
-    // light
-    [m_solidSphere drawWithProgramObject:m_phongObject withSubroutine:@"LightSubroutine"];
-
-    glUseProgram(0);
-    CHECK_GL_ERROR();
-#else
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     
     [m_renderRequest process];
-
-#endif
 }
 
 - (void) resizeToRect:(CGRect)rect {

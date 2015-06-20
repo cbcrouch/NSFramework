@@ -8,12 +8,12 @@
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
 
+#import "NFCommonTypes.h"
 #import "NFAssetSubset.h"
 
-#import "NFCommonTypes.h"
+#import "NFRProgram.h"
 #import "NFSurfaceModel.h"
 
-#import "NFRProgram.h"
 
 
 //
@@ -72,13 +72,5 @@ typedef struct NFLight_t {
 //- (void) generateRenderables;
 //- (void) bindToProgram:(id<NFRProgram>)programObj;
 //- (void) assignSubroutine:(NSString*)subroutineName;
-
-
-
-//
-// TODO: the NFAssetData and NFSubset bind functions really need a better name
-//
-- (void) bindAssetToProgramObj:(id<NFRProgram>)programObj;
-- (void) drawWithProgramObject:(id<NFRProgram>)programObj withSubroutine:(NSString*)subroutine;
 
 @end

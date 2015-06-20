@@ -9,9 +9,10 @@
 #import <GLKit/GLKit.h>
 
 #import "NFCommonTypes.h"
-#import "NFSurfaceModel.h"
 
 #import "NFRProgram.h"
+#import "NFSurfaceModel.h"
+
 
 typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
     kDrawLineStrip,
@@ -52,9 +53,5 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
 
 - (void) loadVertexData:(NFVertex_t *)pVertexData ofSize:(size_t)size;
 - (void) loadIndexData:(GLushort *)pIndexData ofSize:(size_t)size;
-
-- (void) bindSubsetToProgramObj:(id<NFRProgram>)programObj withVAO:(GLuint)hVAO;
-
-- (void) drawWithProgram:(id<NFRProgram>)programObj withAssetModelMatrix:(GLKMatrix4)assetModelMatrix;
 
 @end

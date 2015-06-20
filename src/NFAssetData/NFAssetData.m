@@ -7,30 +7,6 @@
 
 #import "NFAssetData.h"
 
-//
-// TODO: find out who is including gl.h into the project (might be the display link...), one way around all this
-//       might be to skip the provided OpenGL header file and use a custom loader
-//
-
-// NOTE: because both gl.h and gl3.h are included will get symbols for deprecated GL functions
-//       and they should absolutely not be used
-#define GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
-#import <OpenGL/gl3.h>
-#import <GLKit/GLKit.h>
-
-
-@interface NFAssetData()
-
-@property (nonatomic, assign) GLuint hVAO;
-
-//
-// TODO: need to come up with a good way of correlating texture handles with
-//       surface model data
-//
-@property (nonatomic, assign) GLuint textureId;
-@property (nonatomic, assign) GLint textureUniform;
-
-@end
 
 @implementation NFAssetData
 
@@ -50,10 +26,6 @@
     //
     // TODO: need proper cleanup of NFR objects
     //
-    //[_geometry.vertexBuffer.bufferAttributes release];
-    [_geometry.vertexBuffer release];
-    [_geometry.indexBuffer release];
-    [_geometry release];
 
     [super dealloc];
 }
@@ -97,6 +69,10 @@
 }
 
 - (void) generateRenderablesForProgram:(id<NFRProgram>)programObj {
+
+    //
+    // TODO: need to setup proper ownership and refence release for NFR objects
+    //
     NFRBufferAttributes* bufferAttribs = [[[NFRBufferAttributes alloc] initWithFormat:kVertexFormatDefault] retain];
 
     NFRBuffer* vertexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeVertex usingAttributes:bufferAttribs] retain];
@@ -145,81 +121,6 @@
     // TODO: will either want a geometry subset or geometry hierarchy structure object to apply transform hierarchies to
     //
     [self setGeometry:geometry];
-}
-
-- (void) bindAssetToProgramObj:(id<NFRProgram>)programObj {
-    //
-    // TODO: replace old drawing code with the new abstraction classes
-    //
-
-    // create VAO
-    GLuint vao;
-    glGenVertexArrays(1, &(vao));
-    self.hVAO = vao;
-    [programObj configureInputState:self.hVAO];
-
-    // get texture unifrom location
-    self.textureUniform = glGetUniformLocation(programObj.hProgram, (const GLchar *)"texSampler\0");
-    NSAssert(self.textureUniform != -1, @"Failed to get texture uniform location");
-
-    for (NFAssetSubset *subset in self.subsetArray) {
-        [subset bindSubsetToProgramObj:programObj withVAO:self.hVAO];
-
-        NFSurfaceModel *surface = [subset surfaceModel];
-        if (surface) {
-            NFRDataMap *diffuseMap = [surface map_Kd];
-
-            GLuint texId;
-            glGenTextures(1, &texId);
-            self.textureId = texId;
-
-            //
-            // TODO: use glTextureStorage2D specify texture storage requirements
-            //       since for most cases they should be known
-            //
-
-            glBindTexture(GL_TEXTURE_2D, self.textureId);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexImage2D(GL_TEXTURE_2D, 0, [diffuseMap format], [diffuseMap width], [diffuseMap height], 0,
-                         [diffuseMap format], [diffuseMap type], [diffuseMap data]);
-            glBindTexture(GL_TEXTURE_2D, 0);
-        }
-    }
-}
-
-- (void) drawWithProgramObject:(id<NFRProgram>)programObj withSubroutine:(NSString*)subroutine {
-    //
-    // TODO: need to test and abstract out the texture/sampler logic into a NFRTexture and NFRSampler class
-    //
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, self.textureId);
-    glUniform1i(self.textureUniform, 0); // GL_TEXTURE0
-
-
-    //
-    // TODO: temporary set the program subroutine here
-    //
-    if ([programObj respondsToSelector:@selector(activateSubroutine:)]) {
-        [programObj activateSubroutine:subroutine];
-    }
-
-
-    //
-    // TODO: the VAO needs to be bound when issuing a draw call, this needs to be better abstracted so that the
-    //       NFAssetData doesn't need to deal with VAO handles
-    //
-    glBindVertexArray(self.hVAO);
-
-    for (NFAssetSubset *subset in self.subsetArray) {
-        [subset drawWithProgram:programObj withAssetModelMatrix:self.modelMatrix];
-    }
-
-    glBindVertexArray(0);
-    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 @end

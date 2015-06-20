@@ -8,10 +8,6 @@
 
 #import "NFAssetSubset.h"
 
-// NOTE: because both gl.h and gl3.h are included will get symbols for deprecated GL functions
-//       and they should absolutely not be used
-#define GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
-#import <OpenGL/gl3.h>
 #import <GLKit/GLKit.h>
 
 
@@ -317,47 +313,5 @@
     NSAssert(size > 0, @"loadVertexData failed, size <= 0");
     memcpy(self.indices, pIndexData, size);
 }
-
-
-- (void) bindSubsetToProgramObj:(id<NFRProgram>)programObj withVAO:(GLuint)hVAO {
-
-    //
-    // TODO: might be best to create an NFRBuffer (VBO/EBO) and NFRBufferGroup (VAO) classes
-    //       to abstract away OpenGL calls (NFRBufferGroup needs a better name or needs to be
-    //       refactored - VAOs are hard to abstract cleanly, maybe use NFRBufferAttributes with
-    //       each NFRBuffer containing a weak reference to)
-    //
-
-    // create vertex buffer object
-    GLuint vbo;
-    glGenBuffers(1, &vbo);
-    self.hVBO = vbo;
-
-    // create element buffer object
-    GLuint ebo;
-    glGenBuffers(1, &ebo);
-    self.hEBO = ebo;
-
-
-    [programObj configureVertexBufferLayout:self.hVBO withVAO:hVAO];
-
-
-    //
-    // TODO: with num vertices/indices need to align GL types with types used by NSFramework
-    //
-    // load data into buffers
-    [programObj updateVertexBuffer:self.hVBO numVertices:(GLuint)self.numVertices dataPtr:(void*)self.vertices];
-    [programObj updateIndexBuffer:self.hEBO numIndices:(GLuint)self.numIndices dataPtr:(void*)self.indices];
-}
-
-- (void) drawWithProgram:(id<NFRProgram>)programObj withAssetModelMatrix:(GLKMatrix4)assetModelMatrix {
-    GLKMatrix4 renderMat = GLKMatrix4Multiply(assetModelMatrix, self.subsetModelMat);
-    [programObj updateModelMatrix:renderMat];
-    
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.hEBO);
-    glDrawElements(self.mode, (GLsizei)self.numIndices, GL_UNSIGNED_SHORT, NULL);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-}
-
 
 @end

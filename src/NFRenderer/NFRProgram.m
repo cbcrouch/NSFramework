@@ -443,67 +443,11 @@ typedef struct phongLightUniform_t {
     CHECK_GL_ERROR();
 }
 
-
 //
 // TODO: protocol region
 //
 
 @synthesize hProgram = _hProgram;
-
-
-//
-// TODO: pass in an NFRBufferAttributes object and consider storing the attirbutes in the object itself
-//
-- (void) configureInputState:(GLint)hVAO {
-    glBindVertexArray(hVAO);
-
-    // NOTE: the vert attributes bound to the VAO (and associated with the active VBO)
-    glEnableVertexAttribArray(self.vertexAttribute);
-    glEnableVertexAttribArray(self.normalAttribute);
-    glEnableVertexAttribArray(self.texCoordAttribute);
-
-    glBindVertexArray(0);
-    CHECK_GL_ERROR();
-}
-
-
-//
-// TODO: these functions should not be a part of the program object
-//
-- (void) configureVertexBufferLayout:(GLint)hVBO withVAO:(GLint)hVAO {
-    glBindVertexArray(hVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, hVBO);
-
-    glVertexAttribPointer(self.vertexAttribute, ARRAY_COUNT(NFVertex_t, pos), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
-                          (const GLvoid *)0x00 + offsetof(NFVertex_t, pos));
-    glVertexAttribPointer(self.normalAttribute, ARRAY_COUNT(NFVertex_t, norm), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
-                          (const GLvoid *)0x00 + offsetof(NFVertex_t, norm));
-    glVertexAttribPointer(self.texCoordAttribute, ARRAY_COUNT(NFVertex_t, texCoord), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
-                          (const GLvoid *)0x00 + offsetof(NFVertex_t, texCoord));
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-    CHECK_GL_ERROR();
-}
-
-- (void) updateVertexBuffer:(GLint)hVBO numVertices:(GLuint)numVertices dataPtr:(void*)pData {
-    glBindBuffer(GL_ARRAY_BUFFER, hVBO);
-    glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(NFVertex_t), pData, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    CHECK_GL_ERROR();
-}
-
-- (void) updateIndexBuffer:(GLint)hEBO numIndices:(GLuint)numIndices dataPtr:(void*)pData {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(GLushort), pData, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    CHECK_GL_ERROR();
-}
-
-//
-//
-//
-
 
 - (void) configureVertexInput:(NFRBufferAttributes*)bufferAttributes {
     glBindVertexArray(bufferAttributes.hVAO);
@@ -686,40 +630,11 @@ typedef struct phongLightUniform_t {
     CHECK_GL_ERROR();
 }
 
+//
+// TODO: protocol region
+//
 
 @synthesize hProgram = _hProgram;
-
-
-
-- (void) configureInputState:(GLint)hVAO {
-    glBindVertexArray(hVAO);
-
-    // NOTE: the vert attributes bound to the VAO (and associated with the active VBO)
-    glEnableVertexAttribArray(self.vertexAttribute);
-    glEnableVertexAttribArray(self.normalAttribute);
-    glEnableVertexAttribArray(self.colorAttribute);
-
-    glBindVertexArray(0);
-    CHECK_GL_ERROR();
-}
-
-- (void) configureVertexBufferLayout:(GLint)hVBO withVAO:(GLint)hVAO {
-    glBindVertexArray(hVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, hVBO);
-
-    glVertexAttribPointer(self.vertexAttribute, ARRAY_COUNT(NFDebugVertex_t, pos), GL_FLOAT, GL_FALSE, sizeof(NFDebugVertex_t),
-                          (const GLvoid *)0x00 + offsetof(NFDebugVertex_t, pos));
-    glVertexAttribPointer(self.normalAttribute, ARRAY_COUNT(NFDebugVertex_t, norm), GL_FLOAT, GL_FALSE, sizeof(NFDebugVertex_t),
-                          (const GLvoid *)0x00 + offsetof(NFDebugVertex_t, norm));
-    glVertexAttribPointer(self.colorAttribute, ARRAY_COUNT(NFDebugVertex_t, color), GL_FLOAT, GL_FALSE, sizeof(NFDebugVertex_t),
-                          (const GLvoid *)0x00 + offsetof(NFDebugVertex_t, color));
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-    CHECK_GL_ERROR();
-}
-
-
 
 - (void) configureVertexInput:(NFRBufferAttributes*)bufferAttributes {
     glBindVertexArray(bufferAttributes.hVAO);
@@ -746,23 +661,6 @@ typedef struct phongLightUniform_t {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-    CHECK_GL_ERROR();
-}
-
-
-
-
-- (void) updateVertexBuffer:(GLint)hVBO numVertices:(GLuint)numVertices dataPtr:(void*)pData {
-    glBindBuffer(GL_ARRAY_BUFFER, hVBO);
-    glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(NFDebugVertex_t), pData, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    CHECK_GL_ERROR();
-}
-
-- (void) updateIndexBuffer:(GLint)hEBO numIndices:(GLuint)numIndices dataPtr:(void*)pData {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(GLushort), pData, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     CHECK_GL_ERROR();
 }
 
@@ -805,6 +703,9 @@ typedef struct phongLightUniform_t {
 
 @end
 
+//
+//
+//
 
 @implementation NFRProgram
 
