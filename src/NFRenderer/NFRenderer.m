@@ -51,6 +51,7 @@
     id<NFRProgram> m_debugObject;
 
     NFRRenderRequest* m_renderRequest;
+    NFRRenderRequest* m_debugRenderRequest;
 }
 
 @property (nonatomic, retain) NSArray* viewports;
@@ -102,6 +103,9 @@
     m_renderRequest = [[[NFRRenderRequest alloc] init] retain];
     [m_renderRequest setProgram:m_phongObject];
 
+    m_debugRenderRequest = [[[NFRRenderRequest alloc] init] retain];
+    [m_debugRenderRequest setProgram:m_debugObject];
+
 
 
     NSString *fileNamePath;
@@ -134,7 +138,9 @@
 
 
     m_pAsset = [NFAssetLoader allocAssetDataOfType:kWavefrontObj withArgs:fileNamePath, nil];
-    [m_pAsset generateRenderablesForProgram:m_phongObject];
+    [m_pAsset generateRenderables];
+    [m_pAsset bindToProgram:m_phongObject];
+    [m_pAsset assignSubroutine:@"PhongSubroutine"];
 
     //m_pAsset.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 1.0f, 0.0f);
     //[m_pAsset applyOriginCenterMatrix];
@@ -142,7 +148,9 @@
 
 
     m_solidSphere = [NFAssetLoader allocAssetDataOfType:kSolidUVSphere withArgs:nil];
-
+    [m_solidSphere generateRenderables];
+    [m_solidSphere bindToProgram:m_phongObject];
+    [m_solidSphere assignSubroutine:@"LightSubroutine"];
 
     //
     // TODO: solid sphere should be tied to the location of the light rather than hardcoded
@@ -150,11 +158,20 @@
     m_solidSphere.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 2.0f, 1.0f, 0.0f);
     m_solidSphere.modelMatrix = GLKMatrix4Scale(m_solidSphere.modelMatrix, 0.065f, 0.065f, 0.065f);
 
+    //
+    // TODO: currently need to apply a single step to the sphere in order to have its tranforms
+    //       applied, need to find a better/cleaner way to initialize the transforms
+    //
+    [m_solidSphere stepTransforms:0.0f];
+
 
     //
-    // TODO: these three assets should be bound to the debug program
+    // TODO: need to convert the axis vertex data to the debug vertex format before it can be rendered
     //
     m_axisData = [NFAssetLoader allocAssetDataOfType:kAxisWireframe withArgs:nil];
+    //[m_axisData generateRenderables];
+    //[m_axisData bindToProgram:m_debugObject];
+
 
     m_gridData = [NFAssetLoader allocAssetDataOfType:kGridWireframe withArgs:nil];
 
@@ -177,6 +194,10 @@
     // TODO: add the remaining asset geometry objects to the render request
     //
     [m_renderRequest addGeometry:m_pAsset.geometry];
+    [m_renderRequest addGeometry:m_solidSphere.geometry];
+
+
+    //[m_debugRenderRequest addGeometry:m_axisData.geometry];
 
 
     return self;
@@ -200,12 +221,8 @@
 - (void) updateFrameWithTime:(float)secsElapsed withViewPosition:(GLKVector3)viewPosition
               withViewMatrix:(GLKMatrix4)viewMatrix
               withProjection:(GLKMatrix4)projection {
-
     if (self.stepTransforms) {
         [m_pAsset stepTransforms:secsElapsed];
-        //[m_pAsset stepTransforms:0.0f];
-
-        [m_solidSphere stepTransforms:secsElapsed];
     }
 
     //
@@ -231,6 +248,8 @@
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     
     [m_renderRequest process];
+
+    //[m_debugRenderRequest process];
 }
 
 - (void) resizeToRect:(CGRect)rect {

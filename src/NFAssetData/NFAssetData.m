@@ -68,8 +68,7 @@
     [[self.subsetArray objectAtIndex:0] setSubsetModelMat:model];
 }
 
-- (void) generateRenderablesForProgram:(id<NFRProgram>)programObj {
-
+- (void) generateRenderables {
     //
     // TODO: need to setup proper ownership and refence release for NFR objects
     //
@@ -104,23 +103,19 @@
     }
     [geometry syncSurfaceModel];
 
-
-
-    // handle in bindToProgram method
-    [programObj configureVertexInput:bufferAttribs];
-    [programObj configureVertexBufferLayout:vertexBuffer withAttributes:bufferAttribs];
-
-    //vertexBuffer.bufferAttributes
-
-
-    // handle in assignSubroutine
-    [geometry setSubroutineName:@"PhongSubroutine"];
-
-
     //
     // TODO: will either want a geometry subset or geometry hierarchy structure object to apply transform hierarchies to
     //
     [self setGeometry:geometry];
+}
+
+- (void) bindToProgram:(id<NFRProgram>)programObj {
+    [programObj configureVertexInput:self.geometry.vertexBuffer.bufferAttributes];
+    [programObj configureVertexBufferLayout:self.geometry.vertexBuffer withAttributes:self.geometry.vertexBuffer.bufferAttributes];
+}
+
+- (void) assignSubroutine:(NSString*)subroutineName {
+    [self.geometry setSubroutineName:subroutineName];
 }
 
 @end

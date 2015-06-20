@@ -8,9 +8,26 @@
 #import <Foundation/Foundation.h>
 
 //
-// TODO: migrate NFLightSource to NFGraphicsToolkit
+// TODO: make sure struct definition will encompass a point light, spotlight, and directional light
+//       and setup to operate similar to legacy OpenGL lights until working out a better model/design
 //
 
+// the following struct should contain all the light params as an OpenGL 2.1 light
+/*
+typedef struct NFLight_t {
+    float pos[4];
+    float diffuseColor[4];
+    float specularColor[4];
+
+    float constantAttenuation;
+    float linearAttenuation;
+    float quadraticAttenuation;
+
+    float spotCutoff;
+    float spotExponent;
+    float spotDirection[3];
+} NFLight_t;
+*/
 
 @interface NFLightSource : NSObject
 
