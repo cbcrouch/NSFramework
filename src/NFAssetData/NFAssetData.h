@@ -64,6 +64,17 @@ typedef struct NFLight_t {
 - (void) applyOriginCenterMatrix;
 
 
+- (void) generateRenderablesForProgram:(id<NFRProgram>)programObj;
+
+//
+// TODO: break apart generateRenderablesForProgram into the following three methods
+//
+//- (void) generateRenderables;
+//- (void) bindToProgram:(id<NFRProgram>)programObj;
+//- (void) assignSubroutine:(NSString*)subroutineName;
+
+
+
 //
 // TODO: the NFAssetData and NFSubset bind functions really need a better name
 //

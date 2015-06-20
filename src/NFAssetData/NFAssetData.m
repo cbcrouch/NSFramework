@@ -46,6 +46,15 @@
 }
 
 - (void) dealloc {
+
+    //
+    // TODO: need proper cleanup of NFR objects
+    //
+    //[_geometry.vertexBuffer.bufferAttributes release];
+    [_geometry.vertexBuffer release];
+    [_geometry.indexBuffer release];
+    [_geometry release];
+
     [super dealloc];
 }
 
@@ -87,12 +96,7 @@
     [[self.subsetArray objectAtIndex:0] setSubsetModelMat:model];
 }
 
-
-- (void) bindAssetToProgramObj:(id<NFRProgram>)programObj {
-
-    //
-    // TODO: will need to rename this method since it no longer needs the program object
-    //
+- (void) generateRenderablesForProgram:(id<NFRProgram>)programObj {
     NFRBufferAttributes* bufferAttribs = [[[NFRBufferAttributes alloc] initWithFormat:kVertexFormatDefault] retain];
 
     NFRBuffer* vertexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeVertex usingAttributes:bufferAttribs] retain];
@@ -100,6 +104,11 @@
 
     NSAssert([self.subsetArray count] == 1, @"ERROR: NFRGeometry object currently only supports one asset subset");
     NFRGeometry* geometry = [[[NFRGeometry alloc] init] retain];
+
+    //
+    // TODO: these set calls should increment the reference count if not using ARC so that the objects can be
+    //       declared autorelease when created (geometry dealloc will have to release them)
+    //
     [geometry setVertexBuffer:vertexBuffer];
     [geometry setIndexBuffer:indexBuffer];
 
@@ -119,18 +128,26 @@
     }
     [geometry syncSurfaceModel];
 
+
+
+    // handle in bindToProgram method
     [programObj configureVertexInput:bufferAttribs];
     [programObj configureVertexBufferLayout:vertexBuffer withAttributes:bufferAttribs];
 
+    //vertexBuffer.bufferAttributes
 
+
+    // handle in assignSubroutine
     [geometry setSubroutineName:@"PhongSubroutine"];
+
 
     //
     // TODO: will either want a geometry subset or geometry hierarchy structure object to apply transform hierarchies to
     //
     [self setGeometry:geometry];
+}
 
-
+- (void) bindAssetToProgramObj:(id<NFRProgram>)programObj {
     //
     // TODO: replace old drawing code with the new abstraction classes
     //

@@ -534,7 +534,6 @@ typedef struct phongLightUniform_t {
 }
 
 - (void) drawGeometry:(NFRGeometry*)geometry {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glUseProgram(self.hProgram);
 
     //
@@ -767,13 +766,20 @@ typedef struct phongLightUniform_t {
     CHECK_GL_ERROR();
 }
 
-
 - (void) drawGeometry:(NFRGeometry*)geometry {
-    //
-    // TODO: implement
-    //
-}
+    glUseProgram(self.hProgram);
+    glBindVertexArray(geometry.vertexBuffer.bufferAttributes.hVAO);
 
+    [self updateModelMatrix:geometry.modelMatrix];
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geometry.indexBuffer.bufferHandle);
+    glDrawElements(geometry.mode, (GLsizei)geometry.indexBuffer.numberOfElements, GL_UNSIGNED_SHORT, NULL);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(0);
+    glUseProgram(0);
+    CHECK_GL_ERROR();
+}
 
 - (void) updateModelMatrix:(GLKMatrix4)modelMatrix {
     glProgramUniformMatrix4fv(self.hProgram, self.modelMatrixLocation, 1, GL_FALSE, modelMatrix.m);

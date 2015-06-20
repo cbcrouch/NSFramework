@@ -134,17 +134,21 @@
 
 
     m_pAsset = [NFAssetLoader allocAssetDataOfType:kWavefrontObj withArgs:fileNamePath, nil];
-    [m_pAsset bindAssetToProgramObj:m_phongObject];
+
+    //
+    // NOTE: this is what sets up the NFRGeometry object
+    //
+    //[m_pAsset bindAssetToProgramObj:m_phongObject];
+
+    [m_pAsset generateRenderablesForProgram:m_phongObject];
 
     //m_pAsset.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 1.0f, 0.0f);
-
     //[m_pAsset applyOriginCenterMatrix];
-
     //[m_pAsset applyUnitScalarMatrix]; // use for teapot
 
 
     m_solidSphere = [NFAssetLoader allocAssetDataOfType:kSolidUVSphere withArgs:nil];
-    [m_solidSphere bindAssetToProgramObj:m_phongObject];
+    //[m_solidSphere bindAssetToProgramObj:m_phongObject];
 
     //
     // TODO: solid sphere should be tied to the location of the light rather than hardcoded
@@ -246,6 +250,8 @@
     CHECK_GL_ERROR();
 #else
 
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    
     [m_renderRequest process];
 
 #endif
