@@ -208,7 +208,7 @@
 - (void) activateTexture:(GLint)textureUnitNum withUniformLocation:(GLint)uniformLocation {
     glActiveTexture(textureUnitNum);
     glBindTexture(GL_TEXTURE_2D, self.textureID);
-    glUniform1i(uniformLocation, textureUnitNum);
+    glUniform1i(uniformLocation, textureUnitNum - GL_TEXTURE0);
     CHECK_GL_ERROR();
 }
 
@@ -496,6 +496,9 @@ typedef struct phongLightUniform_t {
     CHECK_GL_ERROR();
 }
 
+//
+//
+//
 
 
 - (void) configureVertexInput:(NFRBufferAttributes*)bufferAttributes {
@@ -526,10 +529,6 @@ typedef struct phongLightUniform_t {
     CHECK_GL_ERROR();
 }
 
-//
-//
-//
-
 
 - (void) drawGeometry:(NFRGeometry*)geometry {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -548,17 +547,13 @@ typedef struct phongLightUniform_t {
         NFRDataMapGL* textureGL = [geometry.textureDictionary objectForKey:key];
 
         //
-        // TODO: pass uniform location and texture unit num based on key string
+        // TODO: pass uniform location and texture unit num based on key string, also need to use the actual
+        //       texture sampler uniforms in the default model shader
         //
-        [textureGL activateTexture:GL_TEXTURE0 withUniformLocation:self.materialUniforms.diffuseLoc];
+        [textureGL activateTexture:GL_TEXTURE0 withUniformLocation:glGetUniformLocation(self.hProgram, (const GLchar *)"texSampler")];
     }
 
-
-    //
-    // TODO: buffer attributes has a bad handle
-    //
     glBindVertexArray(geometry.vertexBuffer.bufferAttributes.hVAO);
-
 
     [self updateModelMatrix:geometry.modelMatrix];
 
