@@ -102,13 +102,6 @@
     m_renderRequest = [[[NFRRenderRequest alloc] init] retain];
     [m_renderRequest setProgram:m_phongObject];
 
-    //
-    // TODO: the NFAssetData class will need a method to return a completely constructed geometry object
-    //       (asset data object will own the geometry object so that it can update it)
-    //
-    //[m_renderRequest addGeometry:geometry];
-
-
 
 
     NSString *fileNamePath;

@@ -64,6 +64,15 @@
     float angle = secsElapsed * M_PI_4;
     GLKMatrix4 model = [[self.subsetArray objectAtIndex:0] subsetModelMat];
     [[self.subsetArray objectAtIndex:0] setSubsetModelMat:GLKMatrix4RotateY(model, angle)];
+
+
+    //
+    // update geometry object model matrix
+    //
+    for (NFAssetSubset *subset in self.subsetArray) {
+        GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.modelMatrix, subset.subsetModelMat);
+        [self.geometry setModelMatrix:renderModelMat];
+    }
 }
 
 - (void) applyUnitScalarMatrix {
@@ -80,15 +89,9 @@
 
 
 - (void) bindAssetToProgramObj:(id<NFRProgram>)programObj {
-    // create VAO
-    GLuint vao;
-    glGenVertexArrays(1, &(vao));
-    self.hVAO = vao;
-
-
 
     //
-    // TODO: rough usage code
+    // TODO: will need to rename this method since it no longer needs the program object
     //
     NFRBufferAttributes* bufferAttribs = [[[NFRBufferAttributes alloc] initWithFormat:kVertexFormatDefault] retain];
 
@@ -108,9 +111,6 @@
 
         [geometry setMode:subset.mode];
 
-        //
-        // TODO: will need to make sure that this matrix gets updated every frame
-        //
         GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.modelMatrix, subset.subsetModelMat);
         [geometry setModelMatrix:renderModelMat];
 
@@ -122,32 +122,28 @@
     [programObj configureVertexInput:bufferAttribs];
     [programObj configureVertexBufferLayout:vertexBuffer withAttributes:bufferAttribs];
 
-    [self setGeometry:geometry];
 
-    
+    [geometry setSubroutineName:@"PhongSubroutine"];
 
     //
     // TODO: will either want a geometry subset or geometry hierarchy structure object to apply transform hierarchies to
     //
+    [self setGeometry:geometry];
 
 
+    //
+    // TODO: replace old drawing code with the new abstraction classes
+    //
+
+    // create VAO
+    GLuint vao;
+    glGenVertexArrays(1, &(vao));
+    self.hVAO = vao;
     [programObj configureInputState:self.hVAO];
-
-
-
-    //
-    // TODO: should only perform texture setup if the asset and shader both support it, need to focus
-    //       on removing/moving texture code out of the asset data
-    //
-
-    // first need some way to determine if asset has any valid textures (will also need to know if
-    // the asset has data stored in the debug format)
 
     // get texture unifrom location
     self.textureUniform = glGetUniformLocation(programObj.hProgram, (const GLchar *)"texSampler\0");
     NSAssert(self.textureUniform != -1, @"Failed to get texture uniform location");
-
-
 
     for (NFAssetSubset *subset in self.subsetArray) {
         [subset bindSubsetToProgramObj:programObj withVAO:self.hVAO];
@@ -156,9 +152,6 @@
         if (surface) {
             NFRDataMap *diffuseMap = [surface map_Kd];
 
-            //
-            // TODO: integrate the data map into the NFRGeometry object
-            //
             GLuint texId;
             glGenTextures(1, &texId);
             self.textureId = texId;

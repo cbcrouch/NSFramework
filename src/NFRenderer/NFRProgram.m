@@ -236,6 +236,8 @@
 @synthesize modelMatrix = _modelMatrix;
 @synthesize textureDictionary = _textureDictionary;
 
+@synthesize subroutineName = _subroutineName;
+
 - (NSMutableDictionary*) textureDictionary {
     if (_textureDictionary == nil) {
         _textureDictionary = [[[NSMutableDictionary alloc] init] retain];
@@ -262,9 +264,10 @@
     [self.textureDictionary setObject:mapGL forKey:uniformName];
 }
 
-//
-// TODO: implement dealloc function to decrement the container retain counts
-//
+- (void)dealloc {
+    [_textureDictionary release];
+    [super dealloc];
+}
 
 @end
 
@@ -297,9 +300,10 @@
     }
 }
 
-//
-// TODO: implement dealloc function to decrement the container retain counts
-//
+- (void) dealloc {
+    [_geometryArray release];
+    [super dealloc];
+}
 
 @end
 
@@ -511,8 +515,8 @@ typedef struct phongLightUniform_t {
 
     glBindVertexArray(0);
     CHECK_GL_ERROR();
-
 }
+
 - (void) configureVertexBufferLayout:(NFRBuffer*)vertexBuffer withAttributes:(NFRBufferAttributes*)bufferAttributes {
     glBindVertexArray(bufferAttributes.hVAO);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer.bufferHandle);
@@ -529,19 +533,14 @@ typedef struct phongLightUniform_t {
     CHECK_GL_ERROR();
 }
 
-
 - (void) drawGeometry:(NFRGeometry*)geometry {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glUseProgram(self.hProgram);
 
-
     //
     // TODO: need a better way of handling subroutines
     //
-    if ([self respondsToSelector:@selector(activateSubroutine:)]) {
-        [self activateSubroutine:@"PhongSubroutine"];
-    }
-
+    [self activateSubroutine:geometry.subroutineName];
 
     for (id key in geometry.textureDictionary) {
         NFRDataMapGL* textureGL = [geometry.textureDictionary objectForKey:key];
@@ -564,7 +563,7 @@ typedef struct phongLightUniform_t {
     glBindVertexArray(0);
 
     //
-    // TODO: if debug then deactivate all textures
+    // TODO: only if debug then deactivate all textures
     //
     for (id key in geometry.textureDictionary) {
         NFRDataMapGL* textureGL = [geometry.textureDictionary objectForKey:key];
@@ -574,8 +573,6 @@ typedef struct phongLightUniform_t {
     glUseProgram(0);
     CHECK_GL_ERROR();
 }
-
-
 
 - (void) updateModelMatrix:(GLKMatrix4)modelMatrix {
     glProgramUniformMatrix4fv(self.hProgram, self.modelMatrixLocation, 1, GL_FALSE, modelMatrix.m);
