@@ -48,6 +48,12 @@ typedef struct NFDebugVertex_t {
 } NFDebugVertex_t;
 
 
+typedef NS_ENUM(NSUInteger, NF_VERTEX_TYPE) {
+    kNFVertexType,
+    kNFDebugVertexType
+};
+
+
 typedef struct NFFace_t {
     unsigned short indices[3];
 

@@ -18,6 +18,10 @@ static const char *g_faceType = @encode(NFFace_t);
     // numLines * 2 == number of vertices per grid direction
     // gridDirVertices * 2 == total number of vertices (2 grid directions)
     const NSInteger numVertices = ((size * 8) + 4);
+
+    //
+    // TODO: use NFDebugVertex_t for all debug visualization related assets
+    //
     NFVertex_t vertices[numVertices];
 
     // set all texture coordinates and normals to 0
