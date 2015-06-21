@@ -207,13 +207,17 @@
     //
     // TODO: need to properly clean up after finishing refactoring
     //
-
     [m_pAsset release];
     [m_axisData release];
     [m_gridData release];
     [m_planeData release];
     [m_solidSphere release];
 
+    [m_phongObject release];
+    [m_debugObject release];
+
+    [m_renderRequest release];
+    [m_debugRenderRequest release];
 
     [super dealloc];
 }

@@ -102,7 +102,7 @@
         [self.geometry setModelMatrix:renderModelMat];
 
         if (subset.vertexType == kNFDebugVertexType) {
-            [vertexBuffer loadData:subset.pVertexData ofType:kBufferDataTypeNFDebugVertex_t numberOfElements:subset.numVertices];
+            [vertexBuffer loadData:subset.vertices ofType:kBufferDataTypeNFDebugVertex_t numberOfElements:subset.numVertices];
         }
         else {
             [vertexBuffer loadData:subset.vertices ofType:kBufferDataTypeNFVertex_t numberOfElements:subset.numVertices];

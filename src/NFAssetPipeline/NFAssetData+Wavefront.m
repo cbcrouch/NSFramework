@@ -139,10 +139,11 @@
     }
 
     // allocate and load vertex/index data into the subset
-    [subset allocateVerticesWithNumElts:[uniqueArray count]];
     [subset allocateIndicesWithNumElts:[indices count]];
-    [subset loadVertexData:pData ofSize:[uniqueArray count] * sizeof(NFVertex_t)];
     [subset loadIndexData:pIndices ofSize:[indices count] * sizeof(GLushort)];
+
+    [subset allocateVerticesOfType:kNFVertexType withNumVertices:[uniqueArray count]];
+    [subset loadVertexData:pData ofType:kNFVertexType withNumVertices:[uniqueArray count]];
 
     free(pData);
     free(pIndices);

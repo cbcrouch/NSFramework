@@ -30,19 +30,12 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
 
 @interface NFAssetSubset : NSObject
 
-//
-// TODO: need to add support for NFDebugVertex_t vertices
-//
-@property (nonatomic, assign) NFVertex_t* vertices;
-
-@property (nonatomic, assign) void* pVertexData;
+@property (nonatomic, assign) void* vertices;
+@property (nonatomic, assign) NSUInteger numVertices;
 @property (nonatomic, assign) NF_VERTEX_TYPE vertexType;
 
-
-
 @property (nonatomic, assign) GLushort* indices;
-@property (nonatomic, assign) NSInteger numVertices;
-@property (nonatomic, assign) NSInteger numIndices;
+@property (nonatomic, assign) NSUInteger numIndices;
 
 @property (nonatomic, assign) DRAWING_MODE drawMode;
 
@@ -57,17 +50,10 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
 // no more objects are pointing to it while assign will not
 @property (nonatomic, assign) NFSurfaceModel* surfaceModel;
 
-- (void) allocateVerticesWithNumElts:(NSUInteger)num;
 - (void) allocateIndicesWithNumElts:(NSUInteger)num;
-
-- (void) loadVertexData:(NFVertex_t *)pVertexData ofSize:(size_t)size;
 - (void) loadIndexData:(GLushort *)pIndexData ofSize:(size_t)size;
 
-
-
 - (void) allocateVerticesOfType:(NF_VERTEX_TYPE)vertexType withNumVertices:(NSUInteger)numVertices;
-
 - (void) loadVertexData:(void*)pData ofType:(NF_VERTEX_TYPE)vertexType withNumVertices:(NSUInteger)numVertices;
-
 
 @end

@@ -74,23 +74,23 @@ static const char *g_faceType = @encode(NFFace_t);
 
     NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
 
-
-    NSLog(@"NFAssetData+Procedural loading debug grid into NFAssetSubset");
-
-
     [pSubset allocateVerticesOfType:kNFDebugVertexType withNumVertices:numVertices];
     [pSubset loadVertexData:(void*)vertices ofType:kNFDebugVertexType withNumVertices:numVertices];
 
     [pSubset allocateIndicesWithNumElts:numVertices];
     [pSubset loadIndexData:indices ofSize:(numVertices * sizeof(GLushort))];
+
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
 
 -(void) createAxisOfSize:(NSInteger)size {
     const NSInteger numVertices = 12;
-    NFVertex_t vertices[numVertices];
 
-    // memset will zero out the normal vectors
+    //
+    // TODO: convert axis to NFDebugVertex_t
+    //
+
+    NFVertex_t vertices[numVertices];
     memset(vertices, 0x00, numVertices * sizeof(NFVertex_t));
 
     //
@@ -200,10 +200,13 @@ static const char *g_faceType = @encode(NFFace_t);
     }
 
     NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
-    [pSubset allocateVerticesWithNumElts:numVertices];
+
     [pSubset allocateIndicesWithNumElts:numIndices];
-    [pSubset loadVertexData:vertices ofSize:(numVertices * sizeof(NFVertex_t))];
     [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
+
+    [pSubset allocateVerticesOfType:kNFVertexType withNumVertices:numVertices];
+    [pSubset loadVertexData:vertices ofType:kNFVertexType withNumVertices:numVertices];
+
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
 
@@ -320,10 +323,13 @@ static const char *g_faceType = @encode(NFFace_t);
     }
 
     NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
-    [pSubset allocateVerticesWithNumElts:numVertices];
+
     [pSubset allocateIndicesWithNumElts:numIndices];
-    [pSubset loadVertexData:vertices ofSize:(numVertices * sizeof(NFVertex_t))];
     [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
+
+    [pSubset allocateVerticesOfType:kNFVertexType withNumVertices:numVertices];
+    [pSubset loadVertexData:vertices ofType:kNFVertexType withNumVertices:numVertices];
+
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
 
@@ -444,10 +450,13 @@ static const char *g_faceType = @encode(NFFace_t);
     indices[index+2] = p2;
 
     NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
-    [pSubset allocateVerticesWithNumElts:numVertices];
+
     [pSubset allocateIndicesWithNumElts:numIndices];
-    [pSubset loadVertexData:vertices ofSize:(numVertices * sizeof(NFVertex_t))];
     [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
+
+    [pSubset allocateVerticesOfType:kNFVertexType withNumVertices:numVertices];
+    [pSubset loadVertexData:vertices ofType:kNFVertexType withNumVertices:numVertices];
+
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
 

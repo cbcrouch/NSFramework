@@ -91,11 +91,13 @@
     }
 }
 
+/*
 - (void) allocateVerticesWithNumElts:(NSUInteger)num {
     self.vertices = (NFVertex_t *)malloc(num * sizeof(NFVertex_t));
     NSAssert(self.vertices != NULL, @"failed to allocate interleaved vertices");
     self.numVertices = (NSInteger)num;
 }
+*/
 
 - (void) allocateIndicesWithNumElts:(NSUInteger)num {
     self.indices = (GLushort *)malloc(num * sizeof(GLushort));
@@ -121,8 +123,8 @@
             break;
     }
 
-    self.pVertexData = malloc(vertexDataSize);
-    NSAssert(self.pVertexData != NULL, @"failed to allocate interleaved vertices");
+    self.vertices = malloc(vertexDataSize);
+    NSAssert(self.vertices != NULL, @"failed to allocate interleaved vertices");
 
     self.vertexType = vertexType;
     self.numVertices = numVertices;
@@ -135,17 +137,23 @@
     float min_y, max_y;
     float min_z, max_z;
 
-    min_x = max_x = self.vertices->pos[0];
-    min_y = max_y = self.vertices->pos[1];
-    min_z = max_z = self.vertices->pos[2];
+    if (self.vertexType != kNFVertexType) {
+        NSLog(@"WARNING: NFAssetSubset calcSubsetBounds only supproted for vertices of NFVertex_t type");
+        return;
+    }
+
+    NFVertex_t* vertexPtr = (NFVertex_t*)self.vertices;
+    min_x = max_x = vertexPtr->pos[0];
+    min_y = max_y = vertexPtr->pos[1];
+    min_z = max_z = vertexPtr->pos[2];
 
     for (NSInteger i = 0; i < self.numVertices; ++i) {
-        if (self.vertices[i].pos[0] < min_x) { min_x = self.vertices[i].pos[0]; }
-        if (self.vertices[i].pos[0] > max_x) { max_x = self.vertices[i].pos[0]; }
-        if (self.vertices[i].pos[1] < min_y) { min_y = self.vertices[i].pos[1]; }
-        if (self.vertices[i].pos[1] > max_y) { max_y = self.vertices[i].pos[1]; }
-        if (self.vertices[i].pos[2] < min_z) { min_z = self.vertices[i].pos[2]; }
-        if (self.vertices[i].pos[2] > max_z) { max_z = self.vertices[i].pos[2]; }
+        if (vertexPtr[i].pos[0] < min_x) { min_x = vertexPtr[i].pos[0]; }
+        if (vertexPtr[i].pos[0] > max_x) { max_x = vertexPtr[i].pos[0]; }
+        if (vertexPtr[i].pos[1] < min_y) { min_y = vertexPtr[i].pos[1]; }
+        if (vertexPtr[i].pos[1] > max_y) { max_y = vertexPtr[i].pos[1]; }
+        if (vertexPtr[i].pos[2] < min_z) { min_z = vertexPtr[i].pos[2]; }
+        if (vertexPtr[i].pos[2] > max_z) { max_z = vertexPtr[i].pos[2]; }
     }
 
     //NSLog(@"min x:%f, max x:%f", min_x, max_x);
@@ -243,17 +251,17 @@
     }
 
     NSAssert(vertexDataSize != 0, @"ERROR: NFAssetSubset will not load vertex data with memory size == 0");
-    memcpy(self.pVertexData, pData, vertexDataSize);
+    memcpy(self.vertices, pData, vertexDataSize);
 
     //
-    // TODO: should be generating the AABB is a separate method
+    // TODO: should be generating the AABB is a separate method and should not be doing it for debug vertices
     //
     GLfloat min_x, max_x;
     GLfloat min_y, max_y;
     GLfloat min_z, max_z;
 
     if (vertexType == kNFVertexType) {
-        NFVertex_t* vertexPtr = (NFVertex_t*)self.pVertexData;
+        NFVertex_t* vertexPtr = (NFVertex_t*)self.vertices;
 
         min_x = max_x = vertexPtr->pos[0];
         min_y = max_y = vertexPtr->pos[1];
@@ -269,7 +277,7 @@
         }
     }
     else if (vertexType == kNFDebugVertexType) {
-        NFDebugVertex_t* vertexPtr = (NFDebugVertex_t*)self.pVertexData;
+        NFDebugVertex_t* vertexPtr = (NFDebugVertex_t*)self.vertices;
 
         min_x = max_x = vertexPtr->pos[0];
         min_y = max_y = vertexPtr->pos[1];
@@ -373,6 +381,7 @@
 //
 // TODO: this method will need to work with NFDebugVertex_t data
 //
+/*
 - (void) loadVertexData:(NFVertex_t *)pVertexData ofSize:(size_t)size {
 
 
@@ -475,7 +484,7 @@
 
     self.subsetModelMat = GLKMatrix4Identity;
 }
-
+*/
 - (void) loadIndexData:(GLushort *)pIndexData ofSize:(size_t)size {
     NSAssert(pIndexData != NULL, @"loadVertexData failed, pIndexData == NULL");
     NSAssert(size > 0, @"loadVertexData failed, size <= 0");
