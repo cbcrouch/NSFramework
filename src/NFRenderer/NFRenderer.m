@@ -232,6 +232,8 @@
 
     [m_phongObject updateViewPosition:viewPosition];
     [m_phongObject updateViewMatrix:viewMatrix projectionMatrix:projection];
+
+    [m_debugObject updateViewMatrix:viewMatrix projectionMatrix:projection];
 }
 
 //
@@ -249,11 +251,6 @@
     
     [m_renderRequest process];
 
-
-    //
-    // TODO: the grid data has been converted to use NFDebugVertex_t but it is not currently
-    //       rendering correctly (or at all) need to debug the drawing code
-    //
     [m_debugRenderRequest process];
 }
 
