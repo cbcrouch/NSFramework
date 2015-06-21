@@ -94,12 +94,9 @@
     viewportArray[0].viewRect = CGRectMake(0.0f, 0.0f, (CGFloat)DEFAULT_VIEWPORT_WIDTH, (CGFloat)DEFAULT_VIEWPORT_HEIGHT);
     [self setViewports:[NSArray arrayWithObjects:viewportArray count:MAX_NUM_VIEWPORTS]];
 
-
     m_phongObject = [[NFRProgram createProgramObject:@"DefaultModel"] retain];
     m_debugObject = [[NFRProgram createProgramObject:@"Debug"] retain];
 
-
-    // render request should be a part of the NFRenderer
     m_renderRequest = [[[NFRRenderRequest alloc] init] retain];
     [m_renderRequest setProgram:m_phongObject];
 
@@ -174,6 +171,9 @@
 
 
     m_gridData = [NFAssetLoader allocAssetDataOfType:kGridWireframe withArgs:nil];
+    [m_gridData generateRenderables];
+    [m_gridData bindToProgram:m_debugObject];
+
 
     m_planeData = [NFAssetLoader allocAssetDataOfType:kSolidPlane withArgs:nil];
 
@@ -198,7 +198,7 @@
 
 
     //[m_debugRenderRequest addGeometry:m_axisData.geometry];
-
+    [m_debugRenderRequest addGeometry:m_gridData.geometry];
 
     return self;
 }
@@ -249,7 +249,12 @@
     
     [m_renderRequest process];
 
-    //[m_debugRenderRequest process];
+
+    //
+    // TODO: the grid data has been converted to use NFDebugVertex_t but it is not currently
+    //       rendering correctly (or at all) need to debug the drawing code
+    //
+    [m_debugRenderRequest process];
 }
 
 - (void) resizeToRect:(CGRect)rect {

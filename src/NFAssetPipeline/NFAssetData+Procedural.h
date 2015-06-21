@@ -9,10 +9,20 @@
 
 @interface NFAssetData (Procedural)
 
-- (void) createGridOfSize:(NSInteger)size; // add parameters to specify size of X axis and Z axis
 
+//
+// TODO: the following two methods could be moved to an NFAssetData (Debug) module once the
+//       procedural category starts to expand
+//
+- (void) createGridOfSize:(NSInteger)size; // add parameters to specify size of X axis and Z axis
 - (void) createAxisOfSize:(NSInteger)size;
+
+//
+// TODO: eliminate the need for loadAxisSurface method by converting axis to use NFDebugVertex_t
+//
 - (void) loadAxisSurface:(NFSurfaceModel *)surface;
+
+
 
 - (void) createPlaneOfSize:(NSInteger)size;
 

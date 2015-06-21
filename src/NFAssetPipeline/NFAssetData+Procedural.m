@@ -19,25 +19,28 @@ static const char *g_faceType = @encode(NFFace_t);
     // gridDirVertices * 2 == total number of vertices (2 grid directions)
     const NSInteger numVertices = ((size * 8) + 4);
 
+
     //
     // TODO: use NFDebugVertex_t for all debug visualization related assets
     //
-    NFVertex_t vertices[numVertices];
+    //NFVertex_t vertices[numVertices];
+    //memset(vertices, 0x00, numVertices * sizeof(NFVertex_t));
 
-    // set all texture coordinates and normals to 0
-    memset(vertices, 0x00, numVertices * sizeof(NFVertex_t));
+    NFDebugVertex_t vertices[numVertices];
+    memset(vertices, 0x00, numVertices * sizeof(NFDebugVertex_t));
+
 
     int vertexIndex = 0;
     for (NSInteger i=-size; i<=size; ++i) {
         vertices[vertexIndex].pos[0] = (float)size;
         vertices[vertexIndex].pos[1] = 0.0f;
         vertices[vertexIndex].pos[2] = (float)i;
-        vertices[vertexIndex].pos[3] = 1.0f;
+        //vertices[vertexIndex].pos[3] = 1.0f;
 
         vertices[vertexIndex+1].pos[0] = (float)-size;
         vertices[vertexIndex+1].pos[1] = 0.0f;
         vertices[vertexIndex+1].pos[2] = (float)i;
-        vertices[vertexIndex+1].pos[3] = 1.0f;
+        //vertices[vertexIndex+1].pos[3] = 1.0f;
 
         vertexIndex += 2;
     }
@@ -46,12 +49,12 @@ static const char *g_faceType = @encode(NFFace_t);
         vertices[vertexIndex].pos[0] = (float)i;
         vertices[vertexIndex].pos[1] = 0.0f;
         vertices[vertexIndex].pos[2] = (float)size;
-        vertices[vertexIndex].pos[3] = 1.0f;
+        //vertices[vertexIndex].pos[3] = 1.0f;
 
         vertices[vertexIndex+1].pos[0] = (float)i;
         vertices[vertexIndex+1].pos[1] = 0.0f;
         vertices[vertexIndex+1].pos[2] = (float)-size;
-        vertices[vertexIndex+1].pos[3] = 1.0f;
+        //vertices[vertexIndex+1].pos[3] = 1.0f;
 
         vertexIndex += 2;
     }
@@ -62,9 +65,20 @@ static const char *g_faceType = @encode(NFFace_t);
     }
 
     NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
-    [pSubset allocateVerticesWithNumElts:numVertices];
+
+
+    NSLog(@"NFAssetData+Procedural loading debug grid into NFAssetSubset");
+
+
+    //[pSubset allocateVerticesWithNumElts:numVertices];
+    //[pSubset loadVertexData:vertices ofSize:(numVertices * sizeof(NFVertex_t))];
+
+
+    [pSubset allocateVerticesOfType:kNFDebugVertexType withNumVertices:numVertices];
+    [pSubset loadVertexData:(void*)vertices ofType:kNFDebugVertexType withNumVertices:numVertices];
+
+
     [pSubset allocateIndicesWithNumElts:numVertices];
-    [pSubset loadVertexData:vertices ofSize:(numVertices * sizeof(NFVertex_t))];
     [pSubset loadIndexData:indices ofSize:(numVertices * sizeof(GLushort))];
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }

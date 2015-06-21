@@ -93,6 +93,7 @@
         NFSurfaceModel *surface = [subset surfaceModel];
         if (surface) {
             [self.geometry setSurfaceModel:surface];
+            [self.geometry syncSurfaceModel];
         }
 
         [self.geometry setMode:subset.mode];
@@ -100,11 +101,15 @@
         GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.modelMatrix, subset.subsetModelMat);
         [self.geometry setModelMatrix:renderModelMat];
 
-        [vertexBuffer loadData:subset.vertices ofType:kBufferDataTypeNFVertex_t numberOfElements:subset.numVertices];
+        if (subset.vertexType == kNFDebugVertexType) {
+            [vertexBuffer loadData:subset.pVertexData ofType:kBufferDataTypeNFDebugVertex_t numberOfElements:subset.numVertices];
+        }
+        else {
+            [vertexBuffer loadData:subset.vertices ofType:kBufferDataTypeNFVertex_t numberOfElements:subset.numVertices];
+        }
+
         [indexBuffer loadData:subset.indices ofType:kBufferDataTypeUShort numberOfElements:subset.numIndices];
     }
-
-    [self.geometry syncSurfaceModel];
 }
 
 - (void) bindToProgram:(id<NFRProgram>)programObj {

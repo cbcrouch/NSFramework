@@ -108,25 +108,11 @@
         }
         break;
 
-        case kGridWireframe: {
+        case kGridWireframe:
             [asset createGridOfSize:4];
             for (NFAssetSubset *subset in [asset subsetArray]) {
                 [subset setDrawMode:kDrawLines];
             }
-
-            //
-            // TODO: wireframe assets should not have a surface model
-            //
-/*
-            NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];
-            [surfaceModels addObject:[NFSurfaceModel defaultModel]];
-
-            asset.surfaceModelArray = surfaceModels;
-            for (NFAssetSubset *subset in [asset subsetArray]) {
-                subset.surfaceModel = [surfaceModels objectAtIndex:0];
-            }
-*/
-        }
         break;
 
         case kAxisWireframe:
@@ -134,18 +120,6 @@
             for (NFAssetSubset *subset in [asset subsetArray]) {
                 [subset setDrawMode:kDrawLines];
             }
-/*
-            NFSurfaceModel *surface = [NFSurfaceModel defaultModel];
-            [asset loadAxisSurface:surface];
-
-            NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];
-            [surfaceModels addObject:surface];
-
-            asset.surfaceModelArray = surfaceModels;
-            for (NFAssetSubset *subset in [asset subsetArray]) {
-                subset.surfaceModel = [surfaceModels objectAtIndex:0];
-            }
-*/
         break;
 
         case kSolidUVSphere: {
