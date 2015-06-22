@@ -17,12 +17,6 @@
 - (void) createGridOfSize:(NSInteger)size; // add parameters to specify size of X axis and Z axis
 - (void) createAxisOfSize:(NSInteger)size;
 
-//
-// TODO: eliminate the need for loadAxisSurface method by converting axis to use NFDebugVertex_t
-//
-- (void) loadAxisSurface:(NFSurfaceModel *)surface;
-
-
 
 - (void) createPlaneOfSize:(NSInteger)size;
 
