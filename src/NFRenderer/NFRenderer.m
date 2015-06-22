@@ -162,9 +162,6 @@
     [m_solidSphere stepTransforms:0.0f];
 
 
-    //
-    // TODO: need to convert the axis vertex data to the debug vertex format before it can be rendered
-    //
     m_axisData = [NFAssetLoader allocAssetDataOfType:kAxisWireframe withArgs:nil];
     [m_axisData generateRenderables];
     [m_axisData bindToProgram:m_debugObject];
@@ -176,6 +173,9 @@
 
 
     m_planeData = [NFAssetLoader allocAssetDataOfType:kSolidPlane withArgs:nil];
+    [m_planeData generateRenderables];
+    [m_planeData bindToProgram:m_phongObject];
+    [m_planeData assignSubroutine:@"PhongSubroutine"];
 
 
     _stepTransforms = NO;
@@ -190,11 +190,9 @@
     CHECK_GL_ERROR();
 
 
-    //
-    // TODO: add the remaining asset geometry objects to the render request
-    //
     [m_renderRequest addGeometry:m_pAsset.geometry];
     [m_renderRequest addGeometry:m_solidSphere.geometry];
+    //[m_renderRequest addGeometry:m_planeData.geometry];
 
 
     [m_debugRenderRequest addGeometry:m_axisData.geometry];
