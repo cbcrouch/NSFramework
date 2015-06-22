@@ -166,8 +166,8 @@
     // TODO: need to convert the axis vertex data to the debug vertex format before it can be rendered
     //
     m_axisData = [NFAssetLoader allocAssetDataOfType:kAxisWireframe withArgs:nil];
-    //[m_axisData generateRenderables];
-    //[m_axisData bindToProgram:m_debugObject];
+    [m_axisData generateRenderables];
+    [m_axisData bindToProgram:m_debugObject];
 
 
     m_gridData = [NFAssetLoader allocAssetDataOfType:kGridWireframe withArgs:nil];
@@ -197,8 +197,8 @@
     [m_renderRequest addGeometry:m_solidSphere.geometry];
 
 
-    //[m_debugRenderRequest addGeometry:m_axisData.geometry];
-    [m_debugRenderRequest addGeometry:m_gridData.geometry];
+    [m_debugRenderRequest addGeometry:m_axisData.geometry];
+    //[m_debugRenderRequest addGeometry:m_gridData.geometry];
 
     return self;
 }

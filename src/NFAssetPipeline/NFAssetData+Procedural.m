@@ -90,6 +90,12 @@ static const char *g_faceType = @encode(NFFace_t);
     // TODO: convert axis to NFDebugVertex_t
     //
 
+    NSLog(@"NFAssetData+Procedural createAxisOfSize method called");
+
+    NFDebugVertex_t vertices[numVertices];
+    memset(vertices, 0x00, numVertices * sizeof(NFDebugVertex_t));
+
+/*
     NFVertex_t vertices[numVertices];
     memset(vertices, 0x00, numVertices * sizeof(NFVertex_t));
 
@@ -119,6 +125,7 @@ static const char *g_faceType = @encode(NFFace_t);
 
     float f1 = encodeIntBitsAsFloat(1);
     float f2 = encodeIntBitsAsFloat(2);
+*/
 
     // x - red   (s,t): [0, 0] [1, 0]
     // y - green (s,t): [0, 1] [1, 1]
@@ -127,70 +134,88 @@ static const char *g_faceType = @encode(NFFace_t);
     // x-axis
 
     // pos x
+    //
+    // TODO: just set to desired color rather than selecting a texture coordinate
+    //
     vertices[0].pos[0] = 0.0f;
-    vertices[0].pos[3] = 1.0f;
+    //vertices[0].pos[3] = 1.0f;
 
     vertices[1].pos[0] = (float)size;
-    vertices[1].pos[3] = 1.0f;
+    //vertices[1].pos[3] = 1.0f;
+
+    vertices[0].color[0] = 1.0f;
+    vertices[1].color[0] = 1.0f;
+
+    vertices[0].color[3] = 1.0f;
+    vertices[1].color[3] = 1.0f;
 
     // neg x
     vertices[2].pos[0] = (float)-size;
-    vertices[2].pos[3] = 1.0f;
-    vertices[2].texCoord[0] = f1;
-    vertices[2].texCoord[1] = 0.0f;
+    //vertices[2].pos[3] = 1.0f;
+    //vertices[2].texCoord[0] = f1;
+    //vertices[2].texCoord[1] = 0.0f;
 
     vertices[3].pos[0] = 0.0f;
-    vertices[3].pos[3] = 1.0f;
-    vertices[3].texCoord[0] = f1;
-    vertices[3].texCoord[1] = 0.0f;
+    //vertices[3].pos[3] = 1.0f;
+    //vertices[3].texCoord[0] = f1;
+    //vertices[3].texCoord[1] = 0.0f;
+
+    //
+    // TODO: color is not being applied correctly, may need a coincident vertex, need to debug
+    //
+    vertices[2].color[0] = 0.25f;
+    vertices[3].color[0] = 0.25f;
+
+    vertices[2].color[0] = 1.0f;
+    vertices[3].color[0] = 1.0f;
 
     // y-axis
 
     // pos y
     vertices[4].pos[1] = 0.0f;
-    vertices[4].pos[3] = 1.0f;
-    vertices[4].texCoord[0] = 0.0f;
-    vertices[4].texCoord[1] = f1;
+    //vertices[4].pos[3] = 1.0f;
+    //vertices[4].texCoord[0] = 0.0f;
+    //vertices[4].texCoord[1] = f1;
 
     vertices[5].pos[1] = (float)size;
-    vertices[5].pos[3] = 1.0f;
-    vertices[5].texCoord[0] = 0.0f;
-    vertices[5].texCoord[1] = f1;
+    //vertices[5].pos[3] = 1.0f;
+    //vertices[5].texCoord[0] = 0.0f;
+    //vertices[5].texCoord[1] = f1;
 
     // neg y
     vertices[6].pos[1] = (float)-size;
-    vertices[6].pos[3] = 1.0f;
-    vertices[6].texCoord[0] = f1;
-    vertices[6].texCoord[1] = f1;
+    //vertices[6].pos[3] = 1.0f;
+    //vertices[6].texCoord[0] = f1;
+    //vertices[6].texCoord[1] = f1;
 
     vertices[7].pos[1] = 0.0f;
-    vertices[7].pos[3] = 1.0f;
-    vertices[7].texCoord[0] = f1;
-    vertices[7].texCoord[1] = f1;
+    //vertices[7].pos[3] = 1.0f;
+    //vertices[7].texCoord[0] = f1;
+    //vertices[7].texCoord[1] = f1;
 
     // z-axis
 
     // pos z
     vertices[8].pos[2] = 0.0f;
-    vertices[8].pos[3] = 1.0f;
-    vertices[8].texCoord[0] = 0.0f;
-    vertices[8].texCoord[1] = f2;
+    //vertices[8].pos[3] = 1.0f;
+    //vertices[8].texCoord[0] = 0.0f;
+    //vertices[8].texCoord[1] = f2;
 
     vertices[9].pos[2] = (float)size;
-    vertices[9].pos[3] = 1.0f;
-    vertices[9].texCoord[0] = 0.0f;
-    vertices[9].texCoord[1] = f2;
+    //vertices[9].pos[3] = 1.0f;
+    //vertices[9].texCoord[0] = 0.0f;
+    //vertices[9].texCoord[1] = f2;
 
     // neg z
     vertices[10].pos[2] = (float)-size;
-    vertices[10].pos[3] = 1.0f;
-    vertices[10].texCoord[0] = f1;
-    vertices[10].texCoord[1] = f2;
+    //vertices[10].pos[3] = 1.0f;
+    //vertices[10].texCoord[0] = f1;
+    //vertices[10].texCoord[1] = f2;
 
     vertices[11].pos[2] = 0.0f;
-    vertices[11].pos[3] = 1.0f;
-    vertices[11].texCoord[0] = f1;
-    vertices[11].texCoord[1] = f2;
+    //vertices[11].pos[3] = 1.0f;
+    //vertices[11].texCoord[0] = f1;
+    //vertices[11].texCoord[1] = f2;
 
     const NSInteger numIndices = 12;
     GLushort indices[numIndices];
@@ -204,8 +229,11 @@ static const char *g_faceType = @encode(NFFace_t);
     [pSubset allocateIndicesWithNumElts:numIndices];
     [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
 
-    [pSubset allocateVerticesOfType:kNFVertexType withNumVertices:numVertices];
-    [pSubset loadVertexData:vertices ofType:kNFVertexType withNumVertices:numVertices];
+    //[pSubset allocateVerticesOfType:kNFVertexType withNumVertices:numVertices];
+    //[pSubset loadVertexData:vertices ofType:kNFVertexType withNumVertices:numVertices];
+
+    [pSubset allocateVerticesOfType:kNFDebugVertexType withNumVertices:numVertices];
+    [pSubset loadVertexData:vertices ofType:kNFDebugVertexType withNumVertices:numVertices];
 
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }

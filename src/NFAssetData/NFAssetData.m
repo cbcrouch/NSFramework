@@ -101,13 +101,22 @@
         GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.modelMatrix, subset.subsetModelMat);
         [self.geometry setModelMatrix:renderModelMat];
 
-        if (subset.vertexType == kNFDebugVertexType) {
-            [vertexBuffer loadData:subset.vertices ofType:kBufferDataTypeNFDebugVertex_t numberOfElements:subset.numVertices];
-        }
-        else {
-            [vertexBuffer loadData:subset.vertices ofType:kBufferDataTypeNFVertex_t numberOfElements:subset.numVertices];
+        NFR_BUFFER_DATA_TYPE vertexBufferType = kBufferDataTypeUnknown;
+        switch (subset.vertexType) {
+            case kNFVertexType:
+                vertexBufferType = kBufferDataTypeNFVertex_t;
+                break;
+
+            case kNFDebugVertexType:
+                vertexBufferType = kBufferDataTypeNFDebugVertex_t;
+                break;
+                
+            default:
+                break;
         }
 
+        NSAssert(vertexBufferType != kBufferDataTypeUnknown, @"ERROR: NFAssetData can not recongize subset vertex type");
+        [vertexBuffer loadData:subset.vertices ofType:vertexBufferType numberOfElements:subset.numVertices];
         [indexBuffer loadData:subset.indices ofType:kBufferDataTypeUShort numberOfElements:subset.numIndices];
     }
 }
