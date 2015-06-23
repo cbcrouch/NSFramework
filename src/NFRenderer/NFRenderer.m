@@ -109,7 +109,7 @@
 
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
-    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
+    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
 
     //
     // TODO: teapot contains vertices and texture coordinates (no normals), does not use objects or groups,
@@ -128,7 +128,7 @@
     //       different primitive mode
     //
 
-    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/suzanne.obj";
+    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/suzanne.obj";
 
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/buddha.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/dragon.obj";

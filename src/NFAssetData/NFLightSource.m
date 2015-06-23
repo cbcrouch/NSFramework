@@ -24,31 +24,11 @@
     self = [super init];
     if (self != nil) {
         // set OpenGL default values
-        float tempArray[] = {0.0f, 0.0f, 0.0f, 1.0f};
-
-        _ambient = convertCfloatArrayToNS(tempArray);
-
-        tempArray[0] = 0.0f;
-        tempArray[1] = 0.0f;
-        tempArray[2] = 1.0f;
-        tempArray[3] = 0.0f;
-
-        _position = convertCfloatArrayToNS(tempArray);
-
-        tempArray[0] = 1.0f;
-        tempArray[1] = 1.0f;
-        tempArray[2] = 1.0f;
-        tempArray[3] = 1.0f;
-
-        _diffuse = convertCfloatArrayToNS(tempArray);
-        _specular = convertCfloatArrayToNS(tempArray);
-
-        tempArray[0] = 0.0f;
-        tempArray[1] = 0.0f;
-        tempArray[2] = -1.0f;
-
-        _spotDirection = convertCfloatArrayToNS(tempArray);
-
+        _ambient = GLKVector3Make(0.0f, 0.0f, 0.0f);
+        _position = GLKVector3Make(0.0f, 0.0f, 1.0f);
+        _diffuse = GLKVector3Make(1.0f, 1.0f, 1.0f);
+        _specular = GLKVector3Make(1.0f, 1.0f, 1.0f);
+        _spotDirection = GLKVector3Make(0.0f, 0.0f, -1.0f);
         _spotExponent = 0.0f;
         _spotCutoff = M_PI;
         _constantAttenuation = 1.0f;
@@ -60,11 +40,6 @@
 }
 
 - (void) dealloc {
-
-    //
-    // TODO: release arrays
-    //
-
     [super dealloc];
 }
 

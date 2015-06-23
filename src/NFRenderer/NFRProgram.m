@@ -391,6 +391,11 @@ typedef struct phongLightUniform_t {
 
     [self setMaterialUniforms:phongMat];
 
+
+    //
+    // TODO: need to allow for setting matrial properites based on the surface model
+    //       (also need to support diffuse/specular/etc. texture maps
+    //
     // hardcoded material values (jade)
     glUseProgram(self.hProgram);
     glUniform3f(phongMat.ambientLoc, 0.135f, 0.2225f, 0.1575f);
@@ -398,6 +403,7 @@ typedef struct phongLightUniform_t {
     glUniform3f(phongMat.specularLoc, 0.316228f, 0.316228f, 0.316228f);
     glUniform1f(phongMat.shineLoc, 128.0f * 0.1f);
     glUseProgram(0);
+
 
     // light struct uniform locations
     phongLightUniform_t phongLight;
@@ -415,6 +421,10 @@ typedef struct phongLightUniform_t {
 
     [self setLightUniforms:phongLight];
 
+
+    //
+    // TODO: need to allow for setting dynamic lights using an NFLightSource object
+    //
     // hardcoded light values
     glUseProgram(self.hProgram);
     glUniform3f(phongLight.ambientLoc, 0.2f, 0.2f, 0.2f);
@@ -422,6 +432,7 @@ typedef struct phongLightUniform_t {
     glUniform3f(phongLight.specularLoc, 1.0f, 1.0f, 1.0f);
     glUniform3f(phongLight.positionLoc, 2.0f, 1.0f, 0.0f);
     glUseProgram(0);
+
 
     // model matrix uniform location
     [self setModelMatrixLocation:glGetUniformLocation(self.hProgram, (const GLchar *)"model")];
@@ -527,21 +538,16 @@ typedef struct phongLightUniform_t {
 - (void) updateViewMatrix:(GLKMatrix4)viewMatrix projectionMatrix:(GLKMatrix4)projection {
 
     //
-    // TODO: while not yet implemented should consider using some additional utility method(s)
-    //       for simplfying UBOs to avoid redundant code between shader program implementations
+    // TODO: these utility methods do work but the introduce too much overhead, they will be kept
+    //       around for the time being but the direct loading of UBO data should be preserved if possible
     //
 /*
     static const char* matrixType = @encode(GLKMatrix4);
     NSMutableArray* matrixArray = [[[NSMutableArray alloc] init] autorelease];
     [matrixArray addObject:[NSValue value:&viewMatrix withObjCType:matrixType]];
     [matrixArray addObject:[NSValue value:&projection withObjCType:matrixType]];
-
-    //
-    // TODO: this utility method has not been tested
-    //
     [NFRUtils setUniformBuffer:self.hUBO withData:matrixArray];
 */
-
 
     GLsizeiptr matrixSize = (GLsizeiptr)(16 * sizeof(float));
     GLintptr offset = (GLintptr)matrixSize;

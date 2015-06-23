@@ -6,45 +6,29 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <GLKit/GLKit.h>
 
 //
 // TODO: make sure struct definition will encompass a point light, spotlight, and directional light
 //       and setup to operate similar to legacy OpenGL lights until working out a better model/design
 //
 
-// the following struct should contain all the light params as an OpenGL 2.1 light
-/*
-typedef struct NFLight_t {
-    float pos[4];
-    float diffuseColor[4];
-    float specularColor[4];
 
-    float constantAttenuation;
-    float linearAttenuation;
-    float quadraticAttenuation;
 
-    float spotCutoff;
-    float spotExponent;
-    float spotDirection[3];
-} NFLight_t;
-*/
 
 @interface NFLightSource : NSObject
 
-//
-// NOTE: class is based on gl_LightSourceParameters
-//
-
-@property (nonatomic, retain) NSArray *ambient;   // Aclarri (Acli) also Acs ??
-@property (nonatomic, retain) NSArray *diffuse;   // Dcli
-@property (nonatomic, retain) NSArray *specular;  // Scli
-@property (nonatomic, retain) NSArray *position;  // Ppli
+@property (nonatomic, assign) GLKVector3 ambient;   // Aclarri (Acli) also Acs ??
+@property (nonatomic, assign) GLKVector3 diffuse;   // Dcli
+@property (nonatomic, assign) GLKVector3 specular;  // Scli
+@property (nonatomic, assign) GLKVector3 position;  // Ppli
 
 // NOTE: the halfway vector (Hi) that is stored in the gl_LightSourceParameters is not a member of this
 //       class since it is dependent on the geometry surface normal it will be calculated in the
 //       shader where needed (this prevents coupling between the light definition and surface model)
 
-@property (nonatomic, retain) NSArray *spotDirection;  // Sdli
+@property (nonatomic, assign) GLKVector3 spotDirection;  // Sdli
+
 @property (nonatomic, assign) float spotExponent;      // Srli
 @property (nonatomic, assign) float spotCutoff;        // Crli (range: [0.0, 90.0], 180.0)
 
@@ -59,43 +43,6 @@ typedef struct NFLight_t {
 
 @end
 
-/*
-struct gl_MaterialParameters
-{
-    vec4 emission;    // Ecm
-    vec4 ambient;     // Acm
-    vec4 diffuse;     // Dcm
-    vec4 specular;    // Scm
-    float shininess;  // Srm
-};
-
-uniform gl_MaterialParameters gl_FrontMaterial;
-uniform gl_MaterialParameters gl_BackMaterial;
-*/
-
-//
-// derived state from products of light and material
-//
-/*
-struct gl_LightModelProducts
-{
-    vec4 sceneColor; // Derived. Ecm + Acm * Acs
-};
-
-uniform gl_LightModelProducts gl_FrontLightModelProduct;
-uniform gl_LightModelProducts gl_BackLightModelProduct;
-
-
-struct gl_LightProducts
-{
-    vec4 ambient;    // Acm * Acli
-    vec4 diffuse;    // Dcm * Dcli
-    vec4 specular;   // Scm * Scli
-};
-
-uniform gl_LightProducts gl_FrontLightProduct[gl_MaxLights];
-uniform gl_LightProducts gl_BackLightProduct[gl_MaxLights];
-*/
 
 
 @interface NFLightGroup : NSObject

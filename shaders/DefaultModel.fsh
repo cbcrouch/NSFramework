@@ -25,10 +25,14 @@ uniform vec3 viewPos;
 uniform material_t material;
 uniform light_t light;
 
+
+
 //
 // TODO: add support for diffuse textures
 //
 uniform sampler2D texSampler;
+
+
 
 in vec3 f_position;
 in vec3 f_normal;
