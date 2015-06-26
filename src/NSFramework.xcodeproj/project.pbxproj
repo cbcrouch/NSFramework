@@ -39,6 +39,9 @@
 		238156211A16A1460018ECF3 /* NFSimulation.m in Sources */ = {isa = PBXBuildFile; fileRef = 238156201A16A1460018ECF3 /* NFSimulation.m */; };
 		238156241A16A1A10018ECF3 /* NFCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 238156231A16A1A10018ECF3 /* NFCamera.m */; };
 		23A8095E1901BF340062445D /* NFAssetData+Procedural.m in Sources */ = {isa = PBXBuildFile; fileRef = 23A8095D1901BF340062445D /* NFAssetData+Procedural.m */; };
+		23C2D8AC1B3C988A00A7CA49 /* NFRDefaultProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 23C2D8AB1B3C988A00A7CA49 /* NFRDefaultProgram.m */; };
+		23C2D8AF1B3C98A500A7CA49 /* NFRDebugProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 23C2D8AE1B3C98A500A7CA49 /* NFRDebugProgram.m */; };
+		23C2D8B21B3C995500A7CA49 /* NFRResources.m in Sources */ = {isa = PBXBuildFile; fileRef = 23C2D8B11B3C995500A7CA49 /* NFRResources.m */; };
 		23E9874018DCAC7000F76B1A /* NFAssetData+Wavefront.m in Sources */ = {isa = PBXBuildFile; fileRef = 23E9873F18DCAC7000F76B1A /* NFAssetData+Wavefront.m */; };
 		23EB03261ACCDA6200084CEF /* DefaultModel.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 23EB03241ACCDA6200084CEF /* DefaultModel.fsh */; };
 		23EB03271ACCDA6200084CEF /* DefaultModel.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 23EB03251ACCDA6200084CEF /* DefaultModel.vsh */; };
@@ -109,6 +112,13 @@
 		238156231A16A1A10018ECF3 /* NFCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFCamera.m; path = NFMechanics/NFCamera.m; sourceTree = "<group>"; };
 		23A8095C1901BF340062445D /* NFAssetData+Procedural.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NFAssetData+Procedural.h"; path = "NFAssetPipeline/NFAssetData+Procedural.h"; sourceTree = "<group>"; };
 		23A8095D1901BF340062445D /* NFAssetData+Procedural.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NFAssetData+Procedural.m"; path = "NFAssetPipeline/NFAssetData+Procedural.m"; sourceTree = "<group>"; };
+		23C2D8AA1B3C988A00A7CA49 /* NFRDefaultProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFRDefaultProgram.h; path = NFRenderer/NFRDefaultProgram.h; sourceTree = "<group>"; };
+		23C2D8AB1B3C988A00A7CA49 /* NFRDefaultProgram.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFRDefaultProgram.m; path = NFRenderer/NFRDefaultProgram.m; sourceTree = "<group>"; };
+		23C2D8AD1B3C98A500A7CA49 /* NFRDebugProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFRDebugProgram.h; path = NFRenderer/NFRDebugProgram.h; sourceTree = "<group>"; };
+		23C2D8AE1B3C98A500A7CA49 /* NFRDebugProgram.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFRDebugProgram.m; path = NFRenderer/NFRDebugProgram.m; sourceTree = "<group>"; };
+		23C2D8B01B3C995500A7CA49 /* NFRResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFRResources.h; path = NFRenderer/NFRResources.h; sourceTree = "<group>"; };
+		23C2D8B11B3C995500A7CA49 /* NFRResources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFRResources.m; path = NFRenderer/NFRResources.m; sourceTree = "<group>"; };
+		23C2D8B31B3C9B1500A7CA49 /* NFRProgramProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFRProgramProtocol.h; path = NFRenderer/NFRProgramProtocol.h; sourceTree = "<group>"; };
 		23E9873E18DCAC7000F76B1A /* NFAssetData+Wavefront.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NFAssetData+Wavefront.h"; path = "NFAssetPipeline/NFAssetData+Wavefront.h"; sourceTree = "<group>"; };
 		23E9873F18DCAC7000F76B1A /* NFAssetData+Wavefront.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NFAssetData+Wavefront.m"; path = "NFAssetPipeline/NFAssetData+Wavefront.m"; sourceTree = "<group>"; };
 		23EB03241ACCDA6200084CEF /* DefaultModel.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = DefaultModel.fsh; path = ../shaders/DefaultModel.fsh; sourceTree = "<group>"; };
@@ -167,6 +177,7 @@
 		233797E81885E06C00399EBA /* NFRenderer */ = {
 			isa = PBXGroup;
 			children = (
+				23C2D8A91B3C976300A7CA49 /* NFRProgramImplementations */,
 				235F39671B2D969E00B3CBA5 /* NFRDataMap.h */,
 				235F39681B2D969E00B3CBA5 /* NFRDataMap.m */,
 				233797EF1885E1DF00399EBA /* NFRenderer.h */,
@@ -175,6 +186,9 @@
 				2377618F1B2758AE00855E48 /* NFRProgram.m */,
 				233797F11885E1DF00399EBA /* NFRUtils.h */,
 				233797F21885E1DF00399EBA /* NFRUtils.m */,
+				23C2D8B01B3C995500A7CA49 /* NFRResources.h */,
+				23C2D8B11B3C995500A7CA49 /* NFRResources.m */,
+				23C2D8B31B3C9B1500A7CA49 /* NFRProgramProtocol.h */,
 			);
 			name = NFRenderer;
 			sourceTree = "<group>";
@@ -323,6 +337,17 @@
 			name = NFSimulation;
 			sourceTree = "<group>";
 		};
+		23C2D8A91B3C976300A7CA49 /* NFRProgramImplementations */ = {
+			isa = PBXGroup;
+			children = (
+				23C2D8AA1B3C988A00A7CA49 /* NFRDefaultProgram.h */,
+				23C2D8AB1B3C988A00A7CA49 /* NFRDefaultProgram.m */,
+				23C2D8AD1B3C98A500A7CA49 /* NFRDebugProgram.h */,
+				23C2D8AE1B3C98A500A7CA49 /* NFRDebugProgram.m */,
+			);
+			name = NFRProgramImplementations;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -426,12 +451,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				233797F31885E1DF00399EBA /* NFRenderer.m in Sources */,
+				23C2D8AC1B3C988A00A7CA49 /* NFRDefaultProgram.m in Sources */,
 				232BDD981A15A17500BB8A6C /* NFUtils.m in Sources */,
 				238156241A16A1A10018ECF3 /* NFCamera.m in Sources */,
 				234E2CD5188382CC00AF8F23 /* AppDelegate.m in Sources */,
 				234E2CCE188382CC00AF8F23 /* main.m in Sources */,
 				233797EE1885E1CA00399EBA /* NFWavefrontObj.m in Sources */,
 				238156211A16A1460018ECF3 /* NFSimulation.m in Sources */,
+				23C2D8B21B3C995500A7CA49 /* NFRResources.m in Sources */,
 				235F39691B2D969E00B3CBA5 /* NFRDataMap.m in Sources */,
 				234E85421B2BAE20009B34BF /* NFLightSource.m in Sources */,
 				237761901B2758AE00855E48 /* NFRProgram.m in Sources */,
@@ -444,6 +471,7 @@
 				23A8095E1901BF340062445D /* NFAssetData+Procedural.m in Sources */,
 				233797F41885E1DF00399EBA /* NFRUtils.m in Sources */,
 				233FAEB41A9F7FA000AD025B /* NFAssetUtils.m in Sources */,
+				23C2D8AF1B3C98A500A7CA49 /* NFRDebugProgram.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

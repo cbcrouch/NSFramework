@@ -50,6 +50,8 @@
     id<NFRProgram> m_phongObject;
     id<NFRProgram> m_debugObject;
 
+    //NFRDebugProgram* m_debugObject;
+
     NFRRenderRequest* m_renderRequest;
     NFRRenderRequest* m_debugRenderRequest;
 }
@@ -220,9 +222,7 @@
     [super dealloc];
 }
 
-- (void) updateFrameWithTime:(float)secsElapsed withViewPosition:(GLKVector3)viewPosition
-              withViewMatrix:(GLKMatrix4)viewMatrix
-              withProjection:(GLKMatrix4)projection {
+- (void) updateFrameWithTime:(float)secsElapsed withViewPosition:(GLKVector3)viewPosition withViewMatrix:(GLKMatrix4)viewMatrix withProjection:(GLKMatrix4)projection {
     if (self.stepTransforms) {
         [m_pAsset stepTransforms:secsElapsed];
     }
@@ -252,7 +252,6 @@
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     
     [m_renderRequest process];
-
     [m_debugRenderRequest process];
 }
 

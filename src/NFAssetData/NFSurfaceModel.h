@@ -10,6 +10,12 @@
 
 #import "NFRDataMap.h"
 
+
+// http://learnopengl.com/#!Lighting/Materials
+
+// http://learnopengl.com/#!Lighting/Lighting-maps
+
+
 //
 // TODO: NFSurfaceModel should be a protocol so that NFWavefrontModel, NFGLModel, and NFPBRModel classes
 //       could both be used in the same way when rendering an NFAssetData object
@@ -17,14 +23,14 @@
 @interface NFSurfaceModel : NSObject
 
 
-typedef NS_ENUM(NSUInteger, DEFAULT_SURFACES) {
+typedef NS_ENUM(NSUInteger, DEFAULT_SURFACE) {
     kTestGrid,
     kTestGridColored,
     kGray127
 };
 
 //
-// TODO: take a DEFAULT_SURFACES argument and generate accordingly
+// TODO: take a DEFAULT_SURFACE argument and generate accordingly
 //
 + (NFSurfaceModel *) defaultSurfaceModel;
 

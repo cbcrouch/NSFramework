@@ -14,6 +14,12 @@
 //
 
 
+// http://learnopengl.com/#!Lighting/Light-casters
+// - http://learnopengl.com/code_viewer.php?code=lighting/light_casters_directional&type=fragment
+// - http://learnopengl.com/code_viewer.php?code=lighting/light_casters_point&type=fragment
+// - http://learnopengl.com/code_viewer.php?code=lighting/light_casters_spotlight_hard&type=fragment
+// - http://learnopengl.com/code_viewer.php?code=lighting/light_casters_spotlight_soft&type=fragment
+
 
 
 @interface NFLightSource : NSObject
@@ -38,9 +44,6 @@
 @property (nonatomic, assign) float linearAttenuation;    // K1
 @property (nonatomic, assign) float quadraticAttenuation; // K2
 
-- (instancetype) init;
-- (void) dealloc;
-
 @end
 
 
@@ -56,5 +59,3 @@
 //- (void) calculateProductsFromSurfaces:(NSMutableArray *) surfaces;
 
 @end
-
-

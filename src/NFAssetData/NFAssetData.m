@@ -6,6 +6,7 @@
 //
 
 #import "NFAssetData.h"
+#import "NFRProgramProtocol.h"
 
 
 @implementation NFAssetData
