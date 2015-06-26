@@ -362,10 +362,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     }
 }
 
-//
-// TODO: use mouse wheel and a key to increase/decrease to FOV of the camera
-//
-
 - (void) mouseDown:(NSEvent *)theEvent {
     //
     // NOTE: use this code when there is more than one view for the window
@@ -529,11 +525,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     NSOpenGLPixelFormatAttribute attribs[] = {
         NSOpenGLPFAAccelerated,
         NSOpenGLPFADoubleBuffer,
-
-        //
-        // TODO: is there a way to specify pixel format e.g. RGBA (32bit) Uint ??
-        //
-
         NSOpenGLPFAColorSize, (NSOpenGLPixelFormatAttribute)24,
         NSOpenGLPFAAlphaSize, (NSOpenGLPixelFormatAttribute)8,
         NSOpenGLPFADepthSize, (NSOpenGLPixelFormatAttribute)32,

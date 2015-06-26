@@ -266,7 +266,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 // - unbiasedVertexNormals
 // - surfaceAreaWeightedVertexNormals
 // - faceAngleWeightedVertexNormals
-// - areaAndAngleWeightedVertexNormals (TODO: determine how feasible this is)
+// - areaAndAngleWeightedVertexNormals
 
 - (void) calculateNormals {
     //
@@ -429,8 +429,6 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
 @end
 
-// TODO: use pragma mark to help organize this source file
-
 @implementation NFWavefrontObj
 
 + (NSArray *) componentsFromWavefrontObjLine:(NSString *)line withPrefix:(NSString *)prefix {
@@ -438,15 +436,11 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     //       to remove leading and trailing whitespace as well as the prefix
     NSString *truncLine = [line substringFromIndex:[prefix length]];
 
-    //
-    // TODO: verify will remove leading whitespace
-    //
+    // remove leading whitespace
     NSRange range = [truncLine rangeOfString:@"^\\s*" options:NSRegularExpressionSearch];
     truncLine = [truncLine stringByReplacingCharactersInRange:range withString:@""];
 
-    //
-    // TODO: verify will remove trailing whitespace
-    //
+    // remove trailing whitespace
     range = [truncLine rangeOfString:@"\\s*$" options:NSRegularExpressionSearch];
     truncLine = [truncLine stringByReplacingCharactersInRange:range withString:@""];
 
@@ -753,10 +747,6 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     static NSString *g_mapKdPrefix = @"map_Kd "; // diffuse color texture map=
 
     NFSurfaceModel *mat = [[[NFSurfaceModel alloc] init] autorelease];
-
-    //
-    // TODO: try and simplify some of this functionality using the NSScanner class
-    //
 
     for (NSString *line in lines) {
 

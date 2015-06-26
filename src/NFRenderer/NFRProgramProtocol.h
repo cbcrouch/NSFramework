@@ -13,18 +13,13 @@
 
 @property (nonatomic, readonly) GLuint hProgram;
 
-//
-// TODO: implement these two methods to have the same behavior as the above two methods
-//
 - (void) configureVertexInput:(NFRBufferAttributes*)bufferAttributes;
 - (void) configureVertexBufferLayout:(NFRBuffer*)vertexBuffer withAttributes:(NFRBufferAttributes*)bufferAttributes;
-
 
 - (void) drawGeometry:(NFRGeometry*)geometry;
 
 - (void) updateModelMatrix:(GLKMatrix4)modelMatrix;
 - (void) updateViewMatrix:(GLKMatrix4)viewMatrix projectionMatrix:(GLKMatrix4)projection;
-
 
 @optional
 

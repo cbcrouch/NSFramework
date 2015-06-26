@@ -11,10 +11,6 @@
 #import "NFSurfaceModel.h"
 
 
-//
-// TODO: should remove use of these enums and the PhongMaterial_t struct and use the surface
-//       model object
-//
 typedef NS_ENUM(NSUInteger, ILLUMINATION_MODEL) {
     kColorOnAmbientOff,
     kColorOnAmbientOn,

@@ -38,9 +38,6 @@ typedef struct NFVertex_t {
 } NFVertex_t;
 
 
-//
-// TODO: use the debug vertex to draw the grid lines, axis, and AABBs
-//
 typedef struct NFDebugVertex_t {
     float pos[3];
     float norm[3];

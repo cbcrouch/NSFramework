@@ -204,9 +204,6 @@
 }
 
 - (void) dealloc {
-    //
-    // TODO: need to properly clean up after finishing refactoring
-    //
     [m_pAsset release];
     [m_axisData release];
     [m_gridData release];
@@ -238,10 +235,6 @@
     [m_debugObject updateViewMatrix:viewMatrix projectionMatrix:projection];
 }
 
-//
-// TODO: renderFrame should take a scene/PVS, and pipeline object as params
-//       (viewport will be set/bound ahead of time for the renderer instance)
-//
 - (void) renderFrame {
     //
     // TODO: when in DEBUG mode check to verify that the frame buffer is valid, under some

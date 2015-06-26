@@ -55,17 +55,7 @@
 //
 /*
 - (void) calcHalfVectorFromViewDir:(NSArray *)viewDir {
-
-    // http://www.lighthouse3d.com/tutorials/glsl-tutorial/directional-lights-ii/
-
     //vec4 H = normalize( viewDir - lightDir );
-
-    // http://www.lighthouse3d.com/tutorials/glsl-core-tutorial/glsl-core-tutorial-directional-lights-per-vertex-ii/
-
-
-    // http://stackoverflow.com/questions/3744038/what-is-half-vector-in-modern-glsl
-
-    // comments taken from Blinn-Phong model wikipedia page
 
     // need to determine the correct derived calculation that the OpenGL fixed
     // function pipeline is using

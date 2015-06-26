@@ -5,17 +5,6 @@
 //  Copyright (c) 2015 Casey Crouch. All rights reserved.
 //
 
-
-
-//
-// TODO: nothing outside of NFGraphicsToolkit should be accessing OpenGL or these OpenGL utilities
-//       (once that's true then remove both NFRUtils files)
-//
-
-// currently only NFRenderer uses NFRUtils
-
-
-
 // check, print, and clear all OpenGL errors
 #ifdef DEBUG
 #   define CHECK_GL_ERROR() [NFRUtils checkGLError:__FILE__ line:__LINE__ function:__FUNCTION__]
@@ -57,12 +46,6 @@ typedef NS_ENUM(NSUInteger, SHADER_TYPE) {
 // - numBlocks
 // - elementSize
 // - hUBO
-
-
-
-//
-// TODO: create a sampler class
-//
 
 
 @interface NFRUtils : NSObject

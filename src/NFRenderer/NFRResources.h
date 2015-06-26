@@ -36,13 +36,9 @@ typedef NS_ENUM(NSUInteger, NFR_BUFFER_TYPE) {
 };
 
 //
-// TODO: try and consolidate around a single vertex type
+// TODO: try and consolidate around a single vertex type enum
 //
 typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
-    //
-    // TODO: most enums should allow for an "unknown" type (which will most likely only be used
-    //       to trigger an assert)
-    //
     kBufferDataTypeUnknown,
     kBufferDataTypeUShort,
     kBufferDataTypeNFVertex_t,

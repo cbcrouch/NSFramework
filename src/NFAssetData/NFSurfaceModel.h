@@ -11,13 +11,8 @@
 #import "NFRDataMap.h"
 
 
-// http://learnopengl.com/#!Lighting/Materials
-
-// http://learnopengl.com/#!Lighting/Lighting-maps
-
-
 //
-// TODO: NFSurfaceModel should be a protocol so that NFWavefrontModel, NFGLModel, and NFPBRModel classes
+// TODO: NFSurfaceModel should be a protocol so that NFPhongModel, and NFPBRModel classes
 //       could both be used in the same way when rendering an NFAssetData object
 //
 @interface NFSurfaceModel : NSObject

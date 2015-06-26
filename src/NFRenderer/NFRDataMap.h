@@ -35,9 +35,7 @@ typedef NS_ENUM(NSUInteger, DATA_MAP_FILTER) {
 // wrap s
 // wrap t
 
-//
-// TODO: add support for generating mipmaps
-//
+// mipmaps
 
 // anisotropic filtering
 

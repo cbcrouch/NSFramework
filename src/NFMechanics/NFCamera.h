@@ -116,10 +116,8 @@ typedef NS_ENUM(NSUInteger, CAMERA_DIRECTION_STATE) {
 - (void) resetLookDirection;
 - (void) resetState;
 
-//
-// TODO: function will preserve the cameras current state, this state will be
+// NOTE: function will preserve the cameras current state, this state will be
 //       what is used on the next resetLookDirection and resetState calls
-//
 - (void) saveState;
 
 @end

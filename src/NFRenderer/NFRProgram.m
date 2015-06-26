@@ -101,6 +101,7 @@ typedef struct phongLightUniform_t {
 @synthesize phongSubroutine = _phongSubroutine;
 
 @synthesize hUBO = _hUBO;
+@synthesize hProgram = _hProgram;
 
 - (void) loadProgramInputPoints {
     // shader attributes
@@ -194,12 +195,6 @@ typedef struct phongLightUniform_t {
 
     CHECK_GL_ERROR();
 }
-
-//
-// TODO: protocol region
-//
-
-@synthesize hProgram = _hProgram;
 
 - (void) configureVertexInput:(NFRBufferAttributes*)bufferAttributes {
     glBindVertexArray(bufferAttributes.hVAO);

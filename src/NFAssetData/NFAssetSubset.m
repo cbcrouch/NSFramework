@@ -14,11 +14,6 @@
 @interface NFAssetSubset()
 
 //
-// TODO: will need to integrate the min/max dimension finding into the NFAssetData containing object
-//       and keep the subsets transforms relative
-//
-
-//
 // TODO: should store the min/max dimensions of the complete asset as well as the subset
 //       also each subset should have a centering transform and unit scaling transform
 //       (moving through transform hierarchy will store relative transformations but will
@@ -26,13 +21,6 @@
 //
 @property (nonatomic, assign) GLKVector3 minDimensions;
 @property (nonatomic, assign) GLKVector3 maxDimensions;
-
-
-//
-// TODO: remove all OpenGL primitives
-//
-@property (nonatomic, assign) GLuint hVBO;
-@property (nonatomic, assign) GLuint hEBO;
 
 
 //
@@ -297,12 +285,6 @@
         return;
     }
 
-
-    //
-    // TODO: probably a very good idea to keep the max/min x,y,z in the subset to provide
-    //       an easy way to cull anything not in the view volume
-    //
-
     //NSLog(@"min x:%f, max x:%f", min_x, max_x);
     //NSLog(@"min y:%f, max y:%f", min_y, max_y);
     //NSLog(@"min z:%f, max z:%f", min_z, max_z);
@@ -377,114 +359,6 @@
     self.subsetModelMat = GLKMatrix4Identity;
 }
 
-
-//
-// TODO: this method will need to work with NFDebugVertex_t data
-//
-/*
-- (void) loadVertexData:(NFVertex_t *)pVertexData ofSize:(size_t)size {
-
-
-    NSAssert(pVertexData != NULL, @"loadVertexData failed, pVertexData == NULL");
-    NSAssert(size > 0, @"loadVertexData failed, size <= 0");
-    memcpy(self.vertices, pVertexData, size);
-
-
-    GLfloat min_x, max_x;
-    GLfloat min_y, max_y;
-    GLfloat min_z, max_z;
-    min_x = max_x = self.vertices->pos[0];
-    min_y = max_y = self.vertices->pos[1];
-    min_z = max_z = self.vertices->pos[2];
-
-    for (NSInteger i = 0; i < self.numVertices; ++i) {
-        if (self.vertices[i].pos[0] < min_x) { min_x = self.vertices[i].pos[0]; }
-        if (self.vertices[i].pos[0] > max_x) { max_x = self.vertices[i].pos[0]; }
-        if (self.vertices[i].pos[1] < min_y) { min_y = self.vertices[i].pos[1]; }
-        if (self.vertices[i].pos[1] > max_y) { max_y = self.vertices[i].pos[1]; }
-        if (self.vertices[i].pos[2] < min_z) { min_z = self.vertices[i].pos[2]; }
-        if (self.vertices[i].pos[2] > max_z) { max_z = self.vertices[i].pos[2]; }
-    }
-
-    //
-    // TODO: probably a very good idea to keep the max/min x,y,z in the subset to provide
-    //       an easy way to cull anything not in the view volume
-    //
-
-    //NSLog(@"min x:%f, max x:%f", min_x, max_x);
-    //NSLog(@"min y:%f, max y:%f", min_y, max_y);
-    //NSLog(@"min z:%f, max z:%f", min_z, max_z);
-
-    // NOTE: this transform will scale and center a unit cube so that it fits
-    //       around the surrounding object
-    GLKMatrix4 m_transform;
-
-#if 1
-
-    GLfloat abs_x, abs_y, abs_z;
-    abs_x = fabsf(max_x) > fabsf(min_x) ? fabsf(max_x) : fabsf(min_x);
-    abs_y = fabsf(max_y) > fabsf(min_y) ? fabsf(max_y) : fabsf(min_y);
-    abs_z = fabsf(max_z) > fabsf(min_z) ? fabsf(max_z) : fabsf(min_z);
-
-    // need to double abs_x etc. otherwise will scale -1 -> 1 instead of -0.5 -> 0.5
-    abs_x *= 2.0f;
-    abs_y *= 2.0f;
-    abs_z *= 2.0f;
-
-    // use the largest abs value and scale all dimensions by that value to avoid distortion
-    GLfloat scaleFactor;
-    scaleFactor = abs_x > abs_y ? abs_x : abs_y;
-    scaleFactor = scaleFactor > abs_z ? scaleFactor : abs_z;
-
-    GLKVector4 unitScale = {1.0f/scaleFactor, 1.0f/scaleFactor, 1.0f/scaleFactor, 1.0f};
-
-    //
-    // TODO: verify will translate center of the object to the origin
-    //
-    GLKVector4 origin = {0.0f, 0.0f, 0.0f, 1.0f};
-
-    // NOTE: GLK operation with vector will concatenates matrix with vector
-
-    m_transform = GLKMatrix4Multiply(GLKMatrix4TranslateWithVector4(GLKMatrix4Identity, origin),
-                                     GLKMatrix4ScaleWithVector4(GLKMatrix4Identity, unitScale));
-
-    //m_transform = GLKMatrix4ScaleWithVector4(GLKMatrix4Identity, unitScale);
-
-#else
-
-    GLKVector4 sizeVec = {max_x-min_x, max_y-min_y, max_z-min_z, 1.0f};
-
-    GLKVector4 center = {(max_x+min_x)/2.0f, (max_y+min_y)/2.0f, (max_z+min_z)/2.0f, 1.0f};
-
-    //center = GLKVector4MultiplyScalar(center, -1.0f);
-
-    m_transform = GLKMatrix4Multiply(GLKMatrix4TranslateWithVector4(GLKMatrix4Identity, center),
-                                     GLKMatrix4ScaleWithVector4(GLKMatrix4Identity, sizeVec));
-
-#endif
-
-    //self.modelMat = m_transform;
-
-    self.unitScalarMatrix = m_transform;
-
-
-    //[self calcSubsetBounds];
-    //[self calcCenterPointTransform];
-    //[self calcUnitScaleMatrix];
-
-    //
-    // TODO: animations should ideally transform the model matrix, i.e. a game object is told to move
-    //       along a particular vector or spline over a period of time and the animation system determines
-    //       the pose and model matrix for a given time slice
-    //
-
-    // also animations should have the ability to stack and blend, for example a character can be running
-    // while waving to another character
-
-
-    self.subsetModelMat = GLKMatrix4Identity;
-}
-*/
 - (void) loadIndexData:(GLushort *)pIndexData ofSize:(size_t)size {
     NSAssert(pIndexData != NULL, @"loadVertexData failed, pIndexData == NULL");
     NSAssert(size > 0, @"loadVertexData failed, size <= 0");

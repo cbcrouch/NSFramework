@@ -21,7 +21,7 @@
 @synthesize modelMatrixLocation = _modelMatrixLocation;
 
 @synthesize hUBO = _hUBO;
-
+@synthesize hProgram = _hProgram;
 
 - (void) loadProgramInputPoints {
     // shader attributes
@@ -44,12 +44,6 @@
 
     CHECK_GL_ERROR();
 }
-
-//
-// TODO: protocol region
-//
-
-@synthesize hProgram = _hProgram;
 
 - (void) configureVertexInput:(NFRBufferAttributes*)bufferAttributes {
     glBindVertexArray(bufferAttributes.hVAO);
