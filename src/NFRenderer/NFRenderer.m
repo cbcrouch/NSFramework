@@ -194,10 +194,10 @@
 
     [m_renderRequest addGeometry:m_pAsset.geometry];
     [m_renderRequest addGeometry:m_solidSphere.geometry];
-    //[m_renderRequest addGeometry:m_planeData.geometry];
+    [m_renderRequest addGeometry:m_planeData.geometry];
 
 
-    [m_debugRenderRequest addGeometry:m_axisData.geometry];
+    //[m_debugRenderRequest addGeometry:m_axisData.geometry];
     //[m_debugRenderRequest addGeometry:m_gridData.geometry];
 
     return self;

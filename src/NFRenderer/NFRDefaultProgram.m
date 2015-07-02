@@ -57,20 +57,6 @@
 
     [self setMaterialUniforms:phongMat];
 
-
-    //
-    // TODO: need to allow for setting matrial properites based on the surface model
-    //       (also need to support diffuse/specular/etc. texture maps
-    //
-    // hardcoded material values (jade)
-    glUseProgram(self.hProgram);
-    glUniform3f(phongMat.ambientLoc, 0.135f, 0.2225f, 0.1575f);
-    glUniform3f(phongMat.diffuseLoc, 0.54f, 0.89f, 0.63f);
-    glUniform3f(phongMat.specularLoc, 0.316228f, 0.316228f, 0.316228f);
-    glUniform1f(phongMat.shineLoc, 128.0f * 0.1f);
-    glUseProgram(0);
-
-
     // light struct uniform locations
     phongLightUniform_t phongLight;
     phongLight.ambientLoc = glGetUniformLocation(self.hProgram, "light.ambient");
@@ -158,6 +144,36 @@
     //
     [self activateSubroutine:geometry.subroutineName];
 
+
+    //
+    // TODO: need a better way of getting the textures and surface model data from the geometry object
+    //       (keep in mind still have direct access to the geometry's surface model as it is a public property)
+    //
+/*
+    @property (nonatomic, assign) float Ns; // specular coefficient
+    @property (nonatomic, assign) GLKVector3 Ka; // ambient color
+    @property (nonatomic, assign) GLKVector3 Kd; // diffuse color
+    @property (nonatomic, assign) GLKVector3 Ks; // specular color
+ 
+ // the follow are also listed in the mtl file
+ // Ni
+ // Tr
+ // Ke
+*/
+
+    // hardcoded material values (jade)
+    //glUniform3f(self.materialUniforms.ambientLoc, 0.135f, 0.2225f, 0.1575f);
+    //glUniform3f(self.materialUniforms.diffuseLoc, 0.54f, 0.89f, 0.63f);
+    //glUniform3f(self.materialUniforms.specularLoc, 0.316228f, 0.316228f, 0.316228f);
+    //glUniform1f(self.materialUniforms.shineLoc, 128.0f * 0.1f);
+
+    // hardcoded material values from mtl file
+    glUniform3f(self.materialUniforms.ambientLoc, 1.0f, 1.0f, 1.0f);
+    glUniform3f(self.materialUniforms.diffuseLoc, 1.0f, 1.0f, 1.0f);
+    glUniform3f(self.materialUniforms.specularLoc, 0.2f, 0.2f, 0.2f);
+    glUniform1f(self.materialUniforms.shineLoc, 10.0f);
+
+
     for (id key in geometry.textureDictionary) {
         NFRDataMapGL* textureGL = [geometry.textureDictionary objectForKey:key];
 
@@ -167,6 +183,8 @@
         //
         [textureGL activateTexture:GL_TEXTURE0 withUniformLocation:glGetUniformLocation(self.hProgram, (const GLchar *)"texSampler")];
     }
+
+
 
     glBindVertexArray(geometry.vertexBuffer.bufferAttributes.hVAO);
 

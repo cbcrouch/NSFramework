@@ -33,6 +33,11 @@ typedef NS_ENUM(NSUInteger, DEFAULT_SURFACE) {
 
 @property (nonatomic, retain) NSString *name;
 
+
+//
+// TODO: need a validity check that will verify that all values are present for the given illumination model
+//
+
 @property (nonatomic, assign) float Ns; // specular coefficient
 @property (nonatomic, assign) float Ni; // optical density (also known as index of refraction)
 

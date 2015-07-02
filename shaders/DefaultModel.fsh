@@ -7,12 +7,44 @@
 
 #version 410
 
+
 struct material_t {
+
+    //
+    // TODO: remove ambient and replace diffuse and specular with mapped values, for objects that
+    //       don't have one or the other will need to generate one
+    //
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
+
+
+    // strength of the specular reflection
     float shininess;
+
+    // sampler2D is an opaque type, they can be decalred as members of a struct, but if so, then the struct
+    // can only be used to declare a uniform variable (they cannot be part of a buffer-backed interface block
+    // or an input/output variable)
+    sampler2D diffuseMap;
+    sampler2D specularMap;
+
+
+    // diffuse and specular will be color scalars, i.e. how much of each channel to pass through from
+    // the respective maps, this is primarily for debugging visualization
+    vec3 diffuseScalar;
+    float specularScalar;
 };
+
+// this is most likely the best way to pack this structure
+/*
+struct materialMapped_t {
+    sampler2D diffuseMap;
+    sampler2D specularMap;
+    float shininess;
+    float specularScalar;
+    vec3 diffuseScalar;
+};
+*/
 
 struct light_t {
     vec3 ambient;
@@ -28,7 +60,7 @@ uniform light_t light;
 
 
 //
-// TODO: add support for diffuse textures
+// TODO: add support for diffuse textures in the material struct replace texSampler
 //
 uniform sampler2D texSampler;
 
@@ -44,6 +76,15 @@ out vec4 color;
 // TODO: add layout qualifiers to subroutine definition and uniform
 //
 
+
+//
+// NOTE: if passing the material struct sampler2D to a function must use in qualifer
+//
+//vec4 add(in sampler2D tex) {
+//    return vec4(texture(tex, texcoords));
+//}
+
+
 //
 // lighting subroutines
 //
@@ -58,20 +99,13 @@ vec4 light_subroutine() {
 subroutine(lightingFunc)
 vec4 phong_subroutine() {
     // ambient
-    vec3 ambient = light.ambient * material.ambient;
+    vec3 ambient = light.ambient * material.ambient * texture(texSampler, f_texcoord).xyz;
 
     // diffuse
     vec3 norm = normalize(f_normal);
     vec3 lightDir = normalize(light.position - f_position);
     float diff = max(dot(norm, lightDir), 0.0f);
-    vec3 diffuse = light.diffuse * (diff * material.diffuse);
-
-
-    //
-    // TODO: sample diffuse texture
-    //
-    vec4 diffuseTexel = texture(texSampler, f_texcoord);
-
+    vec3 diffuse = light.diffuse * (diff * material.diffuse * texture(texSampler, f_texcoord).xyz);
 
     // specular
     vec3 viewDir = normalize(viewPos - f_position);
