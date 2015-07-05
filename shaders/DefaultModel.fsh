@@ -46,12 +46,21 @@ struct materialMapped_t {
 };
 */
 
+//
+// TODO: this is a point light, it should be named such after new light types are added
+//
 struct light_t {
+    vec3 position;
+
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
-    vec3 position;
+
+    float constant;
+    float linear;
+    float quadratic;
 };
+
 
 uniform vec3 viewPos;
 uniform material_t material;
@@ -112,6 +121,14 @@ vec4 phong_subroutine() {
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
     vec3 specular = light.specular * (spec * material.specular);
+
+    // attenuation
+    float distance = length(light.position - f_position);
+    float attenuation = 1.0f / (light.constant - light.linear * distance + light.quadratic * (distance * distance));
+
+    ambient  *= attenuation;
+    diffuse  *= attenuation;
+    specular *= attenuation;
 
     vec3 result = ambient + diffuse + specular;
     return vec4(result, 1.0f);

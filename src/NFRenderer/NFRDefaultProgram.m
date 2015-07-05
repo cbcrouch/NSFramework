@@ -58,7 +58,7 @@
     [self setMaterialUniforms:phongMat];
 
     // light struct uniform locations
-    phongLightUniform_t phongLight;
+    pointLightUniforms_t phongLight;
     phongLight.ambientLoc = glGetUniformLocation(self.hProgram, "light.ambient");
     NSAssert(phongLight.ambientLoc != -1, @"failed to get uniform location");
 
@@ -70,6 +70,15 @@
 
     phongLight.positionLoc = glGetUniformLocation(self.hProgram, "light.position");
     NSAssert(phongLight.positionLoc != -1, @"failed to get uniform location");
+
+    phongLight.constantLoc = glGetUniformLocation(self.hProgram, "light.constant");
+    NSAssert(phongLight.constantLoc != -1, @"failed to get uniform location");
+
+    phongLight.linearLoc = glGetUniformLocation(self.hProgram, "light.linear");
+    NSAssert(phongLight.linearLoc != -1, @"failed to get uniform location");
+
+    phongLight.quadraticLoc = glGetUniformLocation(self.hProgram, "light.quadratic");
+    NSAssert(phongLight.quadraticLoc != -1, @"failed to get uniform location");
 
     [self setLightUniforms:phongLight];
 
@@ -83,6 +92,11 @@
     glUniform3f(phongLight.diffuseLoc, 0.5f, 0.5f, 0.5f);
     glUniform3f(phongLight.specularLoc, 1.0f, 1.0f, 1.0f);
     glUniform3f(phongLight.positionLoc, 2.0f, 1.0f, 0.0f);
+
+    glUniform1f(phongLight.constantLoc, 1.0f);
+    glUniform1f(phongLight.linearLoc, 0.09f);
+    glUniform1f(phongLight.quadraticLoc, 0.032);
+
     glUseProgram(0);
 
 
@@ -166,6 +180,7 @@
     //glUniform3f(self.materialUniforms.diffuseLoc, 0.54f, 0.89f, 0.63f);
     //glUniform3f(self.materialUniforms.specularLoc, 0.316228f, 0.316228f, 0.316228f);
     //glUniform1f(self.materialUniforms.shineLoc, 128.0f * 0.1f);
+
 
     // hardcoded material values from mtl file
     glUniform3f(self.materialUniforms.ambientLoc, 1.0f, 1.0f, 1.0f);

@@ -25,19 +25,23 @@ typedef struct phongMaterialUniform_t {
     GLint shineLoc;
 } phongMaterialUniform_t;
 
-typedef struct phongLightUniform_t {
+typedef struct pointLightUniforms_t {
     GLint ambientLoc;
     GLint diffuseLoc;
     GLint specularLoc;
     GLint positionLoc;
-} phongLightUniform_t;
+
+    GLint constantLoc;
+    GLint linearLoc;
+    GLint quadraticLoc;
+} pointLightUniforms_t;
 
 @property (nonatomic, assign) GLint vertexAttribute;
 @property (nonatomic, assign) GLint normalAttribute;
 @property (nonatomic, assign) GLint texCoordAttribute;
 
 @property (nonatomic, assign) phongMaterialUniform_t materialUniforms;
-@property (nonatomic, assign) phongLightUniform_t lightUniforms;
+@property (nonatomic, assign) pointLightUniforms_t lightUniforms;
 
 @property (nonatomic, assign) GLint modelMatrixLocation;
 @property (nonatomic, assign) GLint viewPositionLocation;
