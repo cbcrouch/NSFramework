@@ -23,6 +23,9 @@ typedef struct phongMaterialUniform_t {
     GLint diffuseLoc;
     GLint specularLoc;
     GLint shineLoc;
+
+    GLint diffuseMapLoc;
+    GLint specularMapLoc;
 } phongMaterialUniform_t;
 
 typedef struct pointLightUniforms_t {

@@ -9,7 +9,6 @@
 
 
 struct material_t {
-
     //
     // TODO: remove ambient and replace diffuse and specular with mapped values, for objects that
     //       don't have one or the other will need to generate one
@@ -17,6 +16,11 @@ struct material_t {
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
+
+    // diffuse and specular will be color scalars, i.e. how much of each channel to pass through from
+    // the respective maps, this is primarily for debugging visualization
+    //vec3 diffuseScalar;
+    //float specularScalar;
 
 
     // strength of the specular reflection
@@ -27,24 +31,7 @@ struct material_t {
     // or an input/output variable)
     sampler2D diffuseMap;
     sampler2D specularMap;
-
-
-    // diffuse and specular will be color scalars, i.e. how much of each channel to pass through from
-    // the respective maps, this is primarily for debugging visualization
-    vec3 diffuseScalar;
-    float specularScalar;
 };
-
-// this is most likely the best way to pack this structure
-/*
-struct materialMapped_t {
-    sampler2D diffuseMap;
-    sampler2D specularMap;
-    float shininess;
-    float specularScalar;
-    vec3 diffuseScalar;
-};
-*/
 
 //
 // TODO: this is a point light, it should be named such after new light types are added
@@ -65,15 +52,6 @@ struct light_t {
 uniform vec3 viewPos;
 uniform material_t material;
 uniform light_t light;
-
-
-
-//
-// TODO: add support for diffuse textures in the material struct replace texSampler
-//
-uniform sampler2D texSampler;
-
-
 
 in vec3 f_position;
 in vec3 f_normal;
@@ -108,13 +86,13 @@ vec4 light_subroutine() {
 subroutine(lightingFunc)
 vec4 phong_subroutine() {
     // ambient
-    vec3 ambient = light.ambient * material.ambient * texture(texSampler, f_texcoord).xyz;
+    vec3 ambient = light.ambient * material.ambient * texture(material.diffuseMap, f_texcoord).xyz;
 
     // diffuse
     vec3 norm = normalize(f_normal);
     vec3 lightDir = normalize(light.position - f_position);
     float diff = max(dot(norm, lightDir), 0.0f);
-    vec3 diffuse = light.diffuse * (diff * material.diffuse * texture(texSampler, f_texcoord).xyz);
+    vec3 diffuse = light.diffuse * (diff * material.diffuse * texture(material.diffuseMap, f_texcoord).xyz);
 
     // specular
     vec3 viewDir = normalize(viewPos - f_position);

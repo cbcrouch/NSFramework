@@ -55,6 +55,12 @@
     phongMat.shineLoc = glGetUniformLocation(self.hProgram, "material.shininess");
     NSAssert(phongMat.shineLoc != -1, @"failed to get uniform location");
 
+    phongMat.diffuseMapLoc = glGetUniformLocation(self.hProgram, "material.diffuseMap");
+    NSAssert(phongMat.diffuseMapLoc != -1, @"failed to get uniform location");
+
+    phongMat.specularMapLoc = glGetUniformLocation(self.hProgram, "material.specularMap");
+    NSAssert(phongMat.diffuseMapLoc != -1, @"failed to get uniform location");
+
     [self setMaterialUniforms:phongMat];
 
     // light struct uniform locations
@@ -175,13 +181,6 @@
  // Ke
 */
 
-    // hardcoded material values (jade)
-    //glUniform3f(self.materialUniforms.ambientLoc, 0.135f, 0.2225f, 0.1575f);
-    //glUniform3f(self.materialUniforms.diffuseLoc, 0.54f, 0.89f, 0.63f);
-    //glUniform3f(self.materialUniforms.specularLoc, 0.316228f, 0.316228f, 0.316228f);
-    //glUniform1f(self.materialUniforms.shineLoc, 128.0f * 0.1f);
-
-
     // hardcoded material values from mtl file
     glUniform3f(self.materialUniforms.ambientLoc, 1.0f, 1.0f, 1.0f);
     glUniform3f(self.materialUniforms.diffuseLoc, 1.0f, 1.0f, 1.0f);
@@ -189,17 +188,12 @@
     glUniform1f(self.materialUniforms.shineLoc, 10.0f);
 
 
-    for (id key in geometry.textureDictionary) {
-        NFRDataMapGL* textureGL = [geometry.textureDictionary objectForKey:key];
-
-        //
-        // TODO: pass uniform location and texture unit num based on key string, also need to use the actual
-        //       texture sampler uniforms in the default model shader
-        //
-        [textureGL activateTexture:GL_TEXTURE0 withUniformLocation:glGetUniformLocation(self.hProgram, (const GLchar *)"texSampler")];
+    for (NSString* key in geometry.textureDictionary) {
+        if ([key isEqualToString:@"diffuseTexture"]) {
+            NFRDataMapGL* textureGL = [geometry.textureDictionary objectForKey:key];
+            [textureGL activateTexture:GL_TEXTURE0 withUniformLocation:self.materialUniforms.diffuseMapLoc];
+        }
     }
-
-
 
     glBindVertexArray(geometry.vertexBuffer.bufferAttributes.hVAO);
 
