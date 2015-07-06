@@ -189,6 +189,12 @@
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+
+    //
+    // TODO: add support for gamma correction
+    //
+    //glEnable(GL_FRAMEBUFFER_SRGB);
+
     CHECK_GL_ERROR();
 
 

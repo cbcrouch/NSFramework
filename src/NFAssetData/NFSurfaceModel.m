@@ -81,6 +81,12 @@
 #endif
 
     [surface setMap_Kd:diffuse];
+
+    [surface setKa:GLKVector3Make(1.0f, 1.0f, 1.0f)];
+    [surface setKd:GLKVector3Make(1.0f, 1.0f, 1.0f)];
+    [surface setKs:GLKVector3Make(0.2f, 0.2f, 0.2f)];
+    [surface setNs:10.0f];
+
     return surface;
 }
 
@@ -96,6 +102,12 @@
 @synthesize map_bump = _map_bump;
 @synthesize map_disp = _map_disp;
 @synthesize map_decalT = _map_decalT;
+
+//
+// TODO: have a boolean valid property for each public property that will be set to YES when
+//       the setter for a given property has been called, can then check if a surface model
+//       supports a given illumination model based on which properties have valid data
+//
 
 - (NFRDataMap *) map_Ka {
     if(_map_Ka == nil) {

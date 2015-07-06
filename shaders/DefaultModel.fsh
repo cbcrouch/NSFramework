@@ -96,8 +96,23 @@ vec4 phong_subroutine() {
 
     // specular
     vec3 viewDir = normalize(viewPos - f_position);
-    vec3 reflectDir = reflect(-lightDir, norm);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
+
+    //
+    // TODO: make the useBlinn boolean a uniform and allow it to be set with a key press so
+    //       can switch back and forth between Phong specular and Blinn-Phong specular claculation
+    //
+    bool useBlinn = true;
+
+    float spec = 0.0f;
+    if (useBlinn) {
+        vec3 halfwayDir = normalize(lightDir + viewDir);
+        spec = pow(max(dot(norm, halfwayDir), 0.0f), 2.0f * material.shininess);
+    }
+    else {
+        vec3 reflectDir = reflect(-lightDir, norm);
+        spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
+    }
+
     vec3 specular = light.specular * (spec * material.specular);
 
     // attenuation
@@ -109,6 +124,13 @@ vec4 phong_subroutine() {
     specular *= attenuation;
 
     vec3 result = ambient + diffuse + specular;
+
+    //
+    // TODO: add gamma correction
+    //
+    //float gamma = 2.2f;
+    //result = pow(result, vec3(1.0f/gamma));
+
     return vec4(result, 1.0f);
 }
 

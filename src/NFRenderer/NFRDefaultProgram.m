@@ -99,9 +99,15 @@
     glUniform3f(phongLight.specularLoc, 1.0f, 1.0f, 1.0f);
     glUniform3f(phongLight.positionLoc, 2.0f, 1.0f, 0.0f);
 
+    // distance 50 units
+    //glUniform1f(phongLight.constantLoc, 1.0f);
+    //glUniform1f(phongLight.linearLoc, 0.09f);
+    //glUniform1f(phongLight.quadraticLoc, 0.032);
+
+    // distance 20 units
     glUniform1f(phongLight.constantLoc, 1.0f);
-    glUniform1f(phongLight.linearLoc, 0.09f);
-    glUniform1f(phongLight.quadraticLoc, 0.032);
+    glUniform1f(phongLight.linearLoc, 0.22f);
+    glUniform1f(phongLight.quadraticLoc, 0.20);
 
     glUseProgram(0);
 
@@ -164,29 +170,17 @@
     //
     [self activateSubroutine:geometry.subroutineName];
 
-
     //
-    // TODO: need a better way of getting the textures and surface model data from the geometry object
-    //       (keep in mind still have direct access to the geometry's surface model as it is a public property)
+    // TODO: the follow are also listed in the default mtl file and should be handled appropiately
     //
-/*
-    @property (nonatomic, assign) float Ns; // specular coefficient
-    @property (nonatomic, assign) GLKVector3 Ka; // ambient color
-    @property (nonatomic, assign) GLKVector3 Kd; // diffuse color
-    @property (nonatomic, assign) GLKVector3 Ks; // specular color
- 
- // the follow are also listed in the mtl file
- // Ni
- // Tr
- // Ke
-*/
+    // - Ni  (1.5)    // optical density
+    // - Tr  (0  0)   // transparency
+    // - Ke  (0 0 0)  // emissive
 
-    // hardcoded material values from mtl file
-    glUniform3f(self.materialUniforms.ambientLoc, 1.0f, 1.0f, 1.0f);
-    glUniform3f(self.materialUniforms.diffuseLoc, 1.0f, 1.0f, 1.0f);
-    glUniform3f(self.materialUniforms.specularLoc, 0.2f, 0.2f, 0.2f);
-    glUniform1f(self.materialUniforms.shineLoc, 10.0f);
-
+    glUniform3f(self.materialUniforms.ambientLoc, geometry.surfaceModel.Ka.r, geometry.surfaceModel.Ka.g, geometry.surfaceModel.Ka.b);
+    glUniform3f(self.materialUniforms.diffuseLoc, geometry.surfaceModel.Kd.r, geometry.surfaceModel.Kd.g, geometry.surfaceModel.Kd.b);
+    glUniform3f(self.materialUniforms.specularLoc,  geometry.surfaceModel.Ks.r, geometry.surfaceModel.Ks.g, geometry.surfaceModel.Ks.b);
+    glUniform1f(self.materialUniforms.shineLoc, geometry.surfaceModel.Ns);
 
     for (NSString* key in geometry.textureDictionary) {
         if ([key isEqualToString:@"diffuseTexture"]) {

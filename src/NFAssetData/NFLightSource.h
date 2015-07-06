@@ -14,6 +14,9 @@
 //
 
 
+// NFLightSource should be a protocol ?? or simply implement separate light types i.e. NFDirectionLight,
+// NFPointLight, NFSpotLight ??
+
 
 @interface NFLightSource : NSObject
 

@@ -36,6 +36,13 @@
 }
 
 - (void) process {
+
+    //
+    // TODO: add support for light sources in the render request
+    //
+    //for (NFRLightSource* light in self.lightsArray) {
+    //}
+
     for (NFRGeometry* geo in self.geometryArray) {
         [self.program drawGeometry:geo];
     }
