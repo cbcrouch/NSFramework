@@ -8,50 +8,98 @@
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
 
+#import "NFAssetData.h"
+#import "NFAssetLoader.h"
+
+
 //
-// TODO: make sure struct definition will encompass a point light, spotlight, and directional light
-//       and setup to operate similar to legacy OpenGL lights until working out a better model/design
+// NOTE: light source protocol is so any light can be placed and accessed in a generic container
 //
+@protocol NFLightSource <NSObject>
+@property (nonatomic, assign) GLKVector3 ambient;
+@property (nonatomic, assign) GLKVector3 diffuse;
+@property (nonatomic, assign) GLKVector3 specular;
+
+@property (nonatomic, assign) GLKVector3 position;
+
+@property (nonatomic, readonly, assign) GLKMatrix4 modelMatrix;
+@property (nonatomic, readonly, retain) NFAssetData* geometry;
+@end
 
 
-// NFLightSource should be a protocol ?? or simply implement separate light types i.e. NFDirectionLight,
-// NFPointLight, NFSpotLight ??
+@interface NFPointLight : NSObject <NFLightSource>
 
+@property (nonatomic, assign) GLKVector3 ambient;
+@property (nonatomic, assign) GLKVector3 diffuse;
+@property (nonatomic, assign) GLKVector3 specular;
+@property (nonatomic, assign) GLKVector3 position;
 
-@interface NFLightSource : NSObject
+@property (nonatomic, readonly, assign) GLKMatrix4 modelMatrix;
+@property (nonatomic, readonly, retain) NFAssetData* geometry;
 
-@property (nonatomic, assign) GLKVector3 ambient;   // Aclarri (Acli) also Acs ??
-@property (nonatomic, assign) GLKVector3 diffuse;   // Dcli
-@property (nonatomic, assign) GLKVector3 specular;  // Scli
-@property (nonatomic, assign) GLKVector3 position;  // Ppli
+//
+// Range Constant Linear Quadratic values provided by Ogre3
+// (100% intensity at 0 distance, most light falls in first 20% of range)
+//
+/*
+    Range  Constant  Linear   Quadratic
+    3250,  1.0,      0.0014,  0.000007
+    600,   1.0,      0.007,   0.0002
+    325,   1.0,      0.014,   0.0007
+    200,   1.0,      0.022,   0.0019
+    160,   1.0,      0.027,   0.0028
+    100,   1.0,      0.045,   0.0075
+    65,    1.0,      0.07,    0.017
+    50,    1.0,      0.09,    0.032
+    32,    1.0,      0.14,    0.07
+    20,    1.0,      0.22,    0.20
+    13,    1.0,      0.35,    0.44
+    7,     1.0,      0.7,     1.8
+*/
 
-// NOTE: the halfway vector (Hi) that is stored in the gl_LightSourceParameters is not a member of this
-//       class since it is dependent on the geometry surface normal it will be calculated in the
-//       shader where needed (this prevents coupling between the light definition and surface model)
-
-@property (nonatomic, assign) GLKVector3 spotDirection;  // Sdli
-
-@property (nonatomic, assign) float spotExponent;      // Srli
-@property (nonatomic, assign) float spotCutoff;        // Crli (range: [0.0, 90.0], 180.0)
-
-@property (nonatomic, readonly, assign) float spotCosCutoff;     // derived: cos(Crli) (range: [1.0, 0.0], -1.0)
-
-@property (nonatomic, assign) float constantAttenuation;  // K0
-@property (nonatomic, assign) float linearAttenuation;    // K1
-@property (nonatomic, assign) float quadraticAttenuation; // K2
+@property (nonatomic, assign) float constantAttenuation;
+@property (nonatomic, assign) float linearAttenuation;
+@property (nonatomic, assign) float quadraticAttenuation;
 
 @end
 
 
+@interface NFDirectionalLight : NSObject <NFLightSource>
 
-@interface NFLightGroup : NSObject
+@property (nonatomic, assign) GLKVector3 ambient;
+@property (nonatomic, assign) GLKVector3 diffuse;
+@property (nonatomic, assign) GLKVector3 specular;
 
-//@property (nonatomic, retain) NSMutableArray *lights;
+//
+// NOTE: directional light will use a position to place some debug geometry
+//       in the scene to so there some visual feedback to its presence
+//
+@property (nonatomic, assign) GLKVector3 position;
 
-//@property (nonatomic, retain) NSMutableArray *lightModelProducts;
+@property (nonatomic, readonly, assign) GLKMatrix4 modelMatrix;
+@property (nonatomic, readonly, retain) NFAssetData* geometry;
 
-//@property (nonatomic, retain) NSMutableArray *lightProducts;
+@property (nonatomic, assign) GLKVector3 direction;
 
-//- (void) calculateProductsFromSurfaces:(NSMutableArray *) surfaces;
+@end
+
+@interface NFSpotLight : NSObject <NFLightSource>
+
+@property (nonatomic, assign) GLKVector3 ambient;
+@property (nonatomic, assign) GLKVector3 diffuse;
+@property (nonatomic, assign) GLKVector3 specular;
+@property (nonatomic, assign) GLKVector3 position;
+
+@property (nonatomic, readonly, assign) GLKMatrix4 modelMatrix;
+@property (nonatomic, readonly, retain) NFAssetData* geometry;
+
+@property (nonatomic, assign) GLKVector3 direction;
+
+@property (nonatomic, assign) float innerCutOff;
+@property (nonatomic, assign) float outerCutOff;
+
+@property (nonatomic, assign) float constantAttenuation;
+@property (nonatomic, assign) float linearAttenuation;
+@property (nonatomic, assign) float quadraticAttenuation;
 
 @end

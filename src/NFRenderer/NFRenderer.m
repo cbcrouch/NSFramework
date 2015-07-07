@@ -10,9 +10,10 @@
 #import "NFRProgram.h"
 
 //
-// TODO: move NFAssetLoader module test code into NFSimulation module once it has been stubbed out
+// TODO: move NFAssetLoader and NFLightSource module test code into NFSimulation module once it has been stubbed out
 //
 #import "NFAssetLoader.h"
+#import "NFLightSource.h"
 
 
 // NOTE: because both gl.h and gl3.h are included will get symbols for deprecated GL functions
@@ -47,10 +48,10 @@
     NFAssetData* m_planeData;
     NFAssetData* m_solidSphere;
 
+    NFPointLight* m_pointLight;
+
     id<NFRProgram> m_phongObject;
     id<NFRProgram> m_debugObject;
-
-    //NFRDebugProgram* m_debugObject;
 
     NFRRenderRequest* m_renderRequest;
     NFRRenderRequest* m_debugRenderRequest;
@@ -180,6 +181,9 @@
     [m_planeData assignSubroutine:@"PhongSubroutine"];
 
 
+    m_pointLight = [[[NFPointLight alloc] init] retain];
+
+
     _stepTransforms = NO;
 
 
@@ -202,6 +206,10 @@
     [m_renderRequest addGeometry:m_solidSphere.geometry];
     [m_renderRequest addGeometry:m_planeData.geometry];
 
+    //
+    // TODO: add the point light to the render request
+    //
+
 
     //[m_debugRenderRequest addGeometry:m_axisData.geometry];
     //[m_debugRenderRequest addGeometry:m_gridData.geometry];
@@ -215,6 +223,8 @@
     [m_gridData release];
     [m_planeData release];
     [m_solidSphere release];
+
+    [m_pointLight release];
 
     [m_phongObject release];
     [m_debugObject release];
