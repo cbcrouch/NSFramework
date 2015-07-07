@@ -6,13 +6,13 @@
 //
 
 #import "NFLightSource.h"
+#import "NFAssetLoader.h"
 
 //
 // NFPointLight
 //
 
 @interface NFPointLight()
-@property (nonatomic, readwrite, assign) GLKMatrix4 modelMatrix;
 @property (nonatomic, readwrite, retain) NFAssetData* geometry;
 @end
 
@@ -24,12 +24,19 @@
 @synthesize specular = _specular;
 @synthesize position = _position;
 
-@synthesize modelMatrix = _modelMatrix;
 @synthesize geometry = _geometry;
 
-//
-// TODO: override the position setter to update the modelMatrix when the position changes
-//
+- (void) setPosition:(GLKVector3)position {
+    _position = position;
+    _geometry.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, position.x, position.y, position.z);
+    _geometry.modelMatrix = GLKMatrix4Scale(_geometry.modelMatrix, 0.065f, 0.065f, 0.065f);
+
+    //
+    // TODO: currently need to apply a single step to the sphere in order to have its tranforms
+    //       applied, need to find a better/cleaner way to initialize the transforms
+    //
+    [_geometry stepTransforms:0.0f];
+}
 
 - (instancetype) init {
     self = [super init];
@@ -39,8 +46,25 @@
         //
 
         // point light geometry will be a sphere
+        _geometry = [NFAssetLoader allocAssetDataOfType:kSolidUVSphere withArgs:nil];
+        [_geometry generateRenderables];
+
+        _geometry.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 2.0f, 1.0f, 0.0f);
+        _geometry.modelMatrix = GLKMatrix4Scale(_geometry.modelMatrix, 0.065f, 0.065f, 0.065f);
+
+        //
+        // TODO: currently need to apply a single step to the sphere in order to have its tranforms
+        //       applied, need to find a better/cleaner way to initialize the transforms
+        //
+        [_geometry stepTransforms:0.0f];
+
     }
     return self;
+}
+
+- (void) dealloc {
+    [_geometry release];
+    [super dealloc];
 }
 
 @end
@@ -50,7 +74,6 @@
 //
 
 @interface NFDirectionalLight()
-@property (nonatomic, readwrite, assign) GLKMatrix4 modelMatrix;
 @property (nonatomic, readwrite, retain) NFAssetData* geometry;
 @end
 
@@ -60,13 +83,13 @@
 @synthesize diffuse = _diffuse;
 @synthesize specular = _specular;
 @synthesize position = _position;
-
-@synthesize modelMatrix = _modelMatrix;
 @synthesize geometry = _geometry;
 
-//
-// TODO: override the position setter to update the modelMatrix when the position changes
-//
+- (void) setPosition:(GLKVector3)position {
+    _position = position;
+    _geometry.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, position.x, position.y, position.z);
+    _geometry.modelMatrix = GLKMatrix4Scale(_geometry.modelMatrix, 0.065f, 0.065f, 0.065f);
+}
 
 - (instancetype) init {
     self = [super init];
@@ -80,6 +103,11 @@
     return self;
 }
 
+- (void) dealloc {
+    [_geometry release];
+    [super dealloc];
+}
+
 @end
 
 //
@@ -87,7 +115,6 @@
 //
 
 @interface NFSpotLight()
-@property (nonatomic, readwrite, assign) GLKMatrix4 modelMatrix;
 @property (nonatomic, readwrite, retain) NFAssetData* geometry;
 @end
 
@@ -97,13 +124,13 @@
 @synthesize diffuse = _diffuse;
 @synthesize specular = _specular;
 @synthesize position = _position;
-
-@synthesize modelMatrix = _modelMatrix;
 @synthesize geometry = _geometry;
 
-//
-// TODO: override the position setter to update the modelMatrix when the position changes
-//
+- (void) setPosition:(GLKVector3)position {
+    _position = position;
+    _geometry.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, position.x, position.y, position.z);
+    _geometry.modelMatrix = GLKMatrix4Scale(_geometry.modelMatrix, 0.065f, 0.065f, 0.065f);
+}
 
 - (instancetype) init {
     self = [super init];
@@ -115,6 +142,11 @@
         // spot light geometry will be a cone
     }
     return self;
+}
+
+- (void) dealloc {
+    [_geometry release];
+    [super dealloc];
 }
 
 @end

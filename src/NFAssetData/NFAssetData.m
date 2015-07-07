@@ -82,7 +82,18 @@
     //
     NSAssert([self.subsetArray count] == 1, @"ERROR: NFRGeometry object currently only supports one asset subset");
 
-    NFRBufferAttributes* bufferAttribs = [[[NFRBufferAttributes alloc] initWithFormat:kVertexFormatDefault] autorelease];
+    //
+    // TODO: need a much cleaner way of handling the NFRBufferAttributes vertex format
+    //
+    NFR_VERTEX_FORMAT vertexFormat;
+    NFAssetSubset* testSubset = [self.subsetArray objectAtIndex:0];
+    if (testSubset.vertexType == kNFVertexType) {
+        vertexFormat = kVertexFormatDefault;
+    }
+    else {
+        vertexFormat = kVertexFormatDebug;
+    }
+    NFRBufferAttributes* bufferAttribs = [[[NFRBufferAttributes alloc] initWithFormat:vertexFormat] autorelease];
 
     NFRBuffer* vertexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeVertex usingAttributes:bufferAttribs] autorelease];
     NFRBuffer* indexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeIndex usingAttributes:bufferAttribs] autorelease];
@@ -122,11 +133,9 @@
     }
 }
 
-- (void) bindToProgram:(id<NFRProgram>)programObj {
-    [programObj configureVertexInput:self.geometry.vertexBuffer.bufferAttributes];
-    [programObj configureVertexBufferLayout:self.geometry.vertexBuffer withAttributes:self.geometry.vertexBuffer.bufferAttributes];
-}
-
+//
+// TODO: remove this call after subroutines have been removed from the shader
+//
 - (void) assignSubroutine:(NSString*)subroutineName {
     [self.geometry setSubroutineName:subroutineName];
 }

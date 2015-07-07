@@ -11,7 +11,6 @@
 #import "NFCommonTypes.h"
 #import "NFAssetSubset.h"
 
-#import "NFRProgram.h"
 #import "NFSurfaceModel.h"
 
 
@@ -30,6 +29,8 @@
 
 - (void) stepTransforms:(float)secsElapsed;
 
+- (void) generateRenderables;
+
 
 //
 // TODO: remove these terrible debug/test calls
@@ -37,9 +38,6 @@
 - (void) applyUnitScalarMatrix;
 - (void) applyOriginCenterMatrix;
 
-
-- (void) generateRenderables;
-- (void) bindToProgram:(id<NFRProgram>)programObj;
 - (void) assignSubroutine:(NSString*)subroutineName;
 
 @end

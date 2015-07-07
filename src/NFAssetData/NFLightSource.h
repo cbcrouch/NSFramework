@@ -8,8 +8,9 @@
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
 
+//#import "NFRResources.h"
+
 #import "NFAssetData.h"
-#import "NFAssetLoader.h"
 
 
 //
@@ -22,10 +23,20 @@
 
 @property (nonatomic, assign) GLKVector3 position;
 
-@property (nonatomic, readonly, assign) GLKMatrix4 modelMatrix;
 @property (nonatomic, readonly, retain) NFAssetData* geometry;
+
+//
+// TODO: drop need for top level NFAssetData import, will still use internally but no
+//       need to expose externally (may also help avoid breaking build when including
+//       NFLightSource in NFRProgram for use in the render request)
+//
+//@property (nonatomic, readonly, retain) NFRGeometry* geometry;
+
 @end
 
+//
+// NFPointLight
+//
 
 @interface NFPointLight : NSObject <NFLightSource>
 
@@ -34,11 +45,10 @@
 @property (nonatomic, assign) GLKVector3 specular;
 @property (nonatomic, assign) GLKVector3 position;
 
-@property (nonatomic, readonly, assign) GLKMatrix4 modelMatrix;
 @property (nonatomic, readonly, retain) NFAssetData* geometry;
 
 //
-// Range Constant Linear Quadratic values provided by Ogre3
+// Range Constant Linear Quadratic values provided by Ogre3d
 // (100% intensity at 0 distance, most light falls in first 20% of range)
 //
 /*
@@ -63,6 +73,9 @@
 
 @end
 
+//
+// NFDirectionalLight
+//
 
 @interface NFDirectionalLight : NSObject <NFLightSource>
 
@@ -76,12 +89,15 @@
 //
 @property (nonatomic, assign) GLKVector3 position;
 
-@property (nonatomic, readonly, assign) GLKMatrix4 modelMatrix;
 @property (nonatomic, readonly, retain) NFAssetData* geometry;
 
 @property (nonatomic, assign) GLKVector3 direction;
 
 @end
+
+//
+// NFSpotLight
+//
 
 @interface NFSpotLight : NSObject <NFLightSource>
 
@@ -90,7 +106,6 @@
 @property (nonatomic, assign) GLKVector3 specular;
 @property (nonatomic, assign) GLKVector3 position;
 
-@property (nonatomic, readonly, assign) GLKMatrix4 modelMatrix;
 @property (nonatomic, readonly, retain) NFAssetData* geometry;
 
 @property (nonatomic, assign) GLKVector3 direction;

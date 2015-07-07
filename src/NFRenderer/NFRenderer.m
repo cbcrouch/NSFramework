@@ -139,7 +139,6 @@
 
     m_pAsset = [NFAssetLoader allocAssetDataOfType:kWavefrontObj withArgs:fileNamePath, nil];
     [m_pAsset generateRenderables];
-    [m_pAsset bindToProgram:m_phongObject];
     [m_pAsset assignSubroutine:@"PhongSubroutine"];
 
     //m_pAsset.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 1.0f, 0.0f);
@@ -149,7 +148,6 @@
 
     m_solidSphere = [NFAssetLoader allocAssetDataOfType:kSolidUVSphere withArgs:nil];
     [m_solidSphere generateRenderables];
-    [m_solidSphere bindToProgram:m_phongObject];
     [m_solidSphere assignSubroutine:@"LightSubroutine"];
 
     //
@@ -167,17 +165,14 @@
 
     m_axisData = [NFAssetLoader allocAssetDataOfType:kAxisWireframe withArgs:nil];
     [m_axisData generateRenderables];
-    [m_axisData bindToProgram:m_debugObject];
 
 
     m_gridData = [NFAssetLoader allocAssetDataOfType:kGridWireframe withArgs:nil];
     [m_gridData generateRenderables];
-    [m_gridData bindToProgram:m_debugObject];
 
 
     m_planeData = [NFAssetLoader allocAssetDataOfType:kSolidPlane withArgs:nil];
     [m_planeData generateRenderables];
-    [m_planeData bindToProgram:m_phongObject];
     [m_planeData assignSubroutine:@"PhongSubroutine"];
 
 

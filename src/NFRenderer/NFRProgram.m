@@ -28,19 +28,41 @@
     return _geometryArray;
 }
 
-- (void) addGeometry:(NFRGeometry*)geometry {
-    if (_geometryArray == nil) {
-        _geometryArray = [[[NSMutableArray alloc] init] retain];
+- (NSMutableArray*) lightsArray {
+    if (_lightsArray == nil) {
+        _lightsArray = [[[NSMutableArray alloc] init] retain];
     }
-    [_geometryArray addObject:geometry];
+    return _lightsArray;
 }
+
+- (void) addGeometry:(NFRGeometry*)geometry {
+    [self.geometryArray addObject:geometry];
+
+    //
+    // TODO: geometry objects should be able to be added to multiple render requests and drawn with
+    //       multiple program objects
+    //
+
+    //
+    // NOTE: geometry will now be bound to the shader program here
+    //
+    [self.program configureVertexInput:geometry.vertexBuffer.bufferAttributes];
+    [self.program configureVertexBufferLayout:geometry.vertexBuffer withAttributes:geometry.vertexBuffer.bufferAttributes];
+
+}
+
+/*
+- (void) addLight:(id<NFLightSource>)light {
+    //
+}
+*/
 
 - (void) process {
 
     //
     // TODO: add support for light sources in the render request
     //
-    //for (NFRLightSource* light in self.lightsArray) {
+    //for (id<NFLightSource> light in self.lightsArray) {
     //}
 
     for (NFRGeometry* geo in self.geometryArray) {
@@ -50,6 +72,7 @@
 
 - (void) dealloc {
     [_geometryArray release];
+    [_lightsArray release];
     [super dealloc];
 }
 
