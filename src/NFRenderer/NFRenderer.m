@@ -146,6 +146,7 @@
     //[m_pAsset applyUnitScalarMatrix]; // use for teapot
 
 
+
     m_solidSphere = [NFAssetLoader allocAssetDataOfType:kSolidUVSphere withArgs:nil];
     [m_solidSphere generateRenderables];
     [m_solidSphere assignSubroutine:@"LightSubroutine"];
@@ -161,6 +162,7 @@
     //       applied, need to find a better/cleaner way to initialize the transforms
     //
     [m_solidSphere stepTransforms:0.0f];
+
 
 
     m_axisData = [NFAssetLoader allocAssetDataOfType:kAxisWireframe withArgs:nil];
@@ -198,16 +200,21 @@
 
 
     [m_renderRequest addGeometry:m_pAsset.geometry];
-    [m_renderRequest addGeometry:m_solidSphere.geometry];
     [m_renderRequest addGeometry:m_planeData.geometry];
 
-    //
-    // TODO: add the point light to the render request
-    //
+    [m_renderRequest addGeometry:m_solidSphere.geometry];
+
+    [m_renderRequest addLight:m_pointLight];
 
 
     //[m_debugRenderRequest addGeometry:m_axisData.geometry];
     //[m_debugRenderRequest addGeometry:m_gridData.geometry];
+
+    //
+    // TODO: determine why the light debug visualization geometry is not being rendered
+    //       (once working remove the solid sphere asset and drop support for subroutines for now)
+    //
+    //[m_debugRenderRequest addGeometry:m_pointLight.geometry];
 
     return self;
 }

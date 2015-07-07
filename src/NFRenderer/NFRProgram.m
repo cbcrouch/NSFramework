@@ -48,14 +48,11 @@
     //
     [self.program configureVertexInput:geometry.vertexBuffer.bufferAttributes];
     [self.program configureVertexBufferLayout:geometry.vertexBuffer withAttributes:geometry.vertexBuffer.bufferAttributes];
-
 }
 
-/*
 - (void) addLight:(id<NFLightSource>)light {
-    //
+    [self.lightsArray addObject:light];
 }
-*/
 
 - (void) process {
 

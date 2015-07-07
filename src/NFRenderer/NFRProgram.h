@@ -9,14 +9,9 @@
 #import <GLKit/GLKit.h>
 
 
-//
-// TODO: including NFLightSource here breaks NFAssetData.h (is there a circular reference issue here ??)
-//
-//#import "NFLightSource.h"
-
+#import "NFLightSource.h"
 
 #import "NFRResources.h"
-
 #import "NFRProgramProtocol.h"
 
 
@@ -28,7 +23,7 @@
 
 - (void) addGeometry:(NFRGeometry*)geometry;
 
-//- (void) addLight:(id<NFLightSource>)light;
+- (void) addLight:(id<NFLightSource>)light;
 
 - (void) process;
 

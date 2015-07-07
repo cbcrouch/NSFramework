@@ -6,6 +6,8 @@
 //
 
 #import "NFLightSource.h"
+
+#import "NFAssetData.h"
 #import "NFAssetLoader.h"
 
 //
@@ -13,7 +15,7 @@
 //
 
 @interface NFPointLight()
-@property (nonatomic, readwrite, retain) NFAssetData* geometry;
+@property (nonatomic, retain) NFAssetData* assetData;
 @end
 
 
@@ -28,14 +30,18 @@
 
 - (void) setPosition:(GLKVector3)position {
     _position = position;
-    _geometry.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, position.x, position.y, position.z);
-    _geometry.modelMatrix = GLKMatrix4Scale(_geometry.modelMatrix, 0.065f, 0.065f, 0.065f);
+    _assetData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, position.x, position.y, position.z);
+    _assetData.modelMatrix = GLKMatrix4Scale(_geometry.modelMatrix, 0.065f, 0.065f, 0.065f);
 
     //
     // TODO: currently need to apply a single step to the sphere in order to have its tranforms
     //       applied, need to find a better/cleaner way to initialize the transforms
     //
-    [_geometry stepTransforms:0.0f];
+    [_assetData stepTransforms:0.0f];
+}
+
+- (NFRGeometry*) geometry {
+    return _assetData.geometry;
 }
 
 - (instancetype) init {
@@ -46,18 +52,20 @@
         //
 
         // point light geometry will be a sphere
-        _geometry = [NFAssetLoader allocAssetDataOfType:kSolidUVSphere withArgs:nil];
-        [_geometry generateRenderables];
 
-        _geometry.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 2.0f, 1.0f, 0.0f);
-        _geometry.modelMatrix = GLKMatrix4Scale(_geometry.modelMatrix, 0.065f, 0.065f, 0.065f);
+        _assetData = [NFAssetLoader allocAssetDataOfType:kSolidUVSphere withArgs:nil];
+        [_assetData generateRenderables];
+
+        _position = GLKVector3Make(2.0f, 1.0f, 0.0f);
+
+        _assetData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 2.0f, 1.0f, 0.0f);
+        _assetData.modelMatrix = GLKMatrix4Scale(_geometry.modelMatrix, 0.065f, 0.065f, 0.065f);
 
         //
         // TODO: currently need to apply a single step to the sphere in order to have its tranforms
         //       applied, need to find a better/cleaner way to initialize the transforms
         //
-        [_geometry stepTransforms:0.0f];
-
+        [_assetData stepTransforms:0.0f];
     }
     return self;
 }
@@ -74,7 +82,7 @@
 //
 
 @interface NFDirectionalLight()
-@property (nonatomic, readwrite, retain) NFAssetData* geometry;
+@property (nonatomic, retain) NFAssetData* assetData;
 @end
 
 @implementation NFDirectionalLight
@@ -87,8 +95,14 @@
 
 - (void) setPosition:(GLKVector3)position {
     _position = position;
-    _geometry.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, position.x, position.y, position.z);
-    _geometry.modelMatrix = GLKMatrix4Scale(_geometry.modelMatrix, 0.065f, 0.065f, 0.065f);
+
+    //
+    // TODO: also need to take into account the direction the light is facing
+    //
+    _assetData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, position.x, position.y, position.z);
+    _assetData.modelMatrix = GLKMatrix4Scale(_geometry.modelMatrix, 0.065f, 0.065f, 0.065f);
+
+    [_assetData stepTransforms:0.0f];
 }
 
 - (instancetype) init {
@@ -104,7 +118,7 @@
 }
 
 - (void) dealloc {
-    [_geometry release];
+    [_assetData release];
     [super dealloc];
 }
 
@@ -115,7 +129,7 @@
 //
 
 @interface NFSpotLight()
-@property (nonatomic, readwrite, retain) NFAssetData* geometry;
+@property (nonatomic, retain) NFAssetData* assetData;
 @end
 
 @implementation NFSpotLight
@@ -128,8 +142,14 @@
 
 - (void) setPosition:(GLKVector3)position {
     _position = position;
-    _geometry.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, position.x, position.y, position.z);
-    _geometry.modelMatrix = GLKMatrix4Scale(_geometry.modelMatrix, 0.065f, 0.065f, 0.065f);
+
+    //
+    // TODO: also need to take into account the direction the light is facing
+    //
+    _assetData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, position.x, position.y, position.z);
+    _assetData.modelMatrix = GLKMatrix4Scale(_geometry.modelMatrix, 0.065f, 0.065f, 0.065f);
+
+    [_assetData stepTransforms:0.0f];
 }
 
 - (instancetype) init {
@@ -145,7 +165,7 @@
 }
 
 - (void) dealloc {
-    [_geometry release];
+    [_assetData release];
     [super dealloc];
 }
 
