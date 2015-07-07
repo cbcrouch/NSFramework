@@ -14,7 +14,7 @@
 
 
 #import "NFRProgramProtocol.h"
-
+#import "NFLightSource.h"
 
 @interface NFRDefaultProgram : NSObject <NFRProgram>
 
@@ -56,5 +56,7 @@ typedef struct pointLightUniforms_t {
 @property (nonatomic, readwrite, assign) GLuint hProgram;
 
 - (void) loadProgramInputPoints;
+
+- (void) loadLight:(id<NFLightSource>)light;
 
 @end

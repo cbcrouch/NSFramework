@@ -22,7 +22,6 @@
 @property (nonatomic, retain) NSMutableArray* lightsArray;
 
 - (void) addGeometry:(NFRGeometry*)geometry;
-
 - (void) addLight:(id<NFLightSource>)light;
 
 - (void) process;

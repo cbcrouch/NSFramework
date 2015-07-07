@@ -182,13 +182,13 @@
 				235F39681B2D969E00B3CBA5 /* NFRDataMap.m */,
 				233797EF1885E1DF00399EBA /* NFRenderer.h */,
 				233797F01885E1DF00399EBA /* NFRenderer.m */,
+				23C2D8B31B3C9B1500A7CA49 /* NFRProgramProtocol.h */,
 				2377618E1B2758AE00855E48 /* NFRProgram.h */,
 				2377618F1B2758AE00855E48 /* NFRProgram.m */,
 				233797F11885E1DF00399EBA /* NFRUtils.h */,
 				233797F21885E1DF00399EBA /* NFRUtils.m */,
 				23C2D8B01B3C995500A7CA49 /* NFRResources.h */,
 				23C2D8B11B3C995500A7CA49 /* NFRResources.m */,
-				23C2D8B31B3C9B1500A7CA49 /* NFRProgramProtocol.h */,
 			);
 			name = NFRenderer;
 			sourceTree = "<group>";

@@ -162,6 +162,27 @@
     CHECK_GL_ERROR();
 }
 
+- (void) loadLight:(id<NFLightSource>)light {
+    //
+    // TODO: implement
+    //
+
+    // determine what type of light is is then set the uniforms appropriately
+
+    glUseProgram(self.hProgram);
+/*
+    glUniform3f(phongLight.ambientLoc, 0.2f, 0.2f, 0.2f);
+    glUniform3f(phongLight.diffuseLoc, 0.5f, 0.5f, 0.5f);
+    glUniform3f(phongLight.specularLoc, 1.0f, 1.0f, 1.0f);
+    glUniform3f(phongLight.positionLoc, 2.0f, 1.0f, 0.0f);
+
+    glUniform1f(phongLight.constantLoc, 1.0f);
+    glUniform1f(phongLight.linearLoc, 0.22f);
+    glUniform1f(phongLight.quadraticLoc, 0.20);
+*/
+    glUseProgram(0);
+}
+
 - (void) drawGeometry:(NFRGeometry*)geometry {
     glUseProgram(self.hProgram);
 

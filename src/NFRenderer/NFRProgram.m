@@ -57,10 +57,13 @@
 - (void) process {
 
     //
-    // TODO: add support for light sources in the render request
+    // TODO: loadLight should only be called if the light has been changed (add a dirty flag ??)
     //
-    //for (id<NFLightSource> light in self.lightsArray) {
-    //}
+    for (id<NFLightSource> light in self.lightsArray) {
+        if ([self.program respondsToSelector:@selector(loadLight:)]) {
+            [self.program performSelector:@selector(loadLight:) withObject:light];
+        }
+    }
 
     for (NFRGeometry* geo in self.geometryArray) {
         [self.program drawGeometry:geo];

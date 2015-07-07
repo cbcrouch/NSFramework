@@ -20,18 +20,7 @@
 @property (nonatomic, assign) GLKVector3 specular;
 
 @property (nonatomic, assign) GLKVector3 position;
-
-//@property (nonatomic, readonly, retain) NFAssetData* geometry;
-
-//
-// TODO: drop need for top level NFAssetData import, will still use internally but no
-//       need to expose externally (may also help avoid breaking build when including
-//       NFLightSource in NFRProgram for use in the render request)
-//
-
 @property (nonatomic, readonly, retain) NFRGeometry* geometry;
-
-
 @end
 
 //
@@ -44,8 +33,6 @@
 @property (nonatomic, assign) GLKVector3 diffuse;
 @property (nonatomic, assign) GLKVector3 specular;
 @property (nonatomic, assign) GLKVector3 position;
-
-//@property (nonatomic, readonly, retain) NFAssetData* geometry;
 
 @property (nonatomic, readonly, retain) NFRGeometry* geometry;
 
@@ -91,8 +78,6 @@
 //
 @property (nonatomic, assign) GLKVector3 position;
 
-//@property (nonatomic, readonly, retain) NFAssetData* geometry;
-
 @property (nonatomic, readonly, retain) NFRGeometry* geometry;
 
 @property (nonatomic, assign) GLKVector3 direction;
@@ -109,8 +94,6 @@
 @property (nonatomic, assign) GLKVector3 diffuse;
 @property (nonatomic, assign) GLKVector3 specular;
 @property (nonatomic, assign) GLKVector3 position;
-
-//@property (nonatomic, readonly, retain) NFAssetData* geometry;
 
 @property (nonatomic, readonly, retain) NFRGeometry* geometry;
 

@@ -46,7 +46,6 @@
     NFAssetData* m_axisData;
     NFAssetData* m_gridData;
     NFAssetData* m_planeData;
-    NFAssetData* m_solidSphere;
 
     NFPointLight* m_pointLight;
 
@@ -147,24 +146,6 @@
 
 
 
-    m_solidSphere = [NFAssetLoader allocAssetDataOfType:kSolidUVSphere withArgs:nil];
-    [m_solidSphere generateRenderables];
-    [m_solidSphere assignSubroutine:@"LightSubroutine"];
-
-    //
-    // TODO: solid sphere should be tied to the location of the light rather than hardcoded
-    //
-    m_solidSphere.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 2.0f, 1.0f, 0.0f);
-    m_solidSphere.modelMatrix = GLKMatrix4Scale(m_solidSphere.modelMatrix, 0.065f, 0.065f, 0.065f);
-
-    //
-    // TODO: currently need to apply a single step to the sphere in order to have its tranforms
-    //       applied, need to find a better/cleaner way to initialize the transforms
-    //
-    [m_solidSphere stepTransforms:0.0f];
-
-
-
     m_axisData = [NFAssetLoader allocAssetDataOfType:kAxisWireframe withArgs:nil];
     [m_axisData generateRenderables];
 
@@ -202,8 +183,7 @@
     [m_renderRequest addGeometry:m_pAsset.geometry];
     [m_renderRequest addGeometry:m_planeData.geometry];
 
-    [m_renderRequest addGeometry:m_solidSphere.geometry];
-
+    [m_renderRequest addGeometry:m_pointLight.geometry];
     [m_renderRequest addLight:m_pointLight];
 
 
@@ -211,8 +191,7 @@
     //[m_debugRenderRequest addGeometry:m_gridData.geometry];
 
     //
-    // TODO: determine why the light debug visualization geometry is not being rendered
-    //       (once working remove the solid sphere asset and drop support for subroutines for now)
+    // TODO: need to update the asset loader to create debug vertices of generated geometry as an option
     //
     //[m_debugRenderRequest addGeometry:m_pointLight.geometry];
 
@@ -224,7 +203,6 @@
     [m_axisData release];
     [m_gridData release];
     [m_planeData release];
-    [m_solidSphere release];
 
     [m_pointLight release];
 

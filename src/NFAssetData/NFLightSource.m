@@ -31,7 +31,7 @@
 - (void) setPosition:(GLKVector3)position {
     _position = position;
     _assetData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, position.x, position.y, position.z);
-    _assetData.modelMatrix = GLKMatrix4Scale(_geometry.modelMatrix, 0.065f, 0.065f, 0.065f);
+    _assetData.modelMatrix = GLKMatrix4Scale(_assetData.modelMatrix, 0.065f, 0.065f, 0.065f);
 
     //
     // TODO: currently need to apply a single step to the sphere in order to have its tranforms
@@ -55,11 +55,12 @@
 
         _assetData = [NFAssetLoader allocAssetDataOfType:kSolidUVSphere withArgs:nil];
         [_assetData generateRenderables];
+        [_assetData assignSubroutine:@"LightSubroutine"];
 
         _position = GLKVector3Make(2.0f, 1.0f, 0.0f);
 
         _assetData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 2.0f, 1.0f, 0.0f);
-        _assetData.modelMatrix = GLKMatrix4Scale(_geometry.modelMatrix, 0.065f, 0.065f, 0.065f);
+        _assetData.modelMatrix = GLKMatrix4Scale(_assetData.modelMatrix, 0.065f, 0.065f, 0.065f);
 
         //
         // TODO: currently need to apply a single step to the sphere in order to have its tranforms
@@ -71,7 +72,7 @@
 }
 
 - (void) dealloc {
-    [_geometry release];
+    [_assetData release];
     [super dealloc];
 }
 
