@@ -34,10 +34,13 @@
     _assetData.modelMatrix = GLKMatrix4Scale(_assetData.modelMatrix, 0.065f, 0.065f, 0.065f);
 
     //
-    // TODO: currently need to apply a single step to the sphere in order to have its tranforms
-    //       applied, need to find a better/cleaner way to initialize the transforms
+    // TODO: currently need to apply the updated model matrix to the subsets manually
+    //       (need to find a better/cleaner way to stack the transforms)
     //
-    [_assetData stepTransforms:0.0f];
+    for (NFAssetSubset *subset in self.assetData.subsetArray) {
+        GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.assetData.modelMatrix, subset.subsetModelMat);
+        [self.assetData.geometry setModelMatrix:renderModelMat];
+    }
 }
 
 - (NFRGeometry*) geometry {
@@ -82,6 +85,21 @@
 - (void) dealloc {
     [_assetData release];
     [super dealloc];
+}
+
+- (void) stepTransforms:(float)secsElapsed {
+    typedef GLKMatrix4 (^transformBlock_f)(GLKMatrix4, float);
+    transformBlock_f transformBlock = ^(GLKMatrix4 modelMatrix, float secsElapsed) {
+        float angle = secsElapsed * M_PI_4 * -1.25;
+        return GLKMatrix4MakeRotation(angle, 0.0f, 1.0f, 0.0f);
+
+    };
+
+    GLKMatrix4 tempMat = transformBlock(GLKMatrix4Identity, secsElapsed);
+
+    // NOTE: have to perform this step since when multiplying by vec3 GLK will use w = 0.0f
+    GLKVector4 tempVec = GLKMatrix4MultiplyVector4(tempMat, GLKVector4MakeWithVector3(self.position, 1.0f));
+    self.position = GLKVector3Make(tempVec.x, tempVec.y, tempVec.z);
 }
 
 @end

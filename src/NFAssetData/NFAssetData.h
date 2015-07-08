@@ -14,6 +14,13 @@
 #import "NFSurfaceModel.h"
 
 
+//
+// TODO: this definition out into NFUtils, will eventually need to turn it into
+//       an actual (though primitives at first) animation system
+//
+typedef GLKMatrix4 (^transformBlock_f)(GLKMatrix4, float);
+
+
 @interface NFAssetData : NSObject
 
 @property (nonatomic, assign) GLKMatrix4 modelMatrix;
@@ -22,6 +29,9 @@
 @property (nonatomic, retain) NSArray* surfaceModelArray;
 
 @property (nonatomic, retain) NFRGeometry* geometry;
+
+@property (nonatomic, assign) transformBlock_f transformBlock;
+
 
 
 - (instancetype) init;

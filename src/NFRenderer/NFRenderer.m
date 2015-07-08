@@ -140,7 +140,8 @@
     [m_pAsset generateRenderables];
     [m_pAsset assignSubroutine:@"PhongSubroutine"];
 
-    //m_pAsset.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 1.0f, 0.0f);
+    //m_pAsset.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 0.75f, 1.0f);
+
     //[m_pAsset applyOriginCenterMatrix];
     //[m_pAsset applyUnitScalarMatrix]; // use for teapot
 
@@ -218,6 +219,8 @@
 - (void) updateFrameWithTime:(float)secsElapsed withViewPosition:(GLKVector3)viewPosition withViewMatrix:(GLKMatrix4)viewMatrix withProjection:(GLKMatrix4)projection {
     if (self.stepTransforms) {
         [m_pAsset stepTransforms:secsElapsed];
+
+        [m_pointLight stepTransforms:secsElapsed];
     }
 
     //

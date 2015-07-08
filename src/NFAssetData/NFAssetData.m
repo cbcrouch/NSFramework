@@ -32,7 +32,7 @@
 - (void) dealloc {
 
     //
-    // TODO: need proper cleanup of NFR objects
+    // TODO: proper cleanup of NFR objects
     //
 
     [super dealloc];
@@ -41,33 +41,26 @@
 - (void) stepTransforms:(float)secsElapsed {
 
     //
-    // TODO: this "animation" is currently hardcoded, need to design something simple
-    //       for getting/setting a transform heirarchy and providing step/update functionality
+    // TODO: need to modify the transform block so that it can operate stricky on a matrix with time step
+    //       and then return a matrix so that internal/private details of the asset data implementation don't
+    //       need to be publically exposed
     //
 
     // each animation can be assigned a block which will be its step transform
 
-    typedef void (^transformBlock_f)(NFAssetData*, float);
-
-    transformBlock_f transformBlock = ^(NFAssetData* assetData, float secsElapsed){
-        //
-        // TODO: perform rotation with quaternions if GLK implementation doesn't prevent
-        //       gimbal lock with GLKMatrix4Rotate
-        //
+    transformBlock_f transformBlock = ^(GLKMatrix4 modelMatrix, float secsElapsed) {
         float angle = secsElapsed * M_PI_4;
-        GLKMatrix4 model = [[self.subsetArray objectAtIndex:0] subsetModelMat];
-        [[self.subsetArray objectAtIndex:0] setSubsetModelMat:GLKMatrix4RotateY(model, angle)];
-
-        //
-        // update geometry object model matrix
-        //
-        for (NFAssetSubset *subset in self.subsetArray) {
-            GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.modelMatrix, subset.subsetModelMat);
-            [self.geometry setModelMatrix:renderModelMat];
-        }
+        return GLKMatrix4RotateY(modelMatrix, angle);
     };
 
-    transformBlock(self, secsElapsed);
+    GLKMatrix4 model = [[self.subsetArray objectAtIndex:0] subsetModelMat];
+    [[self.subsetArray objectAtIndex:0] setSubsetModelMat:transformBlock(model, secsElapsed)];
+
+    // update geometry object model matrix
+    for (NFAssetSubset *subset in self.subsetArray) {
+        GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.modelMatrix, subset.subsetModelMat);
+        [self.geometry setModelMatrix:renderModelMat];
+    }
 }
 
 - (void) applyUnitScalarMatrix {

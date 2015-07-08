@@ -60,6 +60,13 @@
 @property (nonatomic, assign) float linearAttenuation;
 @property (nonatomic, assign) float quadraticAttenuation;
 
+
+//
+// TODO: implement a stepTransforms function that will animate the light, spot light should implement it
+//       as well but should not be needed for directional light
+//
+- (void) stepTransforms:(float)secsElapsed;
+
 @end
 
 //
