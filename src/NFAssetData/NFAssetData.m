@@ -45,23 +45,29 @@
     //       for getting/setting a transform heirarchy and providing step/update functionality
     //
 
-    //
-    // TODO: perform rotation with quaternions if GLK implementation doesn't prevent
-    //       gimbal lock with GLKMatrix4Rotate
-    //
+    // each animation can be assigned a block which will be its step transform
 
-    float angle = secsElapsed * M_PI_4;
-    GLKMatrix4 model = [[self.subsetArray objectAtIndex:0] subsetModelMat];
-    [[self.subsetArray objectAtIndex:0] setSubsetModelMat:GLKMatrix4RotateY(model, angle)];
+    typedef void (^transformBlock_f)(NFAssetData*, float);
 
+    transformBlock_f transformBlock = ^(NFAssetData* assetData, float secsElapsed){
+        //
+        // TODO: perform rotation with quaternions if GLK implementation doesn't prevent
+        //       gimbal lock with GLKMatrix4Rotate
+        //
+        float angle = secsElapsed * M_PI_4;
+        GLKMatrix4 model = [[self.subsetArray objectAtIndex:0] subsetModelMat];
+        [[self.subsetArray objectAtIndex:0] setSubsetModelMat:GLKMatrix4RotateY(model, angle)];
 
-    //
-    // update geometry object model matrix
-    //
-    for (NFAssetSubset *subset in self.subsetArray) {
-        GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.modelMatrix, subset.subsetModelMat);
-        [self.geometry setModelMatrix:renderModelMat];
-    }
+        //
+        // update geometry object model matrix
+        //
+        for (NFAssetSubset *subset in self.subsetArray) {
+            GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.modelMatrix, subset.subsetModelMat);
+            [self.geometry setModelMatrix:renderModelMat];
+        }
+    };
+
+    transformBlock(self, secsElapsed);
 }
 
 - (void) applyUnitScalarMatrix {

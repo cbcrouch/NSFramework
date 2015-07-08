@@ -67,6 +67,14 @@
         //       applied, need to find a better/cleaner way to initialize the transforms
         //
         [_assetData stepTransforms:0.0f];
+
+        _ambient = GLKVector3Make(0.2f, 0.2f, 0.2f);
+        _diffuse = GLKVector3Make(0.5f, 0.5f, 0.5f);
+        _specular = GLKVector3Make(1.0f, 1.0f, 1.0f);
+
+        _constantAttenuation = 1.0f;
+        _linearAttenuation = 0.22f;
+        _quadraticAttenuation = 0.20f;
     }
     return self;
 }

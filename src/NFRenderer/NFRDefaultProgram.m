@@ -88,30 +88,6 @@
 
     [self setLightUniforms:phongLight];
 
-
-    //
-    // TODO: need to allow for setting dynamic lights using an NFLightSource object
-    //
-    // hardcoded light values
-    glUseProgram(self.hProgram);
-    glUniform3f(phongLight.ambientLoc, 0.2f, 0.2f, 0.2f);
-    glUniform3f(phongLight.diffuseLoc, 0.5f, 0.5f, 0.5f);
-    glUniform3f(phongLight.specularLoc, 1.0f, 1.0f, 1.0f);
-    glUniform3f(phongLight.positionLoc, 2.0f, 1.0f, 0.0f);
-
-    // distance 50 units
-    //glUniform1f(phongLight.constantLoc, 1.0f);
-    //glUniform1f(phongLight.linearLoc, 0.09f);
-    //glUniform1f(phongLight.quadraticLoc, 0.032);
-
-    // distance 20 units
-    glUniform1f(phongLight.constantLoc, 1.0f);
-    glUniform1f(phongLight.linearLoc, 0.22f);
-    glUniform1f(phongLight.quadraticLoc, 0.20);
-
-    glUseProgram(0);
-
-
     // model matrix uniform location
     [self setModelMatrixLocation:glGetUniformLocation(self.hProgram, (const GLchar *)"model")];
     NSAssert(self.modelMatrixLocation != -1, @"failed to get model matrix uniform location");
@@ -163,23 +139,37 @@
 }
 
 - (void) loadLight:(id<NFLightSource>)light {
-    //
-    // TODO: implement
-    //
-
     // determine what type of light is is then set the uniforms appropriately
-
     glUseProgram(self.hProgram);
-/*
-    glUniform3f(phongLight.ambientLoc, 0.2f, 0.2f, 0.2f);
-    glUniform3f(phongLight.diffuseLoc, 0.5f, 0.5f, 0.5f);
-    glUniform3f(phongLight.specularLoc, 1.0f, 1.0f, 1.0f);
-    glUniform3f(phongLight.positionLoc, 2.0f, 1.0f, 0.0f);
 
-    glUniform1f(phongLight.constantLoc, 1.0f);
-    glUniform1f(phongLight.linearLoc, 0.22f);
-    glUniform1f(phongLight.quadraticLoc, 0.20);
-*/
+    glUniform3f(self.lightUniforms.ambientLoc, light.ambient.r, light.ambient.g, light.ambient.b);
+    glUniform3f(self.lightUniforms.diffuseLoc, light.diffuse.r, light.diffuse.g, light.diffuse.b);
+    glUniform3f(self.lightUniforms.specularLoc, light.specular.r, light.specular.g, light.specular.b);
+
+    if ([light isKindOfClass:NFPointLight.class]) {
+        // cast to a point light class so can easily access needed properties
+        NFPointLight* pointLight = light;
+
+        glUniform3f(self.lightUniforms.positionLoc, pointLight.position.x, pointLight.position.y, pointLight.position.z);
+
+        glUniform1f(self.lightUniforms.constantLoc, pointLight.constantAttenuation);
+        glUniform1f(self.lightUniforms.linearLoc, pointLight.linearAttenuation);
+        glUniform1f(self.lightUniforms.quadraticLoc, pointLight.quadraticAttenuation);
+    }
+    else if ([light isKindOfClass:NFSpotLight.class]) {
+        //
+        // TODO: implement
+        //
+    }
+    else if ([light isKindOfClass:NFDirectionalLight.class]) {
+        //
+        // TODO: implement
+        //
+    }
+    else {
+        NSLog(@"WARNING: NFRDefaultProgram received unrecongized light type");
+    }
+
     glUseProgram(0);
 }
 
