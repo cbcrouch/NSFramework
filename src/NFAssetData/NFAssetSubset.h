@@ -32,7 +32,7 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
 
 @property (nonatomic, assign) void* vertices;
 @property (nonatomic, assign) NSUInteger numVertices;
-@property (nonatomic, assign) NF_VERTEX_TYPE vertexType;
+@property (nonatomic, assign) NF_VERTEX_FORMAT vertexFormat;
 
 @property (nonatomic, assign) GLushort* indices;
 @property (nonatomic, assign) NSUInteger numIndices;
@@ -53,7 +53,7 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
 - (void) allocateIndicesWithNumElts:(NSUInteger)num;
 - (void) loadIndexData:(GLushort *)pIndexData ofSize:(size_t)size;
 
-- (void) allocateVerticesOfType:(NF_VERTEX_TYPE)vertexType withNumVertices:(NSUInteger)numVertices;
-- (void) loadVertexData:(void*)pData ofType:(NF_VERTEX_TYPE)vertexType withNumVertices:(NSUInteger)numVertices;
+- (void) allocateVerticesOfType:(NF_VERTEX_FORMAT)vertexFormat withNumVertices:(NSUInteger)numVertices;
+- (void) loadVertexData:(void*)pData ofType:(NF_VERTEX_FORMAT)vertexFormat withNumVertices:(NSUInteger)numVertices;
 
 @end

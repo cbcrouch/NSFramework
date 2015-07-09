@@ -45,9 +45,9 @@ typedef struct NFDebugVertex_t {
 } NFDebugVertex_t;
 
 
-typedef NS_ENUM(NSUInteger, NF_VERTEX_TYPE) {
-    kNFVertexType,
-    kNFDebugVertexType
+typedef NS_ENUM(NSUInteger, NF_VERTEX_FORMAT) {
+    kVertexFormatDefault,
+    kVertexFormatDebug
 };
 
 

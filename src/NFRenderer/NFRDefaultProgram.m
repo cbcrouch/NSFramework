@@ -160,11 +160,13 @@
         //
         // TODO: implement
         //
+        NSLog(@"WARNING: NFRDefaultProgram loadLight method not yet implemented for spot lights");
     }
     else if ([light isKindOfClass:NFDirectionalLight.class]) {
         //
         // TODO: implement
         //
+        NSLog(@"WARNING: NFRDefaultProgram loadLight method not yet implemented for directional lights");
     }
     else {
         NSLog(@"WARNING: NFRDefaultProgram received unrecongized light type");

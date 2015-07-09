@@ -84,14 +84,10 @@
     //
     // TODO: need a much cleaner way of handling the NFRBufferAttributes vertex format
     //
-    NFR_VERTEX_FORMAT vertexFormat;
+    NF_VERTEX_FORMAT vertexFormat;
     NFAssetSubset* testSubset = [self.subsetArray objectAtIndex:0];
-    if (testSubset.vertexType == kNFVertexType) {
-        vertexFormat = kVertexFormatDefault;
-    }
-    else {
-        vertexFormat = kVertexFormatDebug;
-    }
+    vertexFormat = testSubset.vertexFormat;
+
     NFRBufferAttributes* bufferAttribs = [[[NFRBufferAttributes alloc] initWithFormat:vertexFormat] autorelease];
 
     NFRBuffer* vertexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeVertex usingAttributes:bufferAttribs] autorelease];
@@ -113,12 +109,12 @@
         [self.geometry setModelMatrix:renderModelMat];
 
         NFR_BUFFER_DATA_TYPE vertexBufferType = kBufferDataTypeUnknown;
-        switch (subset.vertexType) {
-            case kNFVertexType:
+        switch (subset.vertexFormat) {
+            case kVertexFormatDefault:
                 vertexBufferType = kBufferDataTypeNFVertex_t;
                 break;
 
-            case kNFDebugVertexType:
+            case kVertexFormatDebug:
                 vertexBufferType = kBufferDataTypeNFDebugVertex_t;
                 break;
                 

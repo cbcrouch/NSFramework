@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "NFCommonTypes.h"
 #import "NFSurfaceModel.h"
 
 @protocol NFRProgram;
@@ -14,16 +15,11 @@
 
 @interface NFRBufferAttributes : NSObject
 
-typedef NS_ENUM(NSUInteger, NFR_VERTEX_FORMAT) {
-    kVertexFormatDefault,
-    kVertexFormatDebug
-};
-
 @property (nonatomic, assign, readonly) GLuint hVAO;
-@property (nonatomic, assign, readonly) NFR_VERTEX_FORMAT format;
+@property (nonatomic, assign, readonly) NF_VERTEX_FORMAT format;
 
 - (instancetype) init __attribute__((unavailable("ERROR: format must be provided upon initialization")));
-- (instancetype) initWithFormat:(NFR_VERTEX_FORMAT)format;
+- (instancetype) initWithFormat:(NF_VERTEX_FORMAT)format;
 
 @end
 

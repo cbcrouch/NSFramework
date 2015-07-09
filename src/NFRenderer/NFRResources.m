@@ -18,7 +18,7 @@
 
 @synthesize hVAO = _hVAO;
 
-- (instancetype) initWithFormat:(NFR_VERTEX_FORMAT)format {
+- (instancetype) initWithFormat:(NF_VERTEX_FORMAT)format {
     self = [super init];
     if (self != nil) {
         GLuint vao;

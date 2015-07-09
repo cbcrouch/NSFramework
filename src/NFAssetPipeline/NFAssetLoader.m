@@ -13,22 +13,23 @@
 
 @implementation NFAssetLoader
 
-+ (NFAssetData *) allocAssetDataOfType:(ASSET_TYPE)type withArgs:(id)firstObj, ... NS_REQUIRES_NIL_TERMINATION {
++ (NFAssetData *) allocAssetDataOfType:(ASSET_TYPE)type withArgs:(id)firstArg, ... NS_REQUIRES_NIL_TERMINATION {
 
     NFAssetData *asset = [[NFAssetData alloc] init];
 
     switch (type) {
         case kWavefrontObj: {
-            NSAssert(firstObj != nil, @"ERROR: expected a string for the file name and path, received nil");
-            NSString *fileNamePath = (NSString *)firstObj;
+            NSAssert(firstArg != nil, @"ERROR: expected a string for the file name and path, received nil");
+            NSString *fileNamePath = (NSString *)firstArg;
 
             va_list args;
-            va_start(args, firstObj);
+            va_start(args, firstArg);
 
             id obj = va_arg(args, id);
             if (obj) {
                 //NSLog(@"allocAssetDataOfType second arg is present, should be a bundle");
             }
+            va_end(args);
 
             NFWavefrontObj *wavefrontObj = [[[NFWavefrontObj alloc] init] autorelease];
             [wavefrontObj loadFileWithPath:fileNamePath];
@@ -123,6 +124,26 @@
         break;
 
         case kSolidUVSphere: {
+
+            //
+            // TODO: firstObj will be nil if no arguments are passed in, so need to check that
+            //       to avoid any false positives when reading of the stack and comparing against
+            //       the vertex format enum
+            //
+
+            NF_VERTEX_FORMAT vertexType = kVertexFormatDefault;
+
+            if(firstArg != nil) {
+                va_list args;
+                va_start(args, firstArg);
+                vertexType = va_arg(args, NF_VERTEX_FORMAT);
+                if (vertexType == kVertexFormatDebug) {
+                    NSLog(@"allocAssetDataOfType second arg is present, should generate vertices in the debug format");
+                }
+                va_end(args);
+            }
+
+
             // with radius 1.0
             // - 8   16 for low resolution
             // - 16  32 for medium resolution

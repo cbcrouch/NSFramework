@@ -142,8 +142,8 @@
     [subset allocateIndicesWithNumElts:[indices count]];
     [subset loadIndexData:pIndices ofSize:[indices count] * sizeof(GLushort)];
 
-    [subset allocateVerticesOfType:kNFVertexType withNumVertices:[uniqueArray count]];
-    [subset loadVertexData:pData ofType:kNFVertexType withNumVertices:[uniqueArray count]];
+    [subset allocateVerticesOfType:kVertexFormatDefault withNumVertices:[uniqueArray count]];
+    [subset loadVertexData:pData ofType:kVertexFormatDefault withNumVertices:[uniqueArray count]];
 
     free(pData);
     free(pIndices);

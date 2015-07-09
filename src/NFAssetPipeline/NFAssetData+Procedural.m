@@ -74,8 +74,8 @@ static const char *g_faceType = @encode(NFFace_t);
 
     NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
 
-    [pSubset allocateVerticesOfType:kNFDebugVertexType withNumVertices:numVertices];
-    [pSubset loadVertexData:(void*)vertices ofType:kNFDebugVertexType withNumVertices:numVertices];
+    [pSubset allocateVerticesOfType:kVertexFormatDebug withNumVertices:numVertices];
+    [pSubset loadVertexData:(void*)vertices ofType:kVertexFormatDebug withNumVertices:numVertices];
 
     [pSubset allocateIndicesWithNumElts:numVertices];
     [pSubset loadIndexData:indices ofSize:(numVertices * sizeof(GLushort))];
@@ -160,8 +160,8 @@ static const char *g_faceType = @encode(NFFace_t);
     [pSubset allocateIndicesWithNumElts:numIndices];
     [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
 
-    [pSubset allocateVerticesOfType:kNFDebugVertexType withNumVertices:numVertices];
-    [pSubset loadVertexData:vertices ofType:kNFDebugVertexType withNumVertices:numVertices];
+    [pSubset allocateVerticesOfType:kVertexFormatDebug withNumVertices:numVertices];
+    [pSubset loadVertexData:vertices ofType:kVertexFormatDebug withNumVertices:numVertices];
 
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
@@ -263,8 +263,8 @@ static const char *g_faceType = @encode(NFFace_t);
     [pSubset allocateIndicesWithNumElts:numIndices];
     [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
 
-    [pSubset allocateVerticesOfType:kNFVertexType withNumVertices:numVertices];
-    [pSubset loadVertexData:vertices ofType:kNFVertexType withNumVertices:numVertices];
+    [pSubset allocateVerticesOfType:kVertexFormatDefault withNumVertices:numVertices];
+    [pSubset loadVertexData:vertices ofType:kVertexFormatDefault withNumVertices:numVertices];
 
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
@@ -390,8 +390,8 @@ static const char *g_faceType = @encode(NFFace_t);
     [pSubset allocateIndicesWithNumElts:numIndices];
     [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
 
-    [pSubset allocateVerticesOfType:kNFVertexType withNumVertices:numVertices];
-    [pSubset loadVertexData:vertices ofType:kNFVertexType withNumVertices:numVertices];
+    [pSubset allocateVerticesOfType:kVertexFormatDefault withNumVertices:numVertices];
+    [pSubset loadVertexData:vertices ofType:kVertexFormatDefault withNumVertices:numVertices];
 
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }

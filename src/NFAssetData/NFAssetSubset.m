@@ -95,14 +95,14 @@
 
 
 
-- (void) allocateVerticesOfType:(NF_VERTEX_TYPE)vertexType withNumVertices:(NSUInteger)numVertices {
+- (void) allocateVerticesOfType:(NF_VERTEX_FORMAT)vertexFormat withNumVertices:(NSUInteger)numVertices {
     size_t vertexDataSize = 0;
-    switch (vertexType) {
-        case kNFVertexType:
+    switch (vertexFormat) {
+        case kVertexFormatDefault:
             vertexDataSize = numVertices * sizeof(NFVertex_t);
             break;
 
-        case kNFDebugVertexType:
+        case kVertexFormatDebug:
             vertexDataSize = numVertices * sizeof(NFDebugVertex_t);
             break;
 
@@ -114,7 +114,7 @@
     self.vertices = malloc(vertexDataSize);
     NSAssert(self.vertices != NULL, @"failed to allocate interleaved vertices");
 
-    self.vertexType = vertexType;
+    self.vertexFormat = vertexFormat;
     self.numVertices = numVertices;
 }
 
@@ -125,7 +125,7 @@
     float min_y, max_y;
     float min_z, max_z;
 
-    if (self.vertexType != kNFVertexType) {
+    if (self.vertexFormat != kVertexFormatDefault) {
         NSLog(@"WARNING: NFAssetSubset calcSubsetBounds only supproted for vertices of NFVertex_t type");
         return;
     }
@@ -222,14 +222,14 @@
 //
 // TODO: fix and cleanup the generation and add some display code for the AABB (axis aligned bounding box)
 //
-- (void) loadVertexData:(void*)pData ofType:(NF_VERTEX_TYPE)vertexType withNumVertices:(NSUInteger)numVertices {
+- (void) loadVertexData:(void*)pData ofType:(NF_VERTEX_FORMAT)vertexFormat withNumVertices:(NSUInteger)numVertices {
     size_t vertexDataSize = 0;
-    switch (vertexType) {
-        case kNFVertexType:
+    switch (vertexFormat) {
+        case kVertexFormatDefault:
             vertexDataSize = numVertices * sizeof(NFVertex_t);
             break;
 
-        case kNFDebugVertexType:
+        case kVertexFormatDebug:
             vertexDataSize = numVertices * sizeof(NFDebugVertex_t);
             break;
 
@@ -248,7 +248,7 @@
     GLfloat min_y, max_y;
     GLfloat min_z, max_z;
 
-    if (vertexType == kNFVertexType) {
+    if (vertexFormat == kVertexFormatDefault) {
         NFVertex_t* vertexPtr = (NFVertex_t*)self.vertices;
 
         min_x = max_x = vertexPtr->pos[0];
@@ -264,7 +264,7 @@
             if (vertexPtr[i].pos[2] > max_z) { max_z = vertexPtr[i].pos[2]; }
         }
     }
-    else if (vertexType == kNFDebugVertexType) {
+    else if (vertexFormat == kVertexFormatDebug) {
         NFDebugVertex_t* vertexPtr = (NFDebugVertex_t*)self.vertices;
 
         min_x = max_x = vertexPtr->pos[0];
