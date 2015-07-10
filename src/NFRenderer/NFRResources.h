@@ -87,10 +87,5 @@ typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
 
 @property (nonatomic, retain, readonly) NSMutableDictionary* textureDictionary;
 
-//
-// TODO: should come up with a better way of configuring shader specific state
-//
-@property (nonatomic, copy) NSString* subroutineName;
-
 - (void) syncSurfaceModel;
 @end

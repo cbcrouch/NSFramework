@@ -55,10 +55,8 @@
         //
 
         // point light geometry will be a sphere
-
-        _assetData = [NFAssetLoader allocAssetDataOfType:kSolidUVSphere withArgs:nil];
+        _assetData = [NFAssetLoader allocAssetDataOfType:kSolidUVSphere withArgs:(id)kVertexFormatDebug, nil];
         [_assetData generateRenderables];
-        [_assetData assignSubroutine:@"LightSubroutine"];
 
         _position = GLKVector3Make(2.0f, 1.0f, 0.0f);
 

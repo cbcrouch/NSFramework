@@ -48,6 +48,4 @@ typedef GLKMatrix4 (^transformBlock_f)(GLKMatrix4, float);
 - (void) applyUnitScalarMatrix;
 - (void) applyOriginCenterMatrix;
 
-- (void) assignSubroutine:(NSString*)subroutineName;
-
 @end

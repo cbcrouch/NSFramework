@@ -128,11 +128,4 @@
     }
 }
 
-//
-// TODO: remove this call after subroutines have been removed from the shader
-//
-- (void) assignSubroutine:(NSString*)subroutineName {
-    [self.geometry setSubroutineName:subroutineName];
-}
-
 @end

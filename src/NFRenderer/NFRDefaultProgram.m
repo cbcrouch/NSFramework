@@ -113,7 +113,7 @@
 - (void) configureVertexInput:(NFRBufferAttributes*)bufferAttributes {
     glBindVertexArray(bufferAttributes.hVAO);
 
-    // NOTE: the vert attributes bound to the VAO (and associated with the active VBO)
+    // NOTE: the vert attributes are bound to the VAO (and associated with the actively bound VBO)
     glEnableVertexAttribArray(self.vertexAttribute);
     glEnableVertexAttribArray(self.normalAttribute);
     glEnableVertexAttribArray(self.texCoordAttribute);
@@ -139,7 +139,6 @@
 }
 
 - (void) loadLight:(id<NFLightSource>)light {
-    // determine what type of light is is then set the uniforms appropriately
     glUseProgram(self.hProgram);
 
     glUniform3f(self.lightUniforms.ambientLoc, light.ambient.r, light.ambient.g, light.ambient.b);
@@ -147,11 +146,8 @@
     glUniform3f(self.lightUniforms.specularLoc, light.specular.r, light.specular.g, light.specular.b);
 
     if ([light isKindOfClass:NFPointLight.class]) {
-        // cast to a point light class so can easily access needed properties
         NFPointLight* pointLight = light;
-
         glUniform3f(self.lightUniforms.positionLoc, pointLight.position.x, pointLight.position.y, pointLight.position.z);
-
         glUniform1f(self.lightUniforms.constantLoc, pointLight.constantAttenuation);
         glUniform1f(self.lightUniforms.linearLoc, pointLight.linearAttenuation);
         glUniform1f(self.lightUniforms.quadraticLoc, pointLight.quadraticAttenuation);
@@ -181,7 +177,7 @@
     //
     // TODO: need a better way of handling subroutines
     //
-    [self activateSubroutine:geometry.subroutineName];
+    [self activateSubroutine:@"PhongSubroutine"];
 
     //
     // TODO: the follow are also listed in the default mtl file and should be handled appropiately

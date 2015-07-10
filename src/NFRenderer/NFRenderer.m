@@ -138,7 +138,6 @@
 
     m_pAsset = [NFAssetLoader allocAssetDataOfType:kWavefrontObj withArgs:fileNamePath, nil];
     [m_pAsset generateRenderables];
-    [m_pAsset assignSubroutine:@"PhongSubroutine"];
 
     //m_pAsset.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 0.75f, 1.0f);
 
@@ -157,7 +156,6 @@
 
     m_planeData = [NFAssetLoader allocAssetDataOfType:kSolidPlane withArgs:nil];
     [m_planeData generateRenderables];
-    [m_planeData assignSubroutine:@"PhongSubroutine"];
 
 
     m_pointLight = [[[NFPointLight alloc] init] retain];
@@ -184,17 +182,13 @@
     [m_renderRequest addGeometry:m_pAsset.geometry];
     [m_renderRequest addGeometry:m_planeData.geometry];
 
-    [m_renderRequest addGeometry:m_pointLight.geometry];
     [m_renderRequest addLight:m_pointLight];
 
 
     //[m_debugRenderRequest addGeometry:m_axisData.geometry];
     //[m_debugRenderRequest addGeometry:m_gridData.geometry];
-
-    //
-    // TODO: need to update the asset loader to create debug vertices of generated geometry as an option
-    //
-    //[m_debugRenderRequest addGeometry:m_pointLight.geometry];
+    
+    [m_debugRenderRequest addGeometry:m_pointLight.geometry];
 
     return self;
 }

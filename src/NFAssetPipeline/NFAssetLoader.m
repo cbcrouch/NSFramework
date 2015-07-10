@@ -22,12 +22,14 @@
             NSAssert(firstArg != nil, @"ERROR: expected a string for the file name and path, received nil");
             NSString *fileNamePath = (NSString *)firstArg;
 
+            //
+            // NOTE: va_list/args will only get data off the stack after the firstArg
+            //
             va_list args;
             va_start(args, firstArg);
-
             id obj = va_arg(args, id);
             if (obj) {
-                //NSLog(@"allocAssetDataOfType second arg is present, should be a bundle");
+                NSLog(@"allocAssetDataOfType second arg is present, should be a bundle");
             }
             va_end(args);
 
@@ -127,13 +129,7 @@
             NF_VERTEX_FORMAT vertexType = kVertexFormatDefault;
 
             if(firstArg != nil) {
-                va_list args;
-                va_start(args, firstArg);
-                vertexType = va_arg(args, NF_VERTEX_FORMAT);
-                if (vertexType == kVertexFormatDebug) {
-                    NSLog(@"allocAssetDataOfType second arg is present, should generate vertices in the debug format");
-                }
-                va_end(args);
+                vertexType = (NF_VERTEX_FORMAT)firstArg;
             }
 
             // with radius 1.0

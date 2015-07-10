@@ -221,8 +221,6 @@
 @synthesize modelMatrix = _modelMatrix;
 @synthesize textureDictionary = _textureDictionary;
 
-@synthesize subroutineName = _subroutineName;
-
 - (NSMutableDictionary*) textureDictionary {
     if (_textureDictionary == nil) {
         _textureDictionary = [[[NSMutableDictionary alloc] init] retain];
