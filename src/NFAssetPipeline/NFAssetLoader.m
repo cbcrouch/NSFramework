@@ -124,13 +124,6 @@
         break;
 
         case kSolidUVSphere: {
-
-            //
-            // TODO: firstObj will be nil if no arguments are passed in, so need to check that
-            //       to avoid any false positives when reading of the stack and comparing against
-            //       the vertex format enum
-            //
-
             NF_VERTEX_FORMAT vertexType = kVertexFormatDefault;
 
             if(firstArg != nil) {
@@ -143,22 +136,21 @@
                 va_end(args);
             }
 
-
             // with radius 1.0
             // - 8   16 for low resolution
             // - 16  32 for medium resolution
             // - 32  64 for high resolution
-            [asset createUVSphereWithRadius:1 withStacks:32 withSlices:64];
+            [asset createUVSphereWithRadius:1 withStacks:32 withSlices:64 withVertexFormat:vertexType];
 
-            NFSurfaceModel *surface = [NFSurfaceModel defaultSurfaceModel];
+            if (vertexType == kVertexFormatDefault) {
+                NFSurfaceModel *surface = [NFSurfaceModel defaultSurfaceModel];
+                NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];
+                [surfaceModels addObject:surface];
 
-            NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];
-            [surfaceModels addObject:surface];
-
-            asset.surfaceModelArray = surfaceModels;
-
-            for (NFAssetSubset *subset in [asset subsetArray]) {
-                subset.surfaceModel = [surfaceModels objectAtIndex:0];
+                asset.surfaceModelArray = surfaceModels;
+                for (NFAssetSubset *subset in [asset subsetArray]) {
+                    subset.surfaceModel = [surfaceModels objectAtIndex:0];
+                }
             }
         }
         break;

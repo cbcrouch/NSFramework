@@ -269,11 +269,11 @@ static const char *g_faceType = @encode(NFFace_t);
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
 
-- (void) createUVSphereWithRadius:(float)radius withStacks:(int)stacks withSlices:(int)slices {
+- (void) createUVSphereWithRadius:(float)radius withStacks:(int)stacks withSlices:(int)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
     const NSInteger numVertices = (stacks+1) * (slices+1) + 1;
     const NSInteger numIndices = stacks * slices * 3 * 2;
-    NFVertex_t vertices[numVertices];
-    GLushort indices[numIndices];
+
+    NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
 
     // spherical coordinates as mapped to perspective coordiantes (x to the right, y up, +z towards the camera)
     // x = r * sin(phi) * sin(theta);
@@ -287,45 +287,90 @@ static const char *g_faceType = @encode(NFFace_t);
     float phiDelta = M_PI / (float)stacks;
     float thetaDelta = (2 * M_PI) / (float)slices;
 
-    // NOTE: need to add an extra slice to get a coincident vertex with both tex coord S = 0.0 and 1.0, and
-    //       and adding an extra stack to get the bottom point i.e. would take five vertical vertices to
-    //       make four stacks
-    int index=0;
-    for (NSInteger i=0; i<stacks+1; ++i) {
-        for (NSInteger j=0; j<slices+1; ++j) {
-            vertices[index].pos[0] = radius * sin(phi) * sin(theta);
-            vertices[index].pos[1] = radius * cos(phi);
-            vertices[index].pos[2] = radius * sin(phi) * cos(theta);
-            vertices[index].pos[3] = 1.0f;
+    if (vertexFormat == kVertexFormatDefault) {
+        NFVertex_t vertices[numVertices];
 
-            //
-            // TODO: second to last vertex on the top and bottom cap won't get used
-            //       should ideally generate one less top and bottom vertex and evenly
-            //       distribute the texture coordinates
-            //
+        // NOTE: need to add an extra slice to get a coincident vertex with both tex coord S = 0.0 and 1.0, and
+        //       and adding an extra stack to get the bottom point i.e. would take five vertical vertices to
+        //       make four stacks
+        int index=0;
+        for (NSInteger i=0; i<stacks+1; ++i) {
+            for (NSInteger j=0; j<slices+1; ++j) {
+                vertices[index].pos[0] = radius * sin(phi) * sin(theta);
+                vertices[index].pos[1] = radius * cos(phi);
+                vertices[index].pos[2] = radius * sin(phi) * cos(theta);
+                vertices[index].pos[3] = 1.0f;
 
-            vertices[index].texCoord[0] = phi / M_PI;
-            vertices[index].texCoord[1] = theta / (2.0f*M_PI);
-            vertices[index].texCoord[2] = 0.0f;
+                //
+                // TODO: second to last vertex on the top and bottom cap won't get used
+                //       should ideally generate one less top and bottom vertex and evenly
+                //       distribute the texture coordinates
+                //
 
-            GLKVector3 normal = GLKVector3Make(vertices[index].pos[0], vertices[index].pos[1], vertices[index].pos[2]);
-            normal = GLKVector3Normalize(normal);
+                vertices[index].texCoord[0] = phi / M_PI;
+                vertices[index].texCoord[1] = theta / (2.0f*M_PI);
+                vertices[index].texCoord[2] = 0.0f;
 
-            vertices[index].norm[0] = normal.x;
-            vertices[index].norm[1] = normal.y;
-            vertices[index].norm[2] = normal.z;
-            vertices[index].norm[3] = 0.0f;
+                GLKVector3 normal = GLKVector3Make(vertices[index].pos[0], vertices[index].pos[1], vertices[index].pos[2]);
+                normal = GLKVector3Normalize(normal);
 
-            theta += thetaDelta;
-            ++index;
+                vertices[index].norm[0] = normal.x;
+                vertices[index].norm[1] = normal.y;
+                vertices[index].norm[2] = normal.z;
+                vertices[index].norm[3] = 0.0f;
+
+                theta += thetaDelta;
+                ++index;
+            }
+            
+            phi += phiDelta;
+            theta = 0.0f;
+        }
+        
+        [pSubset allocateVerticesOfType:kVertexFormatDefault withNumVertices:numVertices];
+        [pSubset loadVertexData:vertices ofType:kVertexFormatDefault withNumVertices:numVertices];
+    }
+    else if (vertexFormat == kVertexFormatDebug) {
+        NFDebugVertex_t vertices[numVertices];
+
+        int index=0;
+        for (NSInteger i=0; i<stacks+1; ++i) {
+            for (NSInteger j=0; j<slices+1; ++j) {
+                vertices[index].pos[0] = radius * sin(phi) * sin(theta);
+                vertices[index].pos[1] = radius * cos(phi);
+                vertices[index].pos[2] = radius * sin(phi) * cos(theta);
+
+                GLKVector3 normal = GLKVector3Make(vertices[index].pos[0], vertices[index].pos[1], vertices[index].pos[2]);
+                normal = GLKVector3Normalize(normal);
+
+                vertices[index].norm[0] = normal.x;
+                vertices[index].norm[1] = normal.y;
+                vertices[index].norm[2] = normal.z;
+
+                vertices[index].color[0] = 1.0f;
+                vertices[index].color[1] = 1.0f;
+                vertices[index].color[2] = 1.0f;
+                vertices[index].color[3] = 1.0f;
+
+                theta += thetaDelta;
+                ++index;
+            }
+
+            phi += phiDelta;
+            theta = 0.0f;
         }
 
-        phi += phiDelta;
-        theta = 0.0f;
+        [pSubset allocateVerticesOfType:kVertexFormatDebug withNumVertices:numVertices];
+        [pSubset loadVertexData:vertices ofType:kVertexFormatDebug withNumVertices:numVertices];
+    }
+    else {
+        NSLog(@"WARNING: createUVSphere received unrecongized vertex format, asset will not have valid vertices or indices");
+        return;
     }
 
     // index the first stack
-    index = 0;
+    GLushort indices[numIndices];
+    int index = 0;
     for (int i=0; i<slices-1; ++i) {
         indices[index] = i;
         indices[index+1] = i + slices + 1;
@@ -385,13 +430,8 @@ static const char *g_faceType = @encode(NFFace_t);
     indices[index+1] = p1+1;
     indices[index+2] = p2;
 
-    NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
-
     [pSubset allocateIndicesWithNumElts:numIndices];
     [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
-
-    [pSubset allocateVerticesOfType:kVertexFormatDefault withNumVertices:numVertices];
-    [pSubset loadVertexData:vertices ofType:kVertexFormatDefault withNumVertices:numVertices];
 
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
