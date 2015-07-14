@@ -125,6 +125,13 @@
             }
         break;
 
+        case kSolidCylinder: {
+            //
+            // TODO: implement
+            //
+        }
+        break;
+
         case kSolidUVSphere: {
             NF_VERTEX_FORMAT vertexType = kVertexFormatDefault;
 
@@ -148,6 +155,13 @@
                     subset.surfaceModel = [surfaceModels objectAtIndex:0];
                 }
             }
+        }
+        break;
+
+        case kSolidCone: {
+            //
+            // TODO: implement
+            //
         }
         break;
 

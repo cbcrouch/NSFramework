@@ -23,12 +23,6 @@
 
 @optional
 
-
-//
-// TODO: replace this method with a better mechanism for selecting/abstracting shader subroutines
-//
-- (void) activateSubroutine:(NSString*)subroutine;
-
 - (void) updateViewPosition:(GLKVector3)viewPosition;
 
 @end

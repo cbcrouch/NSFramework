@@ -33,11 +33,24 @@ struct material_t {
     sampler2D specularMap;
 };
 
-//
-// TODO: this is a point light, it should be named such after new light types are added
-//
-struct light_t {
+struct pointLight_t {
     vec3 position;
+
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+
+    float constant;
+    float linear;
+    float quadratic;
+};
+
+struct spotLight_t {
+    vec3 position;
+    vec3 direction;
+
+    float innerCutOff;
+    float outerCutOff;
 
     vec3 ambient;
     vec3 diffuse;
@@ -50,8 +63,12 @@ struct light_t {
 
 
 uniform vec3 viewPos;
+
+//uniform bool useBlinnSpecular;
+
 uniform material_t material;
-uniform light_t light;
+uniform pointLight_t pointlight;
+uniform spotLight_t spotLight;
 
 in vec3 f_position;
 in vec3 f_normal;
@@ -59,8 +76,12 @@ in vec2 f_texcoord;
 
 out vec4 color;
 
+
+vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir);
+
+
 //
-// TODO: add layout qualifiers to subroutine definition and uniform
+// TODO: add layout qualifiers
 //
 
 
@@ -72,36 +93,42 @@ out vec4 color;
 //}
 
 
-//
-// lighting subroutines
-//
-subroutine vec4 lightingFunc();
-subroutine uniform lightingFunc LightingFunction;
+/*
+vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 viewDir) {
+    vec3 lightDir = normalize(-light.direction);
 
-subroutine(lightingFunc)
-vec4 light_subroutine() {
-    return vec4(1.0f); // set all 4 vector values to 1.0f
+    // diffuse
+    float diff = max(dot(normal, lightDir), 0.0f);
+
+    // specular
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess); // Phong
+
+    vec3 ambient = light.ambient * vec3(texture(material.diffuse, texcoords));
+    vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, texcoords));
+    vec3 specular = light.specular * spec * vec3(texture(material.specular, texcoords));
+    return (ambient + diffuse + specular);
 }
+*/
 
-subroutine(lightingFunc)
-vec4 phong_subroutine() {
+
+vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir) {
+    vec3 lightDir = normalize(light.position - fragPosition);
+
     // ambient
     vec3 ambient = light.ambient * material.ambient * texture(material.diffuseMap, f_texcoord).xyz;
 
     // diffuse
-    vec3 norm = normalize(f_normal);
-    vec3 lightDir = normalize(light.position - f_position);
+    vec3 norm = normalize(normal);
     float diff = max(dot(norm, lightDir), 0.0f);
     vec3 diffuse = light.diffuse * (diff * material.diffuse * texture(material.diffuseMap, f_texcoord).xyz);
 
     // specular
-    vec3 viewDir = normalize(viewPos - f_position);
-
     //
     // TODO: make the useBlinn boolean a uniform and allow it to be set with a key press so
     //       can switch back and forth between Phong specular and Blinn-Phong specular claculation
     //
-    bool useBlinn = true;
+    bool useBlinn = false;
 
     float spec = 0.0f;
     if (useBlinn) {
@@ -116,24 +143,25 @@ vec4 phong_subroutine() {
     vec3 specular = light.specular * (spec * material.specular);
 
     // attenuation
-    float distance = length(light.position - f_position);
+    float distance = length(light.position - fragPosition);
     float attenuation = 1.0f / (light.constant - light.linear * distance + light.quadratic * (distance * distance));
 
     ambient  *= attenuation;
     diffuse  *= attenuation;
     specular *= attenuation;
 
-    vec3 result = ambient + diffuse + specular;
+    return(ambient + diffuse + specular);
+}
+
+void main() {
+    vec3 viewDir = normalize(viewPos - f_position);
+    vec3 result = calc_point_light(pointlight, f_normal, f_position, viewDir);
 
     //
-    // TODO: add gamma correction
+    // TODO: add gamma correction (find some assets with a rendered frame for reference)
     //
     //float gamma = 2.2f;
     //result = pow(result, vec3(1.0f/gamma));
 
-    return vec4(result, 1.0f);
-}
-
-void main() {
-    color = LightingFunction();
+    color = vec4(result, 1.0f);
 }

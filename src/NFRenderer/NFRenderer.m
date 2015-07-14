@@ -139,7 +139,8 @@
     m_pAsset = [NFAssetLoader allocAssetDataOfType:kWavefrontObj withArgs:fileNamePath, nil];
     [m_pAsset generateRenderables];
 
-    //m_pAsset.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 0.75f, 1.0f);
+    //m_pAsset.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 1.0f, 0.0f);
+    //[m_pAsset stepTransforms:0.0f];
 
     //[m_pAsset applyOriginCenterMatrix];
     //[m_pAsset applyUnitScalarMatrix]; // use for teapot
@@ -170,6 +171,11 @@
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+
+    //
+    // TODO: add support for multisampling in window creation (NFView)
+    //
+    //glEnable(GL_MULTISAMPLE);
 
     //
     // TODO: add support for gamma correction

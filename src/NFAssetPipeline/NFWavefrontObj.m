@@ -147,10 +147,6 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
             // - v = 0.5 - arcsin(vec.y)/pi
 
 
-            //
-            // TODO: find vector from center point to the vertex and normalize, this is
-            //       the vector that should be used in the texture coordinate calculation
-            //
             //GLKVector3 vec = GLKVector3Subtract(vertex, center);
             //vec = GLKVector3Normalize(vec);
 
@@ -158,27 +154,8 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
 
             //
-            // TODO: will need to use an alternative texture coordinate algorithm than this naive spherical mapping
-            //       since this will introduce texturing artifacts where the texture wraps
-            //
-
-            // alternative algorithms to try
-            // - cubic mapping
-            // - omnitect mapping
-            // - icosahedral mapping
-            // - octahedral mapping
-
-            // could also just generate a solid color diffuse texture and provide a UV unwrapped texture
-            // that can be updated externally to the application
-
-            //
-            // TODO: convert xyz to a spherical coordinate and assign texture coordinate based on
-            //       phi and theta divied by their respective ranges M_PI and 2*M_PI
-            //
-
-
-            //
-            // TODO: try octahedral mapping, start with cube or spherical environment mapping
+            // TODO: use a cubemap for assets that don't have a texture or attempt to modify the geometry itself
+            //       to allow for conincident vertices along the spherical edge used to generate texture coordinates
             //
 
 
@@ -195,12 +172,10 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
             //float theta = acosf(vertex.y / sqrtf(powf(vertex.x, 2.0f) + powf(vertex.y, 2.0f) + powf(vertex.z, 2.0f)));
             //float phi = 0.5 + atan2f(vertex.x, vertex.z);
 
-
             GLKVector3 texCoord;
             texCoord.s = 0.5f + atan2f(vertex.z, vertex.x) / (2 * M_PI);
             texCoord.t = 0.5f - asin(vertex.y) / M_PI;
             texCoord.p = 0.0f;
-
 
             //
             // NOTE: this is the texture coordinate equation used in the UV sphere generation
@@ -208,15 +183,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
             //texCoord.s = phi / M_PI;
             //texCoord.t = theta / (2*M_PI);
 
-            //
-            // TODO: take into account the relative position of the normal along the unit sphere and generate
-            //       coincident vertices along that unit sphere, then perform texture mapping ??
-            //
 
-
-            //
-            // TODO: verify that these clamps aren't needed
-            //
             if (texCoord.s < 0.0f) {
                 NSLog(@"s coord wrapped: %f", texCoord.s);
                 texCoord.s = 0.0f;

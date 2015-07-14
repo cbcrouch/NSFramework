@@ -17,7 +17,9 @@ typedef NS_ENUM(NSUInteger, ASSET_TYPE) {
     kGridWireframe,
     kAxisWireframe,
 
-    kSolidUVSphere
+    kSolidCylinder,
+    kSolidUVSphere,
+    kSolidCone
 
     //
     // TODO: add support for solid cones and cylinders

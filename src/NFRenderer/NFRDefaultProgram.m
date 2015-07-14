@@ -23,8 +23,6 @@
 
 @synthesize modelMatrixLocation = _modelMatrixLocation;
 @synthesize viewPositionLocation = _viewPositionLocation;
-@synthesize lightSubroutine = _lightSubroutine;
-@synthesize phongSubroutine = _phongSubroutine;
 
 @synthesize hUBO = _hUBO;
 @synthesize hProgram = _hProgram;
@@ -65,25 +63,25 @@
 
     // light struct uniform locations
     pointLightUniforms_t phongLight;
-    phongLight.ambientLoc = glGetUniformLocation(self.hProgram, "light.ambient");
+    phongLight.ambientLoc = glGetUniformLocation(self.hProgram, "pointlight.ambient");
     NSAssert(phongLight.ambientLoc != -1, @"failed to get uniform location");
 
-    phongLight.diffuseLoc = glGetUniformLocation(self.hProgram, "light.diffuse");
+    phongLight.diffuseLoc = glGetUniformLocation(self.hProgram, "pointlight.diffuse");
     NSAssert(phongLight.diffuseLoc != -1, @"failed to get uniform location");
 
-    phongLight.specularLoc = glGetUniformLocation(self.hProgram, "light.specular");
+    phongLight.specularLoc = glGetUniformLocation(self.hProgram, "pointlight.specular");
     NSAssert(phongLight.specularLoc != -1, @"failed to get uniform location");
 
-    phongLight.positionLoc = glGetUniformLocation(self.hProgram, "light.position");
+    phongLight.positionLoc = glGetUniformLocation(self.hProgram, "pointlight.position");
     NSAssert(phongLight.positionLoc != -1, @"failed to get uniform location");
 
-    phongLight.constantLoc = glGetUniformLocation(self.hProgram, "light.constant");
+    phongLight.constantLoc = glGetUniformLocation(self.hProgram, "pointlight.constant");
     NSAssert(phongLight.constantLoc != -1, @"failed to get uniform location");
 
-    phongLight.linearLoc = glGetUniformLocation(self.hProgram, "light.linear");
+    phongLight.linearLoc = glGetUniformLocation(self.hProgram, "pointlight.linear");
     NSAssert(phongLight.linearLoc != -1, @"failed to get uniform location");
 
-    phongLight.quadraticLoc = glGetUniformLocation(self.hProgram, "light.quadratic");
+    phongLight.quadraticLoc = glGetUniformLocation(self.hProgram, "pointlight.quadratic");
     NSAssert(phongLight.quadraticLoc != -1, @"failed to get uniform location");
 
     [self setLightUniforms:phongLight];
@@ -95,13 +93,6 @@
     // view position uniform location
     [self setViewPositionLocation:glGetUniformLocation(self.hProgram, "viewPos")];
     NSAssert(self.viewPositionLocation != -1, @"failed to get uniform location");
-
-    // subroutine indices
-    [self setLightSubroutine:glGetSubroutineIndex(self.hProgram, GL_FRAGMENT_SHADER, "light_subroutine")];
-    NSAssert(self.lightSubroutine != GL_INVALID_INDEX, @"failed to get subroutine index");
-
-    [self setPhongSubroutine:glGetSubroutineIndex(self.hProgram, GL_FRAGMENT_SHADER, "phong_subroutine")];
-    NSAssert(self.phongSubroutine != GL_INVALID_INDEX, @"failed to get subroutine index");
 
     // uniform buffer for view and projection matrix
     [self setHUBO:[NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:self.hProgram]];
@@ -173,11 +164,6 @@
 
 - (void) drawGeometry:(NFRGeometry*)geometry {
     glUseProgram(self.hProgram);
-
-    //
-    // TODO: need a better way of handling subroutines
-    //
-    [self activateSubroutine:@"PhongSubroutine"];
 
     //
     // TODO: the follow are also listed in the default mtl file and should be handled appropiately
@@ -253,20 +239,6 @@
 
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
     CHECK_GL_ERROR();
-}
-
-- (void)activateSubroutine:(NSString *)subroutine {
-    if ([subroutine isEqualToString:@"PhongSubroutine"]) {
-        GLuint phongSubroutine = self.phongSubroutine;
-        glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &(phongSubroutine));
-    }
-    else if ([subroutine isEqualToString:@"LightSubroutine"]) {
-        GLuint lightSubroutine = self.lightSubroutine;
-        glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &(lightSubroutine));
-    }
-    else {
-        NSLog(@"WARNING: NFRPhongProgram recieved unknown subroutine name in activeSubroutine method, no subroutine bound");
-    }
 }
 
 - (void) updateViewPosition:(GLKVector3)viewPosition {

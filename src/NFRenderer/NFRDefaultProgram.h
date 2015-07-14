@@ -48,8 +48,6 @@ typedef struct pointLightUniforms_t {
 
 @property (nonatomic, assign) GLint modelMatrixLocation;
 @property (nonatomic, assign) GLint viewPositionLocation;
-@property (nonatomic, assign) GLuint lightSubroutine;
-@property (nonatomic, assign) GLuint phongSubroutine;
 
 @property (nonatomic, assign) GLuint hUBO;
 
