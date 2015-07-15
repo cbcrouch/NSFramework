@@ -436,4 +436,56 @@ static const char *g_faceType = @encode(NFFace_t);
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
 
+- (void) createCylinder:(float)radius ofHeight:(float)height withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
+    //
+    // TODO: implement
+    //
+
+    const NSInteger numVertices = 3;
+    const NSInteger numIndices = 3;
+
+    NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
+
+    NFDebugVertex_t vertices[numVertices];
+
+    //
+
+    vertices[0].pos[0] = 0.0f;
+    vertices[0].pos[1] = 0.0f;
+    vertices[0].pos[2] = 0.0f;
+
+    vertices[1].pos[0] = 0.0f;
+    vertices[1].pos[1] = 0.0f;
+    vertices[1].pos[2] = 0.0f;
+
+    vertices[2].pos[0] = 0.0f;
+    vertices[2].pos[1] = 0.0f;
+    vertices[2].pos[2] = 0.0f;
+
+
+    [pSubset allocateVerticesOfType:kVertexFormatDebug withNumVertices:numVertices];
+    [pSubset loadVertexData:vertices ofType:kVertexFormatDebug withNumVertices:numVertices];
+
+
+
+    GLushort indices[numIndices];
+
+    //
+
+    indices[0] = 0;
+    indices[1] = 1;
+    indices[2] = 2;
+
+    [pSubset allocateIndicesWithNumElts:numIndices];
+    [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
+
+    self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
+}
+
+- (void) createCone:(float)radius ofHeight:(float)height withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
+    //
+    // TODO: implement
+    //
+}
+
 @end

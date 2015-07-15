@@ -126,9 +126,30 @@
         break;
 
         case kSolidCylinder: {
-            //
-            // TODO: implement
-            //
+            NF_VERTEX_FORMAT vertexType = kVertexFormatDefault;
+
+            if(firstArg != nil) {
+                vertexType = (NF_VERTEX_FORMAT)firstArg;
+            }
+
+            
+            [asset createCylinder:1.0f ofHeight:4.0f withVertexFormat:vertexType];
+
+
+            NFAssetSubset* subset = [asset.subsetArray objectAtIndex:0];
+            [subset setDrawMode:kDrawLineLoop];
+
+
+            if (vertexType == kVertexFormatDefault) {
+                NFSurfaceModel *surface = [NFSurfaceModel defaultSurfaceModel];
+                NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];
+                [surfaceModels addObject:surface];
+
+                asset.surfaceModelArray = surfaceModels;
+                for (NFAssetSubset *subset in [asset subsetArray]) {
+                    subset.surfaceModel = [surfaceModels objectAtIndex:0];
+                }
+            }
         }
         break;
 

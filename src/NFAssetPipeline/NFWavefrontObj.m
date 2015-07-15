@@ -158,6 +158,8 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
             //       to allow for conincident vertices along the spherical edge used to generate texture coordinates
             //
 
+            // (don't forget to enable GL_TEXTURE_CUBE_MAP_SEAMLESS if using a cubemap)
+
 
             // spherical coordinates as mapped to perspective coordiantes (x to the right, y up, +z towards the camera)
             // x = r * sin(phi) * sin(theta);

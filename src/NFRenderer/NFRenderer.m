@@ -47,6 +47,7 @@
     NFAssetData* m_gridData;
     NFAssetData* m_planeData;
 
+    NFDirectionalLight* m_dirLight;
     NFPointLight* m_pointLight;
 
     id<NFRProgram> m_phongObject;
@@ -160,6 +161,7 @@
 
 
     m_pointLight = [[[NFPointLight alloc] init] retain];
+    m_dirLight = [[[NFDirectionalLight alloc] init] retain];
 
 
     _stepTransforms = NO;
@@ -189,12 +191,14 @@
     [m_renderRequest addGeometry:m_planeData.geometry];
 
     [m_renderRequest addLight:m_pointLight];
+    //[m_renderRequest addLight:m_dirLight];
 
 
     //[m_debugRenderRequest addGeometry:m_axisData.geometry];
     //[m_debugRenderRequest addGeometry:m_gridData.geometry];
     
     [m_debugRenderRequest addGeometry:m_pointLight.geometry];
+    [m_debugRenderRequest addGeometry:m_dirLight.geometry];
 
     return self;
 }
@@ -206,6 +210,7 @@
     [m_planeData release];
 
     [m_pointLight release];
+    [m_dirLight release];
 
     [m_phongObject release];
     [m_debugObject release];

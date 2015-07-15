@@ -136,9 +136,17 @@
     // TODO: also need to take into account the direction the light is facing
     //
     _assetData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, position.x, position.y, position.z);
-    _assetData.modelMatrix = GLKMatrix4Scale(_geometry.modelMatrix, 0.065f, 0.065f, 0.065f);
 
     [_assetData stepTransforms:0.0f];
+
+    for (NFAssetSubset *subset in self.assetData.subsetArray) {
+        GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.assetData.modelMatrix, subset.subsetModelMat);
+        [self.assetData.geometry setModelMatrix:renderModelMat];
+    }
+}
+
+- (NFRGeometry*) geometry {
+    return _assetData.geometry;
 }
 
 - (instancetype) init {
@@ -149,6 +157,30 @@
         //
 
         // directional light geometry will be a cylinder
+
+
+        //
+        // TODO: load some sensible default values
+        //
+
+        // point light geometry will be a sphere
+        _assetData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:(id)kVertexFormatDebug, nil];
+        [_assetData generateRenderables];
+
+        _position = GLKVector3Make(2.0f, 1.0f, 1.0f);
+
+        _assetData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 2.0f, 1.0f, 1.0f);
+        //_assetData.modelMatrix = GLKMatrix4Scale(_assetData.modelMatrix, 0.065f, 0.065f, 0.065f);
+
+        //
+        // TODO: currently need to apply a single step to the sphere in order to have its tranforms
+        //       applied, need to find a better/cleaner way to initialize the transforms
+        //
+        [_assetData stepTransforms:0.0f];
+
+        _ambient = GLKVector3Make(0.2f, 0.2f, 0.2f);
+        _diffuse = GLKVector3Make(0.5f, 0.5f, 0.5f);
+        _specular = GLKVector3Make(1.0f, 1.0f, 1.0f);
     }
     return self;
 }
@@ -183,9 +215,17 @@
     // TODO: also need to take into account the direction the light is facing
     //
     _assetData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, position.x, position.y, position.z);
-    _assetData.modelMatrix = GLKMatrix4Scale(_geometry.modelMatrix, 0.065f, 0.065f, 0.065f);
 
     [_assetData stepTransforms:0.0f];
+
+    for (NFAssetSubset *subset in self.assetData.subsetArray) {
+        GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.assetData.modelMatrix, subset.subsetModelMat);
+        [self.assetData.geometry setModelMatrix:renderModelMat];
+    }
+}
+
+- (NFRGeometry*) geometry {
+    return _assetData.geometry;
 }
 
 - (instancetype) init {
