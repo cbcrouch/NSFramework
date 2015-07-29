@@ -194,7 +194,7 @@
     //[m_renderRequest addLight:m_dirLight];
 
 
-    //[m_debugRenderRequest addGeometry:m_axisData.geometry];
+    [m_debugRenderRequest addGeometry:m_axisData.geometry];
     //[m_debugRenderRequest addGeometry:m_gridData.geometry];
     
     [m_debugRenderRequest addGeometry:m_pointLight.geometry];

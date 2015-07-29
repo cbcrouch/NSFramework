@@ -290,7 +290,7 @@ static const char *g_faceType = @encode(NFFace_t);
     if (vertexFormat == kVertexFormatDefault) {
         NFVertex_t vertices[numVertices];
 
-        // NOTE: need to add an extra slice to get a coincident vertex with both tex coord S = 0.0 and 1.0, and
+        // NOTE: need to add an extra slice to get a coincident vertex with tex coord S = 0.0 through 1.0, and
         //       and adding an extra stack to get the bottom point i.e. would take five vertical vertices to
         //       make four stacks
         int index=0;
@@ -449,18 +449,22 @@ static const char *g_faceType = @encode(NFFace_t);
     NFDebugVertex_t vertices[numVertices];
 
     //
+    // TODO: will need to build vertices/indices similiar to the UV sphere except should only need slices
+    //
+
+    height /= 2.0f;
 
     vertices[0].pos[0] = 0.0f;
-    vertices[0].pos[1] = 0.0f;
+    vertices[0].pos[1] = height;
     vertices[0].pos[2] = 0.0f;
 
-    vertices[1].pos[0] = 0.0f;
-    vertices[1].pos[1] = 0.0f;
+    vertices[1].pos[0] = 1.0f;
+    vertices[1].pos[1] = height;
     vertices[1].pos[2] = 0.0f;
 
     vertices[2].pos[0] = 0.0f;
-    vertices[2].pos[1] = 0.0f;
-    vertices[2].pos[2] = 0.0f;
+    vertices[2].pos[1] = height;
+    vertices[2].pos[2] = 1.0f;
 
 
     [pSubset allocateVerticesOfType:kVertexFormatDebug withNumVertices:numVertices];

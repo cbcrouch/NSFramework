@@ -107,7 +107,7 @@
     //
     // TODO: load defaults from a config file
     //
-    return [self initWithEyePosition:GLKVector3Make(4.0f, 2.0f, 4.0f)
+    return [self initWithEyePosition:GLKVector3Make(6.0f, 3.0f, 6.0f)
                       withLookVector:GLKVector3Make(0.0f, 0.0f, 0.0f)
                         withUpVector:GLKVector3Make(0.0f, 1.0f, 0.0f)];
 }

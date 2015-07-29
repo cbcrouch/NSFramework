@@ -133,11 +133,16 @@
             }
 
             
-            [asset createCylinder:1.0f ofHeight:4.0f withVertexFormat:vertexType];
+            [asset createCylinder:1.0f ofHeight:2.0f withVertexFormat:vertexType];
 
 
+            //
+            // TODO: get drawing with wireframe first
+            //
+#if 1
             NFAssetSubset* subset = [asset.subsetArray objectAtIndex:0];
             [subset setDrawMode:kDrawLineLoop];
+#endif
 
 
             if (vertexType == kVertexFormatDefault) {

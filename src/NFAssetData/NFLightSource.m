@@ -167,9 +167,10 @@
         _assetData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:(id)kVertexFormatDebug, nil];
         [_assetData generateRenderables];
 
-        _position = GLKVector3Make(2.0f, 1.0f, 1.0f);
+        //_position = GLKVector3Make(2.0f, 1.0f, 1.0f);
+        _position = GLKVector3Make(0.0f, 0.0f, 0.0f);
 
-        _assetData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 2.0f, 1.0f, 1.0f);
+        _assetData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, _position.x, _position.y, _position.z);
         //_assetData.modelMatrix = GLKMatrix4Scale(_assetData.modelMatrix, 0.065f, 0.065f, 0.065f);
 
         //
