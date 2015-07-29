@@ -437,10 +437,6 @@ static const char *g_faceType = @encode(NFFace_t);
 }
 
 - (void) createCylinder:(float)radius ofHeight:(float)height withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
-    //
-    // TODO: implement
-    //
-
     const NSInteger numVertices = 3;
     const NSInteger numIndices = 3;
 
@@ -448,23 +444,79 @@ static const char *g_faceType = @encode(NFFace_t);
 
     NFDebugVertex_t vertices[numVertices];
 
+    for (int i=0; i<numVertices; ++i) {
+        vertices[i].color[0] = 1.0f;
+        vertices[i].color[1] = 1.0f;
+        vertices[i].color[2] = 1.0f;
+        vertices[i].color[3] = 1.0f;
+    }
+
+
+    int slices = 32;
+
+    // 8 slices should result in a 45 degree v3 vector
+    // 16 slices => 22.5 degree v3 vector
+    // 32 slices => 11.25 degree v3 vector
+
+    // 8 / 4 = 2 points per quadrant => 45 degree v3 vector which needs 1 iteration
+    // 16 / 4 = 4 points per quadrant => 22.5 degree v3 vector which needs 2 iterations
+    // 32 / 4 = 8 points per quadrant => 11.25 degree v3 vector which needs 3 iterations
+
+
+    NSAssert(powerof2(slices) && slices > 4, @"slices must be a power of 2 and at least equal to 8");
+
+
     //
-    // TODO: will need to build vertices/indices similiar to the UV sphere except should only need slices
+    // TODO: build a fast (non x86) integer log2 algorithm
     //
+
+
+    uint32_t x = (slices >> 2); // divide slices by 4
+    uint32_t y;
+    __asm ( "\tbsr %1, %0\n" // return position of highest set bit (bit scan reverse)
+           : "=r"(y)
+           : "r" (x)
+           );
+
+    NSLog(@"y = %d", y);
+
+
+    int iterations = log2(slices / 4.0);
+
+    NSLog(@"n = %d", iterations);
+
+
 
     height /= 2.0f;
 
-    vertices[0].pos[0] = 0.0f;
-    vertices[0].pos[1] = height;
-    vertices[0].pos[2] = 0.0f;
+    GLKVector3 v0 = GLKVector3Make(0.0f, 0.0f, 0.0f);
+    GLKVector3 v1 = GLKVector3Make(1.0f, 0.0f, 0.0f);
+    GLKVector3 v2 = GLKVector3Make(0.0f, 0.0f, 1.0f);
 
-    vertices[1].pos[0] = 1.0f;
-    vertices[1].pos[1] = height;
-    vertices[1].pos[2] = 0.0f;
+    GLKVector3 v3 = GLKVector3Add(v1, v2); // 45 degree vector
+    //v3 = GLKVector3Normalize(v3);
 
-    vertices[2].pos[0] = 0.0f;
-    vertices[2].pos[1] = height;
-    vertices[2].pos[2] = 1.0f;
+    v3 = GLKVector3Normalize(GLKVector3Add(v1, v3));
+
+
+    v0.y = height;
+    v1.y = height;
+    v2.y = height;
+    v3.y = height;
+
+
+    vertices[0].pos[0] = v0.x;
+    vertices[0].pos[1] = v0.y;
+    vertices[0].pos[2] = v0.z;
+
+    vertices[1].pos[0] = v1.x;
+    vertices[1].pos[1] = v1.y;
+    vertices[1].pos[2] = v1.z;
+
+    vertices[2].pos[0] = v3.x;
+    vertices[2].pos[1] = v3.y;
+    vertices[2].pos[2] = v3.z;
+
 
 
     [pSubset allocateVerticesOfType:kVertexFormatDebug withNumVertices:numVertices];
