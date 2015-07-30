@@ -437,8 +437,13 @@ static const char *g_faceType = @encode(NFFace_t);
 }
 
 - (void) createCylinder:(float)radius ofHeight:(float)height withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
-    const NSInteger numVertices = 3;
-    const NSInteger numIndices = 3;
+
+    //
+    //
+    //
+    const NSInteger numVertices = 6;
+    const NSInteger numIndices = 12;
+
 
     NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
 
@@ -452,7 +457,7 @@ static const char *g_faceType = @encode(NFFace_t);
     }
 
 
-    int slices = 32;
+    uint32_t slices = 32;
 
     // 8 slices should result in a 45 degree v3 vector
     // 16 slices => 22.5 degree v3 vector
@@ -467,9 +472,8 @@ static const char *g_faceType = @encode(NFFace_t);
 
 
     //
-    // TODO: build a fast (non x86) integer log2 algorithm
+    // TODO: build a fast (non x86) integer log2 algorithm (lookup table ??)
     //
-
 
     uint32_t x = (slices >> 2); // divide slices by 4
     uint32_t y;
@@ -481,7 +485,7 @@ static const char *g_faceType = @encode(NFFace_t);
     NSLog(@"y = %d", y);
 
 
-    int iterations = log2(slices / 4.0);
+    uint32_t iterations = (uint32_t)log2(slices / 4.0);
 
     NSLog(@"n = %d", iterations);
 
@@ -494,34 +498,47 @@ static const char *g_faceType = @encode(NFFace_t);
     GLKVector3 v2 = GLKVector3Make(0.0f, 0.0f, 1.0f);
 
     GLKVector3 v3 = GLKVector3Add(v1, v2); // 45 degree vector
-    //v3 = GLKVector3Normalize(v3);
+    v3 = GLKVector3Normalize(v3);
 
-    v3 = GLKVector3Normalize(GLKVector3Add(v1, v3));
-
-
-    v0.y = height;
-    v1.y = height;
-    v2.y = height;
-    v3.y = height;
+    v3 = GLKVector3Normalize(GLKVector3Add(v1, v3)); // 22.5 degree vector
 
 
     vertices[0].pos[0] = v0.x;
-    vertices[0].pos[1] = v0.y;
+    vertices[0].pos[1] = height;
     vertices[0].pos[2] = v0.z;
 
     vertices[1].pos[0] = v1.x;
-    vertices[1].pos[1] = v1.y;
+    vertices[1].pos[1] = height;
     vertices[1].pos[2] = v1.z;
 
     vertices[2].pos[0] = v3.x;
-    vertices[2].pos[1] = v3.y;
+    vertices[2].pos[1] = height;
     vertices[2].pos[2] = v3.z;
 
+
+    v3 = GLKVector3Add(v1, v2);
+    v3 = GLKVector3Normalize(v3);
+
+    vertices[3].pos[0] = v3.x;
+    vertices[3].pos[1] = height;
+    vertices[3].pos[2] = v3.z;
+
+
+    v3 = GLKVector3Add(v3, v2);
+    v3 = GLKVector3Normalize(v3);
+
+    vertices[4].pos[0] = v3.x;
+    vertices[4].pos[1] = height;
+    vertices[4].pos[2] = v3.z;
+
+
+    vertices[5].pos[0] = v2.x;
+    vertices[5].pos[1] = height;
+    vertices[5].pos[2] = v2.z;
 
 
     [pSubset allocateVerticesOfType:kVertexFormatDebug withNumVertices:numVertices];
     [pSubset loadVertexData:vertices ofType:kVertexFormatDebug withNumVertices:numVertices];
-
 
 
     GLushort indices[numIndices];
@@ -529,8 +546,21 @@ static const char *g_faceType = @encode(NFFace_t);
     //
 
     indices[0] = 0;
-    indices[1] = 1;
-    indices[2] = 2;
+    indices[1] = 2;
+    indices[2] = 1;
+
+    indices[3] = 0;
+    indices[4] = 3;
+    indices[5] = 2;
+
+    indices[6] = 0;
+    indices[7] = 4;
+    indices[8] = 3;
+
+    indices[9] = 0;
+    indices[10] = 5;
+    indices[11] = 4;
+
 
     [pSubset allocateIndicesWithNumElts:numIndices];
     [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];

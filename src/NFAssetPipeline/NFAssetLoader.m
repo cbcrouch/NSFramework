@@ -132,7 +132,6 @@
                 vertexType = (NF_VERTEX_FORMAT)firstArg;
             }
 
-            
             [asset createCylinder:1.0f ofHeight:2.0f withVertexFormat:vertexType];
 
 
