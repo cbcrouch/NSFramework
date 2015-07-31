@@ -441,8 +441,12 @@ static const char *g_faceType = @encode(NFFace_t);
     //
     //
     //
-    const NSInteger numVertices = 6;
-    const NSInteger numIndices = 12;
+    //const NSInteger numVertices = 6;
+    const NSInteger numVertices = 6*2;
+
+    //const NSInteger numIndices = 12*2;
+
+    const NSInteger numIndices = 18;
 
 
     NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
@@ -491,7 +495,7 @@ static const char *g_faceType = @encode(NFFace_t);
 
 
 
-    height /= 2.0f;
+    //height /= 2.0f;
 
     GLKVector3 v0 = GLKVector3Make(0.0f, 0.0f, 0.0f);
     GLKVector3 v1 = GLKVector3Make(1.0f, 0.0f, 0.0f);
@@ -503,6 +507,9 @@ static const char *g_faceType = @encode(NFFace_t);
     v3 = GLKVector3Normalize(GLKVector3Add(v1, v3)); // 22.5 degree vector
 
 
+    //
+    // TODO: will need coincident vertices for center the cylinder
+    //
     vertices[0].pos[0] = v0.x;
     vertices[0].pos[1] = height;
     vertices[0].pos[2] = v0.z;
@@ -516,12 +523,39 @@ static const char *g_faceType = @encode(NFFace_t);
     vertices[2].pos[2] = v3.z;
 
 
+
+
+    vertices[6].pos[0] = v0.x;
+    vertices[6].pos[1] = height/2.0;
+    vertices[6].pos[2] = v0.z;
+
+    vertices[7].pos[0] = v1.x;
+    vertices[7].pos[1] = height/2.0;
+    vertices[7].pos[2] = v1.z;
+
+    vertices[8].pos[0] = v3.x;
+    vertices[8].pos[1] = height/2.0;
+    vertices[8].pos[2] = v3.z;
+
+
+
+
+
     v3 = GLKVector3Add(v1, v2);
     v3 = GLKVector3Normalize(v3);
 
     vertices[3].pos[0] = v3.x;
     vertices[3].pos[1] = height;
     vertices[3].pos[2] = v3.z;
+
+
+
+    vertices[9].pos[0] = v3.x;
+    vertices[9].pos[1] = height/2.0;
+    vertices[9].pos[2] = v3.z;
+
+
+
 
 
     v3 = GLKVector3Add(v3, v2);
@@ -532,9 +566,24 @@ static const char *g_faceType = @encode(NFFace_t);
     vertices[4].pos[2] = v3.z;
 
 
+    vertices[10].pos[0] = v3.x;
+    vertices[10].pos[1] = height;
+    vertices[10].pos[2] = v3.z;
+
+
+
+
+
     vertices[5].pos[0] = v2.x;
     vertices[5].pos[1] = height;
     vertices[5].pos[2] = v2.z;
+
+
+
+    vertices[11].pos[0] = v2.x;
+    vertices[11].pos[1] = height;
+    vertices[11].pos[2] = v2.z;
+
 
 
     [pSubset allocateVerticesOfType:kVertexFormatDebug withNumVertices:numVertices];
@@ -542,6 +591,9 @@ static const char *g_faceType = @encode(NFFace_t);
 
 
     GLushort indices[numIndices];
+
+    memset(indices, 0, numIndices * sizeof(GLushort));
+
 
     //
 
@@ -560,6 +612,17 @@ static const char *g_faceType = @encode(NFFace_t);
     indices[9] = 0;
     indices[10] = 5;
     indices[11] = 4;
+
+
+
+    indices[12] = 2;
+    indices[13] = 7;
+    indices[14] = 1;
+
+    indices[15] = 2;
+    indices[16] = 8;
+    indices[17] = 7;
+
 
 
     [pSubset allocateIndicesWithNumElts:numIndices];
