@@ -441,7 +441,7 @@ static const char *g_faceType = @encode(NFFace_t);
 
     const NSInteger numVertices = 12;
 
-    const NSInteger numIndices = 30;
+    const NSInteger numIndices = 48;
 
 
     NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
@@ -579,53 +579,107 @@ static const char *g_faceType = @encode(NFFace_t);
 
     GLushort indices[numIndices];
 
+    int i = 0;
 
     // top of the cylinder
-    indices[0] = 0;
-    indices[1] = 2;
-    indices[2] = 1;
+    indices[i]   = 0;
+    indices[i+1] = 2;
+    indices[i+2] = 1;
+    i += 3;
 
-    indices[3] = 0;
-    indices[4] = 3;
-    indices[5] = 2;
+    indices[i]   = 0;
+    indices[i+1] = 3;
+    indices[i+2] = 2;
+    i += 3;
 
-    indices[6] = 0;
-    indices[7] = 4;
-    indices[8] = 3;
+    indices[i]   = 0;
+    indices[i+1] = 4;
+    indices[i+2] = 3;
+    i += 3;
 
-    indices[9] = 0;
-    indices[10] = 5;
-    indices[11] = 4;
+    indices[i]   = 0;
+    indices[i+1] = 5;
+    indices[i+2] = 4;
+    i += 3;
 
 
     // first side of the cylinder
-    indices[12] = 2;
-    indices[13] = 7;
-    indices[14] = 1;
+    indices[i]   = 2;
+    indices[i+1] = 7;
+    indices[i+2] = 1;
+    i += 3;
 
-    indices[15] = 2;
-    indices[16] = 8;
-    indices[17] = 7;
+    indices[i]   = 2;
+    indices[i+1] = 8;
+    indices[i+2] = 7;
+    i += 3;
+
+    //
+    // TODO: indexing scheme for all sides of the cylinder
+    //
+
+    // 2, 1 are the top points
+    // 7, 8 are the bottom points
+
+    // 2nd top, 1st bottom, 1st top
+
+    // 2nd top, 2nd bottom, 1st bottom
+
+    indices[i]   = 3;
+    indices[i+1] = 8;
+    indices[i+2] = 2;
+    i += 3;
+
+    indices[i]   = 3;
+    indices[i+1] = 9;
+    indices[i+2] = 8;
+    i += 3;
+
+
+    indices[i]   = 4;
+    indices[i+1] = 9;
+    indices[i+2] = 3;
+    i += 3;
+
+    indices[i]   = 4;
+    indices[i+1] = 10;
+    indices[i+2] = 9;
+    i += 3;
+
+
+    // last side of cylinder in quadrant
+    indices[i]   = 5;
+    indices[i+1] = 10;
+    indices[i+2] = 4;
+    i += 3;
+
+    indices[i]   = 5;
+    indices[i+1] = 11;
+    indices[i+2] = 10;
+    i += 3;
 
 
 
     // bottom of the cylinder
-    indices[18] = 6;
-    indices[19] = 7;
-    indices[20] = 8;
+    indices[i]   = 6;
+    indices[i+1] = 7;
+    indices[i+2] = 8;
+    i += 3;
 
-    indices[21] = 6;
-    indices[22] = 8;
-    indices[23] = 9;
+    indices[i]   = 6;
+    indices[i+1] = 8;
+    indices[i+2] = 9;
+    i += 3;
 
-    indices[24] = 6;
-    indices[25] = 9;
-    indices[26] = 10;
+    indices[i]   = 6;
+    indices[i+1] = 9;
+    indices[i+2] = 10;
+    i += 3;
 
-    indices[27] = 6;
-    indices[28] = 10;
-    indices[29] = 11;
-
+    indices[i]   = 6;
+    indices[i+1] = 10;
+    indices[i+2] = 11;
+    i += 3;
 
 
     [pSubset allocateIndicesWithNumElts:numIndices];
