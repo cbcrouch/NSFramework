@@ -539,21 +539,7 @@ static const char *g_faceType = @encode(NFFace_t);
     ++vertIndex;
 
 
-
     // first bottom triangle
-/*
-    vertices[6].pos[0] = v0.x;
-    vertices[6].pos[1] = height/2.0;
-    vertices[6].pos[2] = v0.z;
-
-    vertices[7].pos[0] = v1.x;
-    vertices[7].pos[1] = height/2.0;
-    vertices[7].pos[2] = v1.z;
-
-    vertices[8].pos[0] = v3.x;
-    vertices[8].pos[1] = height/2.0;
-    vertices[8].pos[2] = v3.z;
-*/
     vertices[vertIndex].pos[0] = v0.x;
     vertices[vertIndex].pos[1] = height/2.0;
     vertices[vertIndex].pos[2] = v0.z;
@@ -638,105 +624,34 @@ static const char *g_faceType = @encode(NFFace_t);
 
     int i = 0;
 
+    //
+    // TODO: fix these indices
+    //
+
     // top of the cylinder
     indices[i]   = 0;
     indices[i+1] = 2;
     indices[i+2] = 1;
     i += 3;
 
-    indices[i]   = 0;
-    indices[i+1] = 3;
-    indices[i+2] = 2;
-    i += 3;
-
-    indices[i]   = 0;
-    indices[i+1] = 4;
-    indices[i+2] = 3;
-    i += 3;
-
-    indices[i]   = 0;
-    indices[i+1] = 5;
-    indices[i+2] = 4;
-    i += 3;
-
-/*
-    // first side of the cylinder
+    // first triangle of side
     indices[i]   = 2;
-    indices[i+1] = 7;
+    indices[i+1] = 4;
     indices[i+2] = 1;
     i += 3;
 
-    indices[i]   = 2;
-    indices[i+1] = 8;
-    indices[i+2] = 7;
-    i += 3;
-
-    //
-    // TODO: indexing scheme for all sides of the cylinder
-    //
-
-    // 2, 1 are the top points
-    // 7, 8 are the bottom points
-
-    // 2nd top, 1st bottom, 1st top
-
-    // 2nd top, 2nd bottom, 1st bottom
-
-    indices[i]   = 3;
-    indices[i+1] = 8;
+    // second triangle of side
+    indices[i]   = 5;
+    indices[i+1] = 4;
     indices[i+2] = 2;
     i += 3;
 
-    indices[i]   = 3;
-    indices[i+1] = 9;
-    indices[i+2] = 8;
-    i += 3;
-
-
+    // bottom of the cylinder
     indices[i]   = 4;
-    indices[i+1] = 9;
+    indices[i+1] = 5;
     indices[i+2] = 3;
     i += 3;
 
-    indices[i]   = 4;
-    indices[i+1] = 10;
-    indices[i+2] = 9;
-    i += 3;
-
-
-    // last side of cylinder in quadrant
-    indices[i]   = 5;
-    indices[i+1] = 10;
-    indices[i+2] = 4;
-    i += 3;
-
-    indices[i]   = 5;
-    indices[i+1] = 11;
-    indices[i+2] = 10;
-    i += 3;
-
-
-
-    // bottom of the cylinder
-    indices[i]   = 6;
-    indices[i+1] = 7;
-    indices[i+2] = 8;
-    i += 3;
-
-    indices[i]   = 6;
-    indices[i+1] = 8;
-    indices[i+2] = 9;
-    i += 3;
-
-    indices[i]   = 6;
-    indices[i+1] = 9;
-    indices[i+2] = 10;
-    i += 3;
-
-    indices[i]   = 6;
-    indices[i+1] = 10;
-    indices[i+2] = 11;
-*/
 
 
     [pSubset allocateIndicesWithNumElts:numIndices];
