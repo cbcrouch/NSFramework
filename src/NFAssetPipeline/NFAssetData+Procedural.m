@@ -509,6 +509,9 @@ static const char *g_faceType = @encode(NFFace_t);
     //v3 = GLKVector3Normalize(GLKVector3Add(v1, v3)); // 45 degree vector
     //v3 = GLKVector3Normalize(GLKVector3Add(v1, v3)); // 22.5 degree vector
 
+    //
+    // TODO: replace this calculation by simply constructing a quaternion for rotation
+    //
     for (int i=0; i<slicesPerQuad/2; ++i) {
         v3 = GLKVector3Normalize(GLKVector3Add(v1, v3));
     }
@@ -521,6 +524,11 @@ static const char *g_faceType = @encode(NFFace_t);
 
 
     int vertIndex = 0;
+
+
+    //
+    // TODO: put v0, v1, and v3 vectors into an array so can loop over these easily
+    //
 
     // first top triangle
     vertices[vertIndex].pos[0] = v0.x;
@@ -556,63 +564,55 @@ static const char *g_faceType = @encode(NFFace_t);
     ++vertIndex;
 
 
-/*
+    // v1 is currently the x-axis
+
+    // v3 is the 22.5 degree vector
+
+
+
+    // to get the next vector
+    // - v1 = v3
+    // - v3 = quaternion rotation
+
+
+    GLKVector3 temp = GLKVector3Normalize(GLKVector3Add(v1, v2));
+    NSLog(@"45 degree vector (%f, %f, %f", temp.x, temp.y, temp.z);
+
 
     //
+    // TODO: cleanup usage of quaternion
+    //
+
+    GLKQuaternion quat = GLKQuaternionMakeWithAngleAndAxis((M_PI / 180.0f) * -22.5f, 0.0f, 1.0f, 0.0f);
+
+    temp = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, v3));
+
+
+    //
+    // TODO: the following should be faster than v' = q * v * conjugate(q)
+    //       (was it inverse(q) ???)
+    //
+    // t = 2 * cross(q.xyz, v)
+    // v' = v + q.w * t + cross(q.wyz, t)
+
+
+    NSLog(@"quaternion rotated vector (%f, %f, %f", temp.x, temp.y, temp.z);
+
+
+
     // first iteration
-    //
-
-    v3 = GLKVector3Add(v1, v2);
-    v3 = GLKVector3Normalize(v3);
-
-    // add a coincident vertex along the axis
-
-    //vertices[idx].pos[0] = v0.x;
-    //vertices[idx].pos[1] = height;
-    //vertices[idx].pos[2] = v0.z;
-
-    // next top vertex
-    vertices[3].pos[0] = v3.x;
-    vertices[3].pos[1] = height;
-    vertices[3].pos[2] = v3.z;
-
-    // next bottom vertex
-    vertices[9].pos[0] = v3.x;
-    vertices[9].pos[1] = height/2.0;
-    vertices[9].pos[2] = v3.z;
+    //v3 = GLKVector3Add(v1, v2);
+    //v3 = GLKVector3Normalize(v3);
 
 
-
-    //
     // second iteration
-    //
-
-    v3 = GLKVector3Add(v3, v2);
-    v3 = GLKVector3Normalize(v3);
-
-    // next top vertex
-    vertices[4].pos[0] = v3.x;
-    vertices[4].pos[1] = height;
-    vertices[4].pos[2] = v3.z;
-
-    // next bottom vertex
-    vertices[10].pos[0] = v3.x;
-    vertices[10].pos[1] = height/2.0;
-    vertices[10].pos[2] = v3.z;
+    //v3 = GLKVector3Add(v3, v2);
+    //v3 = GLKVector3Normalize(v3);
 
 
+    //v3 = GLKVector3Normalize(GLKVector3Add(v1, v3));
 
 
-    // last top vertex
-    vertices[5].pos[0] = v2.x;
-    vertices[5].pos[1] = height;
-    vertices[5].pos[2] = v2.z;
-
-    // last bottom vertex
-    vertices[11].pos[0] = v2.x;
-    vertices[11].pos[1] = height/2.0;
-    vertices[11].pos[2] = v2.z;
-*/
 
 
     [pSubset allocateVerticesOfType:kVertexFormatDebug withNumVertices:numVertices];
@@ -623,10 +623,6 @@ static const char *g_faceType = @encode(NFFace_t);
     GLushort indices[numIndices];
 
     int i = 0;
-
-    //
-    // TODO: fix these indices
-    //
 
     // top of the cylinder
     indices[i]   = 0;
@@ -650,7 +646,7 @@ static const char *g_faceType = @encode(NFFace_t);
     indices[i]   = 4;
     indices[i+1] = 5;
     indices[i+2] = 3;
-    i += 3;
+    //i += 3;
 
 
 
