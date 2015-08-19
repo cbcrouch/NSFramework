@@ -12,7 +12,10 @@
 
 @protocol NFRProgram;
 
-
+//
+// TODO: rename to something like NFRState and migrate all state to it, then when geometry, etc.
+//       is added to the command list it takes a copy of the state object
+//
 @interface NFRBufferAttributes : NSObject
 
 @property (nonatomic, assign, readonly) GLuint hVAO;
