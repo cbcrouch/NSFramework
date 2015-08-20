@@ -468,13 +468,13 @@ static const char *g_faceType = @encode(NFFace_t);
     // 32 / 4 = 8 points per quadrant => 11.25 degree v3 vector which needs 3 iterations
 
 
-    NSAssert(powerof2(slices) && slices > 4, @"slices must be a power of 2 and at least equal to 8");
+    NSAssert(powerof2(slices) && slices >= 8, @"slices must be a power of 2 and at least equal to 8");
 
 
     //
     // TODO: build a fast (non x86) integer log2 algorithm (lookup table ??)
     //
-
+/*
     uint32_t x = (slices >> 2); // divide slices by 4
     uint32_t y;
     __asm ( "\tbsr %1, %0\n" // return position of highest set bit (bit scan reverse)
@@ -488,7 +488,7 @@ static const char *g_faceType = @encode(NFFace_t);
     uint32_t iterations = (uint32_t)log2(slices / 4.0);
 
     NSLog(@"n = %d", iterations);
-
+*/
 
 
     uint32_t slicesPerQuad = slices / 4;
@@ -497,121 +497,57 @@ static const char *g_faceType = @encode(NFFace_t);
 
 
 
-    //height /= 2.0f;
 
-    GLKVector3 v0 = GLKVector3Make(0.0f, 0.0f, 0.0f);
-    GLKVector3 v1 = GLKVector3Make(1.0f, 0.0f, 0.0f);
-    GLKVector3 v2 = GLKVector3Make(0.0f, 0.0f, 1.0f);
+    GLKVector3 vecs[3];
+    vecs[0] = GLKVector3Make(0.0f, 0.0f, 0.0f);
+    vecs[1] = GLKVector3Make(1.0f, 0.0f, 0.0f);
+    vecs[2] = vecs[1];
 
 
-    GLKVector3 v3 = v2;
-
-    //v3 = GLKVector3Normalize(GLKVector3Add(v1, v3)); // 45 degree vector
-    //v3 = GLKVector3Normalize(GLKVector3Add(v1, v3)); // 22.5 degree vector
-
-    //
-    // TODO: replace this calculation by simply constructing a quaternion for rotation
-    //
-    for (int i=0; i<slicesPerQuad/2; ++i) {
-        v3 = GLKVector3Normalize(GLKVector3Add(v1, v3));
-    }
-
+    GLKQuaternion quat = GLKQuaternionMakeWithAngleAndAxis(-1.0f * M_PI / (float)(slicesPerQuad*2), 0.0f, 1.0f, 0.0f);
 
 
     //
-    // TODO: will need coincident vertices for center the cylinder
-    //
-
-
-    int vertIndex = 0;
-
-
-    //
-    // TODO: put v0, v1, and v3 vectors into an array so can loop over these easily
-    //
-
-    // first top triangle
-    vertices[vertIndex].pos[0] = v0.x;
-    vertices[vertIndex].pos[1] = height;
-    vertices[vertIndex].pos[2] = v0.z;
-    ++vertIndex;
-
-    vertices[vertIndex].pos[0] = v1.x;
-    vertices[vertIndex].pos[1] = height;
-    vertices[vertIndex].pos[2] = v1.z;
-    ++vertIndex;
-
-    vertices[vertIndex].pos[0] = v3.x;
-    vertices[vertIndex].pos[1] = height;
-    vertices[vertIndex].pos[2] = v3.z;
-    ++vertIndex;
-
-
-    // first bottom triangle
-    vertices[vertIndex].pos[0] = v0.x;
-    vertices[vertIndex].pos[1] = height/2.0;
-    vertices[vertIndex].pos[2] = v0.z;
-    ++vertIndex;
-
-    vertices[vertIndex].pos[0] = v1.x;
-    vertices[vertIndex].pos[1] = height/2.0;
-    vertices[vertIndex].pos[2] = v1.z;
-    ++vertIndex;
-
-    vertices[vertIndex].pos[0] = v3.x;
-    vertices[vertIndex].pos[1] = height/2.0;
-    vertices[vertIndex].pos[2] = v3.z;
-    ++vertIndex;
-
-
-    // v1 is currently the x-axis
-
-    // v3 is the 22.5 degree vector
-
-
-
-    // to get the next vector
-    // - v1 = v3
-    // - v3 = quaternion rotation
-
-
-    GLKVector3 temp = GLKVector3Normalize(GLKVector3Add(v1, v2));
-    NSLog(@"45 degree vector (%f, %f, %f", temp.x, temp.y, temp.z);
-
-
-    //
-    // TODO: cleanup usage of quaternion
-    //
-
-    GLKQuaternion quat = GLKQuaternionMakeWithAngleAndAxis((M_PI / 180.0f) * -22.5f, 0.0f, 1.0f, 0.0f);
-
-    temp = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, v3));
-
-
-    //
-    // TODO: the following should be faster than v' = q * v * conjugate(q)
+    // TODO: the following should be faster than v' = q * v * conjugate(q) i.e. GLKQuaternionRotateVector3 impl
     //       (was it inverse(q) ???)
     //
     // t = 2 * cross(q.xyz, v)
     // v' = v + q.w * t + cross(q.wyz, t)
 
 
-    NSLog(@"quaternion rotated vector (%f, %f, %f", temp.x, temp.y, temp.z);
+    //
+    // TODO: will need coincident vertices for center the cylinder
+    //
 
+    int vertIndex = 0;
 
+    //
+    // TODO: loop over this block to generate all vertices for the quadrant (may be able to it
+    //       fo all the vertices for all quadrants)
+    //
 
-    // first iteration
-    //v3 = GLKVector3Add(v1, v2);
-    //v3 = GLKVector3Normalize(v3);
+    vecs[1] = vecs[2];
+    vecs[2] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecs[2]));
 
+    // first top triangle
+    for (int i=0; i<3; ++i) {
+        vertices[vertIndex].pos[0] = vecs[i].x;
+        vertices[vertIndex].pos[1] = height;
+        vertices[vertIndex].pos[2] = vecs[i].z;
+        ++vertIndex;
+    }
 
-    // second iteration
-    //v3 = GLKVector3Add(v3, v2);
-    //v3 = GLKVector3Normalize(v3);
+    // first bottom triangle
+    for (int i=0; i<3; ++i) {
+        vertices[vertIndex].pos[0] = vecs[i].x;
+        vertices[vertIndex].pos[1] = height/2.0;
+        vertices[vertIndex].pos[2] = vecs[i].z;
+        ++vertIndex;
+    }
 
-
-    //v3 = GLKVector3Normalize(GLKVector3Add(v1, v3));
-
+    //
+    // end loop
+    //
 
 
 
