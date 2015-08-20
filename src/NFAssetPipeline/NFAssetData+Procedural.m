@@ -296,6 +296,10 @@ static const char *g_faceType = @encode(NFFace_t);
         int index=0;
         for (NSInteger i=0; i<stacks+1; ++i) {
             for (NSInteger j=0; j<slices+1; ++j) {
+
+                //
+                // TODO: update create sphere method to use vectors and quaternions for generating vertices
+                //
                 vertices[index].pos[0] = radius * sin(phi) * sin(theta);
                 vertices[index].pos[1] = radius * cos(phi);
                 vertices[index].pos[2] = radius * sin(phi) * cos(theta);
@@ -438,14 +442,25 @@ static const char *g_faceType = @encode(NFFace_t);
 
 - (void) createCylinder:(float)radius ofHeight:(float)height withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
 
-    const NSInteger numVertices = 12;
+    //
+    // TODO: slices should be an argument passed into the createCylinder call
+    //
+    NSInteger slices = 16;
+    NSAssert(powerof2(slices) && slices >= 8, @"slices must be a power of 2 and at least equal to 8");
 
+    // 8 / 4 = 2 points per quadrant => 45 degree slices
+    // 16 / 4 = 4 points per quadrant => 22.5 degree slices
+    // 32 / 4 = 8 points per quadrant => 11.25 degree slices
 
-    //const NSInteger numIndices = 48;
-    const NSInteger numIndices = 12;
+    const NSInteger numVertices = 6 * slices;
+    const NSInteger numIndices = 12 * slices;
 
 
     NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
+
+    //
+    // TODO: add support for textured and lit vertices
+    //
 
     NFDebugVertex_t vertices[numVertices];
 
@@ -457,53 +472,16 @@ static const char *g_faceType = @encode(NFFace_t);
     }
 
 
-    uint32_t slices = 16;
-
-    // 8 slices should result in a 45 degree v3 vector
-    // 16 slices => 22.5 degree v3 vector
-    // 32 slices => 11.25 degree v3 vector
-
-    // 8 / 4 = 2 points per quadrant => 45 degree v3 vector which needs 1 iteration
-    // 16 / 4 = 4 points per quadrant => 22.5 degree v3 vector which needs 2 iterations
-    // 32 / 4 = 8 points per quadrant => 11.25 degree v3 vector which needs 3 iterations
-
-
-    NSAssert(powerof2(slices) && slices >= 8, @"slices must be a power of 2 and at least equal to 8");
-
-
     //
-    // TODO: build a fast (non x86) integer log2 algorithm (lookup table ??)
+    // TODO: need to adjust the length of the vectors to be equal to the radius of the cylinder
     //
-/*
-    uint32_t x = (slices >> 2); // divide slices by 4
-    uint32_t y;
-    __asm ( "\tbsr %1, %0\n" // return position of highest set bit (bit scan reverse)
-           : "=r"(y)
-           : "r" (x)
-           );
-
-    NSLog(@"y = %d", y);
-
-
-    uint32_t iterations = (uint32_t)log2(slices / 4.0);
-
-    NSLog(@"n = %d", iterations);
-*/
-
-
-    uint32_t slicesPerQuad = slices / 4;
-
-    NSLog(@"slices per quad = %d", slicesPerQuad);
-
-
-
-
     GLKVector3 vecs[3];
     vecs[0] = GLKVector3Make(0.0f, 0.0f, 0.0f);
     vecs[1] = GLKVector3Make(1.0f, 0.0f, 0.0f);
     vecs[2] = vecs[1];
 
 
+    NSInteger slicesPerQuad = slices / 4;
     GLKQuaternion quat = GLKQuaternionMakeWithAngleAndAxis(-1.0f * M_PI / (float)(slicesPerQuad*2), 0.0f, 1.0f, 0.0f);
 
 
@@ -516,75 +494,73 @@ static const char *g_faceType = @encode(NFFace_t);
 
 
     //
-    // TODO: will need coincident vertices for center the cylinder
+    // TODO: will need coincident vertices for center the cylinder to properly handle texture coordinates
     //
 
     int vertIndex = 0;
+    for (int i=0; i<slices; ++i) {
 
-    //
-    // TODO: loop over this block to generate all vertices for the quadrant (may be able to it
-    //       fo all the vertices for all quadrants)
-    //
+        vecs[1] = vecs[2];
+        vecs[2] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecs[2]));
 
-    vecs[1] = vecs[2];
-    vecs[2] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecs[2]));
+        // top triangle
+        for (int i=0; i<3; ++i) {
+            vertices[vertIndex].pos[0] = vecs[i].x;
+            vertices[vertIndex].pos[1] = height;
+            vertices[vertIndex].pos[2] = vecs[i].z;
+            ++vertIndex;
+        }
 
-    // first top triangle
-    for (int i=0; i<3; ++i) {
-        vertices[vertIndex].pos[0] = vecs[i].x;
-        vertices[vertIndex].pos[1] = height;
-        vertices[vertIndex].pos[2] = vecs[i].z;
-        ++vertIndex;
+        // bottom triangle
+        for (int i=0; i<3; ++i) {
+            vertices[vertIndex].pos[0] = vecs[i].x;
+            vertices[vertIndex].pos[1] = height/2.0;
+            vertices[vertIndex].pos[2] = vecs[i].z;
+            ++vertIndex;
+        }
     }
-
-    // first bottom triangle
-    for (int i=0; i<3; ++i) {
-        vertices[vertIndex].pos[0] = vecs[i].x;
-        vertices[vertIndex].pos[1] = height/2.0;
-        vertices[vertIndex].pos[2] = vecs[i].z;
-        ++vertIndex;
-    }
-
-    //
-    // end loop
-    //
-
-
 
     [pSubset allocateVerticesOfType:kVertexFormatDebug withNumVertices:numVertices];
     [pSubset loadVertexData:vertices ofType:kVertexFormatDebug withNumVertices:numVertices];
 
 
-
     GLushort indices[numIndices];
 
-    int i = 0;
+    GLushort idxVal[6];
+    for (int i=0; i<6; ++i) {
+        idxVal[i] = (GLushort)i;
+    }
 
-    // top of the cylinder
-    indices[i]   = 0;
-    indices[i+1] = 2;
-    indices[i+2] = 1;
-    i += 3;
+    int idx = 0;
+    for (int i=0; i<slices; ++i) {
+        // top of the cylinder
+        indices[idx]   = idxVal[0];
+        indices[idx+1] = idxVal[2];
+        indices[idx+2] = idxVal[1];
+        idx += 3;
 
-    // first triangle of side
-    indices[i]   = 2;
-    indices[i+1] = 4;
-    indices[i+2] = 1;
-    i += 3;
+        // first triangle of side
+        indices[idx]   = idxVal[2];
+        indices[idx+1] = idxVal[4];
+        indices[idx+2] = idxVal[1];
+        idx += 3;
 
-    // second triangle of side
-    indices[i]   = 5;
-    indices[i+1] = 4;
-    indices[i+2] = 2;
-    i += 3;
+        // second triangle of side
+        indices[idx]   = idxVal[5];
+        indices[idx+1] = idxVal[4];
+        indices[idx+2] = idxVal[2];
+        idx += 3;
 
-    // bottom of the cylinder
-    indices[i]   = 4;
-    indices[i+1] = 5;
-    indices[i+2] = 3;
-    //i += 3;
-
-
+        // bottom of the cylinder
+        indices[idx]   = idxVal[4];
+        indices[idx+1] = idxVal[5];
+        indices[idx+2] = idxVal[3];
+        idx += 3;
+        
+        for (int i=0; i<6; ++i) {
+            idxVal[i] += 6;
+        }
+    }
 
     [pSubset allocateIndicesWithNumElts:numIndices];
     [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];

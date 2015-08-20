@@ -138,7 +138,7 @@
             //
             // TODO: get drawing with wireframe first
             //
-#if 0
+#if 1
             NFAssetSubset* subset = [asset.subsetArray objectAtIndex:0];
             [subset setDrawMode:kDrawLineLoop];
 #endif
