@@ -515,12 +515,8 @@ static const char *g_faceType = @encode(NFFace_t);
     if (vertexFormat == kVertexFormatDefault) {
         NFVertex_t vertices[numVertices];
 
-        //
-        // TODO: use the general procedura data object in NFRenderer to test this out
-        //
-
         float uTexCoord = 0.0f;
-        float deltaU = 1.0f/(float)(slices-1);
+        float deltaU = 1.0f/(float)slices;
 
         float surfaceDist = (2.0f * radius) + height;
 
@@ -565,6 +561,11 @@ static const char *g_faceType = @encode(NFFace_t);
 
             uTexCoord += deltaU;
         }
+
+        //
+        // TODO: the normals do not make for as smooth of a cylinder as expected, try hand calculating a few normals
+        //       and then compare to NF asset utils generation
+        //
 
         // build faces array and calculate normals
         GLushort* indexPtr = indices;
