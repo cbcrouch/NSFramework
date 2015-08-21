@@ -449,23 +449,6 @@ static const char *g_faceType = @encode(NFFace_t);
     NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
 
     //
-    // TODO: add support for textured and lit vertices
-    //
-
-    // use the general procedura data object in NFRenderer to test this out
-
-
-    NFDebugVertex_t vertices[numVertices];
-
-    for (int i=0; i<numVertices; ++i) {
-        vertices[i].color[0] = 1.0f;
-        vertices[i].color[1] = 1.0f;
-        vertices[i].color[2] = 1.0f;
-        vertices[i].color[3] = 1.0f;
-    }
-
-
-    //
     // TODO: need to adjust the length of the vectors to be equal to the radius of the cylinder
     //
 
@@ -487,41 +470,125 @@ static const char *g_faceType = @encode(NFFace_t);
     // v' = v + q.w * t + cross(q.wyz, t)
 
 
-    //
-    // TODO: will need coincident vertices for center the cylinder to properly handle texture coordinates
-    //
+    if (vertexFormat == kVertexFormatDefault) {
+        NFVertex_t vertices[numVertices];
 
-    int vertIndex = 0;
-    for (int i=0; i<slices; ++i) {
 
-        vecs[1] = vecs[2];
-        vecs[2] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecs[2]));
+        //
+        // TODO: use the general procedura data object in NFRenderer to test this out
+        //
 
-        // top triangle
-        for (int i=0; i<3; ++i) {
-            vertices[vertIndex].pos[0] = vecs[i].x;
+        float uTexCoord = 0.0f;
+        float deltaU = 1.0f/(float)(slices-1);
 
-            //vertices[vertIndex].pos[1] = height/2.0;
-            vertices[vertIndex].pos[1] = height; // debug
+        float surfaceDist = (2.0f * radius) + height;
 
-            vertices[vertIndex].pos[2] = vecs[i].z;
-            ++vertIndex;
+        float vTexCoords[4];
+        vTexCoords[0] = 0.0f;
+        vTexCoords[1] = radius / surfaceDist;
+        vTexCoords[2] = (radius+height) / surfaceDist;
+        vTexCoords[3] = 1.0f;
+
+        //
+        // TODO: create normals using asset utils helper functions
+        //
+
+
+        int vertIndex = 0;
+        for (int i=0; i<slices; ++i) {
+
+            vecs[1] = vecs[2];
+            vecs[2] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecs[2]));
+
+            // top triangle
+            for (int i=0; i<3; ++i) {
+                vertices[vertIndex].pos[0] = vecs[i].x;
+
+                //vertices[vertIndex].pos[1] = height/2.0;
+                vertices[vertIndex].pos[1] = height; // debug
+
+                vertices[vertIndex].pos[2] = vecs[i].z;
+                vertices[vertIndex].pos[3] = 1.0f;
+
+
+                //vertices[vertIndex].norm[0] = ???
+                //vertices[vertIndex].norm[1] = ???
+                //vertices[vertIndex].norm[2] = ???
+                //vertices[vertIndex].norm[3] = ???
+
+
+                vertices[vertIndex].texCoord[0] = uTexCoord;
+                vertices[vertIndex].texCoord[1] = (i!=0) ? vTexCoords[1] : vTexCoords[0];
+                vertices[vertIndex].texCoord[2] = 0.0f;
+
+                ++vertIndex;
+            }
+
+            // bottom triangle
+            for (int i=0; i<3; ++i) {
+                vertices[vertIndex].pos[0] = vecs[i].x;
+
+                //vertices[vertIndex].pos[1] = -height/2.0;
+                vertices[vertIndex].pos[1] = height/2.0; // debug
+
+                vertices[vertIndex].pos[2] = vecs[i].z;
+                vertices[vertIndex].pos[3] = 1.0f;
+
+                //vertices[vertIndex].norm[0] = ???
+                //vertices[vertIndex].norm[1] = ???
+                //vertices[vertIndex].norm[2] = ???
+                //vertices[vertIndex].norm[3] = ???
+
+                vertices[vertIndex].texCoord[0] = uTexCoord;
+                vertices[vertIndex].texCoord[1] = (i!=0) ? vTexCoords[2] : vTexCoords[3];
+                vertices[vertIndex].texCoord[2] = 0.0f;
+
+
+                ++vertIndex;
+            }
+
+            uTexCoord += deltaU;
         }
 
-        // bottom triangle
-        for (int i=0; i<3; ++i) {
-            vertices[vertIndex].pos[0] = vecs[i].x;
-
-            //vertices[vertIndex].pos[1] = -height/2.0;
-            vertices[vertIndex].pos[1] = height/2.0; // debug
-
-            vertices[vertIndex].pos[2] = vecs[i].z;
-            ++vertIndex;
-        }
+        [pSubset allocateVerticesOfType:kVertexFormatDefault withNumVertices:numVertices];
+        [pSubset loadVertexData:vertices ofType:kVertexFormatDefault withNumVertices:numVertices];
     }
+    else if (vertexFormat == kVertexFormatDebug) {
+        NFDebugVertex_t vertices[numVertices];
 
-    [pSubset allocateVerticesOfType:kVertexFormatDebug withNumVertices:numVertices];
-    [pSubset loadVertexData:vertices ofType:kVertexFormatDebug withNumVertices:numVertices];
+        for (int i=0; i<numVertices; ++i) {
+            vertices[i].color[0] = 1.0f;
+            vertices[i].color[1] = 1.0f;
+            vertices[i].color[2] = 1.0f;
+            vertices[i].color[3] = 1.0f;
+        }
+
+        int vertIndex = 0;
+        for (int i=0; i<slices; ++i) {
+            vecs[1] = vecs[2];
+            vecs[2] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecs[2]));
+
+            // top triangle
+            for (int i=0; i<3; ++i) {
+                vertices[vertIndex].pos[0] = vecs[i].x;
+                vertices[vertIndex].pos[1] = height/2.0;
+                vertices[vertIndex].pos[2] = vecs[i].z;
+                ++vertIndex;
+            }
+
+            // bottom triangle
+            for (int i=0; i<3; ++i) {
+                vertices[vertIndex].pos[0] = vecs[i].x;
+                vertices[vertIndex].pos[1] = -height/2.0;
+                vertices[vertIndex].pos[2] = vecs[i].z;
+
+                ++vertIndex;
+            }
+        }
+
+        [pSubset allocateVerticesOfType:kVertexFormatDebug withNumVertices:numVertices];
+        [pSubset loadVertexData:vertices ofType:kVertexFormatDebug withNumVertices:numVertices];
+    }
 
 
     GLushort indices[numIndices];
