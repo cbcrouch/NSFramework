@@ -47,6 +47,8 @@
     NFAssetData* m_gridData;
     NFAssetData* m_planeData;
 
+    NFAssetData* m_pProceduralData;
+
     NFDirectionalLight* m_dirLight;
     NFPointLight* m_pointLight;
 
@@ -160,6 +162,15 @@
     [m_planeData generateRenderables];
 
 
+
+    m_pProceduralData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:(id)kVertexFormatDebug, nil];
+    //m_pProceduralData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:(id)kVertexFormatDefault, nil];
+
+
+    [m_pProceduralData generateRenderables];
+
+
+
     m_pointLight = [[[NFPointLight alloc] init] retain];
     m_dirLight = [[[NFDirectionalLight alloc] init] retain];
 
@@ -190,6 +201,8 @@
     [m_renderRequest addGeometry:m_pAsset.geometry];
     [m_renderRequest addGeometry:m_planeData.geometry];
 
+    //[m_renderRequest addGeometry:m_pProceduralData.geometry];
+
     [m_renderRequest addLight:m_pointLight];
     //[m_renderRequest addLight:m_dirLight];
 
@@ -198,7 +211,9 @@
     //[m_debugRenderRequest addGeometry:m_gridData.geometry];
     
     [m_debugRenderRequest addGeometry:m_pointLight.geometry];
-    [m_debugRenderRequest addGeometry:m_dirLight.geometry];
+
+    //[m_debugRenderRequest addGeometry:m_dirLight.geometry];
+    [m_debugRenderRequest addGeometry:m_pProceduralData.geometry];
 
     return self;
 }
@@ -208,6 +223,8 @@
     [m_axisData release];
     [m_gridData release];
     [m_planeData release];
+
+    [m_pProceduralData release];
 
     [m_pointLight release];
     [m_dirLight release];

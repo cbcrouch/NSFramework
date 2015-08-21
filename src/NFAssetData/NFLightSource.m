@@ -164,8 +164,8 @@
         //
 
         // point light geometry will be a sphere
-        _assetData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:(id)kVertexFormatDebug, nil];
-        [_assetData generateRenderables];
+        //_assetData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:(id)kVertexFormatDebug, nil];
+        //[_assetData generateRenderables];
 
         //_position = GLKVector3Make(2.0f, 1.0f, 1.0f);
         _position = GLKVector3Make(0.0f, 0.0f, 0.0f);

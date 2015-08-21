@@ -440,27 +440,20 @@ static const char *g_faceType = @encode(NFFace_t);
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
 
-- (void) createCylinder:(float)radius ofHeight:(float)height withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
-
-    //
-    // TODO: slices should be an argument passed into the createCylinder call
-    //
-    NSInteger slices = 16;
+- (void) createCylinder:(float)radius ofHeight:(float)height withSlices:(NSInteger)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
     NSAssert(powerof2(slices) && slices >= 8, @"slices must be a power of 2 and at least equal to 8");
-
-    // 8 / 4 = 2 points per quadrant => 45 degree slices
-    // 16 / 4 = 4 points per quadrant => 22.5 degree slices
-    // 32 / 4 = 8 points per quadrant => 11.25 degree slices
 
     const NSInteger numVertices = 6 * slices;
     const NSInteger numIndices = 12 * slices;
-
 
     NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
 
     //
     // TODO: add support for textured and lit vertices
     //
+
+    // use the general procedura data object in NFRenderer to test this out
+
 
     NFDebugVertex_t vertices[numVertices];
 
@@ -475,6 +468,7 @@ static const char *g_faceType = @encode(NFFace_t);
     //
     // TODO: need to adjust the length of the vectors to be equal to the radius of the cylinder
     //
+
     GLKVector3 vecs[3];
     vecs[0] = GLKVector3Make(0.0f, 0.0f, 0.0f);
     vecs[1] = GLKVector3Make(1.0f, 0.0f, 0.0f);
@@ -506,7 +500,10 @@ static const char *g_faceType = @encode(NFFace_t);
         // top triangle
         for (int i=0; i<3; ++i) {
             vertices[vertIndex].pos[0] = vecs[i].x;
-            vertices[vertIndex].pos[1] = height;
+
+            //vertices[vertIndex].pos[1] = height/2.0;
+            vertices[vertIndex].pos[1] = height; // debug
+
             vertices[vertIndex].pos[2] = vecs[i].z;
             ++vertIndex;
         }
@@ -514,7 +511,10 @@ static const char *g_faceType = @encode(NFFace_t);
         // bottom triangle
         for (int i=0; i<3; ++i) {
             vertices[vertIndex].pos[0] = vecs[i].x;
-            vertices[vertIndex].pos[1] = height/2.0;
+
+            //vertices[vertIndex].pos[1] = -height/2.0;
+            vertices[vertIndex].pos[1] = height/2.0; // debug
+
             vertices[vertIndex].pos[2] = vecs[i].z;
             ++vertIndex;
         }
@@ -568,7 +568,7 @@ static const char *g_faceType = @encode(NFFace_t);
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
 
-- (void) createCone:(float)radius ofHeight:(float)height withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
+- (void) createCone:(float)radius ofHeight:(float)height withSlices:(NSInteger)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
     //
     // TODO: implement
     //
