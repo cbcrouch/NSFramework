@@ -135,17 +135,16 @@
             //
             // TODO: document general resolution based on number of slices
             //
-            // 8 / 4 = 2 points per quadrant => 45 degree slices
-            // 16 / 4 = 4 points per quadrant => 22.5 degree slices
-            // 32 / 4 = 8 points per quadrant => 11.25 degree slices
+            // 8  => 45 degree slices
+            // 16 => 22.5 degree slices
+            // 32 => 11.25 degree slices
+            // 64 => 5.625 degree slices
             [asset createCylinder:1.0f ofHeight:2.0f withSlices:16 withVertexFormat:vertexType];
-
 
 #if 1
             NFAssetSubset* subset = [asset.subsetArray objectAtIndex:0];
             [subset setDrawMode:kDrawLineLoop];
 #endif
-
 
             if (vertexType == kVertexFormatDefault) {
                 NFSurfaceModel *surface = [NFSurfaceModel defaultSurfaceModel];

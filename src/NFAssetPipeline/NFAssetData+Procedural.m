@@ -448,6 +448,49 @@ static const char *g_faceType = @encode(NFFace_t);
 
     NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
 
+    // NOTE: creating and setting up the indices first so they can be used to generate normals
+    //       if using the default vertex format
+    GLushort indices[numIndices];
+
+    GLushort idxVal[6];
+    for (int i=0; i<6; ++i) {
+        idxVal[i] = (GLushort)i;
+    }
+
+    int idx = 0;
+    for (int i=0; i<slices; ++i) {
+        // top of the cylinder
+        indices[idx]   = idxVal[0];
+        indices[idx+1] = idxVal[2];
+        indices[idx+2] = idxVal[1];
+        idx += 3;
+
+        // first triangle of side
+        indices[idx]   = idxVal[2];
+        indices[idx+1] = idxVal[4];
+        indices[idx+2] = idxVal[1];
+        idx += 3;
+
+        // second triangle of side
+        indices[idx]   = idxVal[5];
+        indices[idx+1] = idxVal[4];
+        indices[idx+2] = idxVal[2];
+        idx += 3;
+
+        // bottom of the cylinder
+        indices[idx]   = idxVal[4];
+        indices[idx+1] = idxVal[5];
+        indices[idx+2] = idxVal[3];
+        idx += 3;
+
+        for (int i=0; i<6; ++i) {
+            idxVal[i] += 6;
+        }
+    }
+
+    [pSubset allocateIndicesWithNumElts:numIndices];
+    [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
+
     //
     // TODO: need to adjust the length of the vectors to be equal to the radius of the cylinder
     //
@@ -456,7 +499,6 @@ static const char *g_faceType = @encode(NFFace_t);
     vecs[0] = GLKVector3Make(0.0f, 0.0f, 0.0f);
     vecs[1] = GLKVector3Make(1.0f, 0.0f, 0.0f);
     vecs[2] = vecs[1];
-
 
     NSInteger slicesPerQuad = slices / 4;
     GLKQuaternion quat = GLKQuaternionMakeWithAngleAndAxis(-1.0f * M_PI / (float)(slicesPerQuad*2), 0.0f, 1.0f, 0.0f);
@@ -473,7 +515,6 @@ static const char *g_faceType = @encode(NFFace_t);
     if (vertexFormat == kVertexFormatDefault) {
         NFVertex_t vertices[numVertices];
 
-
         //
         // TODO: use the general procedura data object in NFRenderer to test this out
         //
@@ -488,11 +529,6 @@ static const char *g_faceType = @encode(NFFace_t);
         vTexCoords[1] = radius / surfaceDist;
         vTexCoords[2] = (radius+height) / surfaceDist;
         vTexCoords[3] = 1.0f;
-
-        //
-        // TODO: create normals using asset utils helper functions
-        //
-
 
         int vertIndex = 0;
         for (int i=0; i<slices; ++i) {
@@ -509,13 +545,6 @@ static const char *g_faceType = @encode(NFFace_t);
 
                 vertices[vertIndex].pos[2] = vecs[i].z;
                 vertices[vertIndex].pos[3] = 1.0f;
-
-
-                //vertices[vertIndex].norm[0] = ???
-                //vertices[vertIndex].norm[1] = ???
-                //vertices[vertIndex].norm[2] = ???
-                //vertices[vertIndex].norm[3] = ???
-
 
                 vertices[vertIndex].texCoord[0] = uTexCoord;
                 vertices[vertIndex].texCoord[1] = (i!=0) ? vTexCoords[1] : vTexCoords[0];
@@ -534,11 +563,6 @@ static const char *g_faceType = @encode(NFFace_t);
                 vertices[vertIndex].pos[2] = vecs[i].z;
                 vertices[vertIndex].pos[3] = 1.0f;
 
-                //vertices[vertIndex].norm[0] = ???
-                //vertices[vertIndex].norm[1] = ???
-                //vertices[vertIndex].norm[2] = ???
-                //vertices[vertIndex].norm[3] = ???
-
                 vertices[vertIndex].texCoord[0] = uTexCoord;
                 vertices[vertIndex].texCoord[1] = (i!=0) ? vTexCoords[2] : vTexCoords[3];
                 vertices[vertIndex].texCoord[2] = 0.0f;
@@ -548,6 +572,25 @@ static const char *g_faceType = @encode(NFFace_t);
             }
 
             uTexCoord += deltaU;
+        }
+
+        // build faces array and calculate normals
+        GLushort* indexPtr = indices;
+        NSMutableArray* faceArray = [[[NSMutableArray alloc] init] autorelease];
+
+        for (int i=0; i<numIndices/3; ++i) {
+            NFFace_t face = [NFAssetUtils calculateFaceWithPoints:vertices withIndices:indexPtr];
+            NSValue *value = [NSValue value:&face withObjCType:g_faceType];
+            [faceArray addObject:value];
+            indexPtr += 3;
+        }
+
+        for (int i=0; i<numVertices; ++i) {
+            GLKVector4 vertexNormal = [NFAssetUtils calculateAreaWeightedNormalOfIndex:(GLushort)i withFaces:faceArray];
+            vertices[i].norm[0] = vertexNormal.x;
+            vertices[i].norm[1] = vertexNormal.y;
+            vertices[i].norm[2] = vertexNormal.z;
+            vertices[i].norm[3] = vertexNormal.w;
         }
 
         [pSubset allocateVerticesOfType:kVertexFormatDefault withNumVertices:numVertices];
@@ -589,48 +632,6 @@ static const char *g_faceType = @encode(NFFace_t);
         [pSubset allocateVerticesOfType:kVertexFormatDebug withNumVertices:numVertices];
         [pSubset loadVertexData:vertices ofType:kVertexFormatDebug withNumVertices:numVertices];
     }
-
-
-    GLushort indices[numIndices];
-
-    GLushort idxVal[6];
-    for (int i=0; i<6; ++i) {
-        idxVal[i] = (GLushort)i;
-    }
-
-    int idx = 0;
-    for (int i=0; i<slices; ++i) {
-        // top of the cylinder
-        indices[idx]   = idxVal[0];
-        indices[idx+1] = idxVal[2];
-        indices[idx+2] = idxVal[1];
-        idx += 3;
-
-        // first triangle of side
-        indices[idx]   = idxVal[2];
-        indices[idx+1] = idxVal[4];
-        indices[idx+2] = idxVal[1];
-        idx += 3;
-
-        // second triangle of side
-        indices[idx]   = idxVal[5];
-        indices[idx+1] = idxVal[4];
-        indices[idx+2] = idxVal[2];
-        idx += 3;
-
-        // bottom of the cylinder
-        indices[idx]   = idxVal[4];
-        indices[idx+1] = idxVal[5];
-        indices[idx+2] = idxVal[3];
-        idx += 3;
-        
-        for (int i=0; i<6; ++i) {
-            idxVal[i] += 6;
-        }
-    }
-
-    [pSubset allocateIndicesWithNumElts:numIndices];
-    [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
 
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
