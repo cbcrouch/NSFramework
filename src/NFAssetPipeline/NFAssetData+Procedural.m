@@ -532,17 +532,13 @@ static const char *g_faceType = @encode(NFFace_t);
 
         int vertIndex = 0;
         for (int i=0; i<slices; ++i) {
-
             vecs[1] = vecs[2];
             vecs[2] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecs[2]));
 
             // top triangle
             for (int i=0; i<3; ++i) {
                 vertices[vertIndex].pos[0] = vecs[i].x;
-
-                //vertices[vertIndex].pos[1] = height/2.0;
-                vertices[vertIndex].pos[1] = height; // debug
-
+                vertices[vertIndex].pos[1] = height/2.0;
                 vertices[vertIndex].pos[2] = vecs[i].z;
                 vertices[vertIndex].pos[3] = 1.0f;
 
@@ -556,17 +552,13 @@ static const char *g_faceType = @encode(NFFace_t);
             // bottom triangle
             for (int i=0; i<3; ++i) {
                 vertices[vertIndex].pos[0] = vecs[i].x;
-
-                //vertices[vertIndex].pos[1] = -height/2.0;
-                vertices[vertIndex].pos[1] = height/2.0; // debug
-
+                vertices[vertIndex].pos[1] = -height/2.0;
                 vertices[vertIndex].pos[2] = vecs[i].z;
                 vertices[vertIndex].pos[3] = 1.0f;
 
                 vertices[vertIndex].texCoord[0] = uTexCoord;
                 vertices[vertIndex].texCoord[1] = (i!=0) ? vTexCoords[2] : vTexCoords[3];
                 vertices[vertIndex].texCoord[2] = 0.0f;
-
 
                 ++vertIndex;
             }

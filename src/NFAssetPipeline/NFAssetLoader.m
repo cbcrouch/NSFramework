@@ -139,9 +139,9 @@
             // 16 => 22.5 degree slices
             // 32 => 11.25 degree slices
             // 64 => 5.625 degree slices
-            [asset createCylinder:1.0f ofHeight:2.0f withSlices:16 withVertexFormat:vertexType];
+            [asset createCylinder:1.0f ofHeight:2.0f withSlices:8 withVertexFormat:vertexType];
 
-#if 1
+#if 0
             NFAssetSubset* subset = [asset.subsetArray objectAtIndex:0];
             [subset setDrawMode:kDrawLineLoop];
 #endif

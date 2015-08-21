@@ -163,8 +163,8 @@
 
 
 
-    m_pProceduralData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:(id)kVertexFormatDebug, nil];
-    //m_pProceduralData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:(id)kVertexFormatDefault, nil];
+    //m_pProceduralData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:(id)kVertexFormatDebug, nil];
+    m_pProceduralData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:(id)kVertexFormatDefault, nil];
 
 
     [m_pProceduralData generateRenderables];
@@ -200,8 +200,7 @@
 
     [m_renderRequest addGeometry:m_pAsset.geometry];
     [m_renderRequest addGeometry:m_planeData.geometry];
-
-    //[m_renderRequest addGeometry:m_pProceduralData.geometry];
+    [m_renderRequest addGeometry:m_pProceduralData.geometry];
 
     [m_renderRequest addLight:m_pointLight];
     //[m_renderRequest addLight:m_dirLight];
@@ -211,9 +210,7 @@
     //[m_debugRenderRequest addGeometry:m_gridData.geometry];
     
     [m_debugRenderRequest addGeometry:m_pointLight.geometry];
-
     //[m_debugRenderRequest addGeometry:m_dirLight.geometry];
-    [m_debugRenderRequest addGeometry:m_pProceduralData.geometry];
 
     return self;
 }
