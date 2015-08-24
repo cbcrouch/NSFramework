@@ -152,9 +152,6 @@
 - (instancetype) init {
     self = [super init];
     if (self != nil) {
-        //
-        // TODO: load some sensible default values
-        //
 
         // directional light geometry will be a cylinder
 
@@ -165,23 +162,26 @@
 
         _position = GLKVector3Make(-2.0f, 2.0f, 1.0f);
 
-        _assetData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, _position.x, _position.y, _position.z);
-        _assetData.modelMatrix = GLKMatrix4Scale(_assetData.modelMatrix, 0.065f, 0.065f, 0.065f);
-
 
 
         //
-        // TODO: rotate so the cylinder it is facing the origin
+        // TODO: rotate so the cylinder it is facing the origin prior to translating the asset data
         //
 
         // this should point the directional light towards to the origin
         _direction = GLKVector3MultiplyScalar(_position, -1.0f);
 
         // use direction to determine rotation
-        float radians = M_PI_2;
-        _assetData.modelMatrix = GLKMatrix4Rotate(_assetData.modelMatrix, radians, 1.0f, 0.0f, 0.0f);
+        //float radians = M_PI_2;
+        //_assetData.modelMatrix = GLKMatrix4Rotate(_assetData.modelMatrix, radians, 0.0f, 0.0f, 1.0f);
+
+        //GLKMatrix4 tempMat = GLKMatrix4MakeLookAt(-2.0f, 2.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+        //_assetData.modelMatrix = GLKMatrix4Multiply(_assetData.modelMatrix, tempMat);
 
 
+
+        _assetData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, _position.x, _position.y, _position.z);
+        _assetData.modelMatrix = GLKMatrix4Scale(_assetData.modelMatrix, 0.065f, 0.065f, 0.065f);
 
         //
         // TODO: currently need to apply a single step to the sphere in order to have its tranforms

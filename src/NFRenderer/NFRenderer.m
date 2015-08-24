@@ -163,11 +163,54 @@
 
 
 
-    //m_pProceduralData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:(id)kVertexFormatDebug, nil];
     m_pProceduralData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:(id)kVertexFormatDefault, nil];
 
-    m_pProceduralData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 1.0f, 1.0f, -1.0f);
+    GLKVector3 position = GLKVector3Make(1.0f, 1.0f, -1.0f);
+
+    m_pProceduralData.modelMatrix = GLKMatrix4Identity;
+
+    //m_pProceduralData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 1.0f, -1.0f);
+    m_pProceduralData.modelMatrix = GLKMatrix4TranslateWithVector3(GLKMatrix4Identity, position);
+
     m_pProceduralData.modelMatrix = GLKMatrix4Scale(m_pProceduralData.modelMatrix, 0.35f, 0.35f, 0.35f);
+
+
+
+    // float cosa = dot(fromVec, toVec)
+    // clamp(cosa, -1.0f, 1.0f)
+    // vec axis = cross(fromVec, toVec)
+    // float angle = acos(cosa)
+    // mat4 rotMat = rotate(identity, angle, axis)
+/*
+    GLKVector3 lookAt = GLKVector3Make(1.0f, 1.0f, 1.5f);
+
+    // dot product will not give correct sign but shortest distance around the circle
+    float angle = acosf(GLKVector3DotProduct(position, lookAt));
+    GLKVector3 axis = GLKVector3CrossProduct(position, lookAt);
+
+    GLKQuaternion tempQuat = GLKQuaternionMakeWithAngleAndVector3Axis(angle, axis);
+    GLKMatrix4 rotateMat = GLKMatrix4MakeWithQuaternion(tempQuat);
+
+    m_pProceduralData.modelMatrix = GLKMatrix4Multiply(m_pProceduralData.modelMatrix, rotateMat);
+*/
+
+    //
+    // TODO: rotate the lit cylinder towards the origin and then apply the same logic to the directional light
+    //
+
+    //float radians = atan2f(position.z, position.y);
+    //m_pProceduralData.modelMatrix = GLKMatrix4Rotate(m_pProceduralData.modelMatrix, radians, 1.0f, 0.0f, 0.0f);
+
+    //radians = atan2f(position.z, position.x);
+    //m_pProceduralData.modelMatrix = GLKMatrix4Rotate(m_pProceduralData.modelMatrix, radians, 0.0f, 0.0f, 1.0f);
+
+
+
+
+    //m_pProceduralData.modelMatrix = GLKMatrix4TranslateWithVector3(m_pProceduralData.modelMatrix, position);
+
+
+
 
 
     [m_pProceduralData generateRenderables];
@@ -241,6 +284,7 @@
 - (void) updateFrameWithTime:(float)secsElapsed withViewPosition:(GLKVector3)viewPosition withViewMatrix:(GLKMatrix4)viewMatrix withProjection:(GLKMatrix4)projection {
     if (self.stepTransforms) {
         [m_pAsset stepTransforms:secsElapsed];
+        [m_pProceduralData stepTransforms:secsElapsed];
 
         [m_pointLight stepTransforms:secsElapsed];
     }
