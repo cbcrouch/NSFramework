@@ -166,6 +166,9 @@
     //m_pProceduralData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:(id)kVertexFormatDebug, nil];
     m_pProceduralData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:(id)kVertexFormatDefault, nil];
 
+    m_pProceduralData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 1.0f, 1.0f, -1.0f);
+    m_pProceduralData.modelMatrix = GLKMatrix4Scale(m_pProceduralData.modelMatrix, 0.35f, 0.35f, 0.35f);
+
 
     [m_pProceduralData generateRenderables];
 
@@ -210,7 +213,7 @@
     //[m_debugRenderRequest addGeometry:m_gridData.geometry];
     
     [m_debugRenderRequest addGeometry:m_pointLight.geometry];
-    //[m_debugRenderRequest addGeometry:m_dirLight.geometry];
+    [m_debugRenderRequest addGeometry:m_dirLight.geometry];
 
     return self;
 }

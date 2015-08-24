@@ -562,11 +562,6 @@ static const char *g_faceType = @encode(NFFace_t);
             uTexCoord += deltaU;
         }
 
-        //
-        // TODO: the normals do not make for as smooth of a cylinder as expected, try hand calculating a few normals
-        //       and then compare to NF asset utils generation
-        //
-
         // build faces array and calculate normals
         GLushort* indexPtr = indices;
         NSMutableArray* faceArray = [[[NSMutableArray alloc] init] autorelease];
@@ -579,6 +574,12 @@ static const char *g_faceType = @encode(NFFace_t);
         }
 
         for (int i=0; i<numVertices; ++i) {
+
+            //
+            // TODO: the normals do not make for as smooth of a cylinder as expected, try hand calculating a few normals
+            //       and then compare to NF asset utils generation
+            //
+
             GLKVector4 vertexNormal = [NFAssetUtils calculateAreaWeightedNormalOfIndex:(GLushort)i withFaces:faceArray];
             vertices[i].norm[0] = vertexNormal.x;
             vertices[i].norm[1] = vertexNormal.y;

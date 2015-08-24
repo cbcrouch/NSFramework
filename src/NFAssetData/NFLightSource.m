@@ -159,19 +159,29 @@
         // directional light geometry will be a cylinder
 
 
-        //
-        // TODO: load some sensible default values
-        //
-
         // point light geometry will be a sphere
-        //_assetData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:(id)kVertexFormatDebug, nil];
-        //[_assetData generateRenderables];
+        _assetData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:(id)kVertexFormatDebug, nil];
+        [_assetData generateRenderables];
 
-        //_position = GLKVector3Make(2.0f, 1.0f, 1.0f);
-        _position = GLKVector3Make(0.0f, 0.0f, 0.0f);
+        _position = GLKVector3Make(-2.0f, 2.0f, 1.0f);
 
         _assetData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, _position.x, _position.y, _position.z);
-        //_assetData.modelMatrix = GLKMatrix4Scale(_assetData.modelMatrix, 0.065f, 0.065f, 0.065f);
+        _assetData.modelMatrix = GLKMatrix4Scale(_assetData.modelMatrix, 0.065f, 0.065f, 0.065f);
+
+
+
+        //
+        // TODO: rotate so the cylinder it is facing the origin
+        //
+
+        // this should point the directional light towards to the origin
+        _direction = GLKVector3MultiplyScalar(_position, -1.0f);
+
+        // use direction to determine rotation
+        float radians = M_PI_2;
+        _assetData.modelMatrix = GLKMatrix4Rotate(_assetData.modelMatrix, radians, 1.0f, 0.0f, 0.0f);
+
+
 
         //
         // TODO: currently need to apply a single step to the sphere in order to have its tranforms

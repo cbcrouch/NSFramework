@@ -132,19 +132,11 @@
                 vertexType = (NF_VERTEX_FORMAT)firstArg;
             }
 
-            //
-            // TODO: document general resolution based on number of slices
-            //
-            // 8  => 45 degree slices
-            // 16 => 22.5 degree slices
-            // 32 => 11.25 degree slices
-            // 64 => 5.625 degree slices
-            [asset createCylinder:1.0f ofHeight:2.0f withSlices:8 withVertexFormat:vertexType];
-
-#if 0
-            NFAssetSubset* subset = [asset.subsetArray objectAtIndex:0];
-            [subset setDrawMode:kDrawLineLoop];
-#endif
+            // 8  => 45 degree slices     very low resolution
+            // 16 => 22.5 degree slices   low resolution
+            // 32 => 11.25 degree slices  medium resolution
+            // 64 => 5.625 degree slices  high resolution
+            [asset createCylinder:1.0f ofHeight:2.0f withSlices:16 withVertexFormat:vertexType];
 
             if (vertexType == kVertexFormatDefault) {
                 NFSurfaceModel *surface = [NFSurfaceModel defaultSurfaceModel];
