@@ -169,23 +169,48 @@
 
     m_pProceduralData.modelMatrix = GLKMatrix4Identity;
 
+#define PRE_MULTIPLY 1
+
+#if PRE_MULTIPLY
     //m_pProceduralData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 1.0f, -1.0f);
     m_pProceduralData.modelMatrix = GLKMatrix4TranslateWithVector3(GLKMatrix4Identity, position);
 
     m_pProceduralData.modelMatrix = GLKMatrix4Scale(m_pProceduralData.modelMatrix, 0.35f, 0.35f, 0.35f);
+#endif
 
 
+    //
+    // NOTE: could use a rotation matrix by using an angle of PI and then taking whatever precentage of that is
+    //       need per axis to effectively rotate the geometry (is that how GLK works ??)
+    //
+    //GLKMatrix4 rotationMatrix = GLKMatrix4MakeRotation(M_PI, 1.0f, 1.0f, 1.0f);
 
-    // float cosa = dot(fromVec, toVec)
-    // clamp(cosa, -1.0f, 1.0f)
-    // vec axis = cross(fromVec, toVec)
-    // float angle = acos(cosa)
-    // mat4 rotMat = rotate(identity, angle, axis)
+
+    float xRadians = atan2f(position.y, -position.z);
+    //xRadians /= M_PI;
+
+    //GLKMatrix4 rotationMatrix = GLKMatrix4MakeRotation(M_PI, xRadians, 0.0f, 0.0f);
+
+    // GLK rotation matrix construction does not appear to work as assumed
+    GLKMatrix4 rotationMatrix = GLKMatrix4MakeRotation(xRadians, -1.0f, 0.0f, 0.0f);
+
+    rotationMatrix = GLKMatrix4Add(rotationMatrix, GLKMatrix4MakeRotation(M_PI_2, 0.0f, -1.0f, 0.0f));
+
+
+    m_pProceduralData.modelMatrix = GLKMatrix4Multiply(m_pProceduralData.modelMatrix, rotationMatrix);
+
+
+    //
+    // TODO: rotate the lit cylinder towards the origin and then apply the same logic to the directional light
+    //
+
+
 /*
-    GLKVector3 lookAt = GLKVector3Make(1.0f, 1.0f, 1.5f);
+    //GLKVector3 lookAt = GLKVector3Make(1.0f, 1.0f, 1.5f);
+    GLKVector3 lookAt = GLKVector3MultiplyScalar(position, -1.0f);
 
     // dot product will not give correct sign but shortest distance around the circle
-    float angle = acosf(GLKVector3DotProduct(position, lookAt));
+    float angle = acosf(GLKVector3DotProduct(position, lookAt)); // should clamp dot product [-1.0f, 1.0f]
     GLKVector3 axis = GLKVector3CrossProduct(position, lookAt);
 
     GLKQuaternion tempQuat = GLKQuaternionMakeWithAngleAndVector3Axis(angle, axis);
@@ -194,9 +219,7 @@
     m_pProceduralData.modelMatrix = GLKMatrix4Multiply(m_pProceduralData.modelMatrix, rotateMat);
 */
 
-    //
-    // TODO: rotate the lit cylinder towards the origin and then apply the same logic to the directional light
-    //
+
 
     //float radians = atan2f(position.z, position.y);
     //m_pProceduralData.modelMatrix = GLKMatrix4Rotate(m_pProceduralData.modelMatrix, radians, 1.0f, 0.0f, 0.0f);
@@ -205,11 +228,10 @@
     //m_pProceduralData.modelMatrix = GLKMatrix4Rotate(m_pProceduralData.modelMatrix, radians, 0.0f, 0.0f, 1.0f);
 
 
-
-
-    //m_pProceduralData.modelMatrix = GLKMatrix4TranslateWithVector3(m_pProceduralData.modelMatrix, position);
-
-
+#if !PRE_MULTIPLY
+    m_pProceduralData.modelMatrix = GLKMatrix4TranslateWithVector3(m_pProceduralData.modelMatrix, position);
+    m_pProceduralData.modelMatrix = GLKMatrix4Scale(m_pProceduralData.modelMatrix, 0.35f, 0.35f, 0.35f);
+#endif
 
 
 
@@ -226,7 +248,11 @@
 
     // setup OpenGL state that will never change
     //glClearColor(1.0f, 0.0f, 1.0f, 1.0f); // hot pink for debugging
-    glClearColor(0.30f, 0.30f, 0.30f, 1.0f);
+
+    //glClearColor(0.30f, 0.30f, 0.30f, 1.0f);
+
+    //glClearColor(0.10f, 0.10f, 0.10f, 1.0f);
+    glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -236,11 +262,7 @@
     //
     //glEnable(GL_MULTISAMPLE);
 
-    //
-    // TODO: add support for gamma correction
-    //
-    //glEnable(GL_FRAMEBUFFER_SRGB);
-
+    glEnable(GL_FRAMEBUFFER_SRGB);
     CHECK_GL_ERROR();
 
 

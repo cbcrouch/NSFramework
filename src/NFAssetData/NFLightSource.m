@@ -79,14 +79,13 @@
 
         _constantAttenuation = 1.0f;
 
-        //
-        // TODO: need to revisit these attenuation values after having corrected gamma
-        //
-        _linearAttenuation = 0.22f;
-        _quadraticAttenuation = 0.20f;
+        // good for a distance of 13
+        //_linearAttenuation = 0.35f;
+        //_quadraticAttenuation = 0.44f;
 
-        //_linearAttenuation = 0.7f;
-        //_quadraticAttenuation = 1.8f;
+        // good for a distance of 7
+        _linearAttenuation = 0.7f;
+        _quadraticAttenuation = 1.8f;
     }
     return self;
 }
