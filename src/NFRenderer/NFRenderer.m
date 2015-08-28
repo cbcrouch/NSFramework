@@ -164,61 +164,33 @@
 
 
     m_pProceduralData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:(id)kVertexFormatDefault, nil];
-
-    GLKVector3 position = GLKVector3Make(1.0f, 1.0f, -1.0f);
+    //m_pProceduralData = [NFAssetLoader allocAssetDataOfType:kSolidUVSphere withArgs:(id)kVertexFormatDefault, nil];
 
     m_pProceduralData.modelMatrix = GLKMatrix4Identity;
-
-#define PRE_MULTIPLY 1
-
-#if PRE_MULTIPLY
     //m_pProceduralData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 1.0f, -1.0f);
-    m_pProceduralData.modelMatrix = GLKMatrix4TranslateWithVector3(GLKMatrix4Identity, position);
-
-    m_pProceduralData.modelMatrix = GLKMatrix4Scale(m_pProceduralData.modelMatrix, 0.35f, 0.35f, 0.35f);
-#endif
-
-
-    //
-    // NOTE: could use a rotation matrix by using an angle of PI and then taking whatever precentage of that is
-    //       need per axis to effectively rotate the geometry (is that how GLK works ??)
-    //
-
-    float xRadians = atan2f(position.y, -position.z);
-
-    // GLK rotation matrix construction does not appear to work as assumed
-    GLKMatrix4 rotationMatrix = GLKMatrix4MakeRotation(xRadians, -1.0f, 0.0f, 0.0f);
-
-    //rotationMatrix = GLKMatrix4Multiply(rotationMatrix, GLKMatrix4MakeRotation(M_PI_2, 0.0f, 1.0f, 0.0f));
-
-
-    m_pProceduralData.modelMatrix = GLKMatrix4Multiply(m_pProceduralData.modelMatrix, rotationMatrix);
 
 
     //
     // TODO: rotate the lit cylinder towards the origin and then apply the same logic to the directional light
     //
+    GLKVector3 position = GLKVector3Make(0.0f, 1.0f, -1.0f);
 
-
-/*
-    //GLKVector3 lookAt = GLKVector3Make(1.0f, 1.0f, 1.5f);
-    GLKVector3 lookAt = GLKVector3MultiplyScalar(position, -1.0f);
-
-    // dot product will not give correct sign but shortest distance around the circle
-    float angle = acosf(GLKVector3DotProduct(position, lookAt)); // should clamp dot product [-1.0f, 1.0f]
-    GLKVector3 axis = GLKVector3CrossProduct(position, lookAt);
-
-    GLKQuaternion tempQuat = GLKQuaternionMakeWithAngleAndVector3Axis(angle, axis);
-    GLKMatrix4 rotateMat = GLKMatrix4MakeWithQuaternion(tempQuat);
-
-    m_pProceduralData.modelMatrix = GLKMatrix4Multiply(m_pProceduralData.modelMatrix, rotateMat);
-*/
-
-
-#if !PRE_MULTIPLY
-    m_pProceduralData.modelMatrix = GLKMatrix4TranslateWithVector3(m_pProceduralData.modelMatrix, position);
+    m_pProceduralData.modelMatrix = GLKMatrix4TranslateWithVector3(GLKMatrix4Identity, position);
     m_pProceduralData.modelMatrix = GLKMatrix4Scale(m_pProceduralData.modelMatrix, 0.35f, 0.35f, 0.35f);
-#endif
+
+
+
+    float xRadians = atan2f(position.y, -position.z);
+    NSLog(@"x angle: %f", xRadians * 180.0f / M_PI);
+
+
+    //GLKMatrix4 rotationMatrix = GLKMatrix4MakeRotation(M_PI_4, -1.0f, 0.0f, -1.0f);
+
+    GLKMatrix4 rotationMatrix = GLKMatrix4MakeRotation(M_PI_4, -1.0f, 0.0f, 0.0f);
+    //rotationMatrix = GLKMatrix4Rotate(rotationMatrix, M_PI_4, 0.0f, 0.0f, -1.0);
+
+
+    m_pProceduralData.modelMatrix = GLKMatrix4Multiply(m_pProceduralData.modelMatrix, rotationMatrix);
 
 
 
