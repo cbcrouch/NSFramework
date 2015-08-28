@@ -183,18 +183,13 @@
     // NOTE: could use a rotation matrix by using an angle of PI and then taking whatever precentage of that is
     //       need per axis to effectively rotate the geometry (is that how GLK works ??)
     //
-    //GLKMatrix4 rotationMatrix = GLKMatrix4MakeRotation(M_PI, 1.0f, 1.0f, 1.0f);
-
 
     float xRadians = atan2f(position.y, -position.z);
-    //xRadians /= M_PI;
-
-    //GLKMatrix4 rotationMatrix = GLKMatrix4MakeRotation(M_PI, xRadians, 0.0f, 0.0f);
 
     // GLK rotation matrix construction does not appear to work as assumed
     GLKMatrix4 rotationMatrix = GLKMatrix4MakeRotation(xRadians, -1.0f, 0.0f, 0.0f);
 
-    rotationMatrix = GLKMatrix4Add(rotationMatrix, GLKMatrix4MakeRotation(M_PI_2, 0.0f, -1.0f, 0.0f));
+    //rotationMatrix = GLKMatrix4Multiply(rotationMatrix, GLKMatrix4MakeRotation(M_PI_2, 0.0f, 1.0f, 0.0f));
 
 
     m_pProceduralData.modelMatrix = GLKMatrix4Multiply(m_pProceduralData.modelMatrix, rotationMatrix);
@@ -218,14 +213,6 @@
 
     m_pProceduralData.modelMatrix = GLKMatrix4Multiply(m_pProceduralData.modelMatrix, rotateMat);
 */
-
-
-
-    //float radians = atan2f(position.z, position.y);
-    //m_pProceduralData.modelMatrix = GLKMatrix4Rotate(m_pProceduralData.modelMatrix, radians, 1.0f, 0.0f, 0.0f);
-
-    //radians = atan2f(position.z, position.x);
-    //m_pProceduralData.modelMatrix = GLKMatrix4Rotate(m_pProceduralData.modelMatrix, radians, 0.0f, 0.0f, 1.0f);
 
 
 #if !PRE_MULTIPLY
