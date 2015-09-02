@@ -181,24 +181,17 @@
 
 
     //
-    // TODO: how to get a rotation between vectors using GLK ??
-    //
-    //GLKVector3 targetPos = GLKVector3Make(0.0f, 0.0f, 0.0f);
-    //GLKVector3 direction = GLKVector3Subtract(targetPos, position);
-
-
-    //
     // TODO: need to modify the position to get the desired effect
     //
     GLKVector3 orig = position;
-    GLKVector3 dest = GLKVector3Make(0.0f, 1.0f, 0.0f);
+    GLKVector3 dest = GLKVector3Make(0.0f, 0.0f, 0.0f);
 
     orig = GLKVector3Normalize(orig);
 
     //
     // TODO: normalizing the origin (0,0,0) will result in a vector loaded with nans
     //
-    dest = GLKVector3Normalize(dest);
+    //dest = GLKVector3Normalize(dest);
 
     float cosTheta = GLKVector3DotProduct(orig, dest);
     GLKVector3 rotationAxis;
@@ -224,32 +217,8 @@
 
     NSLog(@"rotationQuat angle: %f", GLKQuaternionAngle(rotationQuat));
 
-#if 1
-
+    
     GLKMatrix4 rotationMatrix = GLKMatrix4MakeWithQuaternion(rotationQuat);
-
-#else
-
-    float xRadians = atan2f(position.y, -position.z);
-    NSLog(@"x angle: %f", xRadians * 180.0f / M_PI);
-
-    NSLog(@"modifer: %f", 0.17 * 180.0f / M_PI);
-    NSLog(@"final angle: %f", (M_PI_4 + 0.17) * 180.0f / M_PI);
-
-    //GLKMatrix4 rotationMatrix = GLKMatrix4MakeRotation(M_PI_4 + 0.17, -1.0f, 0.0f, -1.0f);
-    //GLKMatrix4 rotationMatrix = GLKMatrix4MakeRotation(M_PI_4, -1.0f, 0.0f, -1.0f);
-
-    //
-    // TODO: get work with rotation around another axis
-    //
-
-    GLKMatrix4 rotationMatrix = GLKMatrix4MakeRotation(M_PI_4, 0.0f, 0.0f, -1.0f);
-
-    //rotationMatrix = GLKMatrix4Rotate(rotationMatrix, M_PI_4, -1.0f, 0.0f, 0.0);
-    //rotationMatrix = GLKMatrix4Rotate(rotationMatrix, M_PI_4, 0.0f, 1.0f, 0.0);
-
-#endif
-
 
     m_pProceduralData.modelMatrix = GLKMatrix4Multiply(m_pProceduralData.modelMatrix, rotationMatrix);
 
