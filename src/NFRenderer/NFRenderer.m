@@ -173,21 +173,82 @@
     //
     // TODO: rotate the lit cylinder towards the origin and then apply the same logic to the directional light
     //
-    GLKVector3 position = GLKVector3Make(0.0f, 1.0f, -1.0f);
+    GLKVector3 position = GLKVector3Make(1.0f, 1.0f, -1.0f);
+    //GLKVector3 position = GLKVector3Make(1.0f, 1.0f, 0.0f);
 
     m_pProceduralData.modelMatrix = GLKMatrix4TranslateWithVector3(GLKMatrix4Identity, position);
     m_pProceduralData.modelMatrix = GLKMatrix4Scale(m_pProceduralData.modelMatrix, 0.35f, 0.35f, 0.35f);
 
 
+    //
+    // TODO: how to get a rotation between vectors using GLK ??
+    //
+    //GLKVector3 targetPos = GLKVector3Make(0.0f, 0.0f, 0.0f);
+    //GLKVector3 direction = GLKVector3Subtract(targetPos, position);
+
+
+    //
+    // TODO: need to modify the position to get the desired effect
+    //
+    GLKVector3 orig = position;
+    GLKVector3 dest = GLKVector3Make(0.0f, 1.0f, 0.0f);
+
+    orig = GLKVector3Normalize(orig);
+
+    //
+    // TODO: normalizing the origin (0,0,0) will result in a vector loaded with nans
+    //
+    dest = GLKVector3Normalize(dest);
+
+    float cosTheta = GLKVector3DotProduct(orig, dest);
+    GLKVector3 rotationAxis;
+    GLKQuaternion rotationQuat;
+
+    if (cosTheta < -1.0f + FLT_EPSILON) {
+        rotationAxis = GLKVector3CrossProduct(GLKVector3Make(0.0f, 0.0f, 1.0f), orig);
+        if (GLKVector3Length(rotationAxis) < FLT_EPSILON) {
+            rotationAxis = GLKVector3CrossProduct(GLKVector3Make(1.0f, 0.0f, 0.0f), orig);
+        }
+
+        rotationAxis = GLKVector3Normalize(rotationAxis);
+        rotationQuat = GLKQuaternionMakeWithAngleAndVector3Axis(M_PI, rotationAxis);
+    }
+    else {
+        rotationAxis = GLKVector3CrossProduct(orig, dest);
+
+        float s = sqrtf((1.0f + cosTheta) * 2.0f);
+        float invs = 1.0f / s;
+
+        rotationQuat = GLKQuaternionMake(rotationAxis.x * invs, rotationAxis.y * invs, rotationAxis.z * invs, s * 0.5f);
+    }
+
+    NSLog(@"rotationQuat angle: %f", GLKQuaternionAngle(rotationQuat));
+
+#if 1
+
+    GLKMatrix4 rotationMatrix = GLKMatrix4MakeWithQuaternion(rotationQuat);
+
+#else
 
     float xRadians = atan2f(position.y, -position.z);
     NSLog(@"x angle: %f", xRadians * 180.0f / M_PI);
 
+    NSLog(@"modifer: %f", 0.17 * 180.0f / M_PI);
+    NSLog(@"final angle: %f", (M_PI_4 + 0.17) * 180.0f / M_PI);
 
+    //GLKMatrix4 rotationMatrix = GLKMatrix4MakeRotation(M_PI_4 + 0.17, -1.0f, 0.0f, -1.0f);
     //GLKMatrix4 rotationMatrix = GLKMatrix4MakeRotation(M_PI_4, -1.0f, 0.0f, -1.0f);
 
-    GLKMatrix4 rotationMatrix = GLKMatrix4MakeRotation(M_PI_4, -1.0f, 0.0f, 0.0f);
-    //rotationMatrix = GLKMatrix4Rotate(rotationMatrix, M_PI_4, 0.0f, 0.0f, -1.0);
+    //
+    // TODO: get work with rotation around another axis
+    //
+
+    GLKMatrix4 rotationMatrix = GLKMatrix4MakeRotation(M_PI_4, 0.0f, 0.0f, -1.0f);
+
+    //rotationMatrix = GLKMatrix4Rotate(rotationMatrix, M_PI_4, -1.0f, 0.0f, 0.0);
+    //rotationMatrix = GLKMatrix4Rotate(rotationMatrix, M_PI_4, 0.0f, 1.0f, 0.0);
+
+#endif
 
 
     m_pProceduralData.modelMatrix = GLKMatrix4Multiply(m_pProceduralData.modelMatrix, rotationMatrix);
