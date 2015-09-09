@@ -125,9 +125,9 @@ static const char *g_faceType = @encode(NFFace_t);
     //
     // TODO: delete this block after determining the correct way to use GLK for rotations
     //
-    vertices[6].pos[0] = 1.0f;
-    vertices[6].pos[1] = 1.0f;
-    vertices[6].pos[2] = -1.0f;
+    vertices[6].pos[0] = 2.0f;
+    vertices[6].pos[1] = 2.0f;
+    vertices[6].pos[2] = -2.0f;
     //
     //
     //

@@ -180,18 +180,19 @@
     m_pProceduralData.modelMatrix = GLKMatrix4Scale(m_pProceduralData.modelMatrix, 0.35f, 0.35f, 0.35f);
 
 
-    //
-    // TODO: need to modify the position to get the desired effect
-    //
-    GLKVector3 orig = position;
-    GLKVector3 dest = GLKVector3Make(0.0f, 0.0f, 0.0f);
 
+    GLKVector3 orig = position;
     orig = GLKVector3Normalize(orig);
 
     //
-    // TODO: normalizing the origin (0,0,0) will result in a vector loaded with nans
+    // TODO: build a vector from the position to the origin, double its magnitude then
+    //       normalize it and use that as the destination
     //
-    //dest = GLKVector3Normalize(dest);
+    //GLKVector3 dest = GLKVector3Make(0.0f, 0.0f, 0.0f);
+
+    GLKVector3 dest = GLKVector3Make(-2.0f, 1.0f, 2.0f);
+    dest = GLKVector3Normalize(dest);
+
 
     float cosTheta = GLKVector3DotProduct(orig, dest);
     GLKVector3 rotationAxis;
@@ -215,9 +216,12 @@
         rotationQuat = GLKQuaternionMake(rotationAxis.x * invs, rotationAxis.y * invs, rotationAxis.z * invs, s * 0.5f);
     }
 
-    NSLog(@"rotationQuat angle: %f", GLKQuaternionAngle(rotationQuat));
+    NSLog(@"rotationQuat angle(eg): %f", GLKQuaternionAngle(rotationQuat) * 180.0f/M_PI);
 
-    
+
+    //
+    // NOTE: this will make the top face of the cylinder point towards the origin
+    //
     GLKMatrix4 rotationMatrix = GLKMatrix4MakeWithQuaternion(rotationQuat);
 
     m_pProceduralData.modelMatrix = GLKMatrix4Multiply(m_pProceduralData.modelMatrix, rotationMatrix);
