@@ -392,7 +392,7 @@
 		234E2CB6188382CC00AF8F23 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Casey Crouch";
 				TargetAttributes = {
 					234E2CDE188382CC00AF8F23 = {
@@ -548,6 +548,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
@@ -632,6 +633,7 @@
 				GCC_PREFIX_HEADER = "NSFramework/NSFramework-Prefix.pch";
 				INFOPLIST_FILE = "NSFramework/NSFramework-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				PRODUCT_BUNDLE_IDENTIFIER = "CC.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = NSFramework;
 				WRAPPER_EXTENSION = app;
 			};
@@ -648,6 +650,7 @@
 				GCC_PREFIX_HEADER = "NSFramework/NSFramework-Prefix.pch";
 				INFOPLIST_FILE = "NSFramework/NSFramework-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				PRODUCT_BUNDLE_IDENTIFIER = "CC.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = NSFramework;
 				WRAPPER_EXTENSION = app;
 			};
@@ -669,6 +672,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "NSFrameworkTests/NSFrameworkTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "CC.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = NSFrameworkTests;
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
@@ -687,6 +691,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "NSFramework/NSFramework-Prefix.pch";
 				INFOPLIST_FILE = "NSFrameworkTests/NSFrameworkTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "CC.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = NSFrameworkTests;
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
