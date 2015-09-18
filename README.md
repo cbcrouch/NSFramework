@@ -26,8 +26,8 @@ Building
 
 ### Prerequisites
 
-XCode 6.3
-(XCode Command Line Tools optional but recommended)
+Xcode 7.0
+(Xcode Command Line Tools optional but recommended)
 
 ### Getting source
 
