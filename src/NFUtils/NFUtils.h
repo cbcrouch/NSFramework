@@ -7,8 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
-// NOTE: "the abstime unit is equal to the length of one bus cycle" according to Mach documentation
+#import <GLKit/GLKit.h>
 
+// NOTE: "the abstime unit is equal to the length of one bus cycle" according to Mach documentation
 typedef uint64_t MACH_TIME;
 
 #ifdef DEBUG
@@ -47,5 +48,8 @@ static NSArray * (^convertCfloatArrayToNS)(float[3]) = ^ NSArray * (float triple
 
 
 @interface NFUtils : NSObject
+
+// NOTE: vector and directionVec should be normalized before using
++ (GLKQuaternion) rotateVector:(GLKVector3)vector toDirection:(GLKVector3)directionVec;
 
 @end

@@ -5,6 +5,8 @@
 //  Copyright (c) 2015 Casey Crouch. All rights reserved.
 //
 
+#import "NFUtils.h"
+
 #import "NFRenderer.h"
 #import "NFRUtils.h"
 #import "NFRProgram.h"
@@ -162,6 +164,9 @@
     [m_planeData generateRenderables];
 
 
+    //
+    // NOTE: this cylinder is just for testing the rotate vector to direction method
+    //
     m_pProceduralData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:(id)kVertexFormatDefault, nil];
 
     GLKVector3 position = GLKVector3Make(1.0f, 1.0f, -1.0f);
@@ -169,73 +174,28 @@
     m_pProceduralData.modelMatrix = GLKMatrix4TranslateWithVector3(GLKMatrix4Identity, position);
     m_pProceduralData.modelMatrix = GLKMatrix4Scale(m_pProceduralData.modelMatrix, 0.35f, 0.35f, 0.35f);
 
-
-
     //
     // NOTE: can't use the actual position but need to use the normal vector of the fact that you want
     //       to rotate towards a given destination, and the destination vector must be a vector from the
     //       position of the normal vector to the desired location that normal vector will face
     //
     GLKVector3 orig = GLKVector3Make(0.0f, 1.0f, 0.0f);
-
     orig = GLKVector3Normalize(orig);
-
 
     // NOTE: this should always make the geometry face the origin
     GLKVector3 dest = GLKVector3MultiplyScalar(position, -1.0f);
     dest = GLKVector3Normalize(dest);
 
+    GLKQuaternion rotationQuat = [NFUtils rotateVector:orig toDirection:dest];
 
-    float cosTheta = GLKVector3DotProduct(orig, dest);
-    GLKVector3 rotationAxis;
-    GLKQuaternion rotationQuat;
-
-    if (cosTheta < -1.0f + FLT_EPSILON) {
-        //
-        // TODO: this code path has not been tested
-        //
-        NSLog(@"cosTheta < -1.0f");
-
-        rotationAxis = GLKVector3CrossProduct(GLKVector3Make(0.0f, 0.0f, 1.0f), orig);
-        //rotationAxis = GLKVector3CrossProduct(orig, GLKVector3Make(0.0f, 0.0f, 1.0f));
-
-        NSLog(@"rotationAxis: (%f, %f, %f)", rotationAxis.x, rotationAxis.y, rotationAxis.z);
-
-        if (GLKVector3Length(rotationAxis) < FLT_EPSILON) {
-
-            rotationAxis = GLKVector3CrossProduct(GLKVector3Make(1.0f, 0.0f, 0.0f), orig);
-            //rotationAxis = GLKVector3CrossProduct(orig, GLKVector3Make(1.0f, 0.0f, 0.0f));
-
-            NSLog(@"rotationAxis length < 0.0f");
-            NSLog(@"rotationAxis: (%f, %f, %f)", rotationAxis.x, rotationAxis.y, rotationAxis.z);
-        }
-
-        rotationAxis = GLKVector3Normalize(rotationAxis);
-
-        NSLog(@"rotationAxis: (%f, %f, %f)", rotationAxis.x, rotationAxis.y, rotationAxis.z);
-
-        rotationQuat = GLKQuaternionMakeWithAngleAndVector3Axis(M_PI, rotationAxis);
-    }
-    else {
-        rotationAxis = GLKVector3CrossProduct(orig, dest);
-
-        GLKVector3Normalize(rotationAxis); // not sure if needed
-
-        float s = sqrtf((1.0f + cosTheta) * 2.0f);
-        float invs = 1.0f / s;
-        rotationQuat = GLKQuaternionMake(rotationAxis.x * invs, rotationAxis.y * invs, rotationAxis.z * invs, s * 0.5f);
-    }
-
-
-    //
     // NOTE: this will make the top face of the cylinder point towards the origin
-    //
     GLKMatrix4 rotationMatrix = GLKMatrix4MakeWithQuaternion(rotationQuat);
     m_pProceduralData.modelMatrix = GLKMatrix4Multiply(m_pProceduralData.modelMatrix, rotationMatrix);
 
-
     [m_pProceduralData generateRenderables];
-
+    //
+    //
+    //
 
 
     m_pointLight = [[[NFPointLight alloc] init] retain];
