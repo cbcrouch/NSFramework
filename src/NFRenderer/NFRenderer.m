@@ -163,70 +163,37 @@
 
 
     m_pProceduralData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:(id)kVertexFormatDefault, nil];
-    //m_pProceduralData = [NFAssetLoader allocAssetDataOfType:kSolidUVSphere withArgs:(id)kVertexFormatDefault, nil];
 
-    //m_pProceduralData.modelMatrix = GLKMatrix4Identity;
-    //m_pProceduralData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 1.0f, -1.0f);
-
-
-    //
-    // TODO: rotate the lit cylinder towards the origin and then apply the same logic to the directional light
-    //
-    //GLKVector3 position = GLKVector3Make(1.0f, 1.0f, -1.0f);
-    //GLKVector3 position = GLKVector3Make(1.0f, 1.0f, 0.0f);
-
-    GLKVector3 position = GLKVector3Make(0.0f, 1.0f, -1.0f);
+    GLKVector3 position = GLKVector3Make(1.0f, 1.0f, -1.0f);
 
     m_pProceduralData.modelMatrix = GLKMatrix4TranslateWithVector3(GLKMatrix4Identity, position);
     m_pProceduralData.modelMatrix = GLKMatrix4Scale(m_pProceduralData.modelMatrix, 0.35f, 0.35f, 0.35f);
 
 
 
-
-
-    //GLKVector3 orig = position;
-
     //
-    // TODO: can't use the actual position but need to use the normal vector of the fact that you want
+    // NOTE: can't use the actual position but need to use the normal vector of the fact that you want
     //       to rotate towards a given destination, and the destination vector must be a vector from the
     //       position of the normal vector to the desired location that normal vector will face
     //
     GLKVector3 orig = GLKVector3Make(0.0f, 1.0f, 0.0f);
 
-
-
-
-
     orig = GLKVector3Normalize(orig);
 
-    //
-    // TODO: build a vector from the position to the origin, double its magnitude then
-    //       normalize it and use that as the destination
-    //
-    //GLKVector3 dest = GLKVector3Make(0.0f, 0.0f, 0.0f);
 
-    //GLKVector3 dest = GLKVector3Make(-2.0f, 1.0f, 2.0f);
-    //GLKVector3 dest = GLKVector3Make(-1.0f, 0.0f, 0.0f);
-    //GLKVector3 dest = GLKVector3Make(0.0f, 0.0f, 1.0f);
-
-
-    //GLKVector3 dest = GLKVector3Make(-1.0f, -1.0f, 0.0f);
-    GLKVector3 dest = GLKVector3Make(0.0f, -1.0f, 1.0f);
-
-
+    // NOTE: this should always make the geometry face the origin
+    GLKVector3 dest = GLKVector3MultiplyScalar(position, -1.0f);
     dest = GLKVector3Normalize(dest);
-
 
 
     float cosTheta = GLKVector3DotProduct(orig, dest);
     GLKVector3 rotationAxis;
     GLKQuaternion rotationQuat;
 
-    NSLog(@"cosTheta: %f", cosTheta);
-    NSLog(@"cosTheta (deg): %f", cosTheta * 180.0f/M_PI);
-
     if (cosTheta < -1.0f + FLT_EPSILON) {
-
+        //
+        // TODO: this code path has not been tested
+        //
         NSLog(@"cosTheta < -1.0f");
 
         rotationAxis = GLKVector3CrossProduct(GLKVector3Make(0.0f, 0.0f, 1.0f), orig);
@@ -250,57 +217,21 @@
         rotationQuat = GLKQuaternionMakeWithAngleAndVector3Axis(M_PI, rotationAxis);
     }
     else {
-
-        NSLog(@"cosTheta >= -1.0f");
-
-
         rotationAxis = GLKVector3CrossProduct(orig, dest);
-        //rotationAxis = GLKVector3CrossProduct(dest, orig);
-
-
 
         GLKVector3Normalize(rotationAxis); // not sure if needed
 
-        NSLog(@"rotationAxis: (%f, %f, %f)", rotationAxis.x, rotationAxis.y, rotationAxis.z);
-
         float s = sqrtf((1.0f + cosTheta) * 2.0f);
         float invs = 1.0f / s;
-
-        //NSLog(@"s (deg): %f", s * 180.0f/M_PI);
-        //NSLog(@"invs (deg): %f", invs * 180.0f/M_PI);
-
         rotationQuat = GLKQuaternionMake(rotationAxis.x * invs, rotationAxis.y * invs, rotationAxis.z * invs, s * 0.5f);
     }
-
-
-    NSLog(@"rotationQuat angle(deg): %f", GLKQuaternionAngle(rotationQuat) * 180.0f/M_PI);
-
-    GLKVector3 tempAxis = GLKQuaternionAxis(rotationQuat);
-    NSLog(@"rotationQuat axis: (%f, %f, %f)", tempAxis.x, tempAxis.y, tempAxis.z);
-
-
-
-/*
-    GLKVector3 srcVector = GLKVector3Make(0.0f, 1.0f, 0.0f);
-    GLKVector3 dstVector = GLKVector3Make(1.0f, 0.0f, 0.0f);
-
-    GLKVector3 crsVector = GLKVector3CrossProduct(srcVector, dstVector);
-    NSLog(@"crossed vector: (%f, %f, %f)", crsVector.x, crsVector.y, crsVector.z);
-
-    crsVector = GLKVector3CrossProduct(dstVector, srcVector);
-    NSLog(@"crossed vector: (%f, %f, %f)", crsVector.x, crsVector.y, crsVector.z);
-*/
-
-
 
 
     //
     // NOTE: this will make the top face of the cylinder point towards the origin
     //
     GLKMatrix4 rotationMatrix = GLKMatrix4MakeWithQuaternion(rotationQuat);
-
     m_pProceduralData.modelMatrix = GLKMatrix4Multiply(m_pProceduralData.modelMatrix, rotationMatrix);
-
 
 
     [m_pProceduralData generateRenderables];
