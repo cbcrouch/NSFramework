@@ -33,6 +33,14 @@ struct material_t {
     sampler2D specularMap;
 };
 
+struct directionalLight_t {
+    vec3 direction;
+
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
 struct pointLight_t {
     vec3 position;
 
@@ -67,6 +75,8 @@ uniform vec3 viewPos;
 //uniform bool useBlinnSpecular;
 
 uniform material_t material;
+
+uniform directionalLight_t directionalLight;
 uniform pointLight_t pointlight;
 uniform spotLight_t spotLight;
 
@@ -77,6 +87,7 @@ in vec2 f_texcoord;
 out vec4 color;
 
 
+vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 viewDir);
 vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir);
 
 
@@ -93,7 +104,6 @@ vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 v
 //}
 
 
-/*
 vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 viewDir) {
     vec3 lightDir = normalize(-light.direction);
 
@@ -102,15 +112,21 @@ vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 viewDir)
 
     // specular
     vec3 reflectDir = reflect(-lightDir, normal);
+
+    //
+    // TODO: add option to use Blinn specular
+    //
     float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess); // Phong
 
-    vec3 ambient = light.ambient * vec3(texture(material.diffuse, texcoords));
-    vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, texcoords));
-    vec3 specular = light.specular * spec * vec3(texture(material.specular, texcoords));
+    vec3 ambient = light.ambient * vec3(texture(material.diffuseMap, f_texcoord));
+    vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuseMap, f_texcoord));
+
+    // NOTE: material does not currently have a specular map
+    //vec3 specular = light.specular * spec * vec3(texture(material.specular, f_texcoord));
+    vec3 specular = light.specular * spec * material.specular;
+
     return (ambient + diffuse + specular);
 }
-*/
-
 
 vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir) {
     vec3 lightDir = normalize(light.position - fragPosition);
@@ -157,8 +173,18 @@ void main() {
     vec3 viewDir = normalize(viewPos - f_position);
     vec3 result = calc_point_light(pointlight, f_normal, f_position, viewDir);
 
+    vec3 directionalOutput = calc_directional_light(directionalLight, f_normal, viewDir);
+
     //
-    // TODO: add gamma correction (find some assets with a rendered frame for reference)
+    // TODO: this is only here so the compiler doesn't strip out the call to the direcitonal light calc
+    //
+    directionalOutput = result;
+
+
+    //
+    // TODO: add gamma correction (find some assets with a rendered frame for reference), note that
+    //       currently using an SRGB framebuffer which will make the final frame appear roughly gamma
+    //       correct with a gamma of 2.2 but will not allow for the user to tweak their gamma
     //
     //float gamma = 2.2f;
     //result = pow(result, vec3(1.0f/gamma));

@@ -230,8 +230,7 @@
     [m_renderRequest addGeometry:m_pProceduralData.geometry];
 
     [m_renderRequest addLight:m_pointLight];
-    //[m_renderRequest addLight:m_dirLight];
-
+    [m_renderRequest addLight:m_dirLight];
 
     [m_debugRenderRequest addGeometry:m_axisData.geometry];
     //[m_debugRenderRequest addGeometry:m_gridData.geometry];

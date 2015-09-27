@@ -156,6 +156,11 @@
 
         // directional light geometry will be a cylinder
 
+        //
+        // TODO: will ideally want to create a cylinder with just one, roughly, quarter of it with a bright
+        //       white texture and the rest of the cylinder a flat gray to visualize which direction the
+        //       the light vector is going
+        //
         _assetData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:(id)kVertexFormatDebug, nil];
         [_assetData generateRenderables];
 

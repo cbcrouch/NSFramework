@@ -86,6 +86,12 @@
 
     [self setLightUniforms:phongLight];
 
+
+    //
+    // TODO: load directional light uniforms
+    //
+
+
     // model matrix uniform location
     [self setModelMatrixLocation:glGetUniformLocation(self.hProgram, (const GLchar *)"model")];
     NSAssert(self.modelMatrixLocation != -1, @"failed to get model matrix uniform location");
@@ -150,10 +156,23 @@
         NSLog(@"WARNING: NFRDefaultProgram loadLight method not yet implemented for spot lights");
     }
     else if ([light isKindOfClass:NFDirectionalLight.class]) {
+
         //
         // TODO: implement
         //
-        NSLog(@"WARNING: NFRDefaultProgram loadLight method not yet implemented for directional lights");
+
+        // http://learnopengl.com/#!Lighting/Light-casters
+
+
+        static BOOL doOnce = YES;
+        if (doOnce) {
+            NSLog(@"WARNING: NFRDefaultProgram loadLight method not yet implemented for directional lights");
+            doOnce = NO;
+        }
+
+
+        //
+
     }
     else {
         NSLog(@"WARNING: NFRDefaultProgram received unrecongized light type");
