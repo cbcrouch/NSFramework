@@ -19,7 +19,7 @@
 @synthesize texCoordAttribute = _texCoordAttribute;
 
 @synthesize materialUniforms = _materialUniforms;
-@synthesize lightUniforms = _lightUniforms;
+@synthesize pointLightUniforms = _pointLightUniforms;
 
 @synthesize modelMatrixLocation = _modelMatrixLocation;
 @synthesize viewPositionLocation = _viewPositionLocation;
@@ -62,34 +62,42 @@
     [self setMaterialUniforms:phongMat];
 
     // light struct uniform locations
-    pointLightUniforms_t phongLight;
-    phongLight.ambientLoc = glGetUniformLocation(self.hProgram, "pointlight.ambient");
-    NSAssert(phongLight.ambientLoc != -1, @"failed to get uniform location");
+    pointLightUniforms_t pointLight;
+    pointLight.ambientLoc = glGetUniformLocation(self.hProgram, "pointlight.ambient");
+    NSAssert(pointLight.ambientLoc != -1, @"failed to get uniform location");
 
-    phongLight.diffuseLoc = glGetUniformLocation(self.hProgram, "pointlight.diffuse");
-    NSAssert(phongLight.diffuseLoc != -1, @"failed to get uniform location");
+    pointLight.diffuseLoc = glGetUniformLocation(self.hProgram, "pointlight.diffuse");
+    NSAssert(pointLight.diffuseLoc != -1, @"failed to get uniform location");
 
-    phongLight.specularLoc = glGetUniformLocation(self.hProgram, "pointlight.specular");
-    NSAssert(phongLight.specularLoc != -1, @"failed to get uniform location");
+    pointLight.specularLoc = glGetUniformLocation(self.hProgram, "pointlight.specular");
+    NSAssert(pointLight.specularLoc != -1, @"failed to get uniform location");
 
-    phongLight.positionLoc = glGetUniformLocation(self.hProgram, "pointlight.position");
-    NSAssert(phongLight.positionLoc != -1, @"failed to get uniform location");
+    pointLight.positionLoc = glGetUniformLocation(self.hProgram, "pointlight.position");
+    NSAssert(pointLight.positionLoc != -1, @"failed to get uniform location");
 
-    phongLight.constantLoc = glGetUniformLocation(self.hProgram, "pointlight.constant");
-    NSAssert(phongLight.constantLoc != -1, @"failed to get uniform location");
+    pointLight.constantLoc = glGetUniformLocation(self.hProgram, "pointlight.constant");
+    NSAssert(pointLight.constantLoc != -1, @"failed to get uniform location");
 
-    phongLight.linearLoc = glGetUniformLocation(self.hProgram, "pointlight.linear");
-    NSAssert(phongLight.linearLoc != -1, @"failed to get uniform location");
+    pointLight.linearLoc = glGetUniformLocation(self.hProgram, "pointlight.linear");
+    NSAssert(pointLight.linearLoc != -1, @"failed to get uniform location");
 
-    phongLight.quadraticLoc = glGetUniformLocation(self.hProgram, "pointlight.quadratic");
-    NSAssert(phongLight.quadraticLoc != -1, @"failed to get uniform location");
+    pointLight.quadraticLoc = glGetUniformLocation(self.hProgram, "pointlight.quadratic");
+    NSAssert(pointLight.quadraticLoc != -1, @"failed to get uniform location");
 
-    [self setLightUniforms:phongLight];
+    [self setPointLightUniforms:pointLight];
+
 
 
     //
     // TODO: load directional light uniforms
     //
+
+    directionalLightUniforms_t dirLight;
+
+    dirLight.directionLoc = glGetUniformLocation(self.hProgram, "directionalLight.direction");
+    NSAssert(dirLight.directionLoc != -1, @"failed to get uniform location");
+
+
 
 
     // model matrix uniform location
@@ -138,16 +146,16 @@
 - (void) loadLight:(id<NFLightSource>)light {
     glUseProgram(self.hProgram);
 
-    glUniform3f(self.lightUniforms.ambientLoc, light.ambient.r, light.ambient.g, light.ambient.b);
-    glUniform3f(self.lightUniforms.diffuseLoc, light.diffuse.r, light.diffuse.g, light.diffuse.b);
-    glUniform3f(self.lightUniforms.specularLoc, light.specular.r, light.specular.g, light.specular.b);
+    glUniform3f(self.pointLightUniforms.ambientLoc, light.ambient.r, light.ambient.g, light.ambient.b);
+    glUniform3f(self.pointLightUniforms.diffuseLoc, light.diffuse.r, light.diffuse.g, light.diffuse.b);
+    glUniform3f(self.pointLightUniforms.specularLoc, light.specular.r, light.specular.g, light.specular.b);
 
     if ([light isKindOfClass:NFPointLight.class]) {
         NFPointLight* pointLight = light;
-        glUniform3f(self.lightUniforms.positionLoc, pointLight.position.x, pointLight.position.y, pointLight.position.z);
-        glUniform1f(self.lightUniforms.constantLoc, pointLight.constantAttenuation);
-        glUniform1f(self.lightUniforms.linearLoc, pointLight.linearAttenuation);
-        glUniform1f(self.lightUniforms.quadraticLoc, pointLight.quadraticAttenuation);
+        glUniform3f(self.pointLightUniforms.positionLoc, pointLight.position.x, pointLight.position.y, pointLight.position.z);
+        glUniform1f(self.pointLightUniforms.constantLoc, pointLight.constantAttenuation);
+        glUniform1f(self.pointLightUniforms.linearLoc, pointLight.linearAttenuation);
+        glUniform1f(self.pointLightUniforms.quadraticLoc, pointLight.quadraticAttenuation);
     }
     else if ([light isKindOfClass:NFSpotLight.class]) {
         //

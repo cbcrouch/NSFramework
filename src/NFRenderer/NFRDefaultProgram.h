@@ -28,23 +28,57 @@ typedef struct phongMaterialUniform_t {
     GLint specularMapLoc;
 } phongMaterialUniform_t;
 
-typedef struct pointLightUniforms_t {
+typedef struct directionalLightUniforms_t {
+    GLint directionLoc;
+
     GLint ambientLoc;
     GLint diffuseLoc;
     GLint specularLoc;
+} directionalLightUniforms_t;
+
+typedef struct pointLightUniforms_t {
     GLint positionLoc;
+
+    GLint ambientLoc;
+    GLint diffuseLoc;
+    GLint specularLoc;
 
     GLint constantLoc;
     GLint linearLoc;
     GLint quadraticLoc;
 } pointLightUniforms_t;
 
+typedef struct spotLightUniforms_t {
+    GLint positionLoc;
+    GLint directionLoc;
+
+    GLint innerCutOffLoc;
+    GLint outerCutOffLoc;
+
+    GLint ambientLoc;
+    GLint diffuseLoc;
+    GLint specularLoc;
+
+    GLint constantLoc;
+    GLint linearLoc;
+    GLint quadraticLoc;
+} spotLightUniforms_t;
+
 @property (nonatomic, assign) GLint vertexAttribute;
 @property (nonatomic, assign) GLint normalAttribute;
 @property (nonatomic, assign) GLint texCoordAttribute;
 
 @property (nonatomic, assign) phongMaterialUniform_t materialUniforms;
-@property (nonatomic, assign) pointLightUniforms_t lightUniforms;
+
+
+//
+// TODO: will need a uniforms property for each light, consider using an array
+//
+@property (nonatomic, assign) pointLightUniforms_t pointLightUniforms;
+
+//@property (nonatomic, assign) directionalLightUniforms_t dirLightUniforms;
+//@property (nonatomic, assign) directionalLightUniforms_t spotLightUniforms;
+
 
 @property (nonatomic, assign) GLint modelMatrixLocation;
 @property (nonatomic, assign) GLint viewPositionLocation;

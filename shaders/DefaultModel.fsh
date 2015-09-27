@@ -106,23 +106,30 @@ vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 v
 
 vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 viewDir) {
     vec3 lightDir = normalize(-light.direction);
+    vec3 norm = normalize(normal);
+
+    // ambient
+    vec3 ambient = light.ambient * vec3(texture(material.diffuseMap, f_texcoord));
 
     // diffuse
-    float diff = max(dot(normal, lightDir), 0.0f);
+    float diff = max(dot(norm, lightDir), 0.0f);
+    vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuseMap, f_texcoord));
 
     // specular
-    vec3 reflectDir = reflect(-lightDir, normal);
-
     //
     // TODO: add option to use Blinn specular
     //
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess); // Phong
+    bool useBlinn = false;
+    float spec = 0.0f;
+    if (useBlinn) {
+        vec3 halfwayDir = normalize(lightDir + viewDir);
+        spec = pow(max(dot(norm, halfwayDir), 0.0f), 2.0f * material.shininess);
+    }
+    else {
+        vec3 reflectDir = reflect(-lightDir, norm);
+        spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
+    }
 
-    vec3 ambient = light.ambient * vec3(texture(material.diffuseMap, f_texcoord));
-    vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuseMap, f_texcoord));
-
-    // NOTE: material does not currently have a specular map
-    //vec3 specular = light.specular * spec * vec3(texture(material.specular, f_texcoord));
     vec3 specular = light.specular * spec * material.specular;
 
     return (ambient + diffuse + specular);
@@ -130,12 +137,12 @@ vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 viewDir)
 
 vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir) {
     vec3 lightDir = normalize(light.position - fragPosition);
+    vec3 norm = normalize(normal);
 
     // ambient
     vec3 ambient = light.ambient * material.ambient * texture(material.diffuseMap, f_texcoord).xyz;
 
     // diffuse
-    vec3 norm = normalize(normal);
     float diff = max(dot(norm, lightDir), 0.0f);
     vec3 diffuse = light.diffuse * (diff * material.diffuse * texture(material.diffuseMap, f_texcoord).xyz);
 
