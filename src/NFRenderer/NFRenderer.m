@@ -53,6 +53,7 @@
 
     NFDirectionalLight* m_dirLight;
     NFPointLight* m_pointLight;
+    NFSpotLight* m_spotLight;
 
     id<NFRProgram> m_phongObject;
     id<NFRProgram> m_debugObject;
@@ -165,9 +166,15 @@
 
 
     //
-    // NOTE: this cylinder is just for testing the rotate vector to direction method
+    // NOTE: this asset is just for testing the rotate vector to direction method
     //
-    m_pProceduralData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:(id)kVertexFormatDefault, nil];
+
+
+    //ASSET_TYPE assetType = kSolidCylinder;
+    ASSET_TYPE assetType = kSolidCone;
+
+    m_pProceduralData = [NFAssetLoader allocAssetDataOfType:assetType withArgs:(id)kVertexFormatDefault, nil];
+
 
     GLKVector3 position = GLKVector3Make(1.0f, 1.0f, -1.0f);
 
@@ -200,6 +207,7 @@
 
     m_pointLight = [[[NFPointLight alloc] init] retain];
     m_dirLight = [[[NFDirectionalLight alloc] init] retain];
+    m_spotLight = [[[NFSpotLight alloc] init] retain];
 
 
     _stepTransforms = NO;
@@ -231,12 +239,14 @@
 
     [m_renderRequest addLight:m_pointLight];
     [m_renderRequest addLight:m_dirLight];
+    [m_renderRequest addLight:m_spotLight];
 
     [m_debugRenderRequest addGeometry:m_axisData.geometry];
     //[m_debugRenderRequest addGeometry:m_gridData.geometry];
     
     [m_debugRenderRequest addGeometry:m_pointLight.geometry];
     [m_debugRenderRequest addGeometry:m_dirLight.geometry];
+    [m_debugRenderRequest addGeometry:m_spotLight.geometry];
 
     return self;
 }
@@ -251,6 +261,7 @@
 
     [m_pointLight release];
     [m_dirLight release];
+    [m_spotLight release];
 
     [m_phongObject release];
     [m_debugObject release];

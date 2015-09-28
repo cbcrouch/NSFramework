@@ -107,6 +107,41 @@
 
     [self setDirLightUniforms:dirLight];
 
+    // load spot light uniforms
+    spotLightUniforms_t spotLight;
+
+    spotLight.positionLoc = glGetUniformLocation(self.hProgram, "spotLight.position");
+    NSAssert(spotLight.positionLoc != -1, @"failed to get uniform location");
+
+    spotLight.directionLoc = glGetUniformLocation(self.hProgram, "spotLight.direction");
+    NSAssert(spotLight.directionLoc != -1, @"failed to get uniform location");
+
+    spotLight.innerCutOffLoc = glGetUniformLocation(self.hProgram, "spotLight.innerCutOff");
+    NSAssert(spotLight.innerCutOffLoc != -1, @"failed to get uniform location");
+
+    spotLight.outerCutOffLoc = glGetUniformLocation(self.hProgram, "spotLight.outerCutOff");
+    NSAssert(spotLight.outerCutOffLoc != -1, @"failed to get uniform location");
+
+    spotLight.ambientLoc = glGetUniformLocation(self.hProgram, "spotLight.ambient");
+    NSAssert(spotLight.ambientLoc != -1, @"failed to get uniform location");
+
+    spotLight.diffuseLoc = glGetUniformLocation(self.hProgram, "spotLight.diffuse");
+    NSAssert(spotLight.diffuseLoc != -1, @"failed to get uniform location");
+
+    spotLight.specularLoc = glGetUniformLocation(self.hProgram, "spotLight.specular");
+    NSAssert(spotLight.specularLoc != -1, @"failed to get uniform location");
+
+    spotLight.constantLoc = glGetUniformLocation(self.hProgram, "spotLight.constant");
+    NSAssert(spotLight.constantLoc != -1, @"failed to get uniform location");
+
+    spotLight.linearLoc = glGetUniformLocation(self.hProgram, "spotLight.linear");
+    NSAssert(spotLight.linearLoc != -1, @"failed to get uniform location");
+
+    spotLight.quadraticLoc = glGetUniformLocation(self.hProgram, "spotLight.quadratic");
+    NSAssert(spotLight.quadraticLoc != -1, @"failed to get uniform location");
+
+    [self setSpotLightUniforms:spotLight];
+
     // model matrix uniform location
     [self setModelMatrixLocation:glGetUniformLocation(self.hProgram, (const GLchar *)"model")];
     NSAssert(self.modelMatrixLocation != -1, @"failed to get model matrix uniform location");
@@ -169,10 +204,21 @@
         glUniform1f(self.pointLightUniforms.quadraticLoc, pointLight.quadraticAttenuation);
     }
     else if ([light isKindOfClass:NFSpotLight.class]) {
-        //
-        // TODO: implement
-        //
-        NSLog(@"WARNING: NFRDefaultProgram loadLight method not yet implemented for spot lights");
+        NFSpotLight* spotLight = light;
+
+        glUniform3f(self.spotLightUniforms.positionLoc, spotLight.position.x, spotLight.position.y, spotLight.position.z);
+        glUniform3f(self.spotLightUniforms.directionLoc, spotLight.direction.x, spotLight.direction.y, spotLight.direction.z);
+
+        glUniform1f(self.spotLightUniforms.innerCutOffLoc, spotLight.innerCutOff);
+        glUniform1f(self.spotLightUniforms.outerCutOffLoc, spotLight.outerCutOff);
+
+        glUniform3f(self.spotLightUniforms.ambientLoc, spotLight.ambient.r, spotLight.ambient.g, spotLight.ambient.b);
+        glUniform3f(self.spotLightUniforms.diffuseLoc, spotLight.diffuse.r, spotLight.diffuse.g, spotLight.diffuse.b);
+        glUniform3f(self.spotLightUniforms.specularLoc, spotLight.specular.r, spotLight.specular.g, spotLight.specular.b);
+
+        glUniform1f(self.spotLightUniforms.constantLoc, spotLight.constantAttenuation);
+        glUniform1f(self.spotLightUniforms.linearLoc, spotLight.linearAttenuation);
+        glUniform1f(self.spotLightUniforms.quadraticLoc, spotLight.quadraticAttenuation);
     }
     else if ([light isKindOfClass:NFDirectionalLight.class]) {
         NFDirectionalLight* dirLight = light;

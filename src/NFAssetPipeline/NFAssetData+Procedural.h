@@ -26,8 +26,8 @@
 //
 
 - (void) createUVSphereWithRadius:(float)radius withStacks:(int)stacks withSlices:(int)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat;
-- (void) createCylinder:(float)radius ofHeight:(float)height withSlices:(NSInteger)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat;
-- (void) createCone:(float)radius ofHeight:(float)height withSlices:(NSInteger)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat;
+- (void) createCylinderWithRadius:(float)radius ofHeight:(float)height withSlices:(NSInteger)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat;
+- (void) createConeWithRadius:(float)radius ofHeight:(float)height withSlices:(NSInteger)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat;
 
 
 

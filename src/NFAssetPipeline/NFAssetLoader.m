@@ -127,7 +127,6 @@
 
         case kSolidCylinder: {
             NF_VERTEX_FORMAT vertexType = kVertexFormatDefault;
-
             if(firstArg != nil) {
                 vertexType = (NF_VERTEX_FORMAT)firstArg;
             }
@@ -136,7 +135,7 @@
             // 16 => 22.5 degree slices   low resolution
             // 32 => 11.25 degree slices  medium resolution
             // 64 => 5.625 degree slices  high resolution
-            [asset createCylinder:1.0f ofHeight:2.0f withSlices:16 withVertexFormat:vertexType];
+            [asset createCylinderWithRadius:1.0f ofHeight:2.0f withSlices:16 withVertexFormat:vertexType];
 
             if (vertexType == kVertexFormatDefault) {
                 NFSurfaceModel *surface = [NFSurfaceModel defaultSurfaceModel];
@@ -153,7 +152,6 @@
 
         case kSolidUVSphere: {
             NF_VERTEX_FORMAT vertexType = kVertexFormatDefault;
-
             if(firstArg != nil) {
                 vertexType = (NF_VERTEX_FORMAT)firstArg;
             }
@@ -178,9 +176,28 @@
         break;
 
         case kSolidCone: {
+            NF_VERTEX_FORMAT vertexType = kVertexFormatDefault;
+            if(firstArg != nil) {
+                vertexType = (NF_VERTEX_FORMAT)firstArg;
+            }
+
+
             //
-            // TODO: implement
+            // TODO: document some good default values
             //
+            [asset createConeWithRadius:1.0f ofHeight:1.0f withSlices:8 withVertexFormat:vertexType];
+
+
+            if (vertexType == kVertexFormatDefault) {
+                NFSurfaceModel *surface = [NFSurfaceModel defaultSurfaceModel];
+                NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];
+                [surfaceModels addObject:surface];
+
+                asset.surfaceModelArray = surfaceModels;
+                for (NFAssetSubset *subset in [asset subsetArray]) {
+                    subset.surfaceModel = [surfaceModels objectAtIndex:0];
+                }
+            }
         }
         break;
 

@@ -89,6 +89,7 @@ out vec4 color;
 
 vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 viewDir);
 vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir);
+vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 viewDir);
 
 
 //
@@ -176,6 +177,15 @@ vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 v
     return(ambient + diffuse + specular);
 }
 
+vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 viewDir) {
+
+    //
+    // TODO: implement
+    //
+
+    return vec3(0,0,0);
+}
+
 void main() {
     vec3 viewDir = normalize(viewPos - f_position);
     vec3 result = calc_point_light(pointlight, f_normal, f_position, viewDir);
@@ -185,6 +195,14 @@ void main() {
 #else
     vec3 directionalOutput = calc_directional_light(directionalLight, f_normal, viewDir);
     directionalOutput = result;
+#endif
+
+
+#if 0
+    result += calc_spot_light(spotLight, f_normal, viewDir);
+#else
+    vec3 spotOutput = calc_spot_light(spotLight, f_normal, viewDir);
+    spotOutput = result;
 #endif
 
     //

@@ -76,7 +76,6 @@
 
         _ambient = GLKVector3Make(1.0f, 1.0f, 1.0f);
         _diffuse = GLKVector3Make(1.0f, 1.0f, 1.0f);
-
         _specular = GLKVector3Make(1.0f, 1.0f, 1.0f);
 
         _constantAttenuation = 1.0f;
@@ -190,6 +189,8 @@
         //
         [_assetData stepTransforms:0.0f];
 
+        _direction = dest;
+
         _ambient = GLKVector3Make(0.2f, 0.2f, 0.2f);
         _diffuse = GLKVector3Make(0.5f, 0.5f, 0.5f);
         _specular = GLKVector3Make(1.0f, 1.0f, 1.0f);
@@ -248,6 +249,67 @@
         //
 
         // spot light geometry will be a cone
+
+        //
+        // TODO: will ideally want to create a cone with just one, roughly, quarter of it with a bright
+        //       white texture and the rest of the cone a flat gray to visualize which direction the
+        //       the light vector is going (white would be bottom of the cone)
+        //
+        _assetData = [NFAssetLoader allocAssetDataOfType:kSolidCone withArgs:(id)kVertexFormatDebug, nil];
+        [_assetData generateRenderables];
+
+
+        _position = GLKVector3Make(-2.0f, 1.0f, 2.0f);
+
+        _assetData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, _position.x, _position.y, _position.z);
+        _assetData.modelMatrix = GLKMatrix4Scale(_assetData.modelMatrix, 0.065f, 0.065f, 0.065f);
+
+
+        GLKVector3 orig = GLKVector3Make(0.0f, -1.0f, 0.0f);
+        orig = GLKVector3Normalize(orig);
+
+        // NOTE: this should always make the geometry face the origin
+        GLKVector3 dest = GLKVector3MultiplyScalar(_position, -1.0f);
+        dest = GLKVector3Normalize(dest);
+
+        GLKQuaternion rotationQuat = [NFUtils rotateVector:orig toDirection:dest];
+
+        // NOTE: this will make the bottom face of the cylinder point towards the origin
+        GLKMatrix4 rotationMatrix = GLKMatrix4MakeWithQuaternion(rotationQuat);
+        _assetData.modelMatrix = GLKMatrix4Multiply(_assetData.modelMatrix, rotationMatrix);
+
+
+        //
+        // TODO: currently need to apply a single step to the sphere in order to have its tranforms
+        //       applied, need to find a better/cleaner way to initialize the transforms
+        //
+        [_assetData stepTransforms:0.0f];
+
+        _direction = dest;
+
+        _ambient = GLKVector3Make(0.2f, 0.2f, 0.2f);
+        _diffuse = GLKVector3Make(0.5f, 0.5f, 0.5f);
+        _specular = GLKVector3Make(1.0f, 1.0f, 1.0f);
+
+
+        //
+        // TODO: document some good angles to use for the inner and outer cutoff as well as their
+        //       relationship to how the spot light will appear
+        //
+        _innerCutOff = cosf(12.5f * M_PI/180.0f);
+        _outerCutOff = cosf(17.5f * M_PI/180.0f);
+
+
+        // NOTE: use same attenuation values as with the point light
+        _constantAttenuation = 1.0f;
+
+        // good for a distance of 13
+        //_linearAttenuation = 0.35f;
+        //_quadraticAttenuation = 0.44f;
+
+        // good for a distance of 7
+        _linearAttenuation = 0.7f;
+        _quadraticAttenuation = 1.8f;
     }
     return self;
 }

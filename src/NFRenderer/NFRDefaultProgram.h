@@ -72,7 +72,7 @@ typedef struct spotLightUniforms_t {
 
 @property (nonatomic, assign) directionalLightUniforms_t dirLightUniforms;
 @property (nonatomic, assign) pointLightUniforms_t pointLightUniforms;
-@property (nonatomic, assign) directionalLightUniforms_t spotLightUniforms;
+@property (nonatomic, assign) spotLightUniforms_t spotLightUniforms;
 
 @property (nonatomic, assign) GLint modelMatrixLocation;
 @property (nonatomic, assign) GLint viewPositionLocation;

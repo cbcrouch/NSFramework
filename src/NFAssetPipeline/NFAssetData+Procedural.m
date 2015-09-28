@@ -440,7 +440,7 @@ static const char *g_faceType = @encode(NFFace_t);
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
 
-- (void) createCylinder:(float)radius ofHeight:(float)height withSlices:(NSInteger)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
+- (void) createCylinderWithRadius:(float)radius ofHeight:(float)height withSlices:(NSInteger)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
     NSAssert(powerof2(slices) && slices >= 8, @"slices must be a power of 2 and at least equal to 8");
 
     const NSInteger numVertices = 6 * slices;
@@ -630,10 +630,16 @@ static const char *g_faceType = @encode(NFFace_t);
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
 
-- (void) createCone:(float)radius ofHeight:(float)height withSlices:(NSInteger)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
+- (void) createConeWithRadius:(float)radius ofHeight:(float)height withSlices:(NSInteger)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
     //
     // TODO: implement
     //
+
+    //NSLog(@"WARNING: NFAssetData+Procedural called but not yet implemented");
+
+    NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
+
+    self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
 
 @end
