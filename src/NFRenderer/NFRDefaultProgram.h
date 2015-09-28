@@ -70,15 +70,9 @@ typedef struct spotLightUniforms_t {
 
 @property (nonatomic, assign) phongMaterialUniform_t materialUniforms;
 
-
-//
-// TODO: will need a uniforms property for each light, consider using an array
-//
+@property (nonatomic, assign) directionalLightUniforms_t dirLightUniforms;
 @property (nonatomic, assign) pointLightUniforms_t pointLightUniforms;
-
-//@property (nonatomic, assign) directionalLightUniforms_t dirLightUniforms;
-//@property (nonatomic, assign) directionalLightUniforms_t spotLightUniforms;
-
+@property (nonatomic, assign) directionalLightUniforms_t spotLightUniforms;
 
 @property (nonatomic, assign) GLint modelMatrixLocation;
 @property (nonatomic, assign) GLint viewPositionLocation;

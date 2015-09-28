@@ -19,7 +19,10 @@
 @synthesize texCoordAttribute = _texCoordAttribute;
 
 @synthesize materialUniforms = _materialUniforms;
+
+@synthesize dirLightUniforms = _dirLightUniforms;
 @synthesize pointLightUniforms = _pointLightUniforms;
+@synthesize spotLightUniforms = _spotLightUniforms;
 
 @synthesize modelMatrixLocation = _modelMatrixLocation;
 @synthesize viewPositionLocation = _viewPositionLocation;
@@ -61,8 +64,9 @@
 
     [self setMaterialUniforms:phongMat];
 
-    // light struct uniform locations
+    // load point light uniforms
     pointLightUniforms_t pointLight;
+
     pointLight.ambientLoc = glGetUniformLocation(self.hProgram, "pointlight.ambient");
     NSAssert(pointLight.ambientLoc != -1, @"failed to get uniform location");
 
@@ -86,19 +90,22 @@
 
     [self setPointLightUniforms:pointLight];
 
-
-
-    //
-    // TODO: load directional light uniforms
-    //
-
+    // load directional light uniforms
     directionalLightUniforms_t dirLight;
 
     dirLight.directionLoc = glGetUniformLocation(self.hProgram, "directionalLight.direction");
     NSAssert(dirLight.directionLoc != -1, @"failed to get uniform location");
 
+    dirLight.ambientLoc = glGetUniformLocation(self.hProgram, "directionalLight.ambient");
+    NSAssert(dirLight.ambientLoc != -1, @"failed to get uniform location");
 
+    dirLight.diffuseLoc = glGetUniformLocation(self.hProgram, "directionalLight.diffuse");
+    NSAssert(dirLight.diffuseLoc != -1, @"failed to get uniform location");
 
+    dirLight.specularLoc = glGetUniformLocation(self.hProgram, "directionalLight.specular");
+    NSAssert(dirLight.specularLoc != -1, @"failed to get uniform location");
+
+    [self setDirLightUniforms:dirLight];
 
     // model matrix uniform location
     [self setModelMatrixLocation:glGetUniformLocation(self.hProgram, (const GLchar *)"model")];
@@ -146,13 +153,17 @@
 - (void) loadLight:(id<NFLightSource>)light {
     glUseProgram(self.hProgram);
 
-    glUniform3f(self.pointLightUniforms.ambientLoc, light.ambient.r, light.ambient.g, light.ambient.b);
-    glUniform3f(self.pointLightUniforms.diffuseLoc, light.diffuse.r, light.diffuse.g, light.diffuse.b);
-    glUniform3f(self.pointLightUniforms.specularLoc, light.specular.r, light.specular.g, light.specular.b);
-
+    //
+    // TODO: should not update uniforms every frame if the values have not changed
+    //
     if ([light isKindOfClass:NFPointLight.class]) {
         NFPointLight* pointLight = light;
         glUniform3f(self.pointLightUniforms.positionLoc, pointLight.position.x, pointLight.position.y, pointLight.position.z);
+
+        glUniform3f(self.pointLightUniforms.ambientLoc, pointLight.ambient.r, pointLight.ambient.g, pointLight.ambient.b);
+        glUniform3f(self.pointLightUniforms.diffuseLoc, pointLight.diffuse.r, pointLight.diffuse.g, pointLight.diffuse.b);
+        glUniform3f(self.pointLightUniforms.specularLoc, pointLight.specular.r, pointLight.specular.g, pointLight.specular.b);
+
         glUniform1f(self.pointLightUniforms.constantLoc, pointLight.constantAttenuation);
         glUniform1f(self.pointLightUniforms.linearLoc, pointLight.linearAttenuation);
         glUniform1f(self.pointLightUniforms.quadraticLoc, pointLight.quadraticAttenuation);
@@ -164,28 +175,18 @@
         NSLog(@"WARNING: NFRDefaultProgram loadLight method not yet implemented for spot lights");
     }
     else if ([light isKindOfClass:NFDirectionalLight.class]) {
+        NFDirectionalLight* dirLight = light;
+        glUniform3f(self.dirLightUniforms.directionLoc, dirLight.direction.x, dirLight.direction.y, dirLight.direction.z);
 
-        //
-        // TODO: implement
-        //
-
-        // http://learnopengl.com/#!Lighting/Light-casters
-
-
-        static BOOL doOnce = YES;
-        if (doOnce) {
-            NSLog(@"WARNING: NFRDefaultProgram loadLight method not yet implemented for directional lights");
-            doOnce = NO;
-        }
-
-
-        //
-
+        glUniform3f(self.dirLightUniforms.ambientLoc, dirLight.ambient.r, dirLight.ambient.g, dirLight.ambient.b);
+        glUniform3f(self.dirLightUniforms.diffuseLoc, dirLight.diffuse.r, dirLight.diffuse.g, dirLight.diffuse.b);
+        glUniform3f(self.dirLightUniforms.specularLoc, dirLight.specular.r, dirLight.specular.g, dirLight.specular.b);
     }
     else {
         NSLog(@"WARNING: NFRDefaultProgram received unrecongized light type");
     }
 
+    CHECK_GL_ERROR();
     glUseProgram(0);
 }
 

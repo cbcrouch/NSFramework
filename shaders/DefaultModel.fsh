@@ -180,13 +180,12 @@ void main() {
     vec3 viewDir = normalize(viewPos - f_position);
     vec3 result = calc_point_light(pointlight, f_normal, f_position, viewDir);
 
+#if 0
+    result += calc_directional_light(directionalLight, f_normal, viewDir);
+#else
     vec3 directionalOutput = calc_directional_light(directionalLight, f_normal, viewDir);
-
-    //
-    // TODO: this is only here so the compiler doesn't strip out the call to the direcitonal light calc
-    //
     directionalOutput = result;
-
+#endif
 
     //
     // TODO: add gamma correction (find some assets with a rendered frame for reference), note that
