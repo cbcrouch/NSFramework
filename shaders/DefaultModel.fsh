@@ -183,6 +183,8 @@ vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 viewDir) {
     // TODO: implement
     //
 
+    //
+
     return vec3(0,0,0);
 }
 

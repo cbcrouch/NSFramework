@@ -258,8 +258,13 @@
         _assetData = [NFAssetLoader allocAssetDataOfType:kSolidCone withArgs:(id)kVertexFormatDebug, nil];
         [_assetData generateRenderables];
 
-
+        //
+        // TODO: currently using the spot light geometry to test the cone generation, need to restore the
+        //       calculated transforms once it is working
+        //
+/*
         _position = GLKVector3Make(-2.0f, 1.0f, 2.0f);
+
 
         _assetData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, _position.x, _position.y, _position.z);
         _assetData.modelMatrix = GLKMatrix4Scale(_assetData.modelMatrix, 0.065f, 0.065f, 0.065f);
@@ -278,6 +283,11 @@
         GLKMatrix4 rotationMatrix = GLKMatrix4MakeWithQuaternion(rotationQuat);
         _assetData.modelMatrix = GLKMatrix4Multiply(_assetData.modelMatrix, rotationMatrix);
 
+        _direction = dest;
+*/
+
+        _assetData.modelMatrix = GLKMatrix4Identity;
+
 
         //
         // TODO: currently need to apply a single step to the sphere in order to have its tranforms
@@ -285,7 +295,7 @@
         //
         [_assetData stepTransforms:0.0f];
 
-        _direction = dest;
+
 
         _ambient = GLKVector3Make(0.2f, 0.2f, 0.2f);
         _diffuse = GLKVector3Make(0.5f, 0.5f, 0.5f);

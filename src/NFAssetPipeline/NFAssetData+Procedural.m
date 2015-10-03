@@ -631,13 +631,72 @@ static const char *g_faceType = @encode(NFFace_t);
 }
 
 - (void) createConeWithRadius:(float)radius ofHeight:(float)height withSlices:(NSInteger)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
-    //
-    // TODO: implement
-    //
 
-    //NSLog(@"WARNING: NFAssetData+Procedural called but not yet implemented");
+    //
+    // TODO: determine number of vertices and indices
+    //
+    //const NSInteger numVertices = 6 * slices;
+    //const NSInteger numIndices = 12 * slices;
+
+    const NSInteger numVertices = 3;
+    const NSInteger numIndices = 3;
 
     NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
+
+    if (vertexFormat == kVertexFormatDefault) {
+        NFVertex_t vertices[numVertices];
+        GLushort indices[numIndices];
+
+        //
+        // TODO: generate indices
+        //
+
+        [pSubset allocateIndicesWithNumElts:numIndices];
+        [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
+
+        //
+        // TODO: generate vertices
+        //
+
+        [pSubset allocateVerticesOfType:kVertexFormatDefault withNumVertices:numVertices];
+        [pSubset loadVertexData:vertices ofType:kVertexFormatDefault withNumVertices:numVertices];
+    }
+    else if (vertexFormat == kVertexFormatDebug) {
+        NFDebugVertex_t vertices[numVertices];
+        GLushort indices[numIndices];
+
+        memset(vertices, 0x00, sizeof(vertices));
+
+        //
+        // TODO: generate indices
+        //
+
+        indices[0] = 0;
+        indices[1] = 2;
+        indices[2] = 1;
+
+        [pSubset allocateIndicesWithNumElts:numIndices];
+        [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
+
+        //
+        // TODO: generate vertices
+        //
+
+        vertices[0].pos[0] = 0;
+        vertices[0].pos[1] = 0.5f;
+        vertices[0].pos[2] = 0;
+
+        vertices[1].pos[0] = 0.5f;
+        vertices[1].pos[1] = 0;
+        vertices[1].pos[2] = 0;
+
+        vertices[2].pos[0] = 0;
+        vertices[2].pos[1] = 0;
+        vertices[2].pos[2] = 0.5f;
+
+        [pSubset allocateVerticesOfType:kVertexFormatDebug withNumVertices:numVertices];
+        [pSubset loadVertexData:vertices ofType:kVertexFormatDebug withNumVertices:numVertices];
+    }
 
     self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
 }
