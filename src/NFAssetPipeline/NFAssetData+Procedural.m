@@ -532,28 +532,28 @@ static const char *g_faceType = @encode(NFFace_t);
             vecs[2] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecs[2]));
 
             // top triangle
-            for (int i=0; i<3; ++i) {
-                vertices[vertIndex].pos[0] = vecs[i].x;
+            for (int j=0; j<3; ++j) {
+                vertices[vertIndex].pos[0] = vecs[j].x;
                 vertices[vertIndex].pos[1] = height/2.0;
-                vertices[vertIndex].pos[2] = vecs[i].z;
+                vertices[vertIndex].pos[2] = vecs[j].z;
                 vertices[vertIndex].pos[3] = 1.0f;
 
                 vertices[vertIndex].texCoord[0] = uTexCoord;
-                vertices[vertIndex].texCoord[1] = (i!=0) ? vTexCoords[1] : vTexCoords[0];
+                vertices[vertIndex].texCoord[1] = (j!=0) ? vTexCoords[1] : vTexCoords[0];
                 vertices[vertIndex].texCoord[2] = 0.0f;
 
                 ++vertIndex;
             }
 
             // bottom triangle
-            for (int i=0; i<3; ++i) {
-                vertices[vertIndex].pos[0] = vecs[i].x;
+            for (int j=0; j<3; ++j) {
+                vertices[vertIndex].pos[0] = vecs[j].x;
                 vertices[vertIndex].pos[1] = -height/2.0;
-                vertices[vertIndex].pos[2] = vecs[i].z;
+                vertices[vertIndex].pos[2] = vecs[j].z;
                 vertices[vertIndex].pos[3] = 1.0f;
 
                 vertices[vertIndex].texCoord[0] = uTexCoord;
-                vertices[vertIndex].texCoord[1] = (i!=0) ? vTexCoords[2] : vTexCoords[3];
+                vertices[vertIndex].texCoord[1] = (j!=0) ? vTexCoords[2] : vTexCoords[3];
                 vertices[vertIndex].texCoord[2] = 0.0f;
 
                 ++vertIndex;
@@ -606,18 +606,18 @@ static const char *g_faceType = @encode(NFFace_t);
             vecs[2] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecs[2]));
 
             // top triangle
-            for (int i=0; i<3; ++i) {
-                vertices[vertIndex].pos[0] = vecs[i].x;
+            for (int j=0; j<3; ++j) {
+                vertices[vertIndex].pos[0] = vecs[j].x;
                 vertices[vertIndex].pos[1] = height/2.0;
-                vertices[vertIndex].pos[2] = vecs[i].z;
+                vertices[vertIndex].pos[2] = vecs[j].z;
                 ++vertIndex;
             }
 
             // bottom triangle
-            for (int i=0; i<3; ++i) {
-                vertices[vertIndex].pos[0] = vecs[i].x;
+            for (int j=0; j<3; ++j) {
+                vertices[vertIndex].pos[0] = vecs[j].x;
                 vertices[vertIndex].pos[1] = -height/2.0;
-                vertices[vertIndex].pos[2] = vecs[i].z;
+                vertices[vertIndex].pos[2] = vecs[j].z;
 
                 ++vertIndex;
             }
@@ -635,11 +635,23 @@ static const char *g_faceType = @encode(NFFace_t);
     //
     // TODO: determine number of vertices and indices
     //
-    //const NSInteger numVertices = 6 * slices;
-    //const NSInteger numIndices = 12 * slices;
 
-    const NSInteger numVertices = 3;
-    const NSInteger numIndices = 3;
+    // 8 slices will be 4 triangles per quadrant (should be half of what is needed for a cylinder)
+
+    //const NSInteger numVertices = 3 * slices;
+    //const NSInteger numIndices = 6 * slices;
+
+
+    const NSInteger numVertices = 4;
+    const NSInteger numIndices = 6;
+
+    GLKVector3 vecs[3];
+    vecs[0] = GLKVector3Make(0.0f, 0.0f, 0.0f);
+    vecs[1] = GLKVector3Make(1.0f, 0.0f, 0.0f);
+    vecs[2] = vecs[1];
+
+    NSInteger slicesPerQuad = slices / 4;
+    GLKQuaternion quat = GLKQuaternionMakeWithAngleAndAxis(-1.0f * M_PI / (float)(slicesPerQuad*2), 0.0f, 1.0f, 0.0f);
 
     NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
 
@@ -675,6 +687,10 @@ static const char *g_faceType = @encode(NFFace_t);
         indices[1] = 2;
         indices[2] = 1;
 
+        indices[3] = 1;
+        indices[4] = 2;
+        indices[5] = 3;
+
         [pSubset allocateIndicesWithNumElts:numIndices];
         [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
 
@@ -682,17 +698,66 @@ static const char *g_faceType = @encode(NFFace_t);
         // TODO: generate vertices
         //
 
+        NSLog(@"slices %ld", slices);
+
+
+        int vertIndex = 0;
+
+        //for (int i=0; i<slices; ++i) {
+
+        for (int i=0; i<2; ++i) {
+
+            vecs[1] = vecs[2];
+            vecs[2] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecs[2]));
+
+            // top vertex
+            vertices[vertIndex].pos[0] = 0.0f;
+            vertices[vertIndex].pos[1] = height;
+            vertices[vertIndex].pos[2] = 0.0f;
+
+            ++vertIndex;
+
+            for (int j=0; j<3; ++j) {
+                NSLog(@"vecs[%d] (%f, %f, %f)", j, vecs[j].x, vecs[j].y, vecs[j].z);
+
+                // vecs[0] will be the bottom
+                // vecs[1] will be the right vertex
+                // vecs[2] will be the left vertex
+            }
+
+
+            // indexing order
+            // - top
+            // - right
+            // - left
+            // - bottom
+
+
+            //vertices[vertIndex].pos[0] = vecs[1].x;
+            //...
+            ++vertIndex;
+
+
+            NSLog(@"\n");
+        }
+
+
+
         vertices[0].pos[0] = 0;
-        vertices[0].pos[1] = 0.5f;
+        vertices[0].pos[1] = height;
         vertices[0].pos[2] = 0;
 
-        vertices[1].pos[0] = 0.5f;
+        vertices[1].pos[0] = height;
         vertices[1].pos[1] = 0;
         vertices[1].pos[2] = 0;
 
         vertices[2].pos[0] = 0;
         vertices[2].pos[1] = 0;
-        vertices[2].pos[2] = 0.5f;
+        vertices[2].pos[2] = height;
+
+        vertices[3].pos[0] = 0;
+        vertices[3].pos[1] = 0;
+        vertices[3].pos[2] = 0;
 
         [pSubset allocateVerticesOfType:kVertexFormatDebug withNumVertices:numVertices];
         [pSubset loadVertexData:vertices ofType:kVertexFormatDebug withNumVertices:numVertices];
