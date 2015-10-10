@@ -705,17 +705,10 @@ static const char *g_faceType = @encode(NFFace_t);
 
         //for (int i=0; i<slices; ++i) {
 
-        for (int i=0; i<2; ++i) {
+        for (int i=0; i<1; ++i) {
 
             vecs[1] = vecs[2];
             vecs[2] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecs[2]));
-
-            // top vertex
-            vertices[vertIndex].pos[0] = 0.0f;
-            vertices[vertIndex].pos[1] = height;
-            vertices[vertIndex].pos[2] = 0.0f;
-
-            ++vertIndex;
 
             for (int j=0; j<3; ++j) {
                 NSLog(@"vecs[%d] (%f, %f, %f)", j, vecs[j].x, vecs[j].y, vecs[j].z);
@@ -725,39 +718,39 @@ static const char *g_faceType = @encode(NFFace_t);
                 // vecs[2] will be the left vertex
             }
 
-
-            // indexing order
-            // - top
-            // - right
-            // - left
-            // - bottom
-
-
-            //vertices[vertIndex].pos[0] = vecs[1].x;
-            //...
-            ++vertIndex;
-
-
             NSLog(@"\n");
         }
 
+        // indexing order
+        // - top
+        // - right
+        // - left
+        // - bottom
 
+        // top vertex
+        vertices[vertIndex].pos[0] = 0.0f;
+        vertices[vertIndex].pos[1] = height;
+        vertices[vertIndex].pos[2] = 0.0f;
+        ++vertIndex;
 
-        vertices[0].pos[0] = 0;
-        vertices[0].pos[1] = height;
-        vertices[0].pos[2] = 0;
+        // right vertex
+        vertices[vertIndex].pos[0] = vecs[1].x;
+        vertices[vertIndex].pos[1] = vecs[1].y;
+        vertices[vertIndex].pos[2] = vecs[1].z;
+        ++vertIndex;
 
-        vertices[1].pos[0] = height;
-        vertices[1].pos[1] = 0;
-        vertices[1].pos[2] = 0;
+        // left vertex
+        vertices[vertIndex].pos[0] = vecs[2].x;
+        vertices[vertIndex].pos[1] = vecs[2].y;
+        vertices[vertIndex].pos[2] = vecs[2].z;
+        ++vertIndex;
 
-        vertices[2].pos[0] = 0;
-        vertices[2].pos[1] = 0;
-        vertices[2].pos[2] = height;
+        // bottom vertex
+        vertices[vertIndex].pos[0] = vecs[0].x;
+        vertices[vertIndex].pos[1] = vecs[0].y;
+        vertices[vertIndex].pos[2] = vecs[0].z;
+        ++vertIndex;
 
-        vertices[3].pos[0] = 0;
-        vertices[3].pos[1] = 0;
-        vertices[3].pos[2] = 0;
 
         [pSubset allocateVerticesOfType:kVertexFormatDebug withNumVertices:numVertices];
         [pSubset loadVertexData:vertices ofType:kVertexFormatDebug withNumVertices:numVertices];
