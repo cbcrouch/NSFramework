@@ -483,8 +483,8 @@ static const char *g_faceType = @encode(NFFace_t);
         indices[idx+2] = idxVal[3];
         idx += 3;
 
-        for (int i=0; i<6; ++i) {
-            idxVal[i] += 6;
+        for (int j=0; j<6; ++j) {
+            idxVal[j] += 6;
         }
     }
 
@@ -631,43 +631,62 @@ static const char *g_faceType = @encode(NFFace_t);
 }
 
 - (void) createConeWithRadius:(float)radius ofHeight:(float)height withSlices:(NSInteger)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
+    const NSInteger numVertices = 4 * slices;
+    const NSInteger numIndices = 6 * slices;
 
-    //
-    // TODO: determine number of vertices and indices
-    //
-
-    // 8 slices will be 4 triangles per quadrant (should be half of what is needed for a cylinder)
-
-    //const NSInteger numVertices = 3 * slices;
-    //const NSInteger numIndices = 6 * slices;
-
-
-    const NSInteger numVertices = 4;
-    const NSInteger numIndices = 6;
-
-    GLKVector3 vecs[3];
-    vecs[0] = GLKVector3Make(0.0f, 0.0f, 0.0f);
+    GLKVector3 vecs[4];
+    vecs[0] = GLKVector3Make(0.0f, height, 0.0f);
     vecs[1] = GLKVector3Make(1.0f, 0.0f, 0.0f);
     vecs[2] = vecs[1];
+    vecs[3] = GLKVector3Make(0.0f, 0.0f, 0.0f);
 
     NSInteger slicesPerQuad = slices / 4;
     GLKQuaternion quat = GLKQuaternionMakeWithAngleAndAxis(-1.0f * M_PI / (float)(slicesPerQuad*2), 0.0f, 1.0f, 0.0f);
 
     NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
 
+    GLushort indices[numIndices];
+
+    GLushort idxVal[4];
+    for (int i=0; i<4; ++i) {
+        idxVal[i] = (GLushort)i;
+    }
+
+    // indexing order
+    // - top
+    // - right
+    // - left
+    // - bottom
+
+    int idx = 0;
+    for (int i=0; i<slices; ++i) {
+        // top triangle
+        indices[idx]   = idxVal[0];
+        indices[idx+1] = idxVal[2];
+        indices[idx+2] = idxVal[1];
+        idx += 3;
+
+        // bottom triangle
+        indices[idx]   = idxVal[1];
+        indices[idx+1] = idxVal[2];
+        indices[idx+2] = idxVal[3];
+        idx += 3;
+
+        for (int j=0; j<4; ++j) {
+            idxVal[j] += 4;
+        }
+    }
+
+    [pSubset allocateIndicesWithNumElts:numIndices];
+    [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
+
     if (vertexFormat == kVertexFormatDefault) {
         NFVertex_t vertices[numVertices];
-        GLushort indices[numIndices];
+
+        memset(vertices, 0x00, sizeof(vertices));
 
         //
-        // TODO: generate indices
-        //
-
-        [pSubset allocateIndicesWithNumElts:numIndices];
-        [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
-
-        //
-        // TODO: generate vertices
+        // TODO: generate vertices' tex coords and normals
         //
 
         [pSubset allocateVerticesOfType:kVertexFormatDefault withNumVertices:numVertices];
@@ -675,82 +694,26 @@ static const char *g_faceType = @encode(NFFace_t);
     }
     else if (vertexFormat == kVertexFormatDebug) {
         NFDebugVertex_t vertices[numVertices];
-        GLushort indices[numIndices];
 
-        memset(vertices, 0x00, sizeof(vertices));
-
-        //
-        // TODO: generate indices
-        //
-
-        indices[0] = 0;
-        indices[1] = 2;
-        indices[2] = 1;
-
-        indices[3] = 1;
-        indices[4] = 2;
-        indices[5] = 3;
-
-        [pSubset allocateIndicesWithNumElts:numIndices];
-        [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
-
-        //
-        // TODO: generate vertices
-        //
-
-        NSLog(@"slices %ld", slices);
-
+        for (int i=0; i<numVertices; ++i) {
+            vertices[i].color[0] = 1.0f;
+            vertices[i].color[1] = 1.0f;
+            vertices[i].color[2] = 1.0f;
+            vertices[i].color[3] = 1.0f;
+        }
 
         int vertIndex = 0;
-
-        //for (int i=0; i<slices; ++i) {
-
-        for (int i=0; i<1; ++i) {
-
+        for (int i=0; i<slices; ++i) {
             vecs[1] = vecs[2];
             vecs[2] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecs[2]));
 
-            for (int j=0; j<3; ++j) {
-                NSLog(@"vecs[%d] (%f, %f, %f)", j, vecs[j].x, vecs[j].y, vecs[j].z);
-
-                // vecs[0] will be the bottom
-                // vecs[1] will be the right vertex
-                // vecs[2] will be the left vertex
+            for (int j=0; j<4; ++j) {
+                vertices[vertIndex].pos[0] = vecs[j].x;
+                vertices[vertIndex].pos[1] = vecs[j].y;
+                vertices[vertIndex].pos[2] = vecs[j].z;
+                ++vertIndex;
             }
-
-            NSLog(@"\n");
         }
-
-        // indexing order
-        // - top
-        // - right
-        // - left
-        // - bottom
-
-        // top vertex
-        vertices[vertIndex].pos[0] = 0.0f;
-        vertices[vertIndex].pos[1] = height;
-        vertices[vertIndex].pos[2] = 0.0f;
-        ++vertIndex;
-
-        // right vertex
-        vertices[vertIndex].pos[0] = vecs[1].x;
-        vertices[vertIndex].pos[1] = vecs[1].y;
-        vertices[vertIndex].pos[2] = vecs[1].z;
-        ++vertIndex;
-
-        // left vertex
-        vertices[vertIndex].pos[0] = vecs[2].x;
-        vertices[vertIndex].pos[1] = vecs[2].y;
-        vertices[vertIndex].pos[2] = vecs[2].z;
-        ++vertIndex;
-
-        // bottom vertex
-        vertices[vertIndex].pos[0] = vecs[0].x;
-        vertices[vertIndex].pos[1] = vecs[0].y;
-        vertices[vertIndex].pos[2] = vecs[0].z;
-        ++vertIndex;
-
 
         [pSubset allocateVerticesOfType:kVertexFormatDebug withNumVertices:numVertices];
         [pSubset loadVertexData:vertices ofType:kVertexFormatDebug withNumVertices:numVertices];

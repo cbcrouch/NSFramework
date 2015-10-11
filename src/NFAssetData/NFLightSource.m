@@ -262,6 +262,7 @@
         // TODO: currently using the spot light geometry to test the cone generation, need to restore the
         //       calculated transforms once it is working
         //
+
 /*
         _position = GLKVector3Make(-2.0f, 1.0f, 2.0f);
 
