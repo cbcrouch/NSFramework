@@ -176,6 +176,7 @@
     m_pProceduralData = [NFAssetLoader allocAssetDataOfType:assetType withArgs:(id)kVertexFormatDefault, nil];
 
 
+/*
     GLKVector3 position = GLKVector3Make(1.0f, 1.0f, -1.0f);
 
     m_pProceduralData.modelMatrix = GLKMatrix4TranslateWithVector3(GLKMatrix4Identity, position);
@@ -198,6 +199,7 @@
     // NOTE: this will make the top face of the cylinder point towards the origin
     GLKMatrix4 rotationMatrix = GLKMatrix4MakeWithQuaternion(rotationQuat);
     m_pProceduralData.modelMatrix = GLKMatrix4Multiply(m_pProceduralData.modelMatrix, rotationMatrix);
+*/
 
     [m_pProceduralData generateRenderables];
     //

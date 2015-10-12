@@ -125,6 +125,11 @@
             }
         break;
 
+            //
+            // TODO: need to be able to pass in stacks, slices, and height values for the sphere,
+            //       cylinder, and cone geometry creation methods
+            //
+
         case kSolidCylinder: {
             NF_VERTEX_FORMAT vertexType = kVertexFormatDefault;
             if(firstArg != nil) {
@@ -186,6 +191,8 @@
             // TODO: document some good default values
             //
             [asset createConeWithRadius:1.0f ofHeight:1.0f withSlices:8 withVertexFormat:vertexType];
+
+            // test with other numbers of slices and radius
 
 
             if (vertexType == kVertexFormatDefault) {

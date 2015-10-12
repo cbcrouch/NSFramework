@@ -255,21 +255,20 @@
         //       white texture and the rest of the cone a flat gray to visualize which direction the
         //       the light vector is going (white would be bottom of the cone)
         //
+
+
+        //
+        // TODO: pass in values for height and slices for the cone
+        //
         _assetData = [NFAssetLoader allocAssetDataOfType:kSolidCone withArgs:(id)kVertexFormatDebug, nil];
+
+
         [_assetData generateRenderables];
 
-        //
-        // TODO: currently using the spot light geometry to test the cone generation, need to restore the
-        //       calculated transforms once it is working
-        //
-
-/*
         _position = GLKVector3Make(-2.0f, 1.0f, 2.0f);
-
 
         _assetData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, _position.x, _position.y, _position.z);
         _assetData.modelMatrix = GLKMatrix4Scale(_assetData.modelMatrix, 0.065f, 0.065f, 0.065f);
-
 
         GLKVector3 orig = GLKVector3Make(0.0f, -1.0f, 0.0f);
         orig = GLKVector3Normalize(orig);
@@ -285,9 +284,6 @@
         _assetData.modelMatrix = GLKMatrix4Multiply(_assetData.modelMatrix, rotationMatrix);
 
         _direction = dest;
-*/
-
-        _assetData.modelMatrix = GLKMatrix4Identity;
 
 
         //
@@ -295,7 +291,6 @@
         //       applied, need to find a better/cleaner way to initialize the transforms
         //
         [_assetData stepTransforms:0.0f];
-
 
 
         _ambient = GLKVector3Make(0.2f, 0.2f, 0.2f);

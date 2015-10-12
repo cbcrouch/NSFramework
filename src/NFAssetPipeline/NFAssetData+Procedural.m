@@ -631,6 +631,7 @@ static const char *g_faceType = @encode(NFFace_t);
 }
 
 - (void) createConeWithRadius:(float)radius ofHeight:(float)height withSlices:(NSInteger)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
+    NSAssert(powerof2(slices) && slices >= 8, @"slices must be a power of 2 and at least equal to 8");
     const NSInteger numVertices = 4 * slices;
     const NSInteger numIndices = 6 * slices;
 
@@ -639,9 +640,6 @@ static const char *g_faceType = @encode(NFFace_t);
     vecs[1] = GLKVector3Make(1.0f, 0.0f, 0.0f);
     vecs[2] = vecs[1];
     vecs[3] = GLKVector3Make(0.0f, 0.0f, 0.0f);
-
-    NSInteger slicesPerQuad = slices / 4;
-    GLKQuaternion quat = GLKQuaternionMakeWithAngleAndAxis(-1.0f * M_PI / (float)(slicesPerQuad*2), 0.0f, 1.0f, 0.0f);
 
     NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
 
@@ -680,27 +678,51 @@ static const char *g_faceType = @encode(NFFace_t);
     [pSubset allocateIndicesWithNumElts:numIndices];
     [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
 
+
+    NSInteger slicesPerQuad = slices / 4;
+    GLKQuaternion quat = GLKQuaternionMakeWithAngleAndAxis(-1.0f * M_PI / (float)(slicesPerQuad*2), 0.0f, 1.0f, 0.0f);
+
+
+    //
+    // TODO: scale vectors to radius length
+    //
+
+
     if (vertexFormat == kVertexFormatDefault) {
         NFVertex_t vertices[numVertices];
 
         memset(vertices, 0x00, sizeof(vertices));
 
+
         //
         // TODO: generate vertices' tex coords and normals
         //
 
+        NSLog(@"generating default vertex format cone");
+
+/*
+        int vertIndex = 0;
+        for (int i=0; i<slices; ++i) {
+            vecs[1] = vecs[2];
+            vecs[2] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecs[2]));
+
+            //
+            // TODO: determine why the procedural asset geometry is not showing up (this is not working)
+            //
+            for (int j=0; j<4; ++j) {
+                vertices[vertIndex].pos[0] = vecs[j].x;
+                vertices[vertIndex].pos[1] = vecs[j].y;
+                vertices[vertIndex].pos[2] = vecs[j].z;
+                ++vertIndex;
+            }
+        }
+*/
+        
         [pSubset allocateVerticesOfType:kVertexFormatDefault withNumVertices:numVertices];
         [pSubset loadVertexData:vertices ofType:kVertexFormatDefault withNumVertices:numVertices];
     }
     else if (vertexFormat == kVertexFormatDebug) {
         NFDebugVertex_t vertices[numVertices];
-
-        for (int i=0; i<numVertices; ++i) {
-            vertices[i].color[0] = 1.0f;
-            vertices[i].color[1] = 1.0f;
-            vertices[i].color[2] = 1.0f;
-            vertices[i].color[3] = 1.0f;
-        }
 
         int vertIndex = 0;
         for (int i=0; i<slices; ++i) {
@@ -711,6 +733,12 @@ static const char *g_faceType = @encode(NFFace_t);
                 vertices[vertIndex].pos[0] = vecs[j].x;
                 vertices[vertIndex].pos[1] = vecs[j].y;
                 vertices[vertIndex].pos[2] = vecs[j].z;
+
+                vertices[vertIndex].color[0] = 1.0f;
+                vertices[vertIndex].color[1] = 1.0f;
+                vertices[vertIndex].color[2] = 1.0f;
+                vertices[vertIndex].color[3] = 1.0f;
+
                 ++vertIndex;
             }
         }
