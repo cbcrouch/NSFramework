@@ -678,7 +678,6 @@ static const char *g_faceType = @encode(NFFace_t);
     [pSubset allocateIndicesWithNumElts:numIndices];
     [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
 
-
     NSInteger slicesPerQuad = slices / 4;
     GLKQuaternion quat = GLKQuaternionMakeWithAngleAndAxis(-1.0f * M_PI / (float)(slicesPerQuad*2), 0.0f, 1.0f, 0.0f);
 
@@ -691,32 +690,71 @@ static const char *g_faceType = @encode(NFFace_t);
     if (vertexFormat == kVertexFormatDefault) {
         NFVertex_t vertices[numVertices];
 
-        memset(vertices, 0x00, sizeof(vertices));
+        float uTexCoord = 0.0f;
+        float deltaU = 1.0f/(float)slices;
 
 
         //
-        // TODO: generate vertices' tex coords and normals
+        // TODO: need to generate correct surface distance
         //
+        float surfaceDist = radius + height;
 
-        NSLog(@"generating default vertex format cone");
 
-/*
+        float vTexCoords[4];
+        vTexCoords[0] = 0.0f;
+        vTexCoords[1] = radius / surfaceDist;
+        vTexCoords[2] = (radius+height) / surfaceDist;
+        vTexCoords[3] = 1.0f;
+
+
         int vertIndex = 0;
         for (int i=0; i<slices; ++i) {
             vecs[1] = vecs[2];
             vecs[2] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecs[2]));
 
-            //
-            // TODO: determine why the procedural asset geometry is not showing up (this is not working)
-            //
             for (int j=0; j<4; ++j) {
                 vertices[vertIndex].pos[0] = vecs[j].x;
                 vertices[vertIndex].pos[1] = vecs[j].y;
                 vertices[vertIndex].pos[2] = vecs[j].z;
+                vertices[vertIndex].pos[3] = 1.0f;
+
+                vertices[vertIndex].texCoord[0] = uTexCoord;
+                vertices[vertIndex].texCoord[1] = (j!=0) ? vTexCoords[1] : vTexCoords[0];
+                vertices[vertIndex].texCoord[2] = 0.0f;
+
                 ++vertIndex;
             }
+
+            uTexCoord += deltaU;
         }
-*/
+
+
+
+        // build faces array and calculate normals
+        GLushort* indexPtr = indices;
+        NSMutableArray* faceArray = [[[NSMutableArray alloc] init] autorelease];
+
+        for (int i=0; i<numIndices/3; ++i) {
+            NFFace_t face = [NFAssetUtils calculateFaceWithPoints:vertices withIndices:indexPtr];
+            NSValue *value = [NSValue value:&face withObjCType:g_faceType];
+            [faceArray addObject:value];
+            indexPtr += 3;
+        }
+
+        for (int i=0; i<numVertices; ++i) {
+
+            //
+            // TODO: the normals do not make for as smooth of a cylinder as expected, try hand calculating a few normals
+            //       and then compare to NF asset utils generation
+            //
+
+            GLKVector4 vertexNormal = [NFAssetUtils calculateAreaWeightedNormalOfIndex:(GLushort)i withFaces:faceArray];
+            vertices[i].norm[0] = vertexNormal.x;
+            vertices[i].norm[1] = vertexNormal.y;
+            vertices[i].norm[2] = vertexNormal.z;
+            vertices[i].norm[3] = vertexNormal.w;
+        }
+
         
         [pSubset allocateVerticesOfType:kVertexFormatDefault withNumVertices:numVertices];
         [pSubset loadVertexData:vertices ofType:kVertexFormatDefault withNumVertices:numVertices];

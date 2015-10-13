@@ -268,7 +268,7 @@
         _position = GLKVector3Make(-2.0f, 1.0f, 2.0f);
 
         _assetData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, _position.x, _position.y, _position.z);
-        _assetData.modelMatrix = GLKMatrix4Scale(_assetData.modelMatrix, 0.065f, 0.065f, 0.065f);
+        _assetData.modelMatrix = GLKMatrix4Scale(_assetData.modelMatrix, 0.085f, 0.085f, 0.085f);
 
         GLKVector3 orig = GLKVector3Make(0.0f, -1.0f, 0.0f);
         orig = GLKVector3Normalize(orig);
