@@ -635,12 +635,6 @@ static const char *g_faceType = @encode(NFFace_t);
     const NSInteger numVertices = 4 * slices;
     const NSInteger numIndices = 6 * slices;
 
-    GLKVector3 vecs[4];
-    vecs[0] = GLKVector3Make(0.0f, height, 0.0f);
-    vecs[1] = GLKVector3Make(1.0f, 0.0f, 0.0f);
-    vecs[2] = vecs[1];
-    vecs[3] = GLKVector3Make(0.0f, 0.0f, 0.0f);
-
     NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
 
     GLushort indices[numIndices];
@@ -687,8 +681,55 @@ static const char *g_faceType = @encode(NFFace_t);
     //
 
 
+    GLKVector3 vecs[4];
+    vecs[0] = GLKVector3Make(0.0f, height, 0.0f);
+    vecs[1] = GLKVector3Make(1.0f, 0.0f, 0.0f);
+    vecs[2] = vecs[1];
+    vecs[3] = GLKVector3Make(0.0f, 0.0f, 0.0f);
+
+
+    GLKVector3 vecsAlt[3];
+    vecsAlt[0] = GLKVector3Make(0.0f, height, 0.0f);
+    vecsAlt[1] = GLKVector3Make(1.0f, 0.0f, 0.0f);
+    vecsAlt[2] = GLKVector3Make(0.0f, 0.0f, 0.0f);
+
+
+
     if (vertexFormat == kVertexFormatDefault) {
         NFVertex_t vertices[numVertices];
+
+
+        memset(indices, 0, sizeof(indices));
+        memset(vertices, 0, sizeof(vertices));
+
+
+        idxVal[0] = 0;
+        idxVal[1] = 4;
+        idxVal[2] = 1;
+        idxVal[3] = 2;
+
+        idx = 0;
+
+        // top triangle
+        indices[idx]   = idxVal[0];
+        indices[idx+1] = idxVal[1];
+        indices[idx+2] = idxVal[2];
+        idx += 3;
+
+        // bottom triangle
+        indices[idx]   = idxVal[2];
+        indices[idx+1] = idxVal[1];
+        indices[idx+2] = idxVal[3];
+        //idx += 3;
+
+        for (int j=0; j<4; ++j) {
+            idxVal[j] += 3;
+        }
+
+
+        [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
+
+
 
         float uTexCoord = 0.0f;
         float deltaU = 1.0f/(float)slices;
@@ -702,16 +743,29 @@ static const char *g_faceType = @encode(NFFace_t);
 
         float vTexCoords[4];
         vTexCoords[0] = 0.0f;
+
+        //
+        // TODO: these texture coords are not correct as well (surface distance might be)
+        //
         vTexCoords[1] = radius / surfaceDist;
         vTexCoords[2] = (radius+height) / surfaceDist;
+
         vTexCoords[3] = 1.0f;
 
 
         int vertIndex = 0;
-        for (int i=0; i<slices; ++i) {
+
+
+        //for (int i=0; i<slices; ++i) {
+        for (int i=0; i<2; ++i) {
+
             vecs[1] = vecs[2];
             vecs[2] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecs[2]));
 
+            //
+            // TODO: is this is generating too many vertices, need to drop redundant vertices
+            //
+/*
             for (int j=0; j<4; ++j) {
                 vertices[vertIndex].pos[0] = vecs[j].x;
                 vertices[vertIndex].pos[1] = vecs[j].y;
@@ -719,15 +773,56 @@ static const char *g_faceType = @encode(NFFace_t);
                 vertices[vertIndex].pos[3] = 1.0f;
 
                 vertices[vertIndex].texCoord[0] = uTexCoord;
+
+                //
+                // TODO: this isn't setting the texture coordinates correctly
+                //
                 vertices[vertIndex].texCoord[1] = (j!=0) ? vTexCoords[1] : vTexCoords[0];
+
                 vertices[vertIndex].texCoord[2] = 0.0f;
+
+                NSLog(@"vertex pos: (%f, %f, %f)", vertices[vertIndex].pos[0], vertices[vertIndex].pos[1], vertices[vertIndex].pos[2]);
 
                 ++vertIndex;
             }
+*/
+
+            for (int j=0; j<3; ++j) {
+                vertices[vertIndex].pos[0] = vecsAlt[j].x;
+                vertices[vertIndex].pos[1] = vecsAlt[j].y;
+                vertices[vertIndex].pos[2] = vecsAlt[j].z;
+                vertices[vertIndex].pos[3] = 1.0f;
+
+                vertices[vertIndex].texCoord[0] = uTexCoord;
+
+                //
+                // TODO: this isn't setting the texture coordinates correctly
+                //
+                vertices[vertIndex].texCoord[1] = (j!=0) ? vTexCoords[1] : vTexCoords[0];
+
+                vertices[vertIndex].texCoord[2] = 0.0f;
+
+                NSLog(@"vertex pos: (%f, %f, %f)", vertices[vertIndex].pos[0], vertices[vertIndex].pos[1], vertices[vertIndex].pos[2]);
+                
+                ++vertIndex;
+            }
+
+
+
+            NSLog(@"\n");
+
+            vecsAlt[1] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecsAlt[1]));
 
             uTexCoord += deltaU;
         }
 
+
+        NSLog(@"indices");
+        int index = 0;
+        for (int j=0; j<2; ++j) {
+            NSLog(@"(%d, %d, %d)", indices[index], indices[index+1], indices[index+2]);
+            index += 3;
+        }
 
 
         // build faces array and calculate normals
