@@ -688,23 +688,16 @@ static const char *g_faceType = @encode(NFFace_t);
     if (vertexFormat == kVertexFormatDefault) {
         NFVertex_t vertices[numVertices];
 
-
         float uTexCoord = 0.0f;
         float deltaU = 1.0f/(float)slices;
-        float vTexCoords[4];
+        float vTexCoords[3];
+
+        GLKVector3 diff = GLKVector3Subtract(vecs[0], vecs[1]);
+        float diffLength = GLKVector3Length(diff);
+
         vTexCoords[0] = 0.0f;
-
-        //
-        // TODO: these texture coords are not correct as well (surface distance might be)
-        //
-
-        float surfaceDist = radius + height;
-
-        vTexCoords[1] = radius / surfaceDist;
-        vTexCoords[2] = (radius+height) / surfaceDist;
-
-        vTexCoords[3] = 1.0f;
-
+        vTexCoords[1] = diffLength / (diffLength + radius);
+        vTexCoords[2] = 1.0f;
 
         int vertIndex = 0;
         for (int i=0; i<slices+1; ++i) {
@@ -716,12 +709,7 @@ static const char *g_faceType = @encode(NFFace_t);
                 vertices[vertIndex].pos[3] = 1.0f;
 
                 vertices[vertIndex].texCoord[0] = uTexCoord;
-
-                //
-                // TODO: this isn't setting the texture coordinates correctly
-                //
-                vertices[vertIndex].texCoord[1] = (j!=0) ? vTexCoords[1] : vTexCoords[0];
-
+                vertices[vertIndex].texCoord[1] = vTexCoords[j];
                 vertices[vertIndex].texCoord[2] = 0.0f;
 
                 ++vertIndex;
@@ -745,7 +733,7 @@ static const char *g_faceType = @encode(NFFace_t);
         for (int i=0; i<numVertices; ++i) {
 
             //
-            // TODO: the normals do not make for as smooth of a cylinder as expected, try hand calculating a few normals
+            // TODO: the normals do not make for as smooth of a cone as expected, try hand calculating a few normals
             //       and then compare to NF asset utils generation
             //
 

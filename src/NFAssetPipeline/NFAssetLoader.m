@@ -161,7 +161,7 @@
                 vertexType = (NF_VERTEX_FORMAT)firstArg;
             }
 
-            // with radius 1.0
+            // with radius 1.0 (model space == world space)
             // - 8   16 for low resolution
             // - 16  32 for medium resolution
             // - 32  64 for high resolution
@@ -186,14 +186,11 @@
                 vertexType = (NF_VERTEX_FORMAT)firstArg;
             }
 
-
-            //
-            // TODO: document some good default values
-            //
-            [asset createConeWithRadius:1.0f ofHeight:1.0f withSlices:8 withVertexFormat:vertexType];
-
-            // test with other numbers of slices and radius
-
+            // with radius 1.0 (model space == world space)
+            // - 8  for low resolution
+            // - 16 for medium resolution
+            // - 32 for high resolution
+            [asset createConeWithRadius:1.0f ofHeight:1.0f withSlices:16 withVertexFormat:vertexType];
 
             if (vertexType == kVertexFormatDefault) {
                 NFSurfaceModel *surface = [NFSurfaceModel defaultSurfaceModel];

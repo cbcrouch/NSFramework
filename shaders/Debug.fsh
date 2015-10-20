@@ -8,6 +8,30 @@
 // NOTE: GLSL version 410 corresponds to OpenGL 4.1
 #version 410
 
+
+//
+// TODO: try putting all shader code in one file and use preprocessor to mark off sections
+//       (when the renderer loads the shader it will need to setup the correct preprocessor defines
+//       but specify the version number first, version number will need to be removed from source)
+//
+
+// to set defines:
+//char* shader_source[2] = { "#version 410\n#define VERTEX_SHADER\n", file_source };
+//glShaderSource(shader_handle, 2, shader_source, NULL);
+
+#ifdef VERTEX_SHADER
+
+// vertex shader code
+
+#endif
+
+#ifdef FRAGMENT_SHADER
+
+// fragment shader code
+
+#endif
+
+
 uniform sampler2D texSampler;
 
 //
