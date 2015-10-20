@@ -702,6 +702,12 @@ static const char *g_faceType = @encode(NFFace_t);
         memset(indices, 0, sizeof(indices));
         memset(vertices, 0, sizeof(vertices));
 
+        static int idxSlices = 8;
+
+
+        //
+        // TODO: generalize this indexing and vertex generation
+        //
 
         idxVal[0] = 0;
         idxVal[1] = 4;
@@ -710,22 +716,23 @@ static const char *g_faceType = @encode(NFFace_t);
 
         idx = 0;
 
-        // top triangle
-        indices[idx]   = idxVal[0];
-        indices[idx+1] = idxVal[1];
-        indices[idx+2] = idxVal[2];
-        idx += 3;
+        for (int i=0; i<idxSlices; ++i) {
+            // top triangle
+            indices[idx]   = idxVal[0];
+            indices[idx+1] = idxVal[1];
+            indices[idx+2] = idxVal[2];
+            idx += 3;
 
-        // bottom triangle
-        indices[idx]   = idxVal[2];
-        indices[idx+1] = idxVal[1];
-        indices[idx+2] = idxVal[3];
-        //idx += 3;
+            // bottom triangle
+            indices[idx]   = idxVal[2];
+            indices[idx+1] = idxVal[1];
+            indices[idx+2] = idxVal[3];
+            idx += 3;
 
-        for (int j=0; j<4; ++j) {
-            idxVal[j] += 3;
+            for (int j=0; j<4; ++j) {
+                idxVal[j] += 3;
+            }
         }
-
 
         [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
 
@@ -755,37 +762,13 @@ static const char *g_faceType = @encode(NFFace_t);
 
         int vertIndex = 0;
 
+        //
+        // TODO: can shrink the number of vertices to (slices+1) * 3
+        //
 
-        //for (int i=0; i<slices; ++i) {
-        for (int i=0; i<2; ++i) {
-
+        for (int i=0; i<slices+1; ++i) {
             vecs[1] = vecs[2];
             vecs[2] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecs[2]));
-
-            //
-            // TODO: is this is generating too many vertices, need to drop redundant vertices
-            //
-/*
-            for (int j=0; j<4; ++j) {
-                vertices[vertIndex].pos[0] = vecs[j].x;
-                vertices[vertIndex].pos[1] = vecs[j].y;
-                vertices[vertIndex].pos[2] = vecs[j].z;
-                vertices[vertIndex].pos[3] = 1.0f;
-
-                vertices[vertIndex].texCoord[0] = uTexCoord;
-
-                //
-                // TODO: this isn't setting the texture coordinates correctly
-                //
-                vertices[vertIndex].texCoord[1] = (j!=0) ? vTexCoords[1] : vTexCoords[0];
-
-                vertices[vertIndex].texCoord[2] = 0.0f;
-
-                NSLog(@"vertex pos: (%f, %f, %f)", vertices[vertIndex].pos[0], vertices[vertIndex].pos[1], vertices[vertIndex].pos[2]);
-
-                ++vertIndex;
-            }
-*/
 
             for (int j=0; j<3; ++j) {
                 vertices[vertIndex].pos[0] = vecsAlt[j].x;
@@ -802,28 +785,12 @@ static const char *g_faceType = @encode(NFFace_t);
 
                 vertices[vertIndex].texCoord[2] = 0.0f;
 
-                NSLog(@"vertex pos: (%f, %f, %f)", vertices[vertIndex].pos[0], vertices[vertIndex].pos[1], vertices[vertIndex].pos[2]);
-                
                 ++vertIndex;
             }
 
-
-
-            NSLog(@"\n");
-
             vecsAlt[1] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecsAlt[1]));
-
             uTexCoord += deltaU;
         }
-
-
-        NSLog(@"indices");
-        int index = 0;
-        for (int j=0; j<2; ++j) {
-            NSLog(@"(%d, %d, %d)", indices[index], indices[index+1], indices[index+2]);
-            index += 3;
-        }
-
 
         // build faces array and calculate normals
         GLushort* indexPtr = indices;
