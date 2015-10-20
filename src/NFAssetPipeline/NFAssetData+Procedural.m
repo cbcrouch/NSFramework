@@ -632,7 +632,8 @@ static const char *g_faceType = @encode(NFFace_t);
 
 - (void) createConeWithRadius:(float)radius ofHeight:(float)height withSlices:(NSInteger)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
     NSAssert(powerof2(slices) && slices >= 8, @"slices must be a power of 2 and at least equal to 8");
-    const NSInteger numVertices = 4 * slices;
+
+    const NSInteger numVertices = 3 * (slices+1);
     const NSInteger numIndices = 6 * slices;
 
     NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
@@ -645,27 +646,27 @@ static const char *g_faceType = @encode(NFFace_t);
     }
 
     // indexing order
-    // - top
-    // - right
-    // - left
-    // - bottom
+    idxVal[0] = 0; // top
+    idxVal[1] = 4; // left
+    idxVal[2] = 1; // right
+    idxVal[3] = 2; // bottom
 
     int idx = 0;
     for (int i=0; i<slices; ++i) {
         // top triangle
         indices[idx]   = idxVal[0];
-        indices[idx+1] = idxVal[2];
-        indices[idx+2] = idxVal[1];
+        indices[idx+1] = idxVal[1];
+        indices[idx+2] = idxVal[2];
         idx += 3;
 
         // bottom triangle
-        indices[idx]   = idxVal[1];
-        indices[idx+1] = idxVal[2];
+        indices[idx]   = idxVal[2];
+        indices[idx+1] = idxVal[1];
         indices[idx+2] = idxVal[3];
         idx += 3;
 
         for (int j=0; j<4; ++j) {
-            idxVal[j] += 4;
+            idxVal[j] += 3;
         }
     }
 
@@ -675,85 +676,30 @@ static const char *g_faceType = @encode(NFFace_t);
     NSInteger slicesPerQuad = slices / 4;
     GLKQuaternion quat = GLKQuaternionMakeWithAngleAndAxis(-1.0f * M_PI / (float)(slicesPerQuad*2), 0.0f, 1.0f, 0.0f);
 
-
     //
     // TODO: scale vectors to radius length
     //
 
-
-    GLKVector3 vecs[4];
+    GLKVector3 vecs[3];
     vecs[0] = GLKVector3Make(0.0f, height, 0.0f);
     vecs[1] = GLKVector3Make(1.0f, 0.0f, 0.0f);
-    vecs[2] = vecs[1];
-    vecs[3] = GLKVector3Make(0.0f, 0.0f, 0.0f);
-
-
-    GLKVector3 vecsAlt[3];
-    vecsAlt[0] = GLKVector3Make(0.0f, height, 0.0f);
-    vecsAlt[1] = GLKVector3Make(1.0f, 0.0f, 0.0f);
-    vecsAlt[2] = GLKVector3Make(0.0f, 0.0f, 0.0f);
-
-
+    vecs[2] = GLKVector3Make(0.0f, 0.0f, 0.0f);
 
     if (vertexFormat == kVertexFormatDefault) {
         NFVertex_t vertices[numVertices];
 
 
-        memset(indices, 0, sizeof(indices));
-        memset(vertices, 0, sizeof(vertices));
-
-        static int idxSlices = 8;
-
-
-        //
-        // TODO: generalize this indexing and vertex generation
-        //
-
-        idxVal[0] = 0;
-        idxVal[1] = 4;
-        idxVal[2] = 1;
-        idxVal[3] = 2;
-
-        idx = 0;
-
-        for (int i=0; i<idxSlices; ++i) {
-            // top triangle
-            indices[idx]   = idxVal[0];
-            indices[idx+1] = idxVal[1];
-            indices[idx+2] = idxVal[2];
-            idx += 3;
-
-            // bottom triangle
-            indices[idx]   = idxVal[2];
-            indices[idx+1] = idxVal[1];
-            indices[idx+2] = idxVal[3];
-            idx += 3;
-
-            for (int j=0; j<4; ++j) {
-                idxVal[j] += 3;
-            }
-        }
-
-        [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
-
-
-
         float uTexCoord = 0.0f;
         float deltaU = 1.0f/(float)slices;
-
-
-        //
-        // TODO: need to generate correct surface distance
-        //
-        float surfaceDist = radius + height;
-
-
         float vTexCoords[4];
         vTexCoords[0] = 0.0f;
 
         //
         // TODO: these texture coords are not correct as well (surface distance might be)
         //
+
+        float surfaceDist = radius + height;
+
         vTexCoords[1] = radius / surfaceDist;
         vTexCoords[2] = (radius+height) / surfaceDist;
 
@@ -761,19 +707,12 @@ static const char *g_faceType = @encode(NFFace_t);
 
 
         int vertIndex = 0;
-
-        //
-        // TODO: can shrink the number of vertices to (slices+1) * 3
-        //
-
         for (int i=0; i<slices+1; ++i) {
-            vecs[1] = vecs[2];
-            vecs[2] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecs[2]));
 
             for (int j=0; j<3; ++j) {
-                vertices[vertIndex].pos[0] = vecsAlt[j].x;
-                vertices[vertIndex].pos[1] = vecsAlt[j].y;
-                vertices[vertIndex].pos[2] = vecsAlt[j].z;
+                vertices[vertIndex].pos[0] = vecs[j].x;
+                vertices[vertIndex].pos[1] = vecs[j].y;
+                vertices[vertIndex].pos[2] = vecs[j].z;
                 vertices[vertIndex].pos[3] = 1.0f;
 
                 vertices[vertIndex].texCoord[0] = uTexCoord;
@@ -788,7 +727,7 @@ static const char *g_faceType = @encode(NFFace_t);
                 ++vertIndex;
             }
 
-            vecsAlt[1] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecsAlt[1]));
+            vecs[1] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecs[1]));
             uTexCoord += deltaU;
         }
 
@@ -825,11 +764,9 @@ static const char *g_faceType = @encode(NFFace_t);
         NFDebugVertex_t vertices[numVertices];
 
         int vertIndex = 0;
-        for (int i=0; i<slices; ++i) {
-            vecs[1] = vecs[2];
-            vecs[2] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecs[2]));
+        for (int i=0; i<slices+1; ++i) {
 
-            for (int j=0; j<4; ++j) {
+            for (int j=0; j<3; ++j) {
                 vertices[vertIndex].pos[0] = vecs[j].x;
                 vertices[vertIndex].pos[1] = vecs[j].y;
                 vertices[vertIndex].pos[2] = vecs[j].z;
@@ -841,6 +778,8 @@ static const char *g_faceType = @encode(NFFace_t);
 
                 ++vertIndex;
             }
+
+            vecs[1] = GLKVector3Normalize(GLKQuaternionRotateVector3(quat, vecs[1]));
         }
 
         [pSubset allocateVerticesOfType:kVertexFormatDebug withNumVertices:numVertices];
