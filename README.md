@@ -18,7 +18,7 @@ memory allocations will be managed manually.
 Dependencies
 ------------
 
-OS X 10.10
+OS X 10.11
 OpenGL 4.1 compatible GPU
 
 Building
@@ -26,7 +26,7 @@ Building
 
 ### Prerequisites
 
-Xcode 7.0
+Xcode 7.1
 (Xcode Command Line Tools optional but recommended)
 
 ### Getting source
