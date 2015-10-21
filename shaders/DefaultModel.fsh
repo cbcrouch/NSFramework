@@ -87,9 +87,9 @@ in vec2 f_texcoord;
 out vec4 color;
 
 
-vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 viewDir);
+vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir);
 vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir);
-vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 viewDir);
+vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir);
 
 
 //
@@ -105,12 +105,18 @@ vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 viewDir);
 //}
 
 
-vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 viewDir) {
+vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir) {
+
+    //
+    // TODO: determine the correct light direction to use
+    //
     vec3 lightDir = normalize(-light.direction);
+    //vec3 lightDir = normalize(light.direction - fragPosition);
+
     vec3 norm = normalize(normal);
 
     // ambient
-    vec3 ambient = light.ambient * vec3(texture(material.diffuseMap, f_texcoord));
+    vec3 ambient = light.ambient * material.ambient * vec3(texture(material.diffuseMap, f_texcoord));
 
     // diffuse
     float diff = max(dot(norm, lightDir), 0.0f);
@@ -177,33 +183,91 @@ vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 v
     return(ambient + diffuse + specular);
 }
 
-vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 viewDir) {
+vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir) {
 
     //
-    // TODO: implement
+    // TODO: implement spot light calculation
     //
 
-    //
+    vec3 lightDir = normalize(light.position - fragPosition);
+    vec3 norm = normalize(normal);
 
-    return vec3(0,0,0);
+    // ambient
+    //vec3 ambient = light.ambient * texture(material.diffuseMap, f_texcoord).xyz;
+    vec3 ambient = light.ambient * material.ambient * texture(material.diffuseMap, f_texcoord).xyz;
+
+    // diffuse
+    float diff = max(dot(norm, lightDir), 0.0f);
+    vec3 diffuse = light.diffuse * material.diffuse * (diff * texture(material.diffuseMap, f_texcoord).xyz);
+
+    // specular
+    //
+    // TODO: make the useBlinn boolean a uniform and allow it to be set with a key press so
+    //       can switch back and forth between Phong specular and Blinn-Phong specular claculation
+    //
+    bool useBlinn = false;
+
+    float spec = 0.0f;
+    if (useBlinn) {
+        vec3 halfwayDir = normalize(lightDir + viewDir);
+        spec = pow(max(dot(norm, halfwayDir), 0.0f), 2.0f * material.shininess);
+    }
+    else {
+        vec3 reflectDir = reflect(-lightDir, norm);
+        spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
+    }
+
+    vec3 specular = light.specular * (spec * material.specular);
+
+    // spotlight (soft edges)
+    float theta = dot(lightDir, normalize(-light.direction));
+    float epsilon = (light.innerCutOff - light.outerCutOff);
+    float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0f, 1.0f);
+    diffuse *= intensity;
+    specular *= intensity;
+
+    //
+    // TODO: attenuation is not working correctly, it's zeroing out the ambient, diffuse, and specular terms
+    //
+/*
+    // attenuation
+    float distance = length(light.position - fragPosition);
+    float attenuation = 1.0f / (light.constant + (light.linear * distance) + light.quadratic * (distance * distance));
+    ambient *= attenuation;
+    diffuse *= attenuation;
+    specular *= attenuation;
+*/
+    return(ambient + diffuse + specular);
 }
 
 void main() {
     vec3 viewDir = normalize(viewPos - f_position);
-    vec3 result = calc_point_light(pointlight, f_normal, f_position, viewDir);
 
-#if 0
-    result += calc_directional_light(directionalLight, f_normal, viewDir);
+    vec3 result = vec3(0);
+
+#if 1
+    result = calc_point_light(pointlight, f_normal, f_position, viewDir);
 #else
-    vec3 directionalOutput = calc_directional_light(directionalLight, f_normal, viewDir);
+    vec3 pointOutput = calc_point_light(pointlight, f_normal, f_position, viewDir);
+    pointOutput = result;
+#endif
+
+
+    //
+    // TODO: both the directional and spot light are not working correctly they seem to bleed out ambient light
+    //
+#if 0
+    result += calc_directional_light(directionalLight, f_normal, f_position, viewDir);
+#else
+    vec3 directionalOutput = calc_directional_light(directionalLight, f_normal, f_position, viewDir);
     directionalOutput = result;
 #endif
 
 
 #if 0
-    result += calc_spot_light(spotLight, f_normal, viewDir);
+    result += calc_spot_light(spotLight, f_normal, f_position, viewDir);
 #else
-    vec3 spotOutput = calc_spot_light(spotLight, f_normal, viewDir);
+    vec3 spotOutput = calc_spot_light(spotLight, f_normal, f_position, viewDir);
     spotOutput = result;
 #endif
 
