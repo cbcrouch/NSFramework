@@ -190,9 +190,13 @@
         [_assetData stepTransforms:0.0f];
 
         _direction = dest;
-
+/*
         _ambient = GLKVector3Make(1.0f, 1.0f, 1.0f);
         _diffuse = GLKVector3Make(1.0f, 1.0f, 1.0f);
+        _specular = GLKVector3Make(1.0f, 1.0f, 1.0f);
+*/
+        _ambient = GLKVector3Make(0.2f, 0.2f, 0.2f);
+        _diffuse = GLKVector3Make(0.5f, 0.5f, 0.5f);
         _specular = GLKVector3Make(1.0f, 1.0f, 1.0f);
     }
     return self;

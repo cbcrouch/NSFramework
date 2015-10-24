@@ -110,7 +110,7 @@ vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosi
     //
     // TODO: determine the correct light direction to use
     //
-    vec3 lightDir = normalize(-light.direction);
+    vec3 lightDir = normalize(-light.direction); // this appears to be right
     //vec3 lightDir = normalize(light.direction - fragPosition);
 
     vec3 norm = normalize(normal);
@@ -120,7 +120,8 @@ vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosi
 
     // diffuse
     float diff = max(dot(norm, lightDir), 0.0f);
-    vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuseMap, f_texcoord));
+    //vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuseMap, f_texcoord));
+    vec3 diffuse = light.diffuse * (diff * material.diffuse * texture(material.diffuseMap, f_texcoord).xyz);
 
     // specular
     //
@@ -138,6 +139,15 @@ vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosi
     }
 
     vec3 specular = light.specular * spec * material.specular;
+
+
+    //
+    // TODO: consider taking dot product with surface normal and clamping from [0-1] then using
+    //       that as an intensity multiplier
+    //
+    //ambient *= max(dot(norm, lightDir), 0.0f);
+    //ambient *= clamp(dot(norm, lightDir), 0.0f, 1.0f); // these have the same effect
+
 
     return (ambient + diffuse + specular);
 }
@@ -220,7 +230,6 @@ vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 vie
     specular *= intensity;
     ambient *= intensity;
 
-
     //
     // TODO: derive correct attenuation
     //
@@ -243,27 +252,31 @@ void main() {
 
     vec3 result = vec3(0);
 
-#if 1
-    result = calc_point_light(pointlight, f_normal, f_position, viewDir);
-#else
-    vec3 pointOutput = calc_point_light(pointlight, f_normal, f_position, viewDir);
-    pointOutput = result;
-#endif
+
+#define USE_DIRECTIONAL_LIGHT  0
+#define USE_POINT_LIGHT        1
+#define USE_SPOT_LIGHT         1
 
 
     //
-    // TODO: the directional light does not appear to be working correctly, it is light sides that face away
+    // TODO: the directional light does not appear to be working correctly, it lights sides that face away
     //       from the light (possibly due to bleeding ambient light)
     //
-#if 0
+#if USE_DIRECTIONAL_LIGHT
     result += calc_directional_light(directionalLight, f_normal, f_position, viewDir);
 #else
     vec3 directionalOutput = calc_directional_light(directionalLight, f_normal, f_position, viewDir);
     directionalOutput = result;
 #endif
 
+#if USE_POINT_LIGHT
+    result += calc_point_light(pointlight, f_normal, f_position, viewDir);
+#else
+    vec3 pointOutput = calc_point_light(pointlight, f_normal, f_position, viewDir);
+    pointOutput = result;
+#endif
 
-#if 1
+#if USE_SPOT_LIGHT
     result += calc_spot_light(spotLight, f_normal, f_position, viewDir);
 #else
     vec3 spotOutput = calc_spot_light(spotLight, f_normal, f_position, viewDir);
