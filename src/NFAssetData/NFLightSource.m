@@ -191,8 +191,8 @@
 
         _direction = dest;
 
-        _ambient = GLKVector3Make(0.2f, 0.2f, 0.2f);
-        _diffuse = GLKVector3Make(0.5f, 0.5f, 0.5f);
+        _ambient = GLKVector3Make(1.0f, 1.0f, 1.0f);
+        _diffuse = GLKVector3Make(1.0f, 1.0f, 1.0f);
         _specular = GLKVector3Make(1.0f, 1.0f, 1.0f);
     }
     return self;
@@ -293,8 +293,8 @@
         [_assetData stepTransforms:0.0f];
 
 
-        _ambient = GLKVector3Make(0.2f, 0.2f, 0.2f);
-        _diffuse = GLKVector3Make(0.5f, 0.5f, 0.5f);
+        _ambient = GLKVector3Make(1.0f, 1.0f, 1.0f);
+        _diffuse = GLKVector3Make(1.0f, 1.0f, 1.0f);
         _specular = GLKVector3Make(1.0f, 1.0f, 1.0f);
 
 
@@ -310,12 +310,12 @@
         _constantAttenuation = 1.0f;
 
         // good for a distance of 13
-        //_linearAttenuation = 0.35f;
-        //_quadraticAttenuation = 0.44f;
+        _linearAttenuation = 0.35f;
+        _quadraticAttenuation = 0.44f;
 
         // good for a distance of 7
-        _linearAttenuation = 0.7f;
-        _quadraticAttenuation = 1.8f;
+        //_linearAttenuation = 0.7f;
+        //_quadraticAttenuation = 1.8f;
     }
     return self;
 }

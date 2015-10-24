@@ -175,7 +175,6 @@ vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 v
     // attenuation
     float distance = length(light.position - fragPosition);
     float attenuation = 1.0f / (light.constant - light.linear * distance + light.quadratic * (distance * distance));
-
     ambient  *= attenuation;
     diffuse  *= attenuation;
     specular *= attenuation;
@@ -184,11 +183,6 @@ vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 v
 }
 
 vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir) {
-
-    //
-    // TODO: implement spot light calculation
-    //
-
     vec3 lightDir = normalize(light.position - fragPosition);
     vec3 norm = normalize(normal);
 
@@ -198,7 +192,7 @@ vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 vie
 
     // diffuse
     float diff = max(dot(norm, lightDir), 0.0f);
-    vec3 diffuse = light.diffuse * material.diffuse * (diff * texture(material.diffuseMap, f_texcoord).xyz);
+    vec3 diffuse = light.diffuse * (diff * material.diffuse * texture(material.diffuseMap, f_texcoord).xyz);
 
     // specular
     //
@@ -225,18 +219,29 @@ vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 vie
     float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0f, 1.0f);
     diffuse *= intensity;
     specular *= intensity;
+    ambient *= intensity;
+
 
     //
-    // TODO: attenuation is not working correctly, it's zeroing out the ambient, diffuse, and specular terms
+    // TODO: derive correct attenuation
     //
-/*
+
     // attenuation
     float distance = length(light.position - fragPosition);
     float attenuation = 1.0f / (light.constant + (light.linear * distance) + light.quadratic * (distance * distance));
     ambient *= attenuation;
     diffuse *= attenuation;
     specular *= attenuation;
+
+/*
+    // attenuation
+    float distance = length(light.position - fragPosition);
+    float attenuation = 1.0f / (light.constant - light.linear * distance + light.quadratic * (distance * distance));
+    ambient  *= attenuation;
+    diffuse  *= attenuation;
+    specular *= attenuation;
 */
+
     return(ambient + diffuse + specular);
 }
 
@@ -264,7 +269,7 @@ void main() {
 #endif
 
 
-#if 0
+#if 1
     result += calc_spot_light(spotLight, f_normal, f_position, viewDir);
 #else
     vec3 spotOutput = calc_spot_light(spotLight, f_normal, f_position, viewDir);
