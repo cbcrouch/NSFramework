@@ -187,7 +187,6 @@ vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 vie
     vec3 norm = normalize(normal);
 
     // ambient
-    //vec3 ambient = light.ambient * texture(material.diffuseMap, f_texcoord).xyz;
     vec3 ambient = light.ambient * material.ambient * texture(material.diffuseMap, f_texcoord).xyz;
 
     // diffuse
@@ -228,19 +227,13 @@ vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 vie
 
     // attenuation
     float distance = length(light.position - fragPosition);
+
     float attenuation = 1.0f / (light.constant + (light.linear * distance) + light.quadratic * (distance * distance));
+    //float attenuation = 1.0f / (light.constant - light.linear * distance + light.quadratic * (distance * distance));
+
     ambient *= attenuation;
     diffuse *= attenuation;
     specular *= attenuation;
-
-/*
-    // attenuation
-    float distance = length(light.position - fragPosition);
-    float attenuation = 1.0f / (light.constant - light.linear * distance + light.quadratic * (distance * distance));
-    ambient  *= attenuation;
-    diffuse  *= attenuation;
-    specular *= attenuation;
-*/
 
     return(ambient + diffuse + specular);
 }
@@ -259,7 +252,8 @@ void main() {
 
 
     //
-    // TODO: both the directional and spot light are not working correctly they seem to bleed out ambient light
+    // TODO: the directional light does not appear to be working correctly, it is light sides that face away
+    //       from the light (possibly due to bleeding ambient light)
     //
 #if 0
     result += calc_directional_light(directionalLight, f_normal, f_position, viewDir);
