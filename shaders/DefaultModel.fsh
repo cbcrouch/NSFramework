@@ -106,13 +106,7 @@ vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 vie
 
 
 vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir) {
-
-    //
-    // TODO: determine the correct light direction to use
-    //
-    vec3 lightDir = normalize(-light.direction); // this appears to be right
-    //vec3 lightDir = normalize(light.direction - fragPosition);
-
+    vec3 lightDir = normalize(-light.direction);
     vec3 norm = normalize(normal);
 
     // ambient
@@ -125,9 +119,11 @@ vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosi
 
     // specular
     //
-    // TODO: add option to use Blinn specular
+    // TODO: make the useBlinn boolean a uniform and allow it to be set with a key press so
+    //       can switch back and forth between Phong specular and Blinn-Phong specular claculation
     //
     bool useBlinn = false;
+
     float spec = 0.0f;
     if (useBlinn) {
         vec3 halfwayDir = normalize(lightDir + viewDir);
@@ -139,15 +135,6 @@ vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosi
     }
 
     vec3 specular = light.specular * spec * material.specular;
-
-
-    //
-    // TODO: consider taking dot product with surface normal and clamping from [0-1] then using
-    //       that as an intensity multiplier
-    //
-    //ambient *= max(dot(norm, lightDir), 0.0f);
-    //ambient *= clamp(dot(norm, lightDir), 0.0f, 1.0f); // these have the same effect
-
 
     return (ambient + diffuse + specular);
 }
@@ -165,8 +152,7 @@ vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 v
 
     // specular
     //
-    // TODO: make the useBlinn boolean a uniform and allow it to be set with a key press so
-    //       can switch back and forth between Phong specular and Blinn-Phong specular claculation
+    // TODO: add option to use Blinn specular
     //
     bool useBlinn = false;
 
@@ -205,8 +191,7 @@ vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 vie
 
     // specular
     //
-    // TODO: make the useBlinn boolean a uniform and allow it to be set with a key press so
-    //       can switch back and forth between Phong specular and Blinn-Phong specular claculation
+    // TODO: add option to use Blinn specular
     //
     bool useBlinn = false;
 
@@ -253,21 +238,18 @@ void main() {
     vec3 result = vec3(0);
 
 
-#define USE_DIRECTIONAL_LIGHT  0
+#define USE_DIRECTIONAL_LIGHT  1
 #define USE_POINT_LIGHT        1
 #define USE_SPOT_LIGHT         1
 
 
-    //
-    // TODO: the directional light does not appear to be working correctly, it lights sides that face away
-    //       from the light (possibly due to bleeding ambient light)
-    //
 #if USE_DIRECTIONAL_LIGHT
     result += calc_directional_light(directionalLight, f_normal, f_position, viewDir);
 #else
     vec3 directionalOutput = calc_directional_light(directionalLight, f_normal, f_position, viewDir);
     directionalOutput = result;
 #endif
+
 
 #if USE_POINT_LIGHT
     result += calc_point_light(pointlight, f_normal, f_position, viewDir);

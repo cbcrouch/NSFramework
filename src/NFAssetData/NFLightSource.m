@@ -190,14 +190,19 @@
         [_assetData stepTransforms:0.0f];
 
         _direction = dest;
-/*
+
+        //
+        // TODO: directional light defaults should be very faint
+        //
+#if 0
         _ambient = GLKVector3Make(1.0f, 1.0f, 1.0f);
         _diffuse = GLKVector3Make(1.0f, 1.0f, 1.0f);
         _specular = GLKVector3Make(1.0f, 1.0f, 1.0f);
-*/
-        _ambient = GLKVector3Make(0.2f, 0.2f, 0.2f);
-        _diffuse = GLKVector3Make(0.5f, 0.5f, 0.5f);
-        _specular = GLKVector3Make(1.0f, 1.0f, 1.0f);
+#else
+        _ambient = GLKVector3Make(0.02f, 0.02f, 0.02f);
+        _diffuse = GLKVector3Make(0.05f, 0.05f, 0.05f);
+        _specular = GLKVector3Make(0.75f, 0.75f, 0.75f);
+#endif
     }
     return self;
 }
