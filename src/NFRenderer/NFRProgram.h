@@ -31,7 +31,6 @@ typedef NS_ENUM(NSUInteger, TARGET_TYPE) {
     kStencilBuffer
 };
 
-
 typedef NS_ENUM(NSUInteger, BUFFER_TYPE) {
     kTextureBuffer,
     kRenderBuffer
@@ -47,6 +46,10 @@ typedef NS_ENUM(NSUInteger, BUFFER_TYPE) {
 
 - (void) enable;
 - (void) disable;
+
+//
+// TODO: need a resize method
+//
 
 @end
 

@@ -332,8 +332,17 @@
 #if USE_RENDER_TARGET
     [m_renderTarget disable];
 #endif
+
+    //
+    // TODO: need a shader and some boilerplate code to transfer the contents of the
+    //       render buffer to the screen (the shader used for this will also be used
+    //       for any post-processing algorithms)
+    //
 }
 
+//
+// TODO: render target needs to be resized, will need a way to link this all together
+//
 - (void) resizeToRect:(CGRect)rect {
     NFViewport *viewport = [self.viewports objectAtIndex:0];
 

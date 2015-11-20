@@ -48,13 +48,63 @@
         glGenFramebuffers(1, &tempFBO);
         _hFBO = tempFBO;
         glBindFramebuffer(GL_FRAMEBUFFER, _hFBO);
+
+
+        //
+        // TODO: add a color attachment
+        //
+
+        GLuint textureColorBuffer = 0;
+
+
+        //
+        // TODO: encapsulate generateAttachmentTexture in a class method
+        //
+
+        GLboolean depthAttachment = GL_FALSE;
+        GLboolean stencilAttachment = GL_FALSE;
+
+        GLenum attachmentType;
+        if (!depthAttachment && !stencilAttachment) {
+            attachmentType = GL_RGB;
+        }
+        else if (depthAttachment && !stencilAttachment) {
+            attachmentType = GL_DEPTH_COMPONENT;
+        }
+        else if (!depthAttachment && stencilAttachment) {
+            attachmentType = GL_STENCIL_INDEX;
+        }
+
+        GLuint textureID;
+        glGenTextures(1, &textureID);
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        if (!depthAttachment && !stencilAttachment) {
+            glTexImage2D(GL_TEXTURE_2D, 0, attachmentType, 1280, 720, 0, attachmentType, GL_UNSIGNED_BYTE, NULL);
+        }
+        else {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, 1280, 720, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+        }
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+
+        textureColorBuffer = textureID; //  = [NFRRenderTarget generateAttachmentTextureWithDepth:GL_FALSE withStencil:GL_FALSE];
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorBuffer, 0);
+
+
+
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, tempRBO);
+
 #if 1
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
             NSLog(@"frame buffer with render buffer attachment is ready to go");
         }
 #endif
+        
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 
         CHECK_GL_ERROR();
     }
