@@ -48,6 +48,7 @@ Assets
 If you are in need of Wavefront obj files to parse:
 - http://graphics.cs.williams.edu/data/meshes.xml
 - http://graphics.stanford.edu/~mdfisher/Data/Meshes/bunny.obj
+- https://github.com/JoeyDeVries/LearnOpenGL/tree/master/resources/objects
 
 License
 -------
