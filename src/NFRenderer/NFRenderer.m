@@ -60,6 +60,8 @@
 
     NFRRenderRequest* m_renderRequest;
     NFRRenderRequest* m_debugRenderRequest;
+
+    NFRRenderTarget* m_renderTarget;
 }
 
 @property (nonatomic, retain) NSArray* viewports;
@@ -105,12 +107,21 @@
     m_phongObject = [[NFRProgram createProgramObject:@"DefaultModel"] retain];
     m_debugObject = [[NFRProgram createProgramObject:@"Debug"] retain];
 
+
+    //
+    // TODO: add a render request that will render to a depth buffer for shadow mapping
+    //       (will need one render request per dynamic light)
+    //
+
+
     m_renderRequest = [[[NFRRenderRequest alloc] init] retain];
     [m_renderRequest setProgram:m_phongObject];
 
     m_debugRenderRequest = [[[NFRRenderRequest alloc] init] retain];
     [m_debugRenderRequest setProgram:m_debugObject];
 
+
+    m_renderTarget = [[[NFRRenderTarget alloc] init] retain];
 
 
     NSString *fileNamePath;
@@ -214,6 +225,10 @@
     _stepTransforms = NO;
 
 
+    //
+    // TODO: move these operations into the render target class
+    //
+
     // setup OpenGL state that will never change
     //glClearColor(1.0f, 0.0f, 1.0f, 1.0f); // hot pink for debugging
 
@@ -232,6 +247,10 @@
 
     glEnable(GL_FRAMEBUFFER_SRGB);
     CHECK_GL_ERROR();
+
+    //
+    //
+    //
 
 
     [m_renderRequest addGeometry:m_pAsset.geometry];
@@ -299,10 +318,20 @@
     //       to draw into a frame buffer before it is ready
     //
 
+#define USE_RENDER_TARGET 0
+
+#if USE_RENDER_TARGET
+    [m_renderTarget enable];
+#endif
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     
     [m_renderRequest process];
     [m_debugRenderRequest process];
+
+#if USE_RENDER_TARGET
+    [m_renderTarget disable];
+#endif
 }
 
 - (void) resizeToRect:(CGRect)rect {

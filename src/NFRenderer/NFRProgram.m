@@ -17,6 +17,72 @@
 #import "NFRDebugProgram.h"
 
 
+@interface NFRRenderTarget()
+
+@property (nonatomic, assign) GLuint hFBO;
+
+@end
+
+@implementation NFRRenderTarget
+
+@synthesize hFBO = _hFBO;
+
+- (instancetype) init {
+    self = [super init];
+    if (self != nil) {
+
+        //
+        // TODO: create either a texture or render buffer backing for the framebuffer
+        //
+
+        // create and initialize render buffer
+        GLuint tempRBO;
+        glGenRenderbuffers(1, &tempRBO);
+        glBindRenderbuffer(GL_RENDERBUFFER, tempRBO);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1280, 720);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        CHECK_GL_ERROR();
+
+        // attach render buffer to frame buffer
+        GLuint tempFBO;
+        glGenFramebuffers(1, &tempFBO);
+        _hFBO = tempFBO;
+        glBindFramebuffer(GL_FRAMEBUFFER, _hFBO);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, tempRBO);
+#if 1
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
+            NSLog(@"frame buffer with render buffer attachment is ready to go");
+        }
+#endif
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        CHECK_GL_ERROR();
+    }
+
+    return self;
+}
+
+- (void) enable {
+    glBindFramebuffer(GL_FRAMEBUFFER, self.hFBO);
+    CHECK_GL_ERROR();
+}
+
+- (void) disable {
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    CHECK_GL_ERROR();
+}
+
+- (void) dealloc {
+    GLuint tempFBO = _hFBO;
+    glDeleteFramebuffers(1, &tempFBO);
+    CHECK_GL_ERROR();
+    [super dealloc];
+}
+
+@end
+
+
+
 @implementation NFRRenderRequest
 
 @synthesize geometryArray = _geometryArray;
