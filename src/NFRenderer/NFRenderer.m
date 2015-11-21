@@ -313,8 +313,8 @@
 
 - (void) renderFrame {
     //
-    // TODO: when in DEBUG mode check to verify that the frame buffer is valid, under some
-    //       circumstances when first starting up the application the renderer can attempt
+    // TODO: when in DEBUG mode check to verify that the default frame buffer is valid, under
+    //       some circumstances when first starting up the application the renderer can attempt
     //       to draw into a frame buffer before it is ready
     //
 
@@ -333,21 +333,45 @@
     [m_renderTarget disable];
 #endif
 
+
     //
     // TODO: need a shader and some boilerplate code to transfer the contents of the
     //       render buffer to the screen (the shader used for this will also be used
     //       for any post-processing algorithms)
     //
+
+
+    // NFRScreenTransfer
+    // NFRDisplayTransfer
+    // NFRPixelTransfer
+
+    // NFRDisplayTarget
+    // NFRPostProcessor
+
+    // NFRViewport
+
+
+    // bind screen shader
+    // clear screen
+    // draw othrographic screen space triangles with frame buffer texture
+    // release all binds
 }
 
-//
-// TODO: render target needs to be resized, will need a way to link this all together
-//
 - (void) resizeToRect:(CGRect)rect {
-    NFViewport *viewport = [self.viewports objectAtIndex:0];
 
-    if (viewport.viewRect.size.width != CGRectGetWidth(rect) ||
-        viewport.viewRect.size.height != CGRectGetHeight(rect)) {
+    //
+    // TODO: render target needs to be resized, will need a way to link this all together when render targets
+    //       have been integrated into render requests
+    //
+
+    const uint32_t width = (uint32_t)CGRectGetWidth(rect);
+    const uint32_t height = (uint32_t)CGRectGetHeight(rect);
+    if (m_renderTarget.width != width || m_renderTarget.height != height) {
+        [m_renderTarget resizeWithWidth:width withHeight:height];
+    }
+
+    NFViewport *viewport = [self.viewports objectAtIndex:0];
+    if (viewport.viewRect.size.width != CGRectGetWidth(rect) || viewport.viewRect.size.height != CGRectGetHeight(rect)) {
         viewport.viewRect = rect;
         glViewport((GLint)0, (GLint)0, (GLsizei)CGRectGetWidth(rect), (GLsizei)CGRectGetHeight(rect));
     }

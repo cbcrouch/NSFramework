@@ -36,7 +36,6 @@ typedef NS_ENUM(NSUInteger, BUFFER_TYPE) {
     kRenderBuffer
 };
 
-
 // for a framebuffer to be complete it needs at least
 // - at least one attached buffer (color, depth, or stencil buffer)
 // - there should be at least one color attachment
@@ -44,12 +43,16 @@ typedef NS_ENUM(NSUInteger, BUFFER_TYPE) {
 // - each buffer should have the same number of samples
 
 
+@property (nonatomic, assign) uint32_t width;
+@property (nonatomic, assign) uint32_t height;
+
+//
+// TODO: should try to avoid having an externally facing enable/disable methods
+//
 - (void) enable;
 - (void) disable;
 
-//
-// TODO: need a resize method
-//
+- (void) resizeWithWidth:(uint32_t)width withHeight:(uint32_t)height;
 
 @end
 
