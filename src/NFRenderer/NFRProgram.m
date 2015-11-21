@@ -60,6 +60,10 @@
     [self resizeWithWidth:self.width withHeight:_height];
 }
 
+//
+// TODO: add an init method that has width and height params
+//
+
 - (instancetype) init {
     self = [super init];
     if (self != nil) {
@@ -206,6 +210,45 @@
     [_geometryArray release];
     [_lightsArray release];
     [super dealloc];
+}
+
+@end
+
+
+//
+//
+//
+
+@interface NFRViewport()
+
+//
+
+@end
+
+
+@implementation NFRViewport
+
+- (instancetype) init {
+    self = [super init];
+    if (self != nil) {
+        //
+        // TODO: setup viewport
+        //
+    }
+    return self;
+}
+
+- (void) display {
+    //
+    // TODO: need a shader and some boilerplate code to transfer the contents of the
+    //       render buffer to the screen (the shader used for this will also be used
+    //       for any post-processing algorithms)
+    //
+
+    // bind screen shader
+    // clear screen
+    // draw othrographic screen space triangles with frame buffer texture
+    // release all binds
 }
 
 @end

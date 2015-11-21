@@ -16,7 +16,7 @@
 
 
 //
-// TODO: move the render target and render request classes into their own separate files
+// TODO: move the render target, render request, and viewport classes into their own separate files
 //
 
 
@@ -43,8 +43,13 @@ typedef NS_ENUM(NSUInteger, BUFFER_TYPE) {
 // - each buffer should have the same number of samples
 
 
+//
+// TODO: consider changing width and height to type GLsizei
+//
 @property (nonatomic, assign) uint32_t width;
 @property (nonatomic, assign) uint32_t height;
+
+//- (instancetype) initWithWidth:(uint32_t)width withHeight:(uint32_t)height;
 
 //
 // TODO: should try to avoid having an externally facing enable/disable methods
@@ -55,6 +60,29 @@ typedef NS_ENUM(NSUInteger, BUFFER_TYPE) {
 - (void) resizeWithWidth:(uint32_t)width withHeight:(uint32_t)height;
 
 @end
+
+
+// alternative names
+// - NFRScreenTransfer
+// - NFRDisplayTransfer
+// - NFRPixelTransfer
+// - NFRDisplayTarget
+// - NFRPostProcessor
+
+@interface NFRViewport : NSObject
+
+
+@property (nonatomic, assign) GLsizei originX;
+@property (nonatomic, assign) GLsizei originY;
+@property (nonatomic, assign) GLsizei width;
+@property (nonatomic, assign) GLsizei height;
+
+@property (nonatomic, retain) NFRRenderTarget* displayTarget;
+
+- (void) display;
+
+@end
+
 
 
 @interface NFRRenderRequest : NSObject

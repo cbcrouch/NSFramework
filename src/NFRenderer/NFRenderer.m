@@ -62,6 +62,7 @@
     NFRRenderRequest* m_debugRenderRequest;
 
     NFRRenderTarget* m_renderTarget;
+    NFRViewport* m_viewport;
 }
 
 @property (nonatomic, retain) NSArray* viewports;
@@ -121,7 +122,14 @@
     [m_debugRenderRequest setProgram:m_debugObject];
 
 
+    //
+    // TODO: more render target ownership into the render request
+    //
     m_renderTarget = [[[NFRRenderTarget alloc] init] retain];
+
+    m_viewport = [[[NFRViewport alloc] init] retain];
+    [m_viewport setDisplayTarget:m_renderTarget];
+
 
 
     NSString *fileNamePath;
@@ -331,30 +339,9 @@
 
 #if USE_RENDER_TARGET
     [m_renderTarget disable];
+
+    [m_viewport display];
 #endif
-
-
-    //
-    // TODO: need a shader and some boilerplate code to transfer the contents of the
-    //       render buffer to the screen (the shader used for this will also be used
-    //       for any post-processing algorithms)
-    //
-
-
-    // NFRScreenTransfer
-    // NFRDisplayTransfer
-    // NFRPixelTransfer
-
-    // NFRDisplayTarget
-    // NFRPostProcessor
-
-    // NFRViewport
-
-
-    // bind screen shader
-    // clear screen
-    // draw othrographic screen space triangles with frame buffer texture
-    // release all binds
 }
 
 - (void) resizeToRect:(CGRect)rect {

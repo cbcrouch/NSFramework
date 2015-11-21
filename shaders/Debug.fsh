@@ -1,5 +1,5 @@
 //
-//  OpenGLModel.fsh
+//  Debug.fsh
 //  NSFramework
 //
 //  Copyright (c) 2015 Casey Crouch. All rights reserved.

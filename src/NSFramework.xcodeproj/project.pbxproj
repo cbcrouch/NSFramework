@@ -35,6 +35,8 @@
 		234E85451B2BAF91009B34BF /* NFAssetSubset.m in Sources */ = {isa = PBXBuildFile; fileRef = 234E85441B2BAF91009B34BF /* NFAssetSubset.m */; };
 		235F39661B2D968600B3CBA5 /* NFSurfaceModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 235F39651B2D968600B3CBA5 /* NFSurfaceModel.m */; };
 		235F39691B2D969E00B3CBA5 /* NFRDataMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 235F39681B2D969E00B3CBA5 /* NFRDataMap.m */; };
+		2374621C1C00F64B006EC923 /* Viewport.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 2374621A1C00F64B006EC923 /* Viewport.fsh */; };
+		2374621D1C00F64B006EC923 /* Viewport.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 2374621B1C00F64B006EC923 /* Viewport.vsh */; };
 		237761901B2758AE00855E48 /* NFRProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 2377618F1B2758AE00855E48 /* NFRProgram.m */; };
 		238156211A16A1460018ECF3 /* NFSimulation.m in Sources */ = {isa = PBXBuildFile; fileRef = 238156201A16A1460018ECF3 /* NFSimulation.m */; };
 		238156241A16A1A10018ECF3 /* NFCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 238156231A16A1A10018ECF3 /* NFCamera.m */; };
@@ -104,6 +106,8 @@
 		235F39651B2D968600B3CBA5 /* NFSurfaceModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFSurfaceModel.m; path = NFAssetData/NFSurfaceModel.m; sourceTree = "<group>"; };
 		235F39671B2D969E00B3CBA5 /* NFRDataMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFRDataMap.h; path = NFRenderer/NFRDataMap.h; sourceTree = "<group>"; };
 		235F39681B2D969E00B3CBA5 /* NFRDataMap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFRDataMap.m; path = NFRenderer/NFRDataMap.m; sourceTree = "<group>"; };
+		2374621A1C00F64B006EC923 /* Viewport.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Viewport.fsh; path = ../shaders/Viewport.fsh; sourceTree = "<group>"; };
+		2374621B1C00F64B006EC923 /* Viewport.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Viewport.vsh; path = ../shaders/Viewport.vsh; sourceTree = "<group>"; };
 		2377618E1B2758AE00855E48 /* NFRProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFRProgram.h; path = NFRenderer/NFRProgram.h; sourceTree = "<group>"; };
 		2377618F1B2758AE00855E48 /* NFRProgram.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFRProgram.m; path = NFRenderer/NFRProgram.m; sourceTree = "<group>"; };
 		2381561F1A16A1460018ECF3 /* NFSimulation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFSimulation.h; path = NFSimulation/NFSimulation.h; sourceTree = "<group>"; };
@@ -196,10 +200,12 @@
 		233797F51885E21600399EBA /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				23EB03241ACCDA6200084CEF /* DefaultModel.fsh */,
-				23EB03251ACCDA6200084CEF /* DefaultModel.vsh */,
 				233797F61885E23600399EBA /* Debug.fsh */,
 				233797F71885E23600399EBA /* Debug.vsh */,
+				23EB03241ACCDA6200084CEF /* DefaultModel.fsh */,
+				23EB03251ACCDA6200084CEF /* DefaultModel.vsh */,
+				2374621A1C00F64B006EC923 /* Viewport.fsh */,
+				2374621B1C00F64B006EC923 /* Viewport.vsh */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";
@@ -424,8 +430,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2374621C1C00F64B006EC923 /* Viewport.fsh in Resources */,
 				233797FB1885E23600399EBA /* Debug.vsh in Resources */,
 				233797FA1885E23600399EBA /* Debug.fsh in Resources */,
+				2374621D1C00F64B006EC923 /* Viewport.vsh in Resources */,
 				234E2CCC188382CC00AF8F23 /* InfoPlist.strings in Resources */,
 				23EB03261ACCDA6200084CEF /* DefaultModel.fsh in Resources */,
 				23EB03271ACCDA6200084CEF /* DefaultModel.vsh in Resources */,
