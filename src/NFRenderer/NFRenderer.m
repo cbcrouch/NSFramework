@@ -62,7 +62,7 @@
     NFRRenderRequest* m_debugRenderRequest;
 
     NFRRenderTarget* m_renderTarget;
-    NFRViewport* m_viewport;
+    NFRDisplayTarget* m_displayTarget;
 }
 
 @property (nonatomic, retain) NSArray* viewports;
@@ -127,8 +127,8 @@
     //
     m_renderTarget = [[[NFRRenderTarget alloc] init] retain];
 
-    m_viewport = [[[NFRViewport alloc] init] retain];
-    [m_viewport setDisplayTarget:m_renderTarget];
+    m_displayTarget = [[[NFRDisplayTarget alloc] init] retain];
+    [m_displayTarget setRenderTarget:m_renderTarget];
 
 
 
@@ -340,7 +340,7 @@
 #if USE_RENDER_TARGET
     [m_renderTarget disable];
 
-    [m_viewport display];
+    [m_displayTarget display];
 #endif
 }
 
@@ -357,6 +357,9 @@
         [m_renderTarget resizeWithWidth:width withHeight:height];
     }
 
+    //
+    // TODO: move/merge this into NFRViewport or keep separate and rename NFRViewport
+    //
     NFViewport *viewport = [self.viewports objectAtIndex:0];
     if (viewport.viewRect.size.width != CGRectGetWidth(rect) || viewport.viewRect.size.height != CGRectGetHeight(rect)) {
         viewport.viewRect = rect;

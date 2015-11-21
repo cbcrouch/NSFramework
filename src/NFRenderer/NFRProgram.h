@@ -62,23 +62,20 @@ typedef NS_ENUM(NSUInteger, BUFFER_TYPE) {
 @end
 
 
-// alternative names
-// - NFRScreenTransfer
-// - NFRDisplayTransfer
-// - NFRPixelTransfer
-// - NFRDisplayTarget
-// - NFRPostProcessor
 
-@interface NFRViewport : NSObject
+@interface NFRDisplayTarget : NSObject
 
-
-@property (nonatomic, assign) GLsizei originX;
-@property (nonatomic, assign) GLsizei originY;
 @property (nonatomic, assign) GLsizei width;
 @property (nonatomic, assign) GLsizei height;
 
-@property (nonatomic, retain) NFRRenderTarget* displayTarget;
+//
+// TODO: rename property to something like transferTarget
+//
+@property (nonatomic, retain) NFRRenderTarget* renderTarget;
 
+//
+// TODO: display method needs a better name
+//
 - (void) display;
 
 @end

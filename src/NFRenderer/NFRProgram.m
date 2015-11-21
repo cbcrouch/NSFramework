@@ -219,20 +219,18 @@
 //
 //
 
-@interface NFRViewport()
-
-//
+@interface NFRDisplayTarget()
 
 @end
 
 
-@implementation NFRViewport
+@implementation NFRDisplayTarget
 
 - (instancetype) init {
     self = [super init];
     if (self != nil) {
         //
-        // TODO: setup viewport
+        // TODO: setup vertices, indices, texture, and shader
         //
     }
     return self;
