@@ -106,6 +106,10 @@
             vertexDataSize = numVertices * sizeof(NFDebugVertex_t);
             break;
 
+        case kVertexFormatScreenSpace:
+            vertexDataSize = numVertices * sizeof(NFScreenSpaceVertex_t);
+            break;
+
         default:
             NSLog(@"WARNING: NFAssetSubset attempted to allocate an unknown vertex type");
             break;
