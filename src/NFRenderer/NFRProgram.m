@@ -219,6 +219,14 @@
 
 @interface NFRDisplayTarget()
 
+@property (nonatomic, retain) NFRProgram* program;
+
+//
+// TODO: need to determine if should use NFRDataMap or NFRDataMapGL
+//
+//@property (nonatomic, retain) NFRDataMapGL* texture;
+//@property (nonatomic, retain) NFRDataMap* texture;
+
 @property (nonatomic, retain) NFRBufferAttributes* bufferAttributes;
 @property (nonatomic, retain) NFRBuffer* vertexBuffer;
 @property (nonatomic, retain) NFRBuffer* indexBuffer;
@@ -235,6 +243,7 @@
         //
         // TODO: setup texture, and shader
         //
+
 
         static const GLfloat quadVertices[] = {
             // position     // texcoord

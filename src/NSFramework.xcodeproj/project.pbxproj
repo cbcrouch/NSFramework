@@ -33,6 +33,7 @@
 		234E853F1B2BAD82009B34BF /* NFAssetData.m in Sources */ = {isa = PBXBuildFile; fileRef = 234E853E1B2BAD82009B34BF /* NFAssetData.m */; };
 		234E85421B2BAE20009B34BF /* NFLightSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 234E85411B2BAE20009B34BF /* NFLightSource.m */; };
 		234E85451B2BAF91009B34BF /* NFAssetSubset.m in Sources */ = {isa = PBXBuildFile; fileRef = 234E85441B2BAF91009B34BF /* NFAssetSubset.m */; };
+		23530A191C02621F00F6B252 /* NFRDisplayProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 23530A181C02621F00F6B252 /* NFRDisplayProgram.m */; };
 		235F39661B2D968600B3CBA5 /* NFSurfaceModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 235F39651B2D968600B3CBA5 /* NFSurfaceModel.m */; };
 		235F39691B2D969E00B3CBA5 /* NFRDataMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 235F39681B2D969E00B3CBA5 /* NFRDataMap.m */; };
 		2374621C1C00F64B006EC923 /* Display.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 2374621A1C00F64B006EC923 /* Display.fsh */; };
@@ -101,6 +102,8 @@
 		234E85411B2BAE20009B34BF /* NFLightSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFLightSource.m; path = NFAssetData/NFLightSource.m; sourceTree = "<group>"; };
 		234E85431B2BAF91009B34BF /* NFAssetSubset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFAssetSubset.h; path = NFAssetData/NFAssetSubset.h; sourceTree = "<group>"; };
 		234E85441B2BAF91009B34BF /* NFAssetSubset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFAssetSubset.m; path = NFAssetData/NFAssetSubset.m; sourceTree = "<group>"; };
+		23530A171C02621F00F6B252 /* NFRDisplayProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFRDisplayProgram.h; path = NFRenderer/NFRDisplayProgram.h; sourceTree = "<group>"; };
+		23530A181C02621F00F6B252 /* NFRDisplayProgram.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFRDisplayProgram.m; path = NFRenderer/NFRDisplayProgram.m; sourceTree = "<group>"; };
 		235E326A1B27D5B3002AF5C7 /* NFCommonTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFCommonTypes.h; path = NFUtils/NFCommonTypes.h; sourceTree = "<group>"; };
 		235F39641B2D968600B3CBA5 /* NFSurfaceModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFSurfaceModel.h; path = NFAssetData/NFSurfaceModel.h; sourceTree = "<group>"; };
 		235F39651B2D968600B3CBA5 /* NFSurfaceModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFSurfaceModel.m; path = NFAssetData/NFSurfaceModel.m; sourceTree = "<group>"; };
@@ -350,6 +353,8 @@
 				23C2D8AB1B3C988A00A7CA49 /* NFRDefaultProgram.m */,
 				23C2D8AD1B3C98A500A7CA49 /* NFRDebugProgram.h */,
 				23C2D8AE1B3C98A500A7CA49 /* NFRDebugProgram.m */,
+				23530A171C02621F00F6B252 /* NFRDisplayProgram.h */,
+				23530A181C02621F00F6B252 /* NFRDisplayProgram.m */,
 			);
 			name = NFRProgramImplementations;
 			sourceTree = "<group>";
@@ -475,6 +480,7 @@
 				23E9874018DCAC7000F76B1A /* NFAssetData+Wavefront.m in Sources */,
 				234E85451B2BAF91009B34BF /* NFAssetSubset.m in Sources */,
 				235F39661B2D968600B3CBA5 /* NFSurfaceModel.m in Sources */,
+				23530A191C02621F00F6B252 /* NFRDisplayProgram.m in Sources */,
 				2306F40B1886116E008031BD /* NFView.m in Sources */,
 				23A8095E1901BF340062445D /* NFAssetData+Procedural.m in Sources */,
 				233797F41885E1DF00399EBA /* NFRUtils.m in Sources */,
