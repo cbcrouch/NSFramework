@@ -23,13 +23,6 @@
 
 @implementation NFPointLight
 
-@synthesize ambient = _ambient;
-@synthesize diffuse = _diffuse;
-@synthesize specular = _specular;
-@synthesize position = _position;
-
-@synthesize geometry = _geometry;
-
 - (void) setPosition:(GLKVector3)position {
     _position = position;
     _assetData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, position.x, position.y, position.z);
@@ -122,12 +115,6 @@
 @end
 
 @implementation NFDirectionalLight
-
-@synthesize ambient = _ambient;
-@synthesize diffuse = _diffuse;
-@synthesize specular = _specular;
-@synthesize position = _position;
-@synthesize geometry = _geometry;
 
 - (void) setPosition:(GLKVector3)position {
     _position = position;
@@ -223,12 +210,6 @@
 @end
 
 @implementation NFSpotLight
-
-@synthesize ambient = _ambient;
-@synthesize diffuse = _diffuse;
-@synthesize specular = _specular;
-@synthesize position = _position;
-@synthesize geometry = _geometry;
 
 - (void) setPosition:(GLKVector3)position {
     _position = position;

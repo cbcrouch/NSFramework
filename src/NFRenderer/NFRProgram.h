@@ -69,7 +69,7 @@ typedef NS_ENUM(NSUInteger, BUFFER_TYPE) {
 @property (nonatomic, assign) GLsizei height;
 
 //
-// TODO: rename property to something like transferTarget
+// TODO: rename property to something like transferTarget ??
 //
 @property (nonatomic, retain) NFRRenderTarget* renderTarget;
 

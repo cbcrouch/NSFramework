@@ -155,8 +155,6 @@
 
 @implementation NFRRenderRequest
 
-@synthesize geometryArray = _geometryArray;
-
 - (NSMutableArray*) geometryArray {
     if (_geometryArray == nil) {
         _geometryArray = [[[NSMutableArray alloc] init] retain];
@@ -221,6 +219,10 @@
 
 @interface NFRDisplayTarget()
 
+@property (nonatomic, retain) NFRBufferAttributes* bufferAttributes;
+@property (nonatomic, retain) NFRBuffer* vertexBuffer;
+@property (nonatomic, retain) NFRBuffer* indexBuffer;
+
 @end
 
 
@@ -229,9 +231,37 @@
 - (instancetype) init {
     self = [super init];
     if (self != nil) {
+        
         //
-        // TODO: setup vertices, indices, texture, and shader
+        // TODO: setup texture, and shader
         //
+
+        static const GLfloat quadVertices[] = {
+            // position     // texcoord
+            -1.0f,  1.0f,   0.0f, 1.0f,
+            -1.0f, -1.0f,   0.0f, 0.0f,
+             1.0f, -1.0f,   1.0f, 0.0f,
+
+            -1.0f,  1.0f,   0.0f, 1.0f,
+             1.0f, -1.0f,   1.0f, 0.0f,
+             1.0f,  1.0f,   1.0f, 1.0f
+        };
+        
+        static const GLushort quadIndices[] = {
+            0, 1, 2, 3, 4, 5
+        };
+
+        NSUInteger numVertices = sizeof(quadVertices)/sizeof(GLfloat);
+        NSUInteger numIndices = sizeof(quadIndices)/sizeof(GLushort);
+
+        NF_VERTEX_FORMAT vertexFormat = kVertexFormatScreenSpace;
+        _bufferAttributes = [[[NFRBufferAttributes alloc] initWithFormat:vertexFormat] autorelease];
+
+        _vertexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeVertex usingAttributes:_bufferAttributes] autorelease];
+        _indexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeIndex usingAttributes:_bufferAttributes] autorelease];
+
+        [_vertexBuffer loadData:(void *)quadVertices ofType:kBufferDataTypeNFScreenSpaceVertex_t numberOfElements:numVertices];
+        [_indexBuffer loadData:(void *)quadIndices ofType:kBufferDataTypeUShort numberOfElements:numIndices];
     }
     return self;
 }

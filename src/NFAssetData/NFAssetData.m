@@ -119,6 +119,7 @@
                 break;
                 
             default:
+                NSLog(@"WARNING: generateRenderables called with unknown vertex buffer type");
                 break;
         }
 

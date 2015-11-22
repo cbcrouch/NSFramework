@@ -45,9 +45,16 @@ typedef struct NFDebugVertex_t {
 } NFDebugVertex_t;
 
 
+typedef struct NFScreenSpaceVertex_t {
+    float pos[3];
+    float texCoord[2];
+} NFScreenSpaceVertex_t;
+
+
 typedef NS_ENUM(NSUInteger, NF_VERTEX_FORMAT) {
     kVertexFormatDefault,
-    kVertexFormatDebug
+    kVertexFormatDebug,
+    kVertexFormatScreenSpace
 };
 
 

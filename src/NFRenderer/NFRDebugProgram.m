@@ -14,15 +14,6 @@
 
 @implementation NFRDebugProgram
 
-@synthesize vertexAttribute = _vertexAttribute;
-@synthesize normalAttribute = _normalAttribute;
-@synthesize colorAttribute = _colorAttribute;
-
-@synthesize modelMatrixLocation = _modelMatrixLocation;
-
-@synthesize hUBO = _hUBO;
-@synthesize hProgram = _hProgram;
-
 - (void) loadProgramInputPoints {
     // shader attributes
     [self setVertexAttribute:glGetAttribLocation(self.hProgram, "v_position")];

@@ -340,7 +340,15 @@
 #if USE_RENDER_TARGET
     [m_renderTarget disable];
 
+    //
+    // TODO: enable screen space transfer
+    //
+
+    //[m_displayTarget transfer];
+    //[m_displayTarget process];
+
     [m_displayTarget display];
+
 #endif
 }
 

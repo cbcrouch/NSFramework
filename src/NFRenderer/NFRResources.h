@@ -41,7 +41,8 @@ typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
     kBufferDataTypeUnknown,
     kBufferDataTypeUShort,
     kBufferDataTypeNFVertex_t,
-    kBufferDataTypeNFDebugVertex_t
+    kBufferDataTypeNFDebugVertex_t,
+    kBufferDataTypeNFScreenSpaceVertex_t
 };
 
 @property (nonatomic, retain, readonly) NFRBufferAttributes* bufferAttributes;

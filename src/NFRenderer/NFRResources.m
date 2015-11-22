@@ -16,8 +16,6 @@
 
 @implementation NFRBufferAttributes
 
-@synthesize hVAO = _hVAO;
-
 - (instancetype) initWithFormat:(NF_VERTEX_FORMAT)format {
     self = [super init];
     if (self != nil) {
@@ -55,16 +53,6 @@
 
 
 @implementation NFRBuffer
-
-@synthesize bufferAttributes = _bufferAttributes;
-
-@synthesize bufferType = _bufferType;
-@synthesize bufferDataType = _bufferDataType;
-@synthesize numberOfElements = _numberOfElements;
-@synthesize bufferDataSize = _bufferDataSize;
-@synthesize bufferDataPointer = _bufferDataPointer;
-
-@synthesize bufferHandle = _bufferHandle;
 
 - (instancetype) initWithType:(NFR_BUFFER_TYPE)type usingAttributes:(NFRBufferAttributes*)bufferAttributes {
     self = [super init];
@@ -123,6 +111,11 @@
             glBufferType = GL_ARRAY_BUFFER;
             break;
 
+        case kBufferDataTypeNFScreenSpaceVertex_t:
+            elementSize = sizeof(NFScreenSpaceVertex_t);
+            glBufferType = GL_ARRAY_BUFFER;
+            break;
+
         case kBufferDataTypeUShort:
             elementSize = sizeof(GLushort);
             glBufferType = GL_ELEMENT_ARRAY_BUFFER;
@@ -153,8 +146,6 @@
 @end
 
 @implementation NFRDataMapGL
-
-@synthesize textureID = _textureID;
 
 - (instancetype) init {
     self = [super init];
@@ -213,13 +204,6 @@
 
 
 @implementation NFRGeometry
-
-@synthesize vertexBuffer = _vertexBuffer;
-@synthesize indexBuffer = _indexBuffer;
-@synthesize surfaceModel = _surfaceModel;
-@synthesize mode = _mode;
-@synthesize modelMatrix = _modelMatrix;
-@synthesize textureDictionary = _textureDictionary;
 
 - (NSMutableDictionary*) textureDictionary {
     if (_textureDictionary == nil) {

@@ -14,22 +14,6 @@
 
 @implementation NFRDefaultProgram
 
-@synthesize vertexAttribute = _vertexAttribute;
-@synthesize normalAttribute = _normalAttribute;
-@synthesize texCoordAttribute = _texCoordAttribute;
-
-@synthesize materialUniforms = _materialUniforms;
-
-@synthesize dirLightUniforms = _dirLightUniforms;
-@synthesize pointLightUniforms = _pointLightUniforms;
-@synthesize spotLightUniforms = _spotLightUniforms;
-
-@synthesize modelMatrixLocation = _modelMatrixLocation;
-@synthesize viewPositionLocation = _viewPositionLocation;
-
-@synthesize hUBO = _hUBO;
-@synthesize hProgram = _hProgram;
-
 - (void) loadProgramInputPoints {
     // shader attributes
     [self setVertexAttribute:glGetAttribLocation(self.hProgram, "v_position")];
