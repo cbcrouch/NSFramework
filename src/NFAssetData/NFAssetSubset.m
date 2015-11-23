@@ -79,21 +79,11 @@
     }
 }
 
-/*
-- (void) allocateVerticesWithNumElts:(NSUInteger)num {
-    self.vertices = (NFVertex_t *)malloc(num * sizeof(NFVertex_t));
-    NSAssert(self.vertices != NULL, @"failed to allocate interleaved vertices");
-    self.numVertices = (NSInteger)num;
-}
-*/
-
 - (void) allocateIndicesWithNumElts:(NSUInteger)num {
     self.indices = (GLushort *)malloc(num * sizeof(GLushort));
     NSAssert(self.indices != NULL, @"failed to allocate index array");
     self.numIndices = (NSInteger)num;
 }
-
-
 
 - (void) allocateVerticesOfType:(NF_VERTEX_FORMAT)vertexFormat withNumVertices:(NSUInteger)numVertices {
     size_t vertexDataSize = 0;
@@ -121,8 +111,6 @@
     self.vertexFormat = vertexFormat;
     self.numVertices = numVertices;
 }
-
-
 
 - (void) calcSubsetBounds {
     float min_x, max_x;
