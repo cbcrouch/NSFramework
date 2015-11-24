@@ -68,10 +68,8 @@ typedef NS_ENUM(NSUInteger, BUFFER_TYPE) {
 @property (nonatomic, assign) GLsizei width;
 @property (nonatomic, assign) GLsizei height;
 
-//
-// TODO: rename property to something like transferSource ??
-//
-@property (nonatomic, retain) NFRRenderTarget* renderTarget;
+@property (nonatomic, retain) NFRRenderTarget* transferSource;
+
 
 //
 // TODO: display method needs a better name

@@ -128,7 +128,7 @@
     m_renderTarget = [[[NFRRenderTarget alloc] init] retain];
 
     m_displayTarget = [[[NFRDisplayTarget alloc] init] retain];
-    [m_displayTarget setRenderTarget:m_renderTarget];
+    [m_displayTarget setTransferSource:m_renderTarget];
 
 
 
@@ -260,7 +260,7 @@
     //
     //
 
-
+    
     [m_renderRequest addGeometry:m_pAsset.geometry];
     [m_renderRequest addGeometry:m_planeData.geometry];
     [m_renderRequest addGeometry:m_pProceduralData.geometry];

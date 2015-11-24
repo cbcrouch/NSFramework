@@ -15,6 +15,7 @@
 
 #import "NFRDefaultProgram.h"
 #import "NFRDebugProgram.h"
+#import "NFRDisplayProgram.h"
 
 
 @interface NFRRenderTarget()
@@ -174,7 +175,7 @@
 
     //
     // TODO: geometry objects should be able to be added to multiple render requests and drawn with
-    //       multiple program objects
+    //       multiple program objects (this should work in theory but hasn't been tested)
     //
 
     //
@@ -199,6 +200,19 @@
         }
     }
 
+    //
+    // TODO: rather than having a geometry array have an array of draw blocks to execute ??
+    //       (program handle would be bound and unbound prior to processing the blocks array)
+    //
+
+/*
+    glUseProgram(self.program.hProgram);
+    for (void ^(void)block in self.blocks) {
+        block();
+    }
+    glUseProgram(0);
+*/
+
     for (NFRGeometry* geo in self.geometryArray) {
         [self.program drawGeometry:geo];
     }
@@ -218,16 +232,25 @@
 //
 
 @interface NFRDisplayTarget()
+{
+    __block NFRBuffer* vertexBufferRef;
+    __block NFRBuffer* indexBufferRef;
+}
 
-@property (nonatomic, retain) NFRProgram* program;
+@property (nonatomic, retain) id<NFRProgram> program;
 
 //
-// TODO: need to determine if should use NFRDataMap or NFRDataMapGL
+// TODO: need to determine if should use NFRDataMap or NFRDataMapGL (most likely the latter)
 //
-//@property (nonatomic, retain) NFRDataMapGL* texture;
+//@property (nonatomic, retain) NFRDataMapGL* texture;  <-- probably this one
 //@property (nonatomic, retain) NFRDataMap* texture;
 
-@property (nonatomic, retain) NFRBufferAttributes* bufferAttributes;
+
+//
+// TODO: will need add some flexability in how programs execute draw calls
+//       (make a draw call take a lambda then execute it with current shader bound)
+//
+
 @property (nonatomic, retain) NFRBuffer* vertexBuffer;
 @property (nonatomic, retain) NFRBuffer* indexBuffer;
 
@@ -236,13 +259,22 @@
 
 @implementation NFRDisplayTarget
 
+
++ (void) testBlock:(void (^)(void))block {
+    block();
+}
+
+
 - (instancetype) init {
     self = [super init];
     if (self != nil) {
+
         
         //
         // TODO: setup texture, and shader
         //
+
+        //_program = [[NFRProgram createProgramObject:@"Display"] retain];
 
 
         static const GLfloat quadVertices[] = {
@@ -264,13 +296,24 @@
         NSUInteger numIndices = sizeof(quadIndices)/sizeof(GLushort);
 
         NF_VERTEX_FORMAT vertexFormat = kVertexFormatScreenSpace;
-        _bufferAttributes = [[[NFRBufferAttributes alloc] initWithFormat:vertexFormat] autorelease];
+        NFRBufferAttributes* bufferAttributes = [[[NFRBufferAttributes alloc] initWithFormat:vertexFormat] autorelease];
 
-        _vertexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeVertex usingAttributes:_bufferAttributes] autorelease];
-        _indexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeIndex usingAttributes:_bufferAttributes] autorelease];
+        _vertexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeVertex usingAttributes:bufferAttributes] autorelease];
+        _indexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeIndex usingAttributes:bufferAttributes] autorelease];
 
         [_vertexBuffer loadData:(void *)quadVertices ofType:kBufferDataTypeNFScreenSpaceVertex_t numberOfElements:numVertices];
         [_indexBuffer loadData:(void *)quadIndices ofType:kBufferDataTypeUShort numberOfElements:numIndices];
+
+
+        //__block NFRBuffer* vertexBufferRef = _vertexBuffer;
+        //__block NFRBuffer* indexBufferRef = _indexBuffer;
+        vertexBufferRef = _vertexBuffer;
+        indexBufferRef = _indexBuffer;
+
+        [NFRDisplayTarget testBlock:^{
+            NSLog(@"vertex buffer ref handle: %d", vertexBufferRef.bufferHandle);
+            NSLog(@"index buffer ref handle: %d", indexBufferRef.bufferHandle);
+        }];
     }
     return self;
 }
@@ -307,6 +350,12 @@
     }
     else if ([programName isEqualToString:@"Debug"]) {
         NFRDebugProgram* programObj = [[[NFRDebugProgram alloc] init] autorelease];
+        [programObj setHProgram:[NFRUtils createProgram:programName]];
+        [programObj loadProgramInputPoints];
+        return programObj;
+    }
+    else if ([programName isEqualToString:@"Display"]) {
+        NFRDisplayProgram* programObj = [[[NFRDisplayProgram alloc] init] autorelease];
         [programObj setHProgram:[NFRUtils createProgram:programName]];
         [programObj loadProgramInputPoints];
         return programObj;
