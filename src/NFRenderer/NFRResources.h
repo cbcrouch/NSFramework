@@ -10,6 +10,12 @@
 #import "NFCommonTypes.h"
 #import "NFSurfaceModel.h"
 
+
+//
+// TODO: break out all these classes into their own header and source files
+//
+
+
 @protocol NFRProgram;
 
 //

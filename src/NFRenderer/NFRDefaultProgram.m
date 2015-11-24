@@ -221,7 +221,6 @@
 }
 
 - (void) drawGeometry:(NFRGeometry*)geometry {
-    glUseProgram(self.hProgram);
 
     //
     // TODO: the follow are also listed in the default mtl file and should be handled appropiately
@@ -260,7 +259,6 @@
         [textureGL deactivateTexture];
     }
 
-    glUseProgram(0);
     CHECK_GL_ERROR();
 }
 

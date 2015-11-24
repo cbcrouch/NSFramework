@@ -65,7 +65,6 @@
 }
 
 - (void) drawGeometry:(NFRGeometry*)geometry {
-    glUseProgram(self.hProgram);
     glBindVertexArray(geometry.vertexBuffer.bufferAttributes.hVAO);
 
     [self updateModelMatrix:geometry.modelMatrix];
@@ -75,7 +74,6 @@
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     glBindVertexArray(0);
-    glUseProgram(0);
     CHECK_GL_ERROR();
 }
 

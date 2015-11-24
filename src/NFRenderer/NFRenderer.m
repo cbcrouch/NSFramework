@@ -11,6 +11,9 @@
 #import "NFRUtils.h"
 #import "NFRProgram.h"
 
+#import "NFRDisplayTarget.h"
+#import "NFRRenderRequest.h"
+
 //
 // TODO: move NFAssetLoader and NFLightSource module test code into NFSimulation module once it has been stubbed out
 //
