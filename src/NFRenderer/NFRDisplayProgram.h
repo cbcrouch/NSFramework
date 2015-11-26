@@ -24,7 +24,6 @@
 
 @property (nonatomic, readwrite, assign) GLuint hProgram;
 
-//
 
 - (void) loadProgramInputPoints;
 

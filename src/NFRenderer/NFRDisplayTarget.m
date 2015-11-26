@@ -48,7 +48,6 @@
     self = [super init];
     if (self != nil) {
 
-
         //
         // TODO: setup texture, and shader
         //
@@ -56,6 +55,41 @@
         _program = [[NFRProgram createProgramObject:@"Display"] retain];
 
 
+        NFScreenSpaceVertex_t quadVertices[6];
+
+        // first triangle
+        quadVertices[0].pos[0] = -1.0f;
+        quadVertices[0].pos[1] = 1.0f;
+        quadVertices[0].texCoord[0] = 0.0f;
+        quadVertices[0].texCoord[1] = 1.0f;
+
+        quadVertices[1].pos[0] = -1.0f;
+        quadVertices[1].pos[1] = -1.0f;
+        quadVertices[1].texCoord[0] = 0.0f;
+        quadVertices[1].texCoord[1] = 0.0f;
+
+        quadVertices[2].pos[0] = 1.0f;
+        quadVertices[2].pos[1] = -1.0f;
+        quadVertices[2].texCoord[0] = 1.0f;
+        quadVertices[2].texCoord[1] = 0.0f;
+
+        // second triangle
+        quadVertices[3].pos[0] = -1.0f;
+        quadVertices[3].pos[1] = 1.0f;
+        quadVertices[3].texCoord[0] = 0.0f;
+        quadVertices[3].texCoord[1] = 1.0f;
+
+        quadVertices[4].pos[0] = 1.0f;
+        quadVertices[4].pos[1] = -1.0f;
+        quadVertices[4].texCoord[0] = 1.0f;
+        quadVertices[4].texCoord[1] = 0.0f;
+
+        quadVertices[5].pos[0] = 1.0f;
+        quadVertices[5].pos[1] = 1.0f;
+        quadVertices[5].texCoord[0] = 1.0f;
+        quadVertices[5].texCoord[1] = 1.0f;
+
+/*
         static const GLfloat quadVertices[] = {
             // position     // texcoord
             -1.0f,  1.0f,   0.0f, 1.0f,
@@ -66,7 +100,7 @@
             1.0f, -1.0f,   1.0f, 0.0f,
             1.0f,  1.0f,   1.0f, 1.0f
         };
-
+*/
         static const GLushort quadIndices[] = {
             0, 1, 2, 3, 4, 5
         };

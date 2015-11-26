@@ -18,7 +18,7 @@
 
 
 //
-// TODO: display method needs a better name
+// TODO: display method needs a better name (process or transfer ?)
 //
 - (void) display;
 
