@@ -139,6 +139,10 @@
     CHECK_GL_ERROR();
 }
 
+- (GLuint) getColorAttachmentHandle {
+    return self.colorAttachmentTex;
+}
+
 - (void) dealloc {
     [self tearDown];
     [super dealloc];

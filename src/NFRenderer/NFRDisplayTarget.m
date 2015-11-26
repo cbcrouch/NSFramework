@@ -18,12 +18,8 @@
 
 @property (nonatomic, retain) id<NFRProgram> program;
 
-//
-// TODO: need to determine if should use NFRDataMap or NFRDataMapGL (most likely the latter)
-//
-//@property (nonatomic, retain) NFRDataMapGL* texture;  <-- probably this one
-//@property (nonatomic, retain) NFRDataMap* texture;
 
+@property (nonatomic, assign) GLuint transferTexHandle;
 
 //
 // TODO: will need add some flexability in how programs execute draw calls
@@ -44,16 +40,15 @@
  }
  */
 
+- (void) setTransferSource:(NFRRenderTarget *)transferSource {
+    _transferSource = transferSource;
+    [self setTransferTexHandle:transferSource.getColorAttachmentHandle];
+}
+
 - (instancetype) init {
     self = [super init];
     if (self != nil) {
-
-        //
-        // TODO: setup texture, and shader
-        //
-
         _program = [[NFRProgram createProgramObject:@"Display"] retain];
-
 
         NFScreenSpaceVertex_t quadVertices[6];
 
@@ -89,18 +84,6 @@
         quadVertices[5].texCoord[0] = 1.0f;
         quadVertices[5].texCoord[1] = 1.0f;
 
-/*
-        static const GLfloat quadVertices[] = {
-            // position     // texcoord
-            -1.0f,  1.0f,   0.0f, 1.0f,
-            -1.0f, -1.0f,   0.0f, 0.0f,
-            1.0f, -1.0f,   1.0f, 0.0f,
-
-            -1.0f,  1.0f,   0.0f, 1.0f,
-            1.0f, -1.0f,   1.0f, 0.0f,
-            1.0f,  1.0f,   1.0f, 1.0f
-        };
-*/
         static const GLushort quadIndices[] = {
             0, 1, 2, 3, 4, 5
         };
@@ -117,17 +100,18 @@
         [_vertexBuffer loadData:(void *)quadVertices ofType:kBufferDataTypeNFScreenSpaceVertex_t numberOfElements:numVertices];
         [_indexBuffer loadData:(void *)quadIndices ofType:kBufferDataTypeUShort numberOfElements:numIndices];
 
-        /*
-         //__block NFRBuffer* vertexBufferRef = _vertexBuffer;
-         //__block NFRBuffer* indexBufferRef = _indexBuffer;
-         vertexBufferRef = _vertexBuffer;
-         indexBufferRef = _indexBuffer;
 
-         [NFRDisplayTarget testBlock:^{
-         NSLog(@"vertex buffer ref handle: %d", vertexBufferRef.bufferHandle);
-         NSLog(@"index buffer ref handle: %d", indexBufferRef.bufferHandle);
-         }];
-         */
+/*
+        //__block NFRBuffer* vertexBufferRef = _vertexBuffer;
+        //__block NFRBuffer* indexBufferRef = _indexBuffer;
+        vertexBufferRef = _vertexBuffer;
+        indexBufferRef = _indexBuffer;
+
+        [NFRDisplayTarget testBlock:^{
+            NSLog(@"vertex buffer ref handle: %d", vertexBufferRef.bufferHandle);
+            NSLog(@"index buffer ref handle: %d", indexBufferRef.bufferHandle);
+        }];
+*/
     }
     return self;
 }
@@ -143,6 +127,8 @@
     // clear screen
     // draw othrographic screen space triangles with frame buffer texture
     // release all binds
+
+    NSAssert(self.transferSource != nil, @"attempted to use display target without setting a transfer source");
 }
 
 @end

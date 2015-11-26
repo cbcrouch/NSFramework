@@ -46,4 +46,10 @@ typedef NS_ENUM(NSUInteger, BUFFER_TYPE) {
 
 - (void) resizeWithWidth:(uint32_t)width withHeight:(uint32_t)height;
 
+
+//
+// TODO: would ideally prefer something a little cleaner than passing a raw OpenGL handle
+//
+- (GLuint) getColorAttachmentHandle;
+
 @end
