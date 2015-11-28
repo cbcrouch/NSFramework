@@ -35,9 +35,6 @@
     //       multiple program objects (this should work in theory but hasn't been tested)
     //
 
-    //
-    // NOTE: geometry will now be bound to the shader program here
-    //
     [self.program configureVertexInput:geometry.vertexBuffer.bufferAttributes];
     [self.program configureVertexBufferLayout:geometry.vertexBuffer withAttributes:geometry.vertexBuffer.bufferAttributes];
 }
@@ -57,10 +54,22 @@
         }
     }
 
+
     //
     // TODO: rather than having a geometry array have an array of draw blocks to execute ??
     //       (program handle would be bound and unbound prior to processing the blocks array)
     //
+
+    // would have to move light and geometry arrays sonewhere else (another class? program object own it ??)
+
+    // make another object to own them called a command buffer
+
+    // render request will take general render state like setting clear calls or depth buffer state etc.
+
+
+    // command buffer and program object will each have a descriptor object (will contain vertex format, uniforms, etc.)
+    // and when in debug mode a render request will verify that they both match
+
 
     /*
      glUseProgram(self.program.hProgram);
@@ -69,6 +78,7 @@
      }
      glUseProgram(0);
      */
+
 
     glUseProgram(self.program.hProgram);
     for (NFRGeometry* geo in self.geometryArray) {

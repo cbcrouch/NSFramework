@@ -9,8 +9,6 @@
 #import <GLKit/GLKit.h>
 
 #import "NFCommonTypes.h"
-
-#import "NFRProgram.h"
 #import "NFSurfaceModel.h"
 
 

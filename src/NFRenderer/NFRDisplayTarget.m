@@ -7,7 +7,8 @@
 
 #import "NFRDisplayTarget.h"
 
-#import "NFRProgram.h"
+#import "NFRUtils.h"
+#import "NFRResources.h"
 
 
 @interface NFRDisplayTarget()
@@ -17,14 +18,7 @@
 }
 
 @property (nonatomic, retain) id<NFRProgram> program;
-
-
 @property (nonatomic, assign) GLuint transferTexHandle;
-
-//
-// TODO: will need add some flexability in how programs execute draw calls
-//       (make a draw call take a lambda then execute it with current shader bound)
-//
 
 @property (nonatomic, retain) NFRBuffer* vertexBuffer;
 @property (nonatomic, retain) NFRBuffer* indexBuffer;
@@ -48,7 +42,7 @@
 - (instancetype) init {
     self = [super init];
     if (self != nil) {
-        _program = [[NFRProgram createProgramObject:@"Display"] retain];
+        _program = [[NFRUtils createProgramObject:@"Display"] retain];
 
         NFScreenSpaceVertex_t quadVertices[6];
 
@@ -117,16 +111,12 @@
 }
 
 - (void) display {
+
     //
     // TODO: need a shader and some boilerplate code to transfer the contents of the
     //       render buffer to the screen (the shader used for this will also be used
     //       for any post-processing algorithms)
     //
-
-    // bind screen shader
-    // clear screen
-    // draw othrographic screen space triangles with frame buffer texture
-    // release all binds
 
     NSAssert(self.transferSource != nil, @"attempted to use display target without setting a transfer source");
 }

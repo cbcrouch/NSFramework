@@ -5,6 +5,8 @@
 //  Copyright (c) 2015 Casey Crouch. All rights reserved.
 //
 
+#import "NFRProgramProtocol.h"
+
 // check, print, and clear all OpenGL errors
 #ifdef DEBUG
 #   define CHECK_GL_ERROR() [NFRUtils checkGLError:__FILE__ line:__LINE__ function:__FUNCTION__]
@@ -56,6 +58,8 @@ typedef NS_ENUM(NSUInteger, SHADER_TYPE) {
 
 
 // shader utils
++ (id<NFRProgram>) createProgramObject:(NSString *)programName;
+
 + (GLuint) createProgram:(NSString *)programName;
 + (void) destroyProgramWithHandle:(GLuint)handle;
 

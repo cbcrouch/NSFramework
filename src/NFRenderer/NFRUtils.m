@@ -14,6 +14,11 @@
 
 #import <GLKit/GLKit.h>
 
+#import "NFRDefaultProgram.h"
+#import "NFRDebugProgram.h"
+#import "NFRDisplayProgram.h"
+
+
 #ifdef DEBUG
 #define VALIDATE_PROGRAM(PROGRAM_HANDLE) [NSGLRenderer checkShader:PROGRAM_HANDLE ofType:kProgram againstStatus:kValidateStatus]
 #else
@@ -37,6 +42,31 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
 @end
 
 @implementation NFRUtils
+
++ (id<NFRProgram>) createProgramObject:(NSString *)programName {
+    if ([programName isEqualToString:@"DefaultModel"]) {
+        NFRDefaultProgram* programObj = [[[NFRDefaultProgram alloc] init] autorelease];
+        [programObj setHProgram:[NFRUtils createProgram:programName]];
+        [programObj loadProgramInputPoints];
+        return programObj;
+    }
+    else if ([programName isEqualToString:@"Debug"]) {
+        NFRDebugProgram* programObj = [[[NFRDebugProgram alloc] init] autorelease];
+        [programObj setHProgram:[NFRUtils createProgram:programName]];
+        [programObj loadProgramInputPoints];
+        return programObj;
+    }
+    else if ([programName isEqualToString:@"Display"]) {
+        NFRDisplayProgram* programObj = [[[NFRDisplayProgram alloc] init] autorelease];
+        [programObj setHProgram:[NFRUtils createProgram:programName]];
+        [programObj loadProgramInputPoints];
+        return programObj;
+    }
+    else {
+        NSLog(@"WARNING: NFRUtils createProgramObject attempted to load an unknown program, returning nil");
+    }
+    return nil;
+}
 
 + (GLuint) createProgramWithVertexSource:(NSString *)vertexSource withFragmentSource:(NSString *)fragmentSource {
     GLuint hProgram = 0;

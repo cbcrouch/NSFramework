@@ -9,7 +9,6 @@
 
 #import "NFRenderer.h"
 #import "NFRUtils.h"
-#import "NFRProgram.h"
 
 #import "NFRDisplayTarget.h"
 #import "NFRRenderRequest.h"
@@ -108,8 +107,8 @@
     viewportArray[0].viewRect = CGRectMake(0.0f, 0.0f, (CGFloat)DEFAULT_VIEWPORT_WIDTH, (CGFloat)DEFAULT_VIEWPORT_HEIGHT);
     [self setViewports:[NSArray arrayWithObjects:viewportArray count:MAX_NUM_VIEWPORTS]];
 
-    m_phongObject = [[NFRProgram createProgramObject:@"DefaultModel"] retain];
-    m_debugObject = [[NFRProgram createProgramObject:@"Debug"] retain];
+    m_phongObject = [[NFRUtils createProgramObject:@"DefaultModel"] retain];
+    m_debugObject = [[NFRUtils createProgramObject:@"Debug"] retain];
 
 
     //

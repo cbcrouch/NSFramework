@@ -9,6 +9,7 @@
 
 #import "NFRResources.h"
 
+
 @protocol NFRProgram <NSObject>
 
 @property (nonatomic, readonly) GLuint hProgram;

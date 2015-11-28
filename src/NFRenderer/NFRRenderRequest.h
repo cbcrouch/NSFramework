@@ -14,6 +14,25 @@
 #import "NFRRenderTarget.h"
 
 
+
+@protocol NFRCommandBufferProtcol <NSObject>
+
+// array of blocks to process
+
+@optional
+
+// addLight
+// addGeometry
+
+@end
+
+
+// NFRCommandBufferProtocol
+
+// NFRCommandBuffer
+
+
+
 @interface NFRRenderRequest : NSObject
 
 @property (nonatomic, retain) id<NFRProgram> program;

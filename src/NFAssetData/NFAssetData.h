@@ -11,6 +11,7 @@
 #import "NFCommonTypes.h"
 #import "NFAssetSubset.h"
 
+#import "NFRResources.h"
 #import "NFSurfaceModel.h"
 
 
