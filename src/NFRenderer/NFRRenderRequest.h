@@ -17,19 +17,45 @@
 
 @protocol NFRCommandBufferProtcol <NSObject>
 
-// array of blocks to process
 
-@optional
+//typedef void (^processBlock)(void);
+//- (processBlock) getProcessBlock;
 
-// addLight
-// addGeometry
+//@property (nonatomic, retain) NSMutableArray* commandArray;
+
+//- (NSMutableArray*) getCommandArray;
 
 @end
 
 
-// NFRCommandBufferProtocol
+//
+// TODO: is there a better way to encode commands for a specific format/program
+//       than using specific classes ?? (check Metal API examples)
+//
 
-// NFRCommandBuffer
+@interface NFRCommandBufferDebug : NSObject <NFRCommandBufferProtcol>
+
+//@property (nonatomic, retain) NSMutableArray* geometryArray;
+
+//- (void) addGeometry:(NFRGeometry*)geometry;
+
+@end
+
+
+@interface NFRCommandBufferDefault : NSObject <NFRCommandBufferProtcol>
+
+@property (nonatomic, retain) NSMutableArray* geometryArray;
+@property (nonatomic, retain) NSMutableArray* lightsArray;
+
+- (void) addGeometry:(NFRGeometry*)geometry;
+- (void) addLight:(id<NFLightSource>)light;
+
+@end
+
+
+@interface NFRCommandBufferDisplay : NSObject <NFRCommandBufferProtcol>
+
+@end
 
 
 
