@@ -14,7 +14,9 @@
 
 @implementation NFRCommandBufferDebug
 
-//
+- (void) drawWithProgram:(id<NFRProgram>)program {
+    //
+}
 
 @end
 
@@ -55,10 +57,12 @@
     [self.lightsArray addObject:light];
 }
 
+
 //
 // TODO: this method should return a block that accepts a program argument and has captured
 //       the light and geometry arrays from the command buffer object
 //
+
 - (void) drawWithProgram:(id<NFRProgram>)program {
 
     for (id<NFLightSource> light in self.lightsArray) {
@@ -90,7 +94,9 @@
 
 @implementation NFRCommandBufferDisplay
 
-//
+- (void) drawWithProgram:(id<NFRProgram>)program {
+    //
+}
 
 @end
 
