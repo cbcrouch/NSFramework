@@ -15,6 +15,11 @@ The project is configured to use C11 (with __STRICT_ANSI__ manually undefined), 
 These decisions were made to avoid being dependent on non-standard language/compiler features and because
 memory allocations will be managed manually.
 
+window_base: This directory contains two test applications, one written in Objective C and the other in
+Swift, that are designed to be full streamlined and programatic replacements for window, view, and the
+standard delegates that are used in NSFramework. The goal is that in time NSFramework can be independent
+from both Interface Builder and Xcode.
+
 Dependencies
 ------------
 
@@ -26,7 +31,7 @@ Building
 
 ### Prerequisites
 
-Xcode 7.1
+Xcode 7.x
 (Xcode Command Line Tools optional but recommended)
 
 ### Getting source
