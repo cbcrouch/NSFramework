@@ -1,5 +1,8 @@
 #
-# minimum_objc
+#  makefile
+#  objc_app
+#
+#  Copyright (c) 2015 Casey Crouch. All rights reserved.
 #
 
 TARGET     = min_objc

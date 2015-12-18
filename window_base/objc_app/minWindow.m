@@ -1,6 +1,10 @@
 //
-// minWindow.m
+//  minWindow.m
+//  objc_app
 //
+//  Copyright (c) 2015 Casey Crouch. All rights reserved.
+//
+
 
 #import <Cocoa/Cocoa.h>
 
@@ -34,9 +38,6 @@
 */
 
 // clang minWindow.m -framework Cocoa -x objective-c -o MinimalistCocoaApp
-
-// https://github.com/itfrombit/osx_handmade_minimal/blob/master/Makefile
-// http://www.cocoawithlove.com/2009/01/demystifying-nsapplication-by.html
 
 
 int main ()

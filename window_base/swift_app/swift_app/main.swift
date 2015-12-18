@@ -2,8 +2,7 @@
 //  main.swift
 //  swift_app
 //
-//  Created by cbcrouch on 10/27/14.
-//  Copyright (c) 2014 Casey Crouch. All rights reserved.
+//  Copyright (c) 2015 Casey Crouch. All rights reserved.
 //
 
 // https://developer.apple.com/library/mac/documentation/Swift/Conceptual/Swift_Programming_Language/GuidedTour.html
@@ -381,8 +380,6 @@ class WindowDelegate: NSObject, NSWindowDelegate {
 }
 
 
-// http://stackoverflow.com/questions/32446978/swift-capture-keydown-from-nsviewcontroller/32447474#32447474
-
 class ApplicationDelegate: NSObject, NSApplicationDelegate {
     var _nfView: NFView
     var _window: NSWindow
@@ -460,7 +457,6 @@ func main() -> Int32 {
     }
 
 
-    // https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ApplicationKit/Classes/NSApplication_Class/#//apple_ref/occ/clm/NSApplication/sharedApplication
     let nsApp = NSApplication.sharedApplication()
     //let _ = NSApplication.sharedApplication()
 
