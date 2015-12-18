@@ -285,7 +285,41 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 //    return YES;
 //}
 
+
+- (void) insertText:(id)insertString {
+    NSAssert([insertString isKindOfClass:[NSString class]], @"insertText called with an id that is not a string");
+    NSString* string = (NSString*)insertString;
+
+    //
+    // TODO: use block dictionary to execute desired behavior
+    //
+
+    // http://stackoverflow.com/questions/19067785/switch-case-on-nsstring-in-objective-c
+    // http://stackoverflow.com/questions/8161737/can-objective-c-switch-on-nsstring
+
+/*
+    switch (string) {
+        case 'w':
+            [self.camera setTranslationState:kCameraStateActFwd];
+            break;
+
+        default:
+            break;
+    }
+*/
+    NSLog(@"%@", string);
+}
+
 - (void) keyDown:(NSEvent *)theEvent {
+
+    //
+    // TODO: if this works as intended need to also use in keyUp, this will either require that
+    //       the ability to set the function called or insertTest will have to query state from
+    //       the application
+    //
+    [self interpretKeyEvents:[NSArray arrayWithObjects:theEvent, nil]];
+
+
     unichar key = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
     switch (key) {
         case 'w':
@@ -660,7 +694,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     prevVideoTime = outputTime->videoTime;
 
 
-
+    //
+    // TODO: since no objects are created for rendering then should be able to omit the autorelease pool
+    //       (and if an autorelease pool is need should be using the annotation)
+    //
     // there is no autorelease pool when this method is called because it will be called from a background thread
     // it's important to create one or you will leak objects
     //NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -719,7 +756,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //       (try 10 frame running average and display as ms nn.nnn)
     //
 
-    //[pool release];
+    //[pool drain];
     return kCVReturnSuccess;
 }
 
