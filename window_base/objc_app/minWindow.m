@@ -8,45 +8,96 @@
 
 #import <Cocoa/Cocoa.h>
 
-/*
-- (void) run
-{
 
-    //[self finishLaunching];
+// clang -Wall minWindow.m -framework Cocoa -x objective-c -o MinimalistCocoaApp
 
-    BOOL shouldKeepRunning = YES;
-    while (shouldKeepRunning)
-    {
 
-        @autoreleasepool {
+//
+// TODO: rough implementation for NFView class
+//
+@interface NFView : NSView
 
-            //
-            // TODO: will this nicely block without just spinning on the CPU ??
-            //       (it might appear that using [NSDate distantFuture] will allow it to block nicely)
-            //
-            NSEvent *event = [self nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantFuture]
-                inMode:NSDefaultRunLoopMode dequeue:YES];
+- (instancetype) initWithFrame:(NSRect)frame;
+- (instancetype) initWithCoder:(NSCoder*)coder;
 
-            //[self sendEvent:event];
-            //[self updateWindows];
- 
-        }
+// insertText
+// keyDown
+// awakeFromNib
+
+@end
+
+@implementation NFView
+
+- (instancetype) initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self != nil) {
+        //[self commonInit];
     }
-
-    [pool release];
+    return self;
 }
-*/
 
-// clang minWindow.m -framework Cocoa -x objective-c -o MinimalistCocoaApp
+- (instancetype) initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
+    if (self != nil) {
+        //[self commonInit];
+    }
+    return self;
+}
+
+@end
 
 
-int main ()
+@interface ApplicationDelegate : NSObject <NSApplicationDelegate>
+
+@property (nonatomic, retain) NSWindow* window;
+@property (nonatomic, retain) NFView* view;
+
+- (instancetype) initWithWindow:(NSWindow*)window;
+- (void) applicationDidFinishLaunching:(NSNotification*)notification;
+
+@end
+
+@implementation ApplicationDelegate
+
+@synthesize window = _window;
+@synthesize view = _view;
+
+- (instancetype) initWithWindow:(NSWindow*)window {
+    self = [super init];
+    if (self != nil) {
+        _window = window;
+    }
+    return self;
+}
+
+- (void) applicationDidFinishLaunching:(NSNotification*)notification {
+    NSLog(@"application did finish launching");
+}
+
+@end
+
+
+@interface WindowDelegate : NSObject <NSWindowDelegate>
+- (void) windowWillClose:(NSNotification*)notification;
+@end
+
+@implementation WindowDelegate
+- (void) windowWillClose:(NSNotification*)notification {
+    NSLog(@"window will close");
+}
+@end
+
+
+int main (int argc, char* argv[])
 {
     [[NSAutoreleasePool alloc] init];
     
     [NSApplication sharedApplication];
     [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 
+//
+// TODO: use explicit types instead on id for all objects
+//
     id menubar = [[[NSMenu alloc] init] autorelease];
     id appMenuItem = [[[NSMenuItem alloc] init] autorelease];
     [menubar addItem:appMenuItem];
@@ -71,30 +122,15 @@ int main ()
 
     [NSApp activateIgnoringOtherApps:YES];
     
-    [NSApp run];
     
-    //
-    // TODO: manual message pump
-    //
-/*
-    bool quit = false;
-    while (!quit)
-    {
-        NSEvent *event = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:nil inMode:NSDefaultRunLoopMode dequeue:YES];
-        switch([(NSEvent *)event type])
-        {
-        case NSKeyDown:
-            quit = true;
-            break;
-        default:
-            [NSApp sendEvent:event];
-            break;
-        }
-        [event release];
- 
-        usleep(10000);
-    }
-*/
+    WindowDelegate* windowDelegate = [[[WindowDelegate alloc] init] autorelease];
+    [window setDelegate:windowDelegate];
+    
+    ApplicationDelegate* applicationDelegate = [[[ApplicationDelegate alloc] initWithWindow:window] autorelease];
+    [NSApp setDelegate:applicationDelegate];
+    
+    
+    [NSApp run];
 
     [NSApp terminate:nil];
     return 0;

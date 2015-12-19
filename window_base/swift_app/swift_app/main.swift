@@ -379,7 +379,6 @@ class WindowDelegate: NSObject, NSWindowDelegate {
     }
 }
 
-
 class ApplicationDelegate: NSObject, NSApplicationDelegate {
     var _nfView: NFView
     var _window: NSWindow
@@ -430,8 +429,10 @@ class ApplicationDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(notification: NSNotification) {
 
         //
-        // TODO: try getting this working with a local event monitor as to not require elevated privileges
+        // TODO: can all this stuff be moved into the init method ?? (then what should be in this method ??)
         //
+
+        // NOTE: will need to acquirePrivileges if adding a global monitor for events
         //acquirePrivileges()
         listenForEvents()
 
@@ -442,6 +443,7 @@ class ApplicationDelegate: NSObject, NSApplicationDelegate {
         //
         self._window.makeFirstResponder(self._nfView)
         //self._window.makeFirstResponder(nil) // <-- will make the window the first responder
+
 
         print("application did finish launching")
     }
