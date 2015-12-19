@@ -7,9 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		232790A31A0E8D8400FC15C4 /* card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232790A21A0E8D8400FC15C4 /* card.swift */; };
-		232790A51A0E8FE400FC15C4 /* geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232790A41A0E8FE400FC15C4 /* geometry.swift */; };
-		232790A71A0E917900FC15C4 /* utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232790A61A0E917900FC15C4 /* utilities.swift */; };
 		237D12AB19FEC9520021F569 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 237D12AA19FEC9520021F569 /* main.swift */; };
 /* End PBXBuildFile section */
 
@@ -26,9 +23,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		232790A21A0E8D8400FC15C4 /* card.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = card.swift; sourceTree = "<group>"; };
-		232790A41A0E8FE400FC15C4 /* geometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = geometry.swift; sourceTree = "<group>"; };
-		232790A61A0E917900FC15C4 /* utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = utilities.swift; sourceTree = "<group>"; };
 		237D12A719FEC9520021F569 /* swift_app */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = swift_app; sourceTree = BUILT_PRODUCTS_DIR; };
 		237D12AA19FEC9520021F569 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -63,9 +57,6 @@
 		237D12A919FEC9520021F569 /* swift_app */ = {
 			isa = PBXGroup;
 			children = (
-				232790A21A0E8D8400FC15C4 /* card.swift */,
-				232790A41A0E8FE400FC15C4 /* geometry.swift */,
-				232790A61A0E917900FC15C4 /* utilities.swift */,
 				237D12AA19FEC9520021F569 /* main.swift */,
 			);
 			path = swift_app;
@@ -97,7 +88,7 @@
 		237D129F19FEC9520021F569 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftMigration = 0700;
+				LastSwiftMigration = 0720;
 				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Casey Crouch";
@@ -129,10 +120,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				232790A51A0E8FE400FC15C4 /* geometry.swift in Sources */,
 				237D12AB19FEC9520021F569 /* main.swift in Sources */,
-				232790A71A0E917900FC15C4 /* utilities.swift in Sources */,
-				232790A31A0E8D8400FC15C4 /* card.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

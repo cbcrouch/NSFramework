@@ -10,340 +10,6 @@
 import Foundation
 import Cocoa
 
-
-//
-// values and strings
-//
-
-var myVariable = 42
-myVariable = 50
-
-let myConstant = 42
-
-let implicitInt = 70
-let implicitDouble = 70.0
-let explicitDouble: Double = 70
-
-let constFloat: Float = 4
-
-let label = "The width is "
-let width = 94
-let widthLabel = label + String(width)
-
-print(widthLabel)
-
-let apples = 3
-let oranges = 3
-let appleSummary = "I have \(apples) apples."
-let fruitSummary = "I have \(apples + oranges) pieces of fruit."
-
-//
-// arrays and dictionaries
-//
-
-var shoppingList = ["catfish", "water", "tulips", "blue paint"]
-shoppingList[1] = "bottle of water"
-
-var occupations = [
-    "Malcolm": "Captain",
-    "Kaylee": "Mechanic",
-]
-occupations["Jayne"] = "Public Relations"
-
-let emptyArray = [String]()
-let emptyDictionary = [String: Float]()
-
-shoppingList = []  // empty array shorthand
-occupations = [:]  // empty dicitionary shorthand
-
-//
-// control flow
-//
-
-let individualScores = [75, 43, 103, 87, 12]
-var teamScore = 0
-for score in individualScores {
-    if score > 50 {
-        teamScore += 3
-    } else {
-        teamScore += 1
-    }
-}
-print("Team score is \(teamScore)")
-
-var optionalName: String? = "John Appleseed"
-//optionalName = nil
-
-var greeting = "Hello!"
-if let name = optionalName {
-    greeting = "Hello, \(name)"
-}
-print(greeting)
-
-let vegetable = "red pepper"
-switch vegetable {
-case "celery":
-    let vegetableComment = "Add some raisins and make ants on a log."
-case "cucumber", "watercress":
-    let vegetableComment = "That would make a good tea sandwich"
-case let x where x.hasSuffix("pepper"):
-    let vegetableComment = "Is it spicy \(x)?"
-default:
-    let vegetableComment = "Everything tastes good in soup"
-}
-
-let interestingNumbers = [
-    "Prime": [2, 3, 5, 7, 11, 13],
-    "Fibonacci": [1, 1, 2, 3, 5, 8],
-    "Square": [1, 4, 9, 16, 25],
-]
-var largest = 0
-for (kind, numbers) in interestingNumbers {
-    for number in numbers {
-        if number > largest {
-            largest = number
-        }
-    }
-}
-print("The largest interesting number is \(largest)")
-
-var n = 2
-while n < 100 {
-    n = n * 2
-}
-
-var m = 2
-repeat {
-    m = m * 2
-} while n < 100
-
-var firstForLoop = 0
-for i in 0..<4 {
-    firstForLoop += i
-}
-
-var secondForLoop = 0
-for var i = 0; i < 4; ++i {
-    secondForLoop += i
-}
-
-//
-// functions and closures
-//
-
-let customGreeting = greet("Bob", day: "Tuesday")
-print("\(customGreeting)")
-
-let statistics = calculateStstistics([5, 3, 100, 9])
-print("sum is \(statistics.sum) and max is \(statistics.2)")
-
-print("sum of () \(sumOf())")
-print("sum of (42, 597, 12) \(sumOf(42, 597, 12))")
-
-print("fifteen \(returnFifteen())")
-
-var increment = makeIncrementer()
-print("increment of 7: \(increment(7))")
-
-var numbers = [20, 19, 7, 12]
-print("numbers array has any matches: \(hasAnyMatches(numbers, condition: lessThanTen))")
-
-//numbers.map({
-//    (number: Int) -> Int in
-//    let result = 3 * number
-//    return result
-//})
-let mappedNumbers = numbers.map({ number in 3 * number })
-print("mappedNumbers: \(mappedNumbers)")
-
-let sortedNumbers = numbers.sort { $0 > $1 }
-print("sortedNumbers: \(sortedNumbers)")
-
-//
-// objects and classes
-//
-
-var shape = Shape()
-shape.numberOfSides = 7
-var shapeDescription = shape.simpleDescription()
-print(shapeDescription)
-
-let test = Square(sideLength: 5.2, name: "my test square")
-print("\(test.simpleDescription()) has an area of \(test.area())")
-
-var triangle = EquilateralTriangle(sideLength: 3.3, name: "a triangle")
-print("triangle's current perimeter = \(triangle.perimeter)")
-triangle.perimeter = 9.9
-print("triangle of perimeter \(triangle.perimeter) has a side length of \(triangle.sideLength)")
-
-var triangleAndSquare = TriangleAndSquare(size: 10, name: "another test shape")
-print("square side length: \(triangleAndSquare.square.sideLength)")
-print("triangle side length: \(triangleAndSquare.triangle.sideLength)")
-triangleAndSquare.square = Square(sideLength: 50, name: "largerSquare")
-print("triangle side length: \(triangleAndSquare.triangle.sideLength)")
-
-class Counter {
-    var count: Int = 0
-    // NOTE: specified a new name "times" for parameter "numberOfTimes"
-    func incrementBy(amount: Int, numberOfTimes times: Int) {
-        count += amount * times
-    }
-}
-var counter = Counter()
-counter.incrementBy(2, numberOfTimes: 7)
-
-let optionalSquare: Square? = Square(sideLength: 2.5, name: "optional square")
-let sideLength = optionalSquare?.sideLength
-if sideLength != nil {
-    print("optional side length: \(sideLength)")
-}
-
-//
-// enumerations and structures
-//
-
-let ace = Rank.Ace
-let aceRawValue = ace.rawValue
-print("\(ace.simpleDescription())")
-print("aceRawValue: \(aceRawValue)")
-
-if let convertedRank = Rank(rawValue: 3) {
-    let threeDescription = convertedRank.simpleDescription()
-}
-
-let hearts = Suit.Hearts
-let heartsDescription = hearts.simpleDescription()
-
-let threeOfSpades = Card(rank: .Three, suit: .Spades)
-let threeOfSpadesDescription = threeOfSpades.simpleDescription()
-
-enum ServerResponse {
-    case Result(String, String)
-    case Error(String)
-}
-
-let sucess = ServerResponse.Result("6:00 am", "8:09 pm")
-let failure = ServerResponse.Error("Out of cheese.")
-
-switch sucess {
-case let .Result(sunrise, sunset):
-    let serverResponse = "Sunrise is at \(sunrise) and sunset is at \(sunset)."
-case let .Error(error):
-    let serverResponse = "Failure... \(error)"
-}
-
-//
-// protocols and extensions
-//
-
-protocol ExampleProtocol {
-    var simpleDescription: String { get }
-    mutating func adjust()
-}
-
-class SimpleClass: ExampleProtocol {
-    var simpleDescription: String = "A very simple class."
-    var anotherProperty: Int = 69105
-    func adjust() {
-        simpleDescription += " Now 100% adjusted."
-    }
-}
-var a = SimpleClass()
-a.adjust()
-let aDescription = a.simpleDescription
-
-struct SimpleStructure : ExampleProtocol {
-    var simpleDescription: String = "A simple structure"
-    mutating func adjust() {
-        simpleDescription += " (adjusted)"
-    }
-}
-var b = SimpleStructure()
-b.adjust()
-let bDescription = b.simpleDescription
-
-enum SimpleEnum : ExampleProtocol {
-    case Base, Adjusted
-
-    var simpleDescription: String {
-        get {
-            switch self {
-            case .Base:
-                return "A simple enum"
-            case .Adjusted:
-                return "A simple enum [adjusted]"
-            }
-        }
-    }
-
-    mutating func adjust() {
-        self = SimpleEnum.Adjusted
-    }
-}
-var c = SimpleEnum.Base
-c.adjust()
-let cDescription = c.simpleDescription
-
-extension Int: ExampleProtocol {
-    var simpleDescription: String {
-        return "The number \(self)"
-    }
-    mutating func adjust() {
-        self += 42
-    }
-}
-7.simpleDescription
-
-let protocolValue: ExampleProtocol = a
-print("protocolValue.simpleDescription: \(protocolValue.simpleDescription)")
-
-//
-// generics
-//
-
-func `repeat`<Item>(item: Item, times: Int) -> [Item] {
-    var result = [Item]()
-    for _ in 0..<times {
-        result.append(item)
-    }
-    return result
-}
-`repeat`("knock", times: 4)
-
-// reimplementation of the Swift standard library's optional type
-enum OptionalValue<T> {
-    case None
-    case Some(T)
-}
-var possibleInteger: OptionalValue<Int> = .None
-possibleInteger = .Some(100)
-
-// use where after the type name to specify a list of requirements e.g. to require
-// the type to implement a protocol, to require two types to be the same, or to
-// require a class to have a particular superclass
-func anyCommonElements <T, U where T: SequenceType, U: SequenceType,
-    T.Generator.Element: Equatable, T.Generator.Element == U.Generator.Element>
-    (lhs: T, rhs: U) -> Bool {
-        // in the simple cases you can omit where and simply write the protcol or class
-        // name after a color i.e. <T: Equatable> is the same as <T where T: Equatable>
-
-        for lhsItem in lhs {
-            for rhsItem in rhs {
-                if lhsItem == rhsItem {
-                    return true
-                }
-            }
-        }
-        return false
-}
-anyCommonElements([1,2,3], rhs: [3])
-
-// modify the anyCommonElements function to make a function that returns an array of
-// elements that any two sequences have in common
-
-
-
-
 class NFView: NSView {
 
     override init(frame frameRect: NSRect) {
@@ -357,10 +23,11 @@ class NFView: NSView {
     }
 
     override func insertText(insertString: AnyObject) {
+        //Swift.print("insertText called in NFView", terminator: "")
         Swift.print("insertText called in NFView")
 
         let string: String = insertString as! String
-        Swift.print("\(string)")
+        Swift.print("\(string)", terminator: "")
     }
 
     override func keyDown(theEvent: NSEvent) {
@@ -368,13 +35,13 @@ class NFView: NSView {
     }
 
     override func awakeFromNib() {
-        Swift.print("NFView awake from Nib")
+        Swift.print("NFView awake from Nib", terminator: "")
     }
 }
 
 class WindowDelegate: NSObject, NSWindowDelegate {
     func windowWillClose(notification: NSNotification) {
-        print("WindowDelegate windowWillClose called")
+        print("WindowDelegate windowWillClose called", terminator: "")
         NSApplication.sharedApplication().terminate(0)
     }
 }
@@ -394,11 +61,11 @@ class ApplicationDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func handlerGlobalEvent(aEvent: (NSEvent!)) -> Void {
-        print("global KeyDown: \(aEvent.characters) (\(String(aEvent.keyCode)))")
+        print("global KeyDown: \(aEvent.characters) (\(String(aEvent.keyCode)))", terminator: "")
     }
 
     private func handlerEvent(aEvent: (NSEvent!)) -> NSEvent {
-        print("local KeyDown: \(aEvent.characters) (\(String(aEvent.keyCode)))")
+        print("local KeyDown: \(aEvent.characters) (\(String(aEvent.keyCode)))", terminator: "")
         return aEvent
     }
 
@@ -445,7 +112,7 @@ class ApplicationDelegate: NSObject, NSApplicationDelegate {
         //self._window.makeFirstResponder(nil) // <-- will make the window the first responder
 
 
-        print("application did finish launching")
+        print("application did finish launching", terminator: "")
     }
 }
 
@@ -454,7 +121,7 @@ func main() -> Int32 {
     for argument in Process.arguments {
         switch argument {
         default:
-            print("")
+            print("", terminator: "")
         }
     }
 
@@ -524,35 +191,8 @@ func main() -> Int32 {
 
 
     //
-    // TODO: use application.run or NSRunLoop there is too much other stuff going on main event loop
-    //       to tackle right away but would be nice to get a minimally working example
+    // TODO: setup basic application to handle the main event loop
     //
-
-/*
-    var exitEventLoop = false
-    while !exitEventLoop {
-
-        autoreleasepool {
-            let eventMask : Int = Int.init(truncatingBitPattern: NSEventMask.AnyEventMask.rawValue)
-
-            // NOTE: need to use NSDate.distantFuture() for untilData param (can't pass in nil like in objc)
-            let event = nsApp.nextEventMatchingMask(eventMask, untilDate: NSDate.distantFuture(),
-                inMode: NSDefaultRunLoopMode, dequeue: true)!
-
-            if event.modifierFlags.contains(NSEventModifierFlags.CommandKeyMask) {
-                switch event.keyCode {
-                case UInt16("q")!:
-                    print("q pressed, will exit event loop")
-                    exitEventLoop = true
-                    break;
-
-                default:
-                    NSApp.sendEvent(event)
-                }
-            }
-        }
-    }
-*/
 
     nsApp.terminate(nil)
     return 0
