@@ -6,23 +6,21 @@
 //
 
 
-#import <Cocoa/Cocoa.h>
-
-
 // clang -Wall minWindow.m -framework Cocoa -x objective-c -o objc_app
 
 
-//
-// TODO: rough implementation for NFView class
-//
+#import <Cocoa/Cocoa.h>
+
+
 @interface NFView : NSView
 
 - (instancetype) initWithFrame:(NSRect)frame;
 - (instancetype) initWithCoder:(NSCoder*)coder;
 
-// insertText
-// keyDown
-// awakeFromNib
+- (void) awakeFromNib;
+
+- (void) insertText:(id)insertString;
+- (void) keyDown:(NSEvent *)theEvent;
 
 @end
 
@@ -42,6 +40,20 @@
         //[self commonInit];
     }
     return self;
+}
+
+- (void) awakeFromNib {
+    NSLog(@"awakeFromNib should not be getting called");
+}
+
+- (void) insertText:(id)insertString {
+    NSAssert([insertString isKindOfClass:[NSString class]], @"insertText called with an id that is not a string");
+    NSString* string = (NSString*)insertString;
+    NSLog(@"%@", string);
+}
+
+- (void) keyDown:(NSEvent *)theEvent {
+    [self interpretKeyEvents:[NSArray arrayWithObjects:theEvent, nil]];
 }
 
 @end
@@ -66,6 +78,8 @@
     self = [super init];
     if (self != nil) {
         _window = window;
+        _view = [[[NFView alloc] initWithFrame:_window.contentView.frame] autorelease];
+        [_window.contentView addSubview:_view];
     }
     return self;
 }
@@ -73,8 +87,10 @@
 - (void) applicationDidFinishLaunching:(NSNotification*)notification {
 
     //
-    // TODO: set first responder and/or register for key events as well
+    // TODO: register for key events as well
     //
+    
+    [self.window makeFirstResponder:self.view];
 
     NSLog(@"application did finish launching");
 }
