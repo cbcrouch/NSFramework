@@ -5,7 +5,6 @@
 //  Copyright (c) 2015 Casey Crouch. All rights reserved.
 //
 
-// https://developer.apple.com/library/mac/documentation/Swift/Conceptual/Swift_Programming_Language/GuidedTour.html
 
 import Foundation
 import Cocoa
@@ -23,10 +22,8 @@ class NFView: NSView {
     }
 
     override func insertText(insertString: AnyObject) {
-        Swift.print("insertText called in NFView", terminator: "\n")
-
         let string: String = insertString as! String
-        Swift.print("\(string)", terminator: "\n")
+        Swift.print("insertText called in NFView: \(string)", terminator: "\n")
     }
 
     override func keyDown(theEvent: NSEvent) {
@@ -64,12 +61,6 @@ class ApplicationDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(notification: NSNotification) {
-
-        //
-        // TODO: can all this stuff be moved into the init method ?? (then what should be in this method ??)
-        //
-
-        // alternate way to setup keyboard listener
         let mask = (NSEventMask.KeyDownMask)
         let _ : AnyObject! = NSEvent.addLocalMonitorForEventsMatchingMask(mask, handler: { (event: (NSEvent!)) -> NSEvent in
             //
@@ -79,15 +70,7 @@ class ApplicationDelegate: NSObject, NSApplicationDelegate {
             return event
         })
 
-
-        //
-        // TODO: look into manually creating/extending NSResponder to get a better idea of how events are
-        //       handled for the view and/or make it work with multiple view, also note that setting the
-        //       first responder will avoid system beeps for key events
-        //
         self._window.makeFirstResponder(self._nfView)
-        //self._window.makeFirstResponder(nil) // <-- will make the window the first responder
-
 
         print("application did finish launching", terminator: "\n")
     }
