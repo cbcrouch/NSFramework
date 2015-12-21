@@ -23,11 +23,10 @@ class NFView: NSView {
     }
 
     override func insertText(insertString: AnyObject) {
-        //Swift.print("insertText called in NFView", terminator: "")
-        Swift.print("insertText called in NFView")
+        Swift.print("insertText called in NFView", terminator: "\n")
 
         let string: String = insertString as! String
-        Swift.print("\(string)", terminator: "")
+        Swift.print("\(string)", terminator: "\n")
     }
 
     override func keyDown(theEvent: NSEvent) {
@@ -35,13 +34,13 @@ class NFView: NSView {
     }
 
     override func awakeFromNib() {
-        Swift.print("NFView awake from Nib", terminator: "")
+        Swift.print("NFView awake from Nib", terminator: "\n")
     }
 }
 
 class WindowDelegate: NSObject, NSWindowDelegate {
     func windowWillClose(notification: NSNotification) {
-        print("WindowDelegate windowWillClose called", terminator: "")
+        print("WindowDelegate windowWillClose called", terminator: "\n")
         NSApplication.sharedApplication().terminate(0)
     }
 }
@@ -49,35 +48,6 @@ class WindowDelegate: NSObject, NSWindowDelegate {
 class ApplicationDelegate: NSObject, NSApplicationDelegate {
     var _nfView: NFView
     var _window: NSWindow
-
-    private func acquirePrivileges() -> Bool {
-        let accessEnabled = AXIsProcessTrustedWithOptions(
-            [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true])
-
-        if accessEnabled != true {
-            print("application does not have sufficient privileges to aquire global monitor for events")
-        }
-        return accessEnabled == true
-    }
-
-    private func handlerGlobalEvent(aEvent: (NSEvent!)) -> Void {
-        print("global KeyDown: \(aEvent.characters) (\(String(aEvent.keyCode)))", terminator: "")
-    }
-
-    private func handlerEvent(aEvent: (NSEvent!)) -> NSEvent {
-        print("local KeyDown: \(aEvent.characters) (\(String(aEvent.keyCode)))", terminator: "")
-        return aEvent
-    }
-
-    private func listenForEvents() {
-        let mask = (NSEventMask.KeyDownMask)
-
-        //
-        // NOTE: this is setup only to listen for key down events
-        //
-        //let _: AnyObject! = NSEvent.addGlobalMonitorForEventsMatchingMask(mask, handler: handlerGlobalEvent)
-        let _: AnyObject! = NSEvent.addLocalMonitorForEventsMatchingMask(mask, handler: handlerEvent)
-    }
 
     init(window: NSWindow) {
         self._window = window
@@ -99,9 +69,16 @@ class ApplicationDelegate: NSObject, NSApplicationDelegate {
         // TODO: can all this stuff be moved into the init method ?? (then what should be in this method ??)
         //
 
-        // NOTE: will need to acquirePrivileges if adding a global monitor for events
-        //acquirePrivileges()
-        listenForEvents()
+        // alternate way to setup keyboard listener
+        let mask = (NSEventMask.KeyDownMask)
+        let _ : AnyObject! = NSEvent.addLocalMonitorForEventsMatchingMask(mask, handler: { (event: (NSEvent!)) -> NSEvent in
+            //
+            // TODO: send event data to desired method based on type
+            //
+            print("local KeyDown: \(event.characters) (\(String(event.keyCode)))", terminator: "\n")
+            return event
+        })
+
 
         //
         // TODO: look into manually creating/extending NSResponder to get a better idea of how events are
@@ -112,7 +89,7 @@ class ApplicationDelegate: NSObject, NSApplicationDelegate {
         //self._window.makeFirstResponder(nil) // <-- will make the window the first responder
 
 
-        print("application did finish launching", terminator: "")
+        print("application did finish launching", terminator: "\n")
     }
 }
 

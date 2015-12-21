@@ -85,11 +85,18 @@
 }
 
 - (void) applicationDidFinishLaunching:(NSNotification*)notification {
-
-    //
-    // TODO: register for key events as well
-    //
+    id ehObj = [NSEvent addLocalMonitorForEventsMatchingMask:NSKeyDownMask handler:^(NSEvent *event) {
+        //
+        // TODO: send event data to desired method based on type
+        //
+        if(event.type==NSKeyDown) {
+            NSLog(@"key down event occured");
+        }    
+        return event;
+    }];
+    NSAssert(ehObj != nil, @"event handler object is nil");
     
+    // NOTE: application will get event before view
     [self.window makeFirstResponder:self.view];
 
     NSLog(@"application did finish launching");
