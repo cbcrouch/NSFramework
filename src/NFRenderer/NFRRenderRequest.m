@@ -79,7 +79,6 @@
     [self.lightsArray addObject:light];
 }
 
-
 //
 // TODO: this method should return a block that accepts a program argument and has captured
 //       the light and geometry arrays from the command buffer object (alternative implementation)
@@ -111,20 +110,9 @@
 
 @end
 
-
-@implementation NFRCommandBufferDisplay
-
 //
-// TODO: implement NFRCommandBufferDisplay and integrate with render target and display target
 //
-
-- (void) drawWithProgram:(id<NFRProgram>)program {
-    //
-}
-
-@end
-
-
+//
 
 @implementation NFRRenderRequest
 
@@ -145,10 +133,6 @@
     // TODO: implement setPipelineState to set/configure global OpenGL state
     //
     //[self setPipelineState];
-
-    //
-    // TODO: integrate render target
-    //
 
     for (id<NFRCommandBufferProtocol> commandBuffer in self.commandBufferArray) {
         [commandBuffer drawWithProgram:self.program];

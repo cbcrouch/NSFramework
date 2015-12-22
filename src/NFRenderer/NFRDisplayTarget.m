@@ -12,10 +12,6 @@
 
 
 @interface NFRDisplayTarget()
-{
-    __block NFRBuffer* vertexBufferRef;
-    __block NFRBuffer* indexBufferRef;
-}
 
 @property (nonatomic, retain) id<NFRProgram> program;
 @property (nonatomic, assign) GLuint transferTexHandle;
@@ -27,12 +23,6 @@
 
 
 @implementation NFRDisplayTarget
-
-/*
- + (void) testBlock:(void (^)(void))block {
- block();
- }
- */
 
 - (void) setTransferSource:(NFRRenderTarget *)transferSource {
     _transferSource = transferSource;
@@ -88,37 +78,46 @@
         NF_VERTEX_FORMAT vertexFormat = kVertexFormatScreenSpace;
         NFRBufferAttributes* bufferAttributes = [[[NFRBufferAttributes alloc] initWithFormat:vertexFormat] autorelease];
 
-        _vertexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeVertex usingAttributes:bufferAttributes] autorelease];
-        _indexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeIndex usingAttributes:bufferAttributes] autorelease];
+        _vertexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeVertex usingAttributes:bufferAttributes] retain];
+        _indexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeIndex usingAttributes:bufferAttributes] retain];
 
         [_vertexBuffer loadData:(void *)quadVertices ofType:kBufferDataTypeNFScreenSpaceVertex_t numberOfElements:numVertices];
         [_indexBuffer loadData:(void *)quadIndices ofType:kBufferDataTypeUShort numberOfElements:numIndices];
-
-
-/*
-        //__block NFRBuffer* vertexBufferRef = _vertexBuffer;
-        //__block NFRBuffer* indexBufferRef = _indexBuffer;
-        vertexBufferRef = _vertexBuffer;
-        indexBufferRef = _indexBuffer;
-
-        [NFRDisplayTarget testBlock:^{
-            NSLog(@"vertex buffer ref handle: %d", vertexBufferRef.bufferHandle);
-            NSLog(@"index buffer ref handle: %d", indexBufferRef.bufferHandle);
-        }];
-*/
     }
     return self;
 }
 
-- (void) display {
+- (void) dealloc {
+    [_vertexBuffer release];
+    [_indexBuffer release];
 
-    //
-    // TODO: need a shader and some boilerplate code to transfer the contents of the
-    //       render buffer to the screen (the shader used for this will also be used
-    //       for any post-processing algorithms)
-    //
+    [super dealloc];
+}
 
+- (void) processTransfer {
     NSAssert(self.transferSource != nil, @"attempted to use display target without setting a transfer source");
+
+    //
+    // TODO: this is really inefficient and should be fixed
+    //
+    [self.program configureVertexInput:self.vertexBuffer.bufferAttributes];
+    [self.program configureVertexBufferLayout:self.vertexBuffer withAttributes:self.vertexBuffer.bufferAttributes];
+
+    glUseProgram(self.program.hProgram);
+    glBindVertexArray(self.vertexBuffer.bufferAttributes.hVAO);
+    glDisable(GL_DEPTH_TEST);
+
+    glBindTexture(GL_TEXTURE_2D, self.transferTexHandle);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.indexBuffer.bufferHandle);
+    glDrawElements(GL_TRIANGLES, (GLsizei)self.indexBuffer.numberOfElements, GL_UNSIGNED_SHORT, NULL);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glEnable(GL_DEPTH_TEST);
+    glBindVertexArray(0);
+    glUseProgram(0);
+
+    CHECK_GL_ERROR();
 }
 
 @end

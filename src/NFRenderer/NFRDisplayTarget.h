@@ -16,10 +16,6 @@
 
 @property (nonatomic, retain) NFRRenderTarget* transferSource;
 
-
-//
-// TODO: display method needs a better name (process or transfer ?)
-//
-- (void) display;
+- (void) processTransfer;
 
 @end

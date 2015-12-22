@@ -55,18 +55,9 @@
 @end
 
 
-@interface NFRCommandBufferDisplay : NSObject <NFRCommandBufferProtocol>
-
-- (void) drawWithProgram:(id<NFRProgram>)program;
-
-@end
-
-
-
 @interface NFRRenderRequest : NSObject
 
 @property (nonatomic, retain) id<NFRProgram> program;
-@property (nonatomic, retain) NFRRenderTarget* renderTarget;
 
 //
 // TODO: apply generics to all container usage

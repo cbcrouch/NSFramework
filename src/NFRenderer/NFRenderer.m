@@ -62,7 +62,6 @@
 
     NFRCommandBufferDefault* m_defaultCmdBuffer;
     NFRCommandBufferDebug* m_debugCmdBuffer;
-    NFRCommandBufferDisplay* m_displayCmdBuffer;
 
     NFRRenderRequest* m_renderRequest;
     NFRRenderRequest* m_debugRenderRequest;
@@ -119,8 +118,6 @@
     m_defaultCmdBuffer = [[[NFRCommandBufferDefault alloc] init] retain];
     m_debugCmdBuffer = [[[NFRCommandBufferDebug alloc] init] retain];
 
-    m_displayCmdBuffer = [[[NFRCommandBufferDisplay alloc] init] retain];
-
 
     //
     // TODO: add a render request that will render to a depth buffer for shadow mapping
@@ -136,7 +133,7 @@
 
 
     //
-    // TODO: more render target ownership into the render request
+    // TODO: move render target ownership into the render request
     //
     m_renderTarget = [[[NFRRenderTarget alloc] init] retain];
 
@@ -200,8 +197,6 @@
     //
     // NOTE: this asset is just for testing the rotate vector to direction method
     //
-
-
     //ASSET_TYPE assetType = kSolidCylinder;
     ASSET_TYPE assetType = kSolidCone;
 
@@ -254,7 +249,6 @@
     //glClearColor(1.0f, 0.0f, 1.0f, 1.0f); // hot pink for debugging
 
     //glClearColor(0.30f, 0.30f, 0.30f, 1.0f);
-
     //glClearColor(0.10f, 0.10f, 0.10f, 1.0f);
     glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 
@@ -265,8 +259,8 @@
     // TODO: add support for multisampling in window creation (NFView)
     //
     //glEnable(GL_MULTISAMPLE);
-
     glEnable(GL_FRAMEBUFFER_SRGB);
+
     CHECK_GL_ERROR();
 
     //
@@ -313,7 +307,6 @@
 
     [m_defaultCmdBuffer release];
     [m_debugCmdBuffer release];
-    [m_displayCmdBuffer release];
 
     [m_renderRequest release];
     [m_debugRenderRequest release];
@@ -350,7 +343,7 @@
 #define USE_RENDER_TARGET 0
 
 #if USE_RENDER_TARGET
-    [m_renderTarget enable];
+    [m_renderTarget enable]; // sets FBO to be drawn to
 #endif
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -361,15 +354,7 @@
 #if USE_RENDER_TARGET
     [m_renderTarget disable];
 
-    //
-    // TODO: enable screen space transfer
-    //
-
-    //[m_displayTarget transfer];
-    //[m_displayTarget process];
-
-    [m_displayTarget display];
-
+    [m_displayTarget processTransfer];
 #endif
 }
 
