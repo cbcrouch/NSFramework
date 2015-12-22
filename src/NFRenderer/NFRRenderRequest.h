@@ -14,16 +14,12 @@
 #import "NFRRenderTarget.h"
 
 
+// render request will take general render state like setting clear calls or depth buffer state etc.
+
+// command buffer and program object will each have a descriptor object (will contain vertex format, uniforms, etc.)
+// and when in debug mode a render request will verify that they both match
 
 @protocol NFRCommandBufferProtocol <NSObject>
-
-//typedef void (^processBlock)(void);
-//typedef void (^processBlock)(id<NFRProgram>);
-
-//- (processBlock) getProcessBlock;
-
-//@property (nonatomic, retain) NSMutableArray* commandArray;
-//- (NSMutableArray*) getCommandArray;
 
 - (void) drawWithProgram:(id<NFRProgram>)program;
 
@@ -70,21 +66,14 @@
 @interface NFRRenderRequest : NSObject
 
 @property (nonatomic, retain) id<NFRProgram> program;
-@property (nonatomic, retain) NSMutableArray* geometryArray;
-@property (nonatomic, retain) NSMutableArray* lightsArray;
-
+@property (nonatomic, retain) NFRRenderTarget* renderTarget;
 
 //
 // TODO: apply generics to all container usage
 //
 @property (nonatomic, retain) NSMutableArray< id<NFRCommandBufferProtocol> >* commandBufferArray;
 
-
-@property (nonatomic, retain) NFRRenderTarget* renderTarget;
-
-- (void) addGeometry:(NFRGeometry*)geometry;
-- (void) addLight:(id<NFLightSource>)light;
-
+- (void) addCommandBuffer:(id<NFRCommandBufferProtocol>)commandBuffer;
 - (void) process;
 
 @end

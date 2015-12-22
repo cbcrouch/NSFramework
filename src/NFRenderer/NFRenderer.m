@@ -60,13 +60,9 @@
     id<NFRProgram> m_phongObject;
     id<NFRProgram> m_debugObject;
 
-
-
     NFRCommandBufferDefault* m_defaultCmdBuffer;
     NFRCommandBufferDebug* m_debugCmdBuffer;
     NFRCommandBufferDisplay* m_displayCmdBuffer;
-
-
 
     NFRRenderRequest* m_renderRequest;
     NFRRenderRequest* m_debugRenderRequest;
@@ -277,7 +273,7 @@
     //
     //
 
-
+    // add renderables to command buffers
     [m_defaultCmdBuffer addGeometry:m_pAsset.geometry];
     [m_defaultCmdBuffer addGeometry:m_planeData.geometry];
     [m_defaultCmdBuffer addGeometry:m_pProceduralData.geometry];
@@ -293,33 +289,9 @@
     [m_debugCmdBuffer addGeometry:m_dirLight.geometry];
     [m_debugCmdBuffer addGeometry:m_spotLight.geometry];
 
-
+    // add command buffers to render requests
     [[m_renderRequest commandBufferArray] addObject:m_defaultCmdBuffer];
     [[m_debugRenderRequest commandBufferArray] addObject:m_debugCmdBuffer];
-
-
-    //
-    // TODO: replace adding geometry/lights directly to render requests and replace with command buffers
-    //
-
-#if 0
-    [m_renderRequest addGeometry:m_pAsset.geometry];
-    [m_renderRequest addGeometry:m_planeData.geometry];
-    [m_renderRequest addGeometry:m_pProceduralData.geometry];
-
-    [m_renderRequest addLight:m_pointLight];
-    [m_renderRequest addLight:m_dirLight];
-    [m_renderRequest addLight:m_spotLight];
-#endif
-
-#if 0
-    [m_debugRenderRequest addGeometry:m_axisData.geometry];
-    //[m_debugRenderRequest addGeometry:m_gridData.geometry];
-    
-    [m_debugRenderRequest addGeometry:m_pointLight.geometry];
-    [m_debugRenderRequest addGeometry:m_dirLight.geometry];
-    [m_debugRenderRequest addGeometry:m_spotLight.geometry];
-#endif
 
     return self;
 }
