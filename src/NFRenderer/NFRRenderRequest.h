@@ -32,14 +32,14 @@
 
 //
 // TODO: is there a better way to encode commands for a specific format/program
-//       than using specific classes ?? (check Metal API examples)
+//       than using specific classes ?? (check Metal API command buffer examples)
 //
 
 @interface NFRCommandBufferDebug : NSObject <NFRCommandBufferProtocol>
 
-//@property (nonatomic, retain) NSMutableArray* geometryArray;
+@property (nonatomic, retain) NSMutableArray< NFRGeometry* >* geometryArray;
 
-//- (void) addGeometry:(NFRGeometry*)geometry;
+- (void) addGeometry:(NFRGeometry*)geometry;
 
 - (void) drawWithProgram:(id<NFRProgram>)program;
 
@@ -48,8 +48,8 @@
 
 @interface NFRCommandBufferDefault : NSObject <NFRCommandBufferProtocol>
 
-@property (nonatomic, retain) NSMutableArray* geometryArray;
-@property (nonatomic, retain) NSMutableArray* lightsArray;
+@property (nonatomic, retain) NSMutableArray< NFRGeometry* >* geometryArray;
+@property (nonatomic, retain) NSMutableArray< id<NFLightSource> >* lightsArray;
 
 - (void) addGeometry:(NFRGeometry*)geometry;
 - (void) addLight:(id<NFLightSource>)light;
@@ -72,6 +72,13 @@
 @property (nonatomic, retain) id<NFRProgram> program;
 @property (nonatomic, retain) NSMutableArray* geometryArray;
 @property (nonatomic, retain) NSMutableArray* lightsArray;
+
+
+//
+// TODO: apply generics to all container usage
+//
+@property (nonatomic, retain) NSMutableArray< id<NFRCommandBufferProtocol> >* commandBufferArray;
+
 
 @property (nonatomic, retain) NFRRenderTarget* renderTarget;
 

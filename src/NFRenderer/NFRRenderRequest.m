@@ -14,12 +14,34 @@
 
 @implementation NFRCommandBufferDebug
 
+- (NSMutableArray*) geometryArray {
+    if (_geometryArray == nil) {
+        _geometryArray = [[[NSMutableArray alloc] init] retain];
+    }
+    return _geometryArray;
+}
+
+- (void) addGeometry:(NFRGeometry*)geometry {
+    [self.geometryArray addObject:geometry];
+}
+
 - (void) drawWithProgram:(id<NFRProgram>)program {
     //
+    // TODO: this is really inefficient and should be fixed
+    //
+    for (NFRGeometry* geo in self.geometryArray) {
+        [program configureVertexInput:geo.vertexBuffer.bufferAttributes];
+        [program configureVertexBufferLayout:geo.vertexBuffer withAttributes:geo.vertexBuffer.bufferAttributes];
+    }
+
+    glUseProgram(program.hProgram);
+    for (NFRGeometry* geo in self.geometryArray) {
+        [program drawGeometry:geo];
+    }
+    glUseProgram(0);
 }
 
 @end
-
 
 
 @implementation NFRCommandBufferDefault
@@ -62,7 +84,6 @@
 // TODO: this method should return a block that accepts a program argument and has captured
 //       the light and geometry arrays from the command buffer object
 //
-
 - (void) drawWithProgram:(id<NFRProgram>)program {
 
     for (id<NFLightSource> light in self.lightsArray) {
@@ -79,7 +100,6 @@
         [program configureVertexBufferLayout:geo.vertexBuffer withAttributes:geo.vertexBuffer.bufferAttributes];
     }
 
-
     glUseProgram(program.hProgram);
     for (NFRGeometry* geo in self.geometryArray) {
         [program drawGeometry:geo];
@@ -89,7 +109,6 @@
 }
 
 @end
-
 
 
 @implementation NFRCommandBufferDisplay
@@ -119,6 +138,13 @@
     return _lightsArray;
 }
 
+- (NSMutableArray*) commandBufferArray {
+    if (_commandBufferArray == nil) {
+        _commandBufferArray = [[[NSMutableArray alloc] init] retain];
+    }
+    return _commandBufferArray;
+}
+
 - (void) addGeometry:(NFRGeometry*)geometry {
     [self.geometryArray addObject:geometry];
 
@@ -140,15 +166,17 @@
     //
     // TODO: loadLight should only be called if the light has been changed (add a dirty flag ??)
     //
+/*
     for (id<NFLightSource> light in self.lightsArray) {
         if ([self.program respondsToSelector:@selector(loadLight:)]) {
             [self.program performSelector:@selector(loadLight:) withObject:light];
         }
     }
-
+*/
 
     //
-    // TODO: integrate command buffers with render request
+    // TODO: integrate command buffers with render request (will need to create command buffers and
+    //       populate them in NFRenderer driver code
     //
 
     // render request will take general render state like setting clear calls or depth buffer state etc.
@@ -157,20 +185,18 @@
     // and when in debug mode a render request will verify that they both match
 
 
-    /*
-     glUseProgram(self.program.hProgram);
-     for (void ^(void)block in self.blocks) {
-     block();
-     }
-     glUseProgram(0);
-     */
+    for (id<NFRCommandBufferProtocol> commandBuffer in self.commandBufferArray) {
+        [commandBuffer drawWithProgram:self.program];
+    }
 
 
+/*
     glUseProgram(self.program.hProgram);
     for (NFRGeometry* geo in self.geometryArray) {
         [self.program drawGeometry:geo];
     }
     glUseProgram(0);
+*/
 }
 
 - (void) dealloc {
