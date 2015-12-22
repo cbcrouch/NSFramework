@@ -270,8 +270,8 @@ void main() {
     //       currently using an SRGB framebuffer which will make the final frame appear roughly gamma
     //       correct with a gamma of 2.2 but will not allow for the user to tweak their gamma
     //
-    //float gamma = 2.2f;
-    //result = pow(result, vec3(1.0f/gamma));
+    float gamma = 2.2f;
+    result = pow(result, vec3(1.0f/gamma));
 
     color = vec4(result, 1.0f);
 }

@@ -242,15 +242,14 @@
 
 
     //
-    // TODO: move these operations into the render target class
+    // TODO: move these operations into the render target or render request class
     //
 
     // setup OpenGL state that will never change
     //glClearColor(1.0f, 0.0f, 1.0f, 1.0f); // hot pink for debugging
 
-    //glClearColor(0.30f, 0.30f, 0.30f, 1.0f);
-    //glClearColor(0.10f, 0.10f, 0.10f, 1.0f);
-    glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+    glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
+    //glClearColor(0.05f, 0.05f, 0.05f, 1.0f); // use with GL_FRAMEBUFFER_SRGB enabled
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -259,7 +258,7 @@
     // TODO: add support for multisampling in window creation (NFView)
     //
     //glEnable(GL_MULTISAMPLE);
-    glEnable(GL_FRAMEBUFFER_SRGB);
+    //glEnable(GL_FRAMEBUFFER_SRGB);
 
     CHECK_GL_ERROR();
 
@@ -340,7 +339,7 @@
     //       to draw into a frame buffer before it is ready
     //
 
-#define USE_RENDER_TARGET 0
+#define USE_RENDER_TARGET 1
 
 #if USE_RENDER_TARGET
     [m_renderTarget enable]; // sets FBO to be drawn to

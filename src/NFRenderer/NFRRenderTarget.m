@@ -87,6 +87,10 @@
     GLuint tempFBO;
     glGenFramebuffers(1, &tempFBO);
     _hFBO = tempFBO;
+
+    //
+    // TODO: is there a way to an OpenGL FBO to work with GL_FRAMEBUFFER_SRGB ??
+    //
     glBindFramebuffer(GL_FRAMEBUFFER, _hFBO);
 
     // add a color attachment
