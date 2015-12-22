@@ -69,5 +69,6 @@ vec4 ExplicitTexelFetch(sampler2D sampler, vec3 coords) {
 */
 
 void main (void) {
-    fragColor = f_color;
+    float gamma = 2.2f;
+    fragColor = pow(f_color, vec4(1.0f/gamma));
 }
