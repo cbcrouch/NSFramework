@@ -51,44 +51,4 @@
     CHECK_GL_ERROR();
 }
 
-
-/*
-- (void) activateTexture:(GLint)textureUnitNum withUniformLocation:(GLint)uniformLocation {
-    glActiveTexture(textureUnitNum);
-    glBindTexture(GL_TEXTURE_2D, self.textureID);
-    glUniform1i(uniformLocation, textureUnitNum - GL_TEXTURE0);
-    CHECK_GL_ERROR();
-}
-*/
-
-
-- (void) drawGeometry:(NFRGeometry *)geometry {
-
-    //
-    // TODO: implement
-    //
-
-    // [textureGL activateTexture:GL_TEXTURE0 withUniformLocation:self.materialUniforms.diffuseMapLoc];
-
-    //
-    // TODO: does the depth test need to be enabled again for the other draw calls or will it only
-    //       apply to the currently bound program ??
-    //
-    //glDisable(GL_DEPTH_TEST);
-
-/*
-    glBindVertexArray(geometry.vertexBuffer.bufferAttributes.hVAO);
-
-    [self updateModelMatrix:geometry.modelMatrix];
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geometry.indexBuffer.bufferHandle);
-    glDrawElements(geometry.mode, (GLsizei)geometry.indexBuffer.numberOfElements, GL_UNSIGNED_SHORT, NULL);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    glBindVertexArray(0);
-    CHECK_GL_ERROR();
-*/
-    
-}
-
 @end

@@ -69,6 +69,13 @@ vec4 ExplicitTexelFetch(sampler2D sampler, vec3 coords) {
 */
 
 void main (void) {
+
+    //
+    // TODO: should programmatically modify shaders to have a custom/dynamic gamma added to them
+    //       (i.e. add snippet to all shaders that need gamma correction, also expose gamma value
+    //       as a uniform a boolean uniform to enable/disable it)
+    //
+
     float gamma = 2.2f;
     fragColor = pow(f_color, vec4(1.0f/gamma));
 }

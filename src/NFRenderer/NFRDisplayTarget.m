@@ -10,6 +10,7 @@
 #import "NFRUtils.h"
 #import "NFRResources.h"
 
+#import "NFRDisplayProgram.h"
 
 @interface NFRDisplayTarget()
 
@@ -103,19 +104,25 @@
     [self.program configureVertexInput:self.vertexBuffer.bufferAttributes];
     [self.program configureVertexBufferLayout:self.vertexBuffer withAttributes:self.vertexBuffer.bufferAttributes];
 
-    glUseProgram(self.program.hProgram);
-    glBindVertexArray(self.vertexBuffer.bufferAttributes.hVAO);
     glDisable(GL_DEPTH_TEST);
+    glUseProgram(self.program.hProgram);
 
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, self.transferTexHandle);
 
+    //
+    // TODO: should probably store the program as a NFRDisplayProgram object to avoiding this cast every frame
+    //
+    glUniform1i(((NFRDisplayProgram*)self.program).textureUniform, 0);
+
+    glBindVertexArray(self.vertexBuffer.bufferAttributes.hVAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.indexBuffer.bufferHandle);
     glDrawElements(GL_TRIANGLES, (GLsizei)self.indexBuffer.numberOfElements, GL_UNSIGNED_SHORT, NULL);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    glEnable(GL_DEPTH_TEST);
     glBindVertexArray(0);
     glUseProgram(0);
+    glEnable(GL_DEPTH_TEST);
 
     CHECK_GL_ERROR();
 }

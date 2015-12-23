@@ -19,12 +19,9 @@
 - (void) configureVertexInput:(NFRBufferAttributes*)bufferAttributes;
 - (void) configureVertexBufferLayout:(NFRBuffer*)vertexBuffer withAttributes:(NFRBufferAttributes*)bufferAttributes;
 
-//
-// TODO: drawGeometry should probably be optional as well (make it so once able to replace with a draw block)
-//
-- (void) drawGeometry:(NFRGeometry*)geometry;
-
 @optional
+
+- (void) drawGeometry:(NFRGeometry*)geometry;
 
 - (void) updateViewPosition:(GLKVector3)viewPosition;
 

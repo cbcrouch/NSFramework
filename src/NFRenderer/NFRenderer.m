@@ -345,6 +345,15 @@
     [m_renderTarget enable]; // sets FBO to be drawn to
 #endif
 
+    //
+    // TODO: move clear call setting into render request and start implementing shadow mapping
+    //       (for shadow mapping will most likely need an array of render requets/targets per
+    //       light in order to generate shadow maps for each light)
+    //
+    //       render target will need more options so that it can be configured for either an
+    //       FBO backing or to render to texture
+    //
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     
     [m_renderRequest process];
