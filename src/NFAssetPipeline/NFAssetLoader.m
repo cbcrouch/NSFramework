@@ -133,7 +133,8 @@
         case kSolidCylinder: {
             NF_VERTEX_FORMAT vertexType = kVertexFormatDefault;
             if(firstArg != nil) {
-                vertexType = (NF_VERTEX_FORMAT)firstArg;
+                NSNumber* numObj = (NSNumber*)firstArg;
+                [numObj getValue:(void*)&vertexType];
             }
 
             // 8  => 45 degree slices     very low resolution
@@ -158,7 +159,8 @@
         case kSolidUVSphere: {
             NF_VERTEX_FORMAT vertexType = kVertexFormatDefault;
             if(firstArg != nil) {
-                vertexType = (NF_VERTEX_FORMAT)firstArg;
+                NSNumber* numObj = (NSNumber*)firstArg;
+                [numObj getValue:(void*)&vertexType];
             }
 
             // with radius 1.0 (model space == world space)
@@ -183,7 +185,8 @@
         case kSolidCone: {
             NF_VERTEX_FORMAT vertexType = kVertexFormatDefault;
             if(firstArg != nil) {
-                vertexType = (NF_VERTEX_FORMAT)firstArg;
+                NSNumber* numObj = (NSNumber*)firstArg;
+                [numObj getValue:(void*)&vertexType];
             }
 
             // with radius 1.0 (model space == world space)

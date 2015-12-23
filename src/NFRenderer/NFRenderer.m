@@ -199,8 +199,7 @@
     //
     //ASSET_TYPE assetType = kSolidCylinder;
     ASSET_TYPE assetType = kSolidCone;
-
-    m_pProceduralData = [NFAssetLoader allocAssetDataOfType:assetType withArgs:(id)kVertexFormatDefault, nil];
+    m_pProceduralData = [NFAssetLoader allocAssetDataOfType:assetType withArgs:[NSNumber numberWithUnsignedInteger:kVertexFormatDefault], nil];
 
     GLKVector3 position = GLKVector3Make(1.0f, 1.0f, -1.0f);
 

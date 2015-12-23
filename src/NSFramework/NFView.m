@@ -81,7 +81,12 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp* now,
                                     const CVTimeStamp* outputTime, CVOptionFlags flagsIn,
                                     CVOptionFlags* flagsOut, void* displayLinkContext) {
-    CVReturn result = [(NFView*)displayLinkContext getFrameForTime:outputTime];
+    //
+    // TODO: verify that this is the correct bridging cast to use
+    //
+    //CVReturn result = [(NFView*)CFBridgingRelease(displayLinkContext) getFrameForTime:outputTime];
+    CVReturn result = [(__bridge NFView*)displayLinkContext getFrameForTime:outputTime];
+
     assert(result == kCVReturnSuccess);
     return result;
 }
