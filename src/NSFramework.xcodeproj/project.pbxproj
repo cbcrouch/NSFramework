@@ -26,10 +26,6 @@
 		234E2CD5188382CC00AF8F23 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 234E2CD4188382CC00AF8F23 /* AppDelegate.m */; };
 		234E2CD8188382CC00AF8F23 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 234E2CD6188382CC00AF8F23 /* MainMenu.xib */; };
 		234E2CDA188382CC00AF8F23 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 234E2CD9188382CC00AF8F23 /* Images.xcassets */; };
-		234E2CE1188382CC00AF8F23 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 234E2CE0188382CC00AF8F23 /* XCTest.framework */; };
-		234E2CE2188382CC00AF8F23 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 234E2CC1188382CC00AF8F23 /* Cocoa.framework */; };
-		234E2CEA188382CC00AF8F23 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 234E2CE8188382CC00AF8F23 /* InfoPlist.strings */; };
-		234E2CEC188382CC00AF8F23 /* NSFrameworkTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 234E2CEB188382CC00AF8F23 /* NSFrameworkTests.m */; };
 		234E853F1B2BAD82009B34BF /* NFAssetData.m in Sources */ = {isa = PBXBuildFile; fileRef = 234E853E1B2BAD82009B34BF /* NFAssetData.m */; };
 		234E85421B2BAE20009B34BF /* NFLightSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 234E85411B2BAE20009B34BF /* NFLightSource.m */; };
 		234E85451B2BAF91009B34BF /* NFAssetSubset.m in Sources */ = {isa = PBXBuildFile; fileRef = 234E85441B2BAF91009B34BF /* NFAssetSubset.m */; };
@@ -51,16 +47,6 @@
 		23EB03261ACCDA6200084CEF /* DefaultModel.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 23EB03241ACCDA6200084CEF /* DefaultModel.fsh */; };
 		23EB03271ACCDA6200084CEF /* DefaultModel.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 23EB03251ACCDA6200084CEF /* DefaultModel.vsh */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		234E2CE3188382CC00AF8F23 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 234E2CB6188382CC00AF8F23 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 234E2CBD188382CC00AF8F23;
-			remoteInfo = NSGLFramework;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		2306F4091886116E008031BD /* NFView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NFView.h; sourceTree = "<group>"; };
@@ -93,11 +79,6 @@
 		234E2CD4188382CC00AF8F23 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		234E2CD7188382CC00AF8F23 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		234E2CD9188382CC00AF8F23 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		234E2CDF188382CC00AF8F23 /* NSFrameworkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NSFrameworkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		234E2CE0188382CC00AF8F23 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		234E2CE7188382CC00AF8F23 /* NSFrameworkTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NSFrameworkTests-Info.plist"; sourceTree = "<group>"; };
-		234E2CE9188382CC00AF8F23 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		234E2CEB188382CC00AF8F23 /* NSFrameworkTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSFrameworkTests.m; sourceTree = "<group>"; };
 		234E853D1B2BAD82009B34BF /* NFAssetData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFAssetData.h; path = NFAssetData/NFAssetData.h; sourceTree = "<group>"; };
 		234E853E1B2BAD82009B34BF /* NFAssetData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFAssetData.m; path = NFAssetData/NFAssetData.m; sourceTree = "<group>"; };
 		234E85401B2BAE20009B34BF /* NFLightSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFLightSource.h; path = NFAssetData/NFLightSource.h; sourceTree = "<group>"; };
@@ -147,15 +128,6 @@
 				233798011885E26700399EBA /* GLKit.framework in Frameworks */,
 				233797FF1885E25F00399EBA /* OpenGL.framework in Frameworks */,
 				234E2CC2188382CC00AF8F23 /* Cocoa.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		234E2CDC188382CC00AF8F23 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				234E2CE2188382CC00AF8F23 /* Cocoa.framework in Frameworks */,
-				234E2CE1188382CC00AF8F23 /* XCTest.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,7 +205,6 @@
 				23767231189067F700AE8A5C /* NFUtils */,
 				234E2CC7188382CC00AF8F23 /* NSFramework */,
 				233797F51885E21600399EBA /* Shaders */,
-				236F33BB1887024700DA708F /* XCTests */,
 				234E2CC0188382CC00AF8F23 /* Frameworks */,
 				234E2CBF188382CC00AF8F23 /* Products */,
 			);
@@ -243,7 +214,6 @@
 			isa = PBXGroup;
 			children = (
 				234E2CBE188382CC00AF8F23 /* NSFramework.app */,
-				234E2CDF188382CC00AF8F23 /* NSFrameworkTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -255,7 +225,6 @@
 				233798001885E26700399EBA /* GLKit.framework */,
 				233797FE1885E25F00399EBA /* OpenGL.framework */,
 				234E2CC1188382CC00AF8F23 /* Cocoa.framework */,
-				234E2CE0188382CC00AF8F23 /* XCTest.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -286,24 +255,6 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		234E2CE5188382CC00AF8F23 /* NSFrameworkTests */ = {
-			isa = PBXGroup;
-			children = (
-				234E2CEB188382CC00AF8F23 /* NSFrameworkTests.m */,
-				234E2CE6188382CC00AF8F23 /* Supporting Files */,
-			);
-			path = NSFrameworkTests;
-			sourceTree = "<group>";
-		};
-		234E2CE6188382CC00AF8F23 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				234E2CE7188382CC00AF8F23 /* NSFrameworkTests-Info.plist */,
-				234E2CE8188382CC00AF8F23 /* InfoPlist.strings */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
 		234E853C1B2BAD3F009B34BF /* NFAssetData */ = {
 			isa = PBXGroup;
 			children = (
@@ -317,14 +268,6 @@
 				235F39651B2D968600B3CBA5 /* NFSurfaceModel.m */,
 			);
 			name = NFAssetData;
-			sourceTree = "<group>";
-		};
-		236F33BB1887024700DA708F /* XCTests */ = {
-			isa = PBXGroup;
-			children = (
-				234E2CE5188382CC00AF8F23 /* NSFrameworkTests */,
-			);
-			name = XCTests;
 			sourceTree = "<group>";
 		};
 		23767231189067F700AE8A5C /* NFUtils */ = {
@@ -389,24 +332,6 @@
 			productReference = 234E2CBE188382CC00AF8F23 /* NSFramework.app */;
 			productType = "com.apple.product-type.application";
 		};
-		234E2CDE188382CC00AF8F23 /* NSFrameworkTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 234E2CF2188382CC00AF8F23 /* Build configuration list for PBXNativeTarget "NSFrameworkTests" */;
-			buildPhases = (
-				234E2CDB188382CC00AF8F23 /* Sources */,
-				234E2CDC188382CC00AF8F23 /* Frameworks */,
-				234E2CDD188382CC00AF8F23 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				234E2CE4188382CC00AF8F23 /* PBXTargetDependency */,
-			);
-			name = NSFrameworkTests;
-			productName = NSGLFrameworkTests;
-			productReference = 234E2CDF188382CC00AF8F23 /* NSFrameworkTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -415,11 +340,6 @@
 			attributes = {
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Casey Crouch";
-				TargetAttributes = {
-					234E2CDE188382CC00AF8F23 = {
-						TestTargetID = 234E2CBD188382CC00AF8F23;
-					};
-				};
 			};
 			buildConfigurationList = 234E2CB9188382CC00AF8F23 /* Build configuration list for PBXProject "NSFramework" */;
 			compatibilityVersion = "Xcode 6.3";
@@ -435,7 +355,6 @@
 			projectRoot = "";
 			targets = (
 				234E2CBD188382CC00AF8F23 /* NSFramework */,
-				234E2CDE188382CC00AF8F23 /* NSFrameworkTests */,
 			);
 		};
 /* End PBXProject section */
@@ -455,14 +374,6 @@
 				234E2CDA188382CC00AF8F23 /* Images.xcassets in Resources */,
 				234E2CD2188382CC00AF8F23 /* Credits.rtf in Resources */,
 				234E2CD8188382CC00AF8F23 /* MainMenu.xib in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		234E2CDD188382CC00AF8F23 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				234E2CEA188382CC00AF8F23 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -501,23 +412,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		234E2CDB188382CC00AF8F23 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				234E2CEC188382CC00AF8F23 /* NSFrameworkTests.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		234E2CE4188382CC00AF8F23 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 234E2CBD188382CC00AF8F23 /* NSFramework */;
-			targetProxy = 234E2CE3188382CC00AF8F23 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		234E2CCA188382CC00AF8F23 /* InfoPlist.strings */ = {
@@ -542,14 +437,6 @@
 				234E2CD7188382CC00AF8F23 /* Base */,
 			);
 			name = MainMenu.xib;
-			sourceTree = "<group>";
-		};
-		234E2CE8188382CC00AF8F23 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				234E2CE9188382CC00AF8F23 /* en */,
-			);
-			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -696,48 +583,6 @@
 			};
 			name = Release;
 		};
-		234E2CF3188382CC00AF8F23 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/NSFramework.app/Contents/MacOS/NSFramework";
-				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-					"$(inherited)",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "NSFramework/NSFramework-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = "NSFrameworkTests/NSFrameworkTests-Info.plist";
-				PRODUCT_BUNDLE_IDENTIFIER = "CC.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = NSFrameworkTests;
-				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = xctest;
-			};
-			name = Debug;
-		};
-		234E2CF4188382CC00AF8F23 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/NSFramework.app/Contents/MacOS/NSFramework";
-				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-					"$(inherited)",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "NSFramework/NSFramework-Prefix.pch";
-				INFOPLIST_FILE = "NSFrameworkTests/NSFrameworkTests-Info.plist";
-				PRODUCT_BUNDLE_IDENTIFIER = "CC.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = NSFrameworkTests;
-				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = xctest;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -755,15 +600,6 @@
 			buildConfigurations = (
 				234E2CF0188382CC00AF8F23 /* Debug */,
 				234E2CF1188382CC00AF8F23 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		234E2CF2188382CC00AF8F23 /* Build configuration list for PBXNativeTarget "NSFrameworkTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				234E2CF3188382CC00AF8F23 /* Debug */,
-				234E2CF4188382CC00AF8F23 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
