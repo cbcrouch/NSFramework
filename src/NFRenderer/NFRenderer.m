@@ -70,7 +70,7 @@
     NFRDisplayTarget* m_displayTarget;
 }
 
-@property (nonatomic, retain) NSArray* viewports;
+@property (nonatomic, strong) NSArray* viewports;
 
 @end
 
@@ -101,7 +101,7 @@
 
     NFViewport* viewportArray[MAX_NUM_VIEWPORTS];
     for (int i=0; i<MAX_NUM_VIEWPORTS; ++i) {
-        viewportArray[i] = [[[NFViewport alloc] init] autorelease];
+        viewportArray[i] = [[NFViewport alloc] init];
         viewportArray[i].uniqueId = -1;
         viewportArray[i].viewRect = CGRectMake(0.0f, 0.0f, 0.0f, 0.0f);
     }
@@ -111,12 +111,12 @@
     self.viewports = [NSArray arrayWithObjects:viewportArray count:MAX_NUM_VIEWPORTS];
 
     // shader objects
-    m_phongObject = [[NFRUtils createProgramObject:@"DefaultModel"] retain];
-    m_debugObject = [[NFRUtils createProgramObject:@"Debug"] retain];
+    m_phongObject = [NFRUtils createProgramObject:@"DefaultModel"];
+    m_debugObject = [NFRUtils createProgramObject:@"Debug"];
 
     // command buffers
-    m_defaultCmdBuffer = [[[NFRCommandBufferDefault alloc] init] retain];
-    m_debugCmdBuffer = [[[NFRCommandBufferDebug alloc] init] retain];
+    m_defaultCmdBuffer = [[NFRCommandBufferDefault alloc] init];
+    m_debugCmdBuffer = [[NFRCommandBufferDebug alloc] init];
 
 
     //
@@ -125,19 +125,19 @@
     //
 
     // render requests
-    m_renderRequest = [[[NFRRenderRequest alloc] init] retain];
+    m_renderRequest = [[NFRRenderRequest alloc] init];
     m_renderRequest.program = m_phongObject;
 
-    m_debugRenderRequest = [[[NFRRenderRequest alloc] init] retain];
+    m_debugRenderRequest = [[NFRRenderRequest alloc] init];
     m_debugRenderRequest.program = m_debugObject;
 
 
     //
     // TODO: move render target ownership into the render request
     //
-    m_renderTarget = [[[NFRRenderTarget alloc] init] retain];
+    m_renderTarget = [[NFRRenderTarget alloc] init];
 
-    m_displayTarget = [[[NFRDisplayTarget alloc] init] retain];
+    m_displayTarget = [[NFRDisplayTarget alloc] init];
     m_displayTarget.transferSource = m_renderTarget;
 
 
@@ -232,9 +232,9 @@
     //
 
 
-    m_pointLight = [[[NFPointLight alloc] init] retain];
-    m_dirLight = [[[NFDirectionalLight alloc] init] retain];
-    m_spotLight = [[[NFSpotLight alloc] init] retain];
+    m_pointLight = [[NFPointLight alloc] init];
+    m_dirLight = [[NFDirectionalLight alloc] init];
+    m_spotLight = [[NFSpotLight alloc] init];
 
 
     _stepTransforms = NO;
@@ -288,29 +288,6 @@
     return self;
 }
 
-- (void) dealloc {
-    [m_pAsset release];
-    [m_axisData release];
-    [m_gridData release];
-    [m_planeData release];
-
-    [m_pProceduralData release];
-
-    [m_pointLight release];
-    [m_dirLight release];
-    [m_spotLight release];
-
-    [m_phongObject release];
-    [m_debugObject release];
-
-    [m_defaultCmdBuffer release];
-    [m_debugCmdBuffer release];
-
-    [m_renderRequest release];
-    [m_debugRenderRequest release];
-
-    [super dealloc];
-}
 
 - (void) updateFrameWithTime:(float)secsElapsed withViewPosition:(GLKVector3)viewPosition withViewMatrix:(GLKMatrix4)viewMatrix withProjection:(GLKMatrix4)projection {
     if (self.stepTransforms) {

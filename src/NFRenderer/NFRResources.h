@@ -51,7 +51,7 @@ typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
     kBufferDataTypeNFScreenSpaceVertex_t
 };
 
-@property (nonatomic, retain, readonly) NFRBufferAttributes* bufferAttributes;
+@property (nonatomic, strong, readonly) NFRBufferAttributes* bufferAttributes;
 
 @property (nonatomic, assign, readonly) NFR_BUFFER_TYPE bufferType;
 @property (nonatomic, assign, readonly) NFR_BUFFER_DATA_TYPE bufferDataType;
@@ -73,7 +73,7 @@ typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
 @interface NFRDataMapGL : NSObject
 
 @property (nonatomic, assign, readonly) GLuint textureID;
-@property (nonatomic, retain) NFRDataSampler* sampler;
+@property (nonatomic, strong) NFRDataSampler* sampler;
 
 @property (nonatomic, assign, readonly, getter=isTextureValid) BOOL validTexture;
 
@@ -88,14 +88,14 @@ typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
 
 @interface NFRGeometry : NSObject
 
-@property (nonatomic, retain) NFRBuffer* vertexBuffer;
-@property (nonatomic, retain) NFRBuffer* indexBuffer;
-@property (nonatomic, retain) NFSurfaceModel* surfaceModel;
+@property (nonatomic, strong) NFRBuffer* vertexBuffer;
+@property (nonatomic, strong) NFRBuffer* indexBuffer;
+@property (nonatomic, strong) NFSurfaceModel* surfaceModel;
 
 @property (nonatomic, assign) GLenum mode;
 @property (nonatomic, assign) GLKMatrix4 modelMatrix;
 
-@property (nonatomic, retain, readonly) NSMutableDictionary* textureDictionary;
+@property (nonatomic, strong, readonly) NSMutableDictionary* textureDictionary;
 
 - (void) syncSurfaceModel;
 @end

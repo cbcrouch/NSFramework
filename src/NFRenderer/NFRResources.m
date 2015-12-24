@@ -31,7 +31,6 @@
 - (void) dealloc {
     GLuint vao = _hVAO;
     glDeleteVertexArrays(1, &vao);
-    [super dealloc];
 }
 
 @end
@@ -40,7 +39,7 @@
 
 @interface NFRBuffer()
 
-@property (nonatomic, retain, readwrite) NFRBufferAttributes* bufferAttributes;
+@property (nonatomic, strong, readwrite) NFRBufferAttributes* bufferAttributes;
 
 @property (nonatomic, assign, readwrite) NFR_BUFFER_TYPE bufferType;
 @property (nonatomic, assign, readwrite) NFR_BUFFER_DATA_TYPE bufferDataType;
@@ -59,7 +58,6 @@
     if (self != nil) {
         _bufferType = type;
         _bufferAttributes = bufferAttributes;
-        [_bufferAttributes retain];
         glBindVertexArray(_bufferAttributes.hVAO);
         switch (_bufferType) {
             case kBufferTypeVertex: {
@@ -87,10 +85,8 @@
 }
 
 - (void) dealloc {
-    [_bufferAttributes release];
     GLuint hBuffer = self.bufferHandle;
     glDeleteBuffers(1, &hBuffer);
-    [super dealloc];
 }
 
 - (void) loadData:(void*)pData ofType:(NFR_BUFFER_DATA_TYPE)dataType numberOfElements:(NSUInteger)numElements {
@@ -160,7 +156,6 @@
         GLuint texId = self.textureID;
         glDeleteTextures(1, &(texId));
     }
-    [super dealloc];
 }
 
 - (void) syncDataMap:(NFRDataMap*)dataMap {
@@ -199,7 +194,7 @@
 
 
 @interface NFRGeometry()
-@property (nonatomic, retain, readwrite) NSMutableDictionary* textureDictionary;
+@property (nonatomic, strong, readwrite) NSMutableDictionary* textureDictionary;
 @end
 
 
@@ -207,7 +202,7 @@
 
 - (NSMutableDictionary*) textureDictionary {
     if (_textureDictionary == nil) {
-        _textureDictionary = [[[NSMutableDictionary alloc] init] retain];
+        _textureDictionary = [[NSMutableDictionary alloc] init];
     }
     return _textureDictionary;
 }
@@ -222,7 +217,7 @@
     //
     NFRDataMap *diffuseMap = (self.surfaceModel).map_Kd;
 
-    NFRDataMapGL* mapGL = [[[NFRDataMapGL alloc] init] autorelease];
+    NFRDataMapGL* mapGL = [[NFRDataMapGL alloc] init];
     [mapGL syncDataMap:diffuseMap];
 
     NSString* uniformName = @"diffuseTexture";
@@ -231,9 +226,5 @@
     (self.textureDictionary)[uniformName] = mapGL;
 }
 
-- (void)dealloc {
-    [_textureDictionary release];
-    [super dealloc];
-}
 
 @end

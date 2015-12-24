@@ -27,13 +27,13 @@ typedef uint64_t MACH_TIME;
 
 
 static NSArray * (^convertCfloatArrayToNS)(float[3]) = ^ NSArray * (float triplet[3]) {
-    NSMutableArray *tempArray = [[[NSMutableArray alloc] init] autorelease];
+    NSMutableArray *tempArray = [[NSMutableArray alloc] init];
     NSNumber *tempNum;
     for (int i=0; i<3; ++i) {
         tempNum = @(triplet[i]);
         [tempArray addObject:tempNum];
     }
-    return [[tempArray copy] autorelease];
+    return [tempArray copy];
 };
 
 

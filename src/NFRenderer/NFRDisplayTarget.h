@@ -14,7 +14,7 @@
 @property (nonatomic, assign) GLsizei width;
 @property (nonatomic, assign) GLsizei height;
 
-@property (nonatomic, retain) NFRRenderTarget* transferSource;
+@property (nonatomic, strong) NFRRenderTarget* transferSource;
 
 - (void) processTransfer;
 

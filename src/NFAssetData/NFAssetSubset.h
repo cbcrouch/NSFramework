@@ -46,7 +46,7 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
 
 // assign is similar to weak, weak releases and sets the object to nil after
 // no more objects are pointing to it while assign will not
-@property (nonatomic, assign) NFSurfaceModel* surfaceModel;
+@property (nonatomic, weak) NFSurfaceModel* surfaceModel;
 
 - (void) allocateIndicesWithNumElts:(NSUInteger)num;
 - (void) loadIndexData:(GLushort *)pIndexData ofSize:(size_t)size;

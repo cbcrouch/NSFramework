@@ -11,16 +11,16 @@
 
 - (void) setNumberOfSubsets:(NSInteger)numSubsets {
     // build subset array
-    NSMutableArray *tempArray = [[[NSMutableArray alloc] initWithCapacity:numSubsets] autorelease];
+    NSMutableArray *tempArray = [[NSMutableArray alloc] initWithCapacity:numSubsets];
 
     NFAssetSubset *subset;
     for (int i=0; i<numSubsets; ++i) {
-        subset = [[[NFAssetSubset alloc] init] autorelease];
+        subset = [[NFAssetSubset alloc] init];
         [tempArray addObject:subset];
     }
 
     // set the non-mutable asset data subset array
-    self.subsetArray = [[tempArray copy] autorelease]; // will return nil if tempArray is nil
+    self.subsetArray = [tempArray copy]; // will return nil if tempArray is nil
     //self.subsetArray = [NSArray arrayWithArray:tempArray]; // will return @[] (empty array) if tempArray is nil
 
     // NOTE: if copy fits the design better than arrayWithArray then perhaps use the copy
@@ -30,7 +30,7 @@
 - (void) addSubsetWithIndices:(NSMutableArray *)indices ofObject:(WFObject *)wfObj atIndex:(NSUInteger)idx {
     NFAssetSubset *subset = (self.subsetArray)[idx];
 
-    NSMutableArray *uniqueArray = [[[NSMutableArray alloc] init] autorelease];
+    NSMutableArray *uniqueArray = [[NSMutableArray alloc] init];
     [uniqueArray addObjectsFromArray:[NSSet setWithArray:indices].allObjects];
 
     NSArray *sortedArray = [uniqueArray sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
@@ -42,7 +42,7 @@
     memset(pData, 0x00, [uniqueArray count] * sizeof(NFVertex_t));
     memset(pIndices, 0x00, [indices count] * sizeof(GLushort));
 
-    NSMutableArray *indexArray = [[[NSMutableArray alloc] init] autorelease];
+    NSMutableArray *indexArray = [[NSMutableArray alloc] init];
 
     // iterate through the uniqueArray and create interleaved vertices
     int dataIndex = 0;

@@ -36,7 +36,6 @@
     if (self.data != NULL) {
         free(self.data);
     }
-    [super dealloc];
 }
 
 - (void) loadWithData:(GLubyte *)pData ofSize:(CGRect)rect ofType:(GLenum)type withFormat:(GLenum)format {

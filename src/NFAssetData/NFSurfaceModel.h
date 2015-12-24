@@ -31,7 +31,7 @@ typedef NS_ENUM(NSUInteger, DEFAULT_SURFACE) {
 
 
 
-@property (nonatomic, retain) NSString *name;
+@property (nonatomic, strong) NSString *name;
 
 
 //
@@ -58,15 +58,15 @@ typedef NS_ENUM(NSUInteger, DEFAULT_SURFACE) {
 @property (nonatomic, assign) GLKVector3 Ks; // specular color
 @property (nonatomic, assign) GLKVector3 Ke; // emissive color
 
-@property (nonatomic, retain) NFRDataMap *map_Ka; // ambient color texture map (will be same as diffuse most of the time)
-@property (nonatomic, retain) NFRDataMap *map_Kd; // diffuse color texture map
-@property (nonatomic, retain) NFRDataMap *map_Ks; // specular color texture map
-@property (nonatomic, retain) NFRDataMap *map_Ns; // specular highlight component
+@property (nonatomic, strong) NFRDataMap *map_Ka; // ambient color texture map (will be same as diffuse most of the time)
+@property (nonatomic, strong) NFRDataMap *map_Kd; // diffuse color texture map
+@property (nonatomic, strong) NFRDataMap *map_Ks; // specular color texture map
+@property (nonatomic, strong) NFRDataMap *map_Ns; // specular highlight component
 
-@property (nonatomic, retain) NFRDataMap *map_Tr; // transparency map
+@property (nonatomic, strong) NFRDataMap *map_Tr; // transparency map
 
-@property (nonatomic, retain) NFRDataMap *map_bump;   // bump map
-@property (nonatomic, retain) NFRDataMap *map_disp;   // displacement map
-@property (nonatomic, retain) NFRDataMap *map_decalT; // decal texture
+@property (nonatomic, strong) NFRDataMap *map_bump;   // bump map
+@property (nonatomic, strong) NFRDataMap *map_disp;   // displacement map
+@property (nonatomic, strong) NFRDataMap *map_decalT; // decal texture
 
 @end

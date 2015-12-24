@@ -45,19 +45,19 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
 
 + (id<NFRProgram>) createProgramObject:(NSString *)programName {
     if ([programName isEqualToString:@"DefaultModel"]) {
-        NFRDefaultProgram* programObj = [[[NFRDefaultProgram alloc] init] autorelease];
+        NFRDefaultProgram* programObj = [[NFRDefaultProgram alloc] init];
         programObj.hProgram = [NFRUtils createProgram:programName];
         [programObj loadProgramInputPoints];
         return programObj;
     }
     else if ([programName isEqualToString:@"Debug"]) {
-        NFRDebugProgram* programObj = [[[NFRDebugProgram alloc] init] autorelease];
+        NFRDebugProgram* programObj = [[NFRDebugProgram alloc] init];
         programObj.hProgram = [NFRUtils createProgram:programName];
         [programObj loadProgramInputPoints];
         return programObj;
     }
     else if ([programName isEqualToString:@"Display"]) {
-        NFRDisplayProgram* programObj = [[[NFRDisplayProgram alloc] init] autorelease];
+        NFRDisplayProgram* programObj = [[NFRDisplayProgram alloc] init];
         programObj.hProgram = [NFRUtils createProgram:programName];
         [programObj loadProgramInputPoints];
         return programObj;
@@ -252,7 +252,7 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
     NSAssert(shaderData != nil, @"Failed to read NSFileHandle");
 
     // NOTE: this works with NON-NULL terminated data
-    NSString *shaderSource = [[[NSString alloc] initWithData:shaderData encoding:NSUTF8StringEncoding] autorelease];
+    NSString *shaderSource = [[NSString alloc] initWithData:shaderData encoding:NSUTF8StringEncoding];
     NSAssert(shaderSource != nil, @"Failed to convert NSData to an NSString");
 
     // at this point shaderSource should have a copy of the NSData from the file read and the file can be closed

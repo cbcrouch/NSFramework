@@ -33,7 +33,7 @@
             }
             va_end(args);
 
-            NFWavefrontObj *wavefrontObj = [[[NFWavefrontObj alloc] init] autorelease];
+            NFWavefrontObj *wavefrontObj = [[NFWavefrontObj alloc] init];
             [wavefrontObj loadFileWithPath:fileNamePath];
 
 
@@ -65,7 +65,7 @@
 
 
             // loop through all values and convert them into NFLightingModel objects
-            NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];
+            NSMutableArray *surfaceModels = [[NSMutableArray alloc] init];
             for (NFSurfaceModel *surface in wavefrontObj.materialsArray) {
                 // would convert the asset surface model to the internal framework
                 // representation here if they were different
@@ -100,7 +100,7 @@
 
             NFSurfaceModel *surface = [NFSurfaceModel defaultSurfaceModel];
 
-            NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];
+            NSMutableArray *surfaceModels = [[NSMutableArray alloc] init];
             [surfaceModels addObject:surface];
 
             asset.surfaceModelArray = surfaceModels;
@@ -145,7 +145,7 @@
 
             if (vertexType == kVertexFormatDefault) {
                 NFSurfaceModel *surface = [NFSurfaceModel defaultSurfaceModel];
-                NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];
+                NSMutableArray *surfaceModels = [[NSMutableArray alloc] init];
                 [surfaceModels addObject:surface];
 
                 asset.surfaceModelArray = surfaceModels;
@@ -171,7 +171,7 @@
 
             if (vertexType == kVertexFormatDefault) {
                 NFSurfaceModel *surface = [NFSurfaceModel defaultSurfaceModel];
-                NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];
+                NSMutableArray *surfaceModels = [[NSMutableArray alloc] init];
                 [surfaceModels addObject:surface];
 
                 asset.surfaceModelArray = surfaceModels;
@@ -197,7 +197,7 @@
 
             if (vertexType == kVertexFormatDefault) {
                 NFSurfaceModel *surface = [NFSurfaceModel defaultSurfaceModel];
-                NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];
+                NSMutableArray *surfaceModels = [[NSMutableArray alloc] init];
                 [surfaceModels addObject:surface];
 
                 asset.surfaceModelArray = surfaceModels;

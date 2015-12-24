@@ -69,28 +69,28 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
 - (NSMutableArray *)vertices {
     if (_vertices == nil) {
-        _vertices = [[[NSMutableArray alloc] init] autorelease];
+        _vertices = [[NSMutableArray alloc] init];
     }
     return _vertices;
 }
 
 - (NSMutableArray *)textureCoords {
     if (_textureCoords == nil) {
-        _textureCoords = [[[NSMutableArray alloc] init] autorelease];
+        _textureCoords = [[NSMutableArray alloc] init];
     }
     return _textureCoords;
 }
 
 - (NSMutableArray *)normals {
     if (_normals == nil) {
-        _normals = [[[NSMutableArray alloc] init] autorelease];
+        _normals = [[NSMutableArray alloc] init];
     }
     return _normals;
 }
 
 - (NSMutableArray *)groups {
     if (_groups == nil) {
-        _groups = [[[NSMutableArray alloc] init] autorelease];
+        _groups = [[NSMutableArray alloc] init];
     }
     return _groups;
 }
@@ -321,12 +321,12 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
         // convert C face normals array into an NSArray so it can be used with NFAssetUtils vertex normal calculation
         static const char *faceType = @encode(NFFace_t);
-        NSMutableArray* tempFaceNormals = [[[NSMutableArray alloc] initWithCapacity:faceIndex] autorelease];
+        NSMutableArray* tempFaceNormals = [[NSMutableArray alloc] initWithCapacity:faceIndex];
         for (int i=0; i<faceIndex; ++i) {
             NSValue *value = [NSValue value:&(faceArray[i]) withObjCType:faceType];
             [tempFaceNormals addObject:value];
         }
-        NSArray* faceNormals = [[[NSArray alloc] initWithArray:tempFaceNormals] autorelease];
+        NSArray* faceNormals = [[NSArray alloc] initWithArray:tempFaceNormals];
 
         // calculate vertex normals and update Wavefront obj face
         for (int i=0; i<faceCount; ++i) {
@@ -366,7 +366,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
 - (NSMutableArray *)faceStrArray {
     if (_faceStrArray == nil) {
-        _faceStrArray = [[[NSMutableArray alloc] init] autorelease];
+        _faceStrArray = [[NSMutableArray alloc] init];
     }
     return _faceStrArray;
 }
@@ -381,12 +381,12 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
 + (NSArray *) componentsFromWavefrontObjLine:(NSString *)line withPrefix:(NSString *)prefix;
 
-@property (nonatomic, retain) NSString *objPath;
-@property (nonatomic, retain) NSString *fileSource;
-@property (nonatomic, retain) NSString *mtlSource;
+@property (nonatomic, strong) NSString *objPath;
+@property (nonatomic, strong) NSString *fileSource;
+@property (nonatomic, strong) NSString *mtlSource;
 
-@property (nonatomic, assign) WFObject *activeObject;
-@property (nonatomic, assign) WFGroup *activeGroup;
+@property (nonatomic, strong) WFObject *activeObject;
+@property (nonatomic, strong) WFGroup *activeGroup;
 
 - (void) parseVertexArray:(NSArray *)vertexArray;
 - (void) parseTextureCoordArray:(NSArray *)texCoordArray;
@@ -418,7 +418,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
 - (NSMutableArray *)materialsArray {
     if (_materialsArray == nil) {
-        _materialsArray = [[[NSMutableArray alloc] init] autorelease];
+        _materialsArray = [[NSMutableArray alloc] init];
     }
     return _materialsArray;
 }
@@ -432,13 +432,10 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     _activeObject = nil;
     _activeGroup = nil;
 
-    _object = [[[WFObject alloc] init] autorelease];
+    _object = [[WFObject alloc] init];
     return self;
 }
 
-- (void) dealloc {
-    [super dealloc];
-}
 
 - (void) loadFileWithPath:(NSString *)filePath { // currently used load method
     NSError *nsErr = nil;
@@ -476,7 +473,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     NSAssert(fileData != nil, @"Failed to read NSFileHandle");
 
     // NOTE: this works with NON-NULL terminated data
-    self.fileSource = [[[NSString alloc] initWithData:fileData encoding:NSUTF8StringEncoding] autorelease];
+    self.fileSource = [[NSString alloc] initWithData:fileData encoding:NSUTF8StringEncoding];
     NSAssert(self.fileSource != nil, @"Failed to convert NSData to an NSString");
 
     //
@@ -506,7 +503,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     NSArray *lines = [self.fileSource componentsSeparatedByString:@"\n"];
 
     // index set is for converting quads into triangles
-    NSMutableIndexSet *indexSet = [[[NSMutableIndexSet alloc] initWithIndexesInRange:NSMakeRange(0, 3)] autorelease];
+    NSMutableIndexSet *indexSet = [[NSMutableIndexSet alloc] initWithIndexesInRange:NSMakeRange(0, 3)];
 
     for (NSString *line in lines) {
 
@@ -533,7 +530,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
             NSString *groupName = [line substringFromIndex:g_groupPrefix.length];
 
             // allocate a new group (which will be the current active group) and add to object's group array
-            self.activeGroup = [[[WFGroup alloc] init] autorelease];
+            self.activeGroup = [[WFGroup alloc] init];
             [self.object.groups addObject:self.activeGroup];
 
             // start populating the active group
@@ -560,7 +557,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
                 if (self.activeGroup == nil) {
                     // allocate a new group (which will be the current active group) and add to object's group array
-                    self.activeGroup = [[[WFGroup alloc] init] autorelease];
+                    self.activeGroup = [[WFGroup alloc] init];
                     [self.object.groups addObject:self.activeGroup];
                     self.activeGroup.groupName = @"default_group";
                 }
@@ -611,7 +608,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
             if (self.activeGroup == nil) {
                 // allocate a new group (which will be the current active group) and add to object's group array
-                self.activeGroup = [[[WFGroup alloc] init] autorelease];
+                self.activeGroup = [[WFGroup alloc] init];
                 [self.object.groups addObject:self.activeGroup];
                 self.activeGroup.groupName = @"default_group";
             }
@@ -715,9 +712,9 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
     static NSString *g_mapKdPrefix = @"map_Kd "; // diffuse color texture map=
 
-    NFSurfaceModel *mat = [[[NFSurfaceModel alloc] init] autorelease];
+    NFSurfaceModel *mat = [[NFSurfaceModel alloc] init];
 
-    for (NSString *line in lines) {
+    for (__strong NSString *line in lines) {
 
         //
         // TODO: will also need to handle leading tabs, should be able to update regex
@@ -890,7 +887,6 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     CGContextDrawImage(context, CGRectMake(0.0, 0.0, CGRectGetWidth(mapSize), CGRectGetHeight(mapSize)), cgImage);
     CGContextRelease(context);
 
-    [imageClass release];
 
 #if 0
     int winStyleMask = NSTitledWindowMask | NSClosableWindowMask;
@@ -918,9 +914,8 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     [imageView release];
 #endif
 
-    [nsimage release];
 
-    NFRDataMap *dataMap = [[[NFRDataMap alloc] init] autorelease];
+    NFRDataMap *dataMap = [[NFRDataMap alloc] init];
     [dataMap loadWithData:pData ofSize:mapSize ofType:type withFormat:format];
 
     NSAssert(pData != NULL, @"ERROR: image data buffer pointer was set to NULL prior to freeing memory");

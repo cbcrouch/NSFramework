@@ -14,11 +14,11 @@
 
 @interface NFRDisplayTarget()
 
-@property (nonatomic, retain) id<NFRProgram> program;
+@property (nonatomic, strong) id<NFRProgram> program;
 @property (nonatomic, assign) GLuint transferTexHandle;
 
-@property (nonatomic, retain) NFRBuffer* vertexBuffer;
-@property (nonatomic, retain) NFRBuffer* indexBuffer;
+@property (nonatomic, strong) NFRBuffer* vertexBuffer;
+@property (nonatomic, strong) NFRBuffer* indexBuffer;
 
 @end
 
@@ -33,7 +33,7 @@
 - (instancetype) init {
     self = [super init];
     if (self != nil) {
-        _program = [[NFRUtils createProgramObject:@"Display"] retain];
+        _program = [NFRUtils createProgramObject:@"Display"];
 
         NFScreenSpaceVertex_t quadVertices[6];
 
@@ -77,10 +77,10 @@
         NSUInteger numIndices = sizeof(quadIndices)/sizeof(GLushort);
 
         NF_VERTEX_FORMAT vertexFormat = kVertexFormatScreenSpace;
-        NFRBufferAttributes* bufferAttributes = [[[NFRBufferAttributes alloc] initWithFormat:vertexFormat] autorelease];
+        NFRBufferAttributes* bufferAttributes = [[NFRBufferAttributes alloc] initWithFormat:vertexFormat];
 
-        _vertexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeVertex usingAttributes:bufferAttributes] retain];
-        _indexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeIndex usingAttributes:bufferAttributes] retain];
+        _vertexBuffer = [[NFRBuffer alloc] initWithType:kBufferTypeVertex usingAttributes:bufferAttributes];
+        _indexBuffer = [[NFRBuffer alloc] initWithType:kBufferTypeIndex usingAttributes:bufferAttributes];
 
         [_vertexBuffer loadData:(void *)quadVertices ofType:kBufferDataTypeNFScreenSpaceVertex_t numberOfElements:numVertices];
         [_indexBuffer loadData:(void *)quadIndices ofType:kBufferDataTypeUShort numberOfElements:numIndices];
@@ -88,12 +88,6 @@
     return self;
 }
 
-- (void) dealloc {
-    [_vertexBuffer release];
-    [_indexBuffer release];
-
-    [super dealloc];
-}
 
 - (void) processTransfer {
     NSAssert(self.transferSource != nil, @"attempted to use display target without setting a transfer source");

@@ -14,7 +14,7 @@
 @implementation NFSurfaceModel
 
 + (NFSurfaceModel *) defaultSurfaceModel {
-    NFSurfaceModel *surface = [[[NFSurfaceModel alloc] init] autorelease];
+    NFSurfaceModel *surface = [[NFSurfaceModel alloc] init];
     surface.name = @"NSGLFramework_defaultSurfaceModel";
 
 
@@ -71,7 +71,7 @@
     }
 #endif
 
-    NFRDataMap *diffuse = [[[NFRDataMap alloc] init] autorelease];
+    NFRDataMap *diffuse = [[NFRDataMap alloc] init];
 
     CGRect rect = CGRectMake(0.0, 0.0, (float)width, (float)height);
     [diffuse loadWithData:DefaultTexture ofSize:rect ofType:GL_UNSIGNED_BYTE withFormat:GL_RGBA];
@@ -111,56 +111,56 @@
 
 - (NFRDataMap *) map_Ka {
     if(_map_Ka == nil) {
-        _map_Ka = [[[NFRDataMap alloc] init] autorelease];
+        _map_Ka = [[NFRDataMap alloc] init];
     }
     return _map_Ka;
 }
 
 - (NFRDataMap *) map_Kd {
     if(_map_Kd == nil) {
-        _map_Kd = [[[NFRDataMap alloc] init] autorelease];
+        _map_Kd = [[NFRDataMap alloc] init];
     }
     return _map_Kd;
 }
 
 - (NFRDataMap *) map_Ks {
     if(_map_Ks == nil) {
-        _map_Ks = [[[NFRDataMap alloc] init] autorelease];
+        _map_Ks = [[NFRDataMap alloc] init];
     }
     return _map_Ks;
 }
 
 - (NFRDataMap *) map_Ns {
     if(_map_Ns == nil) {
-        _map_Ns = [[[NFRDataMap alloc] init] autorelease];
+        _map_Ns = [[NFRDataMap alloc] init];
     }
     return _map_Ns;
 }
 
 - (NFRDataMap *) map_Tr {
     if(_map_Tr == nil) {
-        _map_Tr = [[[NFRDataMap alloc] init] autorelease];
+        _map_Tr = [[NFRDataMap alloc] init];
     }
     return _map_Tr;
 }
 
 - (NFRDataMap *) map_bump {
     if(_map_bump == nil) {
-        _map_bump = [[[NFRDataMap alloc] init] autorelease];
+        _map_bump = [[NFRDataMap alloc] init];
     }
     return _map_bump;
 }
 
 - (NFRDataMap *) map_disp {
     if(_map_disp == nil) {
-        _map_disp = [[[NFRDataMap alloc] init] autorelease];
+        _map_disp = [[NFRDataMap alloc] init];
     }
     return _map_disp;
 }
 
 - (NFRDataMap *) map_decalT {
     if(_map_decalT == nil) {
-        _map_decalT = [[[NFRDataMap alloc] init] autorelease];
+        _map_decalT = [[NFRDataMap alloc] init];
     }
     return _map_decalT;
 }

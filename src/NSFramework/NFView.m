@@ -61,12 +61,12 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 // TODO: support full display rendering with CGL for "game" mode
 //       and add support for OS X fullscreen mode
 //
-@property (nonatomic, retain) NSOpenGLContext *glContext;
-@property (nonatomic, retain) NSOpenGLPixelFormat *pixelFormat;
+@property (nonatomic, strong) NSOpenGLContext *glContext;
+@property (nonatomic, strong) NSOpenGLPixelFormat *pixelFormat;
 
-@property (nonatomic, retain) NFRenderer *glRenderer;
-@property (nonatomic, retain) NFViewVolume *viewVolume;
-@property (nonatomic, retain) NFCamera *camera;
+@property (nonatomic, strong) NFRenderer *glRenderer;
+@property (nonatomic, strong) NFViewVolume *viewVolume;
+@property (nonatomic, strong) NFCamera *camera;
 
 - (void) execStartupSequence;
 - (void) setupTiming;
@@ -154,7 +154,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 - (void) clearTrackingArea {
     if (m_trackingArea) {
         [self removeTrackingArea:m_trackingArea];
-        [m_trackingArea release];
         m_trackingArea = nil;
     }
 }
@@ -179,7 +178,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     CVDisplayLinkRelease(self.displayLink);
 
     // call NSView (parent class) dealloc
-    [super dealloc];
 }
 
 - (void) awakeFromNib {
@@ -573,7 +571,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
         (NSOpenGLPixelFormatAttribute)0
     };
 
-    NSOpenGLPixelFormat *pf = [[[NSOpenGLPixelFormat alloc] initWithAttributes:attribs] autorelease];
+    NSOpenGLPixelFormat *pf = [[NSOpenGLPixelFormat alloc] initWithAttributes:attribs];
     NSAssert(pf != nil, @"Error: could not create an OpenGL compatible pixel format");
 
 
@@ -585,7 +583,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     // kCGLARGB8888Bit
 
 
-    NSOpenGLContext *context = [[[NSOpenGLContext alloc] initWithFormat:pf shareContext:nil] autorelease];
+    NSOpenGLContext *context = [[NSOpenGLContext alloc] initWithFormat:pf shareContext:nil];
     NSAssert(context != nil, @"Failed to create an OpenGL context");
 
     self.pixelFormat = pf;
@@ -618,9 +616,9 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 - (void) initRenderer {
     [self.glContext makeCurrentContext];
 
-    self.glRenderer = [[[NFRenderer alloc] init] autorelease];
+    self.glRenderer = [[NFRenderer alloc] init];
 
-    self.viewVolume = [[[NFViewVolume alloc] init] autorelease];
+    self.viewVolume = [[NFViewVolume alloc] init];
 
     CGFloat width = self.frame.size.width;
     CGFloat height = self.frame.size.height;
@@ -634,7 +632,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //GLKVector3 up = GLKVector3Make(0.0f, 1.0f, 0.0f);
     //self.camera = [[[NFCamera alloc] initWithEyePosition:eye withLookVector:look withUpVector:up] autorelease];
 
-    self.camera = [[[NFCamera alloc] init] autorelease];
+    self.camera = [[NFCamera alloc] init];
 
     m_verticalAngle = self.camera.pitch;
     m_horizontalAngle = self.camera.yaw;
@@ -653,7 +651,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     NSAssert(rv == kCVReturnSuccess, @"Failed to create display link with active display");
 
     // set the renderer output callback function
-    rv = CVDisplayLinkSetOutputCallback(self.displayLink, &displayLinkCallback, self);
+    rv = CVDisplayLinkSetOutputCallback(self.displayLink, &displayLinkCallback, (__bridge void * _Nullable)(self));
     NSAssert(rv == kCVReturnSuccess, @"Failed to set display link callback");
 
     // convert NSGL objects to CGL objects

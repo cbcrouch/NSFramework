@@ -13,7 +13,7 @@
 
 - (NFRGeometry*) geometry {
     if (_geometry == nil) {
-        _geometry = [[[NFRGeometry alloc] init] autorelease];
+        _geometry = [[NFRGeometry alloc] init];
     }
     return _geometry;
 }
@@ -29,14 +29,6 @@
     return self;
 }
 
-- (void) dealloc {
-
-    //
-    // TODO: proper cleanup of NFR objects
-    //
-
-    [super dealloc];
-}
 
 - (void) stepTransforms:(float)secsElapsed {
 
@@ -88,10 +80,10 @@
     NFAssetSubset* testSubset = (self.subsetArray)[0];
     vertexFormat = testSubset.vertexFormat;
 
-    NFRBufferAttributes* bufferAttribs = [[[NFRBufferAttributes alloc] initWithFormat:vertexFormat] autorelease];
+    NFRBufferAttributes* bufferAttribs = [[NFRBufferAttributes alloc] initWithFormat:vertexFormat];
 
-    NFRBuffer* vertexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeVertex usingAttributes:bufferAttribs] autorelease];
-    NFRBuffer* indexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeIndex usingAttributes:bufferAttribs] autorelease];
+    NFRBuffer* vertexBuffer = [[NFRBuffer alloc] initWithType:kBufferTypeVertex usingAttributes:bufferAttribs];
+    NFRBuffer* indexBuffer = [[NFRBuffer alloc] initWithType:kBufferTypeIndex usingAttributes:bufferAttribs];
 
     (self.geometry).vertexBuffer = vertexBuffer;
     (self.geometry).indexBuffer = indexBuffer;

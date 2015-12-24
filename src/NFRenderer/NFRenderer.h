@@ -41,8 +41,6 @@ typedef NSInteger NFViewportId;
 //- (instancetype) initWithWidth:(NSInteger)width withHeight(NSInteger)height NS_DESIGNATED_INITIALIZER;
 //- (instancetype) initWithViewport:(NSRect)viewportRect;
 
-- (void) dealloc;
-
 
 //
 // TODO: group view/projection matrix and view position into a ViewDescription structure

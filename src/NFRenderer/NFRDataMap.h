@@ -82,7 +82,7 @@ typedef NS_ENUM(NSUInteger, DATA_MAP_FILTER) {
 @property (nonatomic, assign, readonly) GLuint rowByteSize;
 @property (nonatomic, assign, readonly) GLubyte* data;
 
-@property (nonatomic, retain) NFRDataSampler* sampler;
+@property (nonatomic, strong) NFRDataSampler* sampler;
 
 - (void) loadWithData:(GLubyte *)pData ofSize:(CGRect)rect ofType:(GLenum)type withFormat:(GLenum)format;
 

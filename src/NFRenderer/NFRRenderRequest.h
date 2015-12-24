@@ -33,7 +33,7 @@
 
 @interface NFRCommandBufferDebug : NSObject <NFRCommandBufferProtocol>
 
-@property (nonatomic, retain) NSMutableArray< NFRGeometry* >* geometryArray;
+@property (nonatomic, strong) NSMutableArray< NFRGeometry* >* geometryArray;
 
 - (void) addGeometry:(NFRGeometry*)geometry;
 
@@ -44,8 +44,8 @@
 
 @interface NFRCommandBufferDefault : NSObject <NFRCommandBufferProtocol>
 
-@property (nonatomic, retain) NSMutableArray< NFRGeometry* >* geometryArray;
-@property (nonatomic, retain) NSMutableArray< id<NFLightSource> >* lightsArray;
+@property (nonatomic, strong) NSMutableArray< NFRGeometry* >* geometryArray;
+@property (nonatomic, strong) NSMutableArray< id<NFLightSource> >* lightsArray;
 
 - (void) addGeometry:(NFRGeometry*)geometry;
 - (void) addLight:(id<NFLightSource>)light;
@@ -57,12 +57,12 @@
 
 @interface NFRRenderRequest : NSObject
 
-@property (nonatomic, retain) id<NFRProgram> program;
+@property (nonatomic, strong) id<NFRProgram> program;
 
 //
 // TODO: apply generics to all container usage
 //
-@property (nonatomic, retain) NSMutableArray< id<NFRCommandBufferProtocol> >* commandBufferArray;
+@property (nonatomic, strong) NSMutableArray< id<NFRCommandBufferProtocol> >* commandBufferArray;
 
 - (void) addCommandBuffer:(id<NFRCommandBufferProtocol>)commandBuffer;
 - (void) process;

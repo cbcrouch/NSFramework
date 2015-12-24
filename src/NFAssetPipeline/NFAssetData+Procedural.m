@@ -72,7 +72,7 @@ static const char *g_faceType = @encode(NFFace_t);
         indices[i] = i;
     }
 
-    NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
+    NFAssetSubset *pSubset = [[NFAssetSubset alloc] init];
 
     [pSubset allocateVerticesOfType:kVertexFormatDebug withNumVertices:numVertices];
     [pSubset loadVertexData:(void*)vertices ofType:kVertexFormatDebug withNumVertices:numVertices];
@@ -80,7 +80,7 @@ static const char *g_faceType = @encode(NFFace_t);
     [pSubset allocateIndicesWithNumElts:numVertices];
     [pSubset loadIndexData:indices ofSize:(numVertices * sizeof(GLushort))];
 
-    self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
+    self.subsetArray = [[NSArray alloc] initWithObjects:(id)pSubset, nil];
 }
 
 -(void) createAxisOfSize:(NSInteger)size {
@@ -155,7 +155,7 @@ static const char *g_faceType = @encode(NFFace_t);
         indices[i] = i;
     }
 
-    NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
+    NFAssetSubset *pSubset = [[NFAssetSubset alloc] init];
 
     [pSubset allocateIndicesWithNumElts:numIndices];
     [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
@@ -163,7 +163,7 @@ static const char *g_faceType = @encode(NFFace_t);
     [pSubset allocateVerticesOfType:kVertexFormatDebug withNumVertices:numVertices];
     [pSubset loadVertexData:vertices ofType:kVertexFormatDebug withNumVertices:numVertices];
 
-    self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
+    self.subsetArray = [[NSArray alloc] initWithObjects:(id)pSubset, nil];
 }
 
 - (void) createPlaneOfSize:(NSInteger)size {
@@ -248,7 +248,7 @@ static const char *g_faceType = @encode(NFFace_t);
     // encode the faces into an array
     NSValue *value1 = [NSValue value:&face1 withObjCType:g_faceType];
     NSValue *value2 = [NSValue value:&face2 withObjCType:g_faceType];
-    NSArray *array = [[[NSArray alloc] initWithObjects:value1, value2, nil] autorelease];
+    NSArray *array = [[NSArray alloc] initWithObjects:value1, value2, nil];
 
     for (int i=0; i<4; ++i) {
         GLKVector4 vertexNormal = [NFAssetUtils calculateAreaWeightedNormalOfIndex:i withFaces:array];
@@ -258,7 +258,7 @@ static const char *g_faceType = @encode(NFFace_t);
         vertices[i].norm[3] = vertexNormal.w;
     }
 
-    NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
+    NFAssetSubset *pSubset = [[NFAssetSubset alloc] init];
 
     [pSubset allocateIndicesWithNumElts:numIndices];
     [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
@@ -266,14 +266,14 @@ static const char *g_faceType = @encode(NFFace_t);
     [pSubset allocateVerticesOfType:kVertexFormatDefault withNumVertices:numVertices];
     [pSubset loadVertexData:vertices ofType:kVertexFormatDefault withNumVertices:numVertices];
 
-    self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
+    self.subsetArray = [[NSArray alloc] initWithObjects:(id)pSubset, nil];
 }
 
 - (void) createUVSphereWithRadius:(float)radius withStacks:(int)stacks withSlices:(int)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
     const NSInteger numVertices = (stacks+1) * (slices+1) + 1;
     const NSInteger numIndices = stacks * slices * 3 * 2;
 
-    NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
+    NFAssetSubset *pSubset = [[NFAssetSubset alloc] init];
 
     // spherical coordinates as mapped to perspective coordiantes (x to the right, y up, +z towards the camera)
     // x = r * sin(phi) * sin(theta);
@@ -437,7 +437,7 @@ static const char *g_faceType = @encode(NFFace_t);
     [pSubset allocateIndicesWithNumElts:numIndices];
     [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
 
-    self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
+    self.subsetArray = [[NSArray alloc] initWithObjects:(id)pSubset, nil];
 }
 
 - (void) createCylinderWithRadius:(float)radius ofHeight:(float)height withSlices:(NSInteger)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
@@ -446,7 +446,7 @@ static const char *g_faceType = @encode(NFFace_t);
     const NSInteger numVertices = 6 * slices;
     const NSInteger numIndices = 12 * slices;
 
-    NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
+    NFAssetSubset *pSubset = [[NFAssetSubset alloc] init];
 
     // NOTE: creating and setting up the indices first so they can be used to generate normals
     //       if using the default vertex format
@@ -564,7 +564,7 @@ static const char *g_faceType = @encode(NFFace_t);
 
         // build faces array and calculate normals
         GLushort* indexPtr = indices;
-        NSMutableArray* faceArray = [[[NSMutableArray alloc] init] autorelease];
+        NSMutableArray* faceArray = [[NSMutableArray alloc] init];
 
         for (int i=0; i<numIndices/3; ++i) {
             NFFace_t face = [NFAssetUtils calculateFaceWithPoints:vertices withIndices:indexPtr];
@@ -627,7 +627,7 @@ static const char *g_faceType = @encode(NFFace_t);
         [pSubset loadVertexData:vertices ofType:kVertexFormatDebug withNumVertices:numVertices];
     }
 
-    self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
+    self.subsetArray = [[NSArray alloc] initWithObjects:(id)pSubset, nil];
 }
 
 - (void) createConeWithRadius:(float)radius ofHeight:(float)height withSlices:(NSInteger)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
@@ -636,7 +636,7 @@ static const char *g_faceType = @encode(NFFace_t);
     const NSInteger numVertices = 3 * (slices+1);
     const NSInteger numIndices = 6 * slices;
 
-    NFAssetSubset *pSubset = [[[NFAssetSubset alloc] init] autorelease];
+    NFAssetSubset *pSubset = [[NFAssetSubset alloc] init];
 
     GLushort indices[numIndices];
 
@@ -721,7 +721,7 @@ static const char *g_faceType = @encode(NFFace_t);
 
         // build faces array and calculate normals
         GLushort* indexPtr = indices;
-        NSMutableArray* faceArray = [[[NSMutableArray alloc] init] autorelease];
+        NSMutableArray* faceArray = [[NSMutableArray alloc] init];
 
         for (int i=0; i<numIndices/3; ++i) {
             NFFace_t face = [NFAssetUtils calculateFaceWithPoints:vertices withIndices:indexPtr];
@@ -774,7 +774,7 @@ static const char *g_faceType = @encode(NFFace_t);
         [pSubset loadVertexData:vertices ofType:kVertexFormatDebug withNumVertices:numVertices];
     }
 
-    self.subsetArray = [[[NSArray alloc] initWithObjects:(id)pSubset, nil] autorelease];
+    self.subsetArray = [[NSArray alloc] initWithObjects:(id)pSubset, nil];
 }
 
 @end

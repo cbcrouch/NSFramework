@@ -16,7 +16,7 @@
 
 - (NSMutableArray*) geometryArray {
     if (_geometryArray == nil) {
-        _geometryArray = [[[NSMutableArray alloc] init] retain];
+        _geometryArray = [[NSMutableArray alloc] init];
     }
     return _geometryArray;
 }
@@ -48,14 +48,14 @@
 
 - (NSMutableArray*) geometryArray {
     if (_geometryArray == nil) {
-        _geometryArray = [[[NSMutableArray alloc] init] retain];
+        _geometryArray = [[NSMutableArray alloc] init];
     }
     return _geometryArray;
 }
 
 - (NSMutableArray*) lightsArray {
     if (_lightsArray == nil) {
-        _lightsArray = [[[NSMutableArray alloc] init] retain];
+        _lightsArray = [[NSMutableArray alloc] init];
     }
     return _lightsArray;
 }
@@ -118,7 +118,7 @@
 
 - (NSMutableArray*) commandBufferArray {
     if (_commandBufferArray == nil) {
-        _commandBufferArray = [[[NSMutableArray alloc] init] retain];
+        _commandBufferArray = [[NSMutableArray alloc] init];
     }
     return _commandBufferArray;
 }
@@ -139,9 +139,5 @@
     }
 }
 
-- (void) dealloc {
-    [_commandBufferArray release];
-    [super dealloc];
-}
 
 @end

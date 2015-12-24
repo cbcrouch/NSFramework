@@ -149,7 +149,6 @@
 
 - (void) dealloc {
     [self tearDown];
-    [super dealloc];
 }
 
 @end

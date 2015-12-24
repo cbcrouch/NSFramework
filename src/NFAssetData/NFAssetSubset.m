@@ -53,7 +53,6 @@
 - (void) dealloc {
     if (self.vertices != NULL) { free(self.vertices); }
     if (self.indices != NULL) { free(self.indices); }
-    [super dealloc];
 }
 
 - (void) setDrawMode:(DRAWING_MODE)drawMode {

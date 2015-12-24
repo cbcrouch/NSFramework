@@ -17,7 +17,7 @@
 //
 
 @interface NFPointLight()
-@property (nonatomic, retain) NFAssetData* assetData;
+@property (nonatomic, strong) NFAssetData* assetData;
 @end
 
 
@@ -84,10 +84,6 @@
     return self;
 }
 
-- (void) dealloc {
-    [_assetData release];
-    [super dealloc];
-}
 
 - (void) stepTransforms:(float)secsElapsed {
     typedef GLKMatrix4 (^transformBlock_f)(GLKMatrix4, float);
@@ -111,7 +107,7 @@
 //
 
 @interface NFDirectionalLight()
-@property (nonatomic, retain) NFAssetData* assetData;
+@property (nonatomic, strong) NFAssetData* assetData;
 @end
 
 @implementation NFDirectionalLight
@@ -194,10 +190,6 @@
     return self;
 }
 
-- (void) dealloc {
-    [_assetData release];
-    [super dealloc];
-}
 
 @end
 
@@ -206,7 +198,7 @@
 //
 
 @interface NFSpotLight()
-@property (nonatomic, retain) NFAssetData* assetData;
+@property (nonatomic, strong) NFAssetData* assetData;
 @end
 
 @implementation NFSpotLight
@@ -308,9 +300,5 @@
     return self;
 }
 
-- (void) dealloc {
-    [_assetData release];
-    [super dealloc];
-}
 
 @end

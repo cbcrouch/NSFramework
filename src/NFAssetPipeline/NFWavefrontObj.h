@@ -52,12 +52,12 @@ static NSInteger (^normalizeObjIndex)(NSInteger, NSUInteger) = ^ NSInteger (NSIn
 
 // container for Wavefront object
 @interface WFObject : NSObject
-@property (nonatomic, retain) NSString *objectName;
-@property (nonatomic, retain) NSMutableArray *groups;
+@property (nonatomic, strong) NSString *objectName;
+@property (nonatomic, strong) NSMutableArray *groups;
 
-@property (nonatomic, retain) NSMutableArray *vertices;
-@property (nonatomic, retain) NSMutableArray *textureCoords;
-@property (nonatomic, retain) NSMutableArray *normals;
+@property (nonatomic, strong) NSMutableArray *vertices;
+@property (nonatomic, strong) NSMutableArray *textureCoords;
+@property (nonatomic, strong) NSMutableArray *normals;
 
 - (void) calculateTextureCoordinates;
 - (void) calculateNormals;
@@ -67,9 +67,9 @@ static NSInteger (^normalizeObjIndex)(NSInteger, NSUInteger) = ^ NSInteger (NSIn
 
 // container for Wavefront object groups
 @interface WFGroup : NSObject
-@property (nonatomic, retain) NSString *groupName;
-@property (nonatomic, retain) NSString *materialName;
-@property (nonatomic, retain) NSMutableArray *faceStrArray;
+@property (nonatomic, strong) NSString *groupName;
+@property (nonatomic, strong) NSString *materialName;
+@property (nonatomic, strong) NSMutableArray *faceStrArray;
 @end
 
 
@@ -80,13 +80,12 @@ static NSInteger (^normalizeObjIndex)(NSInteger, NSUInteger) = ^ NSInteger (NSIn
 //       (currently only support one "o" object per file)
 //
 //@property (nonatomic, retain) NSMutableArray *objectsArray;
-@property (nonatomic, retain) WFObject *object;
+@property (nonatomic, strong) WFObject *object;
 
-@property (nonatomic, retain) NSMutableArray *materialsArray;
+@property (nonatomic, strong) NSMutableArray *materialsArray;
 
 
 - (instancetype) init;
-- (void) dealloc;
 
 //
 // TODO: load and write methods should return an error of some kind if they fail

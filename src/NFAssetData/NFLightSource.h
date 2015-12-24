@@ -34,7 +34,7 @@
 @property (nonatomic, assign) GLKVector3 specular;
 @property (nonatomic, assign) GLKVector3 position;
 
-@property (nonatomic, readonly, retain) NFRGeometry* geometry;
+@property (nonatomic, readonly, strong) NFRGeometry* geometry;
 
 //
 // Range Constant Linear Quadratic values provided by Ogre3d
@@ -85,7 +85,7 @@
 //
 @property (nonatomic, assign) GLKVector3 position;
 
-@property (nonatomic, readonly, retain) NFRGeometry* geometry;
+@property (nonatomic, readonly, strong) NFRGeometry* geometry;
 
 @property (nonatomic, assign) GLKVector3 direction;
 
@@ -102,7 +102,7 @@
 @property (nonatomic, assign) GLKVector3 specular;
 @property (nonatomic, assign) GLKVector3 position;
 
-@property (nonatomic, readonly, retain) NFRGeometry* geometry;
+@property (nonatomic, readonly, strong) NFRGeometry* geometry;
 
 @property (nonatomic, assign) GLKVector3 direction;
 
