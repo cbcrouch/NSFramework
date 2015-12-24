@@ -43,9 +43,7 @@ typedef NS_ENUM(NSUInteger, DRAWING_MODE) {
 @property (nonatomic, assign) GLKMatrix4 unitScalarMatrix;
 @property (nonatomic, assign) GLKMatrix4 originCenterMatrix;
 
-
-// assign is similar to weak, weak releases and sets the object to nil after
-// no more objects are pointing to it while assign will not
+// surface model is weak since memory will be retained the asset data's surface model array property
 @property (nonatomic, weak) NFSurfaceModel* surfaceModel;
 
 - (void) allocateIndicesWithNumElts:(NSUInteger)num;

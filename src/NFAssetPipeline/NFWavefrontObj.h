@@ -79,13 +79,11 @@ static NSInteger (^normalizeObjIndex)(NSInteger, NSUInteger) = ^ NSInteger (NSIn
 // TODO: will need an NSMutableArray property for storing multiple objects
 //       (currently only support one "o" object per file)
 //
-//@property (nonatomic, retain) NSMutableArray *objectsArray;
+//@property (nonatomic, strong) NSMutableArray *objectsArray;
 @property (nonatomic, strong) WFObject *object;
 
 @property (nonatomic, strong) NSMutableArray *materialsArray;
 
-
-- (instancetype) init;
 
 //
 // TODO: load and write methods should return an error of some kind if they fail

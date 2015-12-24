@@ -28,17 +28,12 @@ typedef GLKMatrix4 (^transformBlock_f)(GLKMatrix4, float);
 
 @property (nonatomic, strong) NSArray* subsetArray;
 @property (nonatomic, strong) NSArray* surfaceModelArray;
-
 @property (nonatomic, strong) NFRGeometry* geometry;
 
 @property (nonatomic, weak) transformBlock_f transformBlock;
 
 
-
-- (instancetype) init;
-
 - (void) stepTransforms:(float)secsElapsed;
-
 - (void) generateRenderables;
 
 

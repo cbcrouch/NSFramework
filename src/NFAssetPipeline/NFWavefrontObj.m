@@ -714,6 +714,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
     NFSurfaceModel *mat = [[NFSurfaceModel alloc] init];
 
+    // need to use __strong qualifer to allow variables used in fast enumeration to be modified
     for (__strong NSString *line in lines) {
 
         //
@@ -911,7 +912,6 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     [imageWindow makeKeyAndOrderFront:self]; // will issue a dispaly call to all sub views
     //[imageView display]; // explicit call not currently needed but may be in future versions of OS X
 
-    [imageView release];
 #endif
 
 

@@ -9,11 +9,7 @@ a hobby project that will be a perpetual WIP as its primary purpose is to expand
 Objective-C and Cocoa more than anything else. Work will be slow going given that I am a family man and
 have other hobby projects as well.
 
-Beware of hardcoded paths!
-
-The project is configured to use C11 (with __STRICT_ANSI__ manually undefined), and ARC has been disabled.
-These decisions were made to avoid being dependent on non-standard language/compiler features and because
-memory allocations will be managed manually.
+Beware of hardcoded paths! Also note that this project is configured to use C11 (with __STRICT_ANSI__ manually undefined).
 
 window_base: This directory contains two test applications, one written in Objective C and the other in
 Swift, that are designed to be full streamlined and programatic replacements for window, view, and the
@@ -45,7 +41,7 @@ Launch XCode and build
 Internals
 ---------
 
-Currently using C11 without GNU extensions, though __STRICT_ANSI__ has been undefined, and NOT using ARC.
+Currently using C11 without GNU extensions, though __STRICT_ANSI__ has been undefined.
 
 Assets
 ------

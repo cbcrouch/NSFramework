@@ -30,8 +30,6 @@ typedef NSInteger NFViewportId;
 @property (nonatomic, assign) BOOL stepTransforms;
 
 
-- (instancetype) init;
-
 //
 // TODO: the renderer should have viewport origin and width/height which can be
 //       different than the width/height of the camera i.e. the viewport is the

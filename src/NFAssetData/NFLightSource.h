@@ -20,7 +20,7 @@
 @property (nonatomic, assign) GLKVector3 specular;
 
 @property (nonatomic, assign) GLKVector3 position;
-@property (nonatomic, readonly, retain) NFRGeometry* geometry;
+@property (nonatomic, readonly, strong) NFRGeometry* geometry;
 @end
 
 //

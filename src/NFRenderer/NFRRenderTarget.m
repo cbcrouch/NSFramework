@@ -22,7 +22,7 @@
 @property (nonatomic, assign) GLuint hFBO;
 
 @property (nonatomic, assign) GLuint hRBO;
-@property (nonatomic, assign) GLuint colorAttachmentHandle;
+@property (nonatomic, assign, readwrite) GLuint colorAttachmentHandle;
 
 @end
 
