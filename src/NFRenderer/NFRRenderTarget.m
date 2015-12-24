@@ -22,7 +22,7 @@
 @property (nonatomic, assign) GLuint hFBO;
 
 @property (nonatomic, assign) GLuint hRBO;
-@property (nonatomic, assign) GLuint colorAttachmentTex;
+@property (nonatomic, assign) GLuint colorAttachmentHandle;
 
 @end
 
@@ -94,8 +94,8 @@
     glBindFramebuffer(GL_FRAMEBUFFER, _hFBO);
 
     // add a color attachment
-    _colorAttachmentTex = [NFRRenderTarget generateAttachmentTextureWithWidth:width withHeight:height withDepth:GL_FALSE withStencil:GL_FALSE];
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _colorAttachmentTex, 0);
+    _colorAttachmentHandle = [NFRRenderTarget generateAttachmentTextureWithWidth:width withHeight:height withDepth:GL_FALSE withStencil:GL_FALSE];
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _colorAttachmentHandle, 0);
 
     // attach render buffer to frame buffer
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _hRBO);
@@ -106,9 +106,9 @@
 }
 
 - (void) tearDown {
-    GLuint tempTextureID = self.colorAttachmentTex;
+    GLuint tempTextureID = self.colorAttachmentHandle;
     glDeleteTextures(1, &tempTextureID);
-    self.colorAttachmentTex = tempTextureID;
+    self.colorAttachmentHandle = tempTextureID;
 
     GLuint tempRBO = self.hRBO;
     glDeleteRenderbuffers(1, &tempRBO);
@@ -144,7 +144,7 @@
 }
 
 - (GLuint) getColorAttachmentHandle {
-    return self.colorAttachmentTex;
+    return self.colorAttachmentHandle;
 }
 
 - (void) dealloc {

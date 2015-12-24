@@ -27,7 +27,7 @@
 
 - (void) setTransferSource:(NFRRenderTarget *)transferSource {
     _transferSource = transferSource;
-    self.transferTexHandle = transferSource.getColorAttachmentHandle;
+    self.transferTexHandle = transferSource.colorAttachmentHandle;
 }
 
 - (instancetype) init {
