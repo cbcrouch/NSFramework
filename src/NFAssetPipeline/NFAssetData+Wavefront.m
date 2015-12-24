@@ -28,17 +28,17 @@
 }
 
 - (void) addSubsetWithIndices:(NSMutableArray *)indices ofObject:(WFObject *)wfObj atIndex:(NSUInteger)idx {
-    NFAssetSubset *subset = [self.subsetArray objectAtIndex:idx];
+    NFAssetSubset *subset = (self.subsetArray)[idx];
 
     NSMutableArray *uniqueArray = [[[NSMutableArray alloc] init] autorelease];
-    [uniqueArray addObjectsFromArray:[[NSSet setWithArray:indices] allObjects]];
+    [uniqueArray addObjectsFromArray:[NSSet setWithArray:indices].allObjects];
 
     NSArray *sortedArray = [uniqueArray sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
         return [(NSString *)b compare:(NSString *)a];
     }];
 
-    NFVertex_t *pData = (NFVertex_t *)malloc([uniqueArray count] * sizeof(NFVertex_t));
-    GLushort *pIndices = (GLushort *)malloc([indices count] * sizeof(GLushort));
+    NFVertex_t *pData = (NFVertex_t *)malloc(uniqueArray.count * sizeof(NFVertex_t));
+    GLushort *pIndices = (GLushort *)malloc(indices.count * sizeof(GLushort));
     memset(pData, 0x00, [uniqueArray count] * sizeof(NFVertex_t));
     memset(pIndices, 0x00, [indices count] * sizeof(GLushort));
 
@@ -73,16 +73,16 @@
         // NOTE: this will only work if all the faces are listed after the vertices they reference
         //       (is this guaranteed by the WavefrontObj file format ?? )
 
-        NSUInteger count = [groupParts count];
+        NSUInteger count = groupParts.count;
         NSInteger intValue;
         for (NSUInteger i=0; i<count; ++i) {
             // NOTE: will have an empty string i.e. "" at the texture coordinate or normal position when
             //       there is no texture coordinate given and this will return an intValue of 0
-            intValue = [[groupParts objectAtIndex:i] intValue];
+            intValue = [groupParts[i] intValue];
             switch (i) {
-                case kGroupIndexVertex: vertIndex = normalizeObjIndex(intValue, [[wfObj vertices] count]); break;
-                case kGroupIndexTex: texIndex = normalizeObjIndex(intValue, [[wfObj textureCoords] count]); break;
-                case kGroupIndexNorm: normIndex = normalizeObjIndex(intValue, [[wfObj normals] count]); break;
+                case kGroupIndexVertex: vertIndex = normalizeObjIndex(intValue, wfObj.vertices.count); break;
+                case kGroupIndexTex: texIndex = normalizeObjIndex(intValue, wfObj.textureCoords.count); break;
+                case kGroupIndexNorm: normIndex = normalizeObjIndex(intValue, wfObj.normals.count); break;
                 default: NSAssert(NO, @"Error, unknown face index type"); break;
             }
         }
@@ -93,7 +93,7 @@
 
         if (vertIndex != -1) {
             GLKVector3 vertex;
-            valueObj = [[wfObj vertices] objectAtIndex:vertIndex];
+            valueObj = wfObj.vertices[vertIndex];
             [valueObj getValue:&vertex];
             pData[dataIndex].pos[0] = vertex.x;
             pData[dataIndex].pos[1] = vertex.y;
@@ -103,7 +103,7 @@
 
         if (texIndex != -1) {
             GLKVector3 texCoord;
-            valueObj = [[wfObj textureCoords] objectAtIndex:texIndex];
+            valueObj = wfObj.textureCoords[texIndex];
             [valueObj getValue:&texCoord];
             pData[dataIndex].texCoord[0] = texCoord.s;
             pData[dataIndex].texCoord[1] = texCoord.t;
@@ -112,7 +112,7 @@
 
         if (normIndex != -1) {
             GLKVector3 normal;
-            valueObj = [[wfObj normals] objectAtIndex:normIndex];
+            valueObj = wfObj.normals[normIndex];
             [valueObj getValue:&normal];
             pData[dataIndex].norm[0] = normal.x;
             pData[dataIndex].norm[1] = normal.y;
@@ -121,7 +121,7 @@
         }
 
         // record data index to be associated with specific Wavefront obj face value
-        NSNumber *num = [NSNumber numberWithInt:dataIndex];
+        NSNumber *num = @(dataIndex);
         [indexArray addObject:num];
         ++dataIndex;
     }
@@ -133,17 +133,17 @@
     // iterate through faceStrArray and set index value based on dictionary lookup
     dataIndex = 0;
     for (NSString *faceStr in indices) {
-        NSNumber *indexNum = [indexDict objectForKey:faceStr];
-        pIndices[dataIndex] = (GLushort)[indexNum intValue];
+        NSNumber *indexNum = indexDict[faceStr];
+        pIndices[dataIndex] = (GLushort)indexNum.intValue;
         ++dataIndex;
     }
 
     // allocate and load vertex/index data into the subset
-    [subset allocateIndicesWithNumElts:[indices count]];
-    [subset loadIndexData:pIndices ofSize:[indices count] * sizeof(GLushort)];
+    [subset allocateIndicesWithNumElts:indices.count];
+    [subset loadIndexData:pIndices ofSize:indices.count * sizeof(GLushort)];
 
-    [subset allocateVerticesOfType:kVertexFormatDefault withNumVertices:[uniqueArray count]];
-    [subset loadVertexData:pData ofType:kVertexFormatDefault withNumVertices:[uniqueArray count]];
+    [subset allocateVerticesOfType:kVertexFormatDefault withNumVertices:uniqueArray.count];
+    [subset loadVertexData:pData ofType:kVertexFormatDefault withNumVertices:uniqueArray.count];
 
     free(pData);
     free(pIndices);

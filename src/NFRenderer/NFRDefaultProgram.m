@@ -16,13 +16,13 @@
 
 - (void) loadProgramInputPoints {
     // shader attributes
-    [self setVertexAttribute:glGetAttribLocation(self.hProgram, "v_position")];
+    self.vertexAttribute = glGetAttribLocation(self.hProgram, "v_position");
     NSAssert(self.vertexAttribute != -1, @"Failed to bind attribute");
 
-    [self setNormalAttribute:glGetAttribLocation(self.hProgram, "v_normal")];
+    self.normalAttribute = glGetAttribLocation(self.hProgram, "v_normal");
     NSAssert(self.normalAttribute != -1, @"Failed to bind attribute");
 
-    [self setTexCoordAttribute:glGetAttribLocation(self.hProgram, "v_texcoord")];
+    self.texCoordAttribute = glGetAttribLocation(self.hProgram, "v_texcoord");
     NSAssert(self.texCoordAttribute != -1, @"Failed to bind attribute");
 
     // material struct uniform locations
@@ -46,7 +46,7 @@
     phongMat.specularMapLoc = glGetUniformLocation(self.hProgram, "material.specularMap");
     NSAssert(phongMat.diffuseMapLoc != -1, @"failed to get uniform location");
 
-    [self setMaterialUniforms:phongMat];
+    self.materialUniforms = phongMat;
 
     // load point light uniforms
     pointLightUniforms_t pointLight;
@@ -72,7 +72,7 @@
     pointLight.quadraticLoc = glGetUniformLocation(self.hProgram, "pointlight.quadratic");
     NSAssert(pointLight.quadraticLoc != -1, @"failed to get uniform location");
 
-    [self setPointLightUniforms:pointLight];
+    self.pointLightUniforms = pointLight;
 
     // load directional light uniforms
     directionalLightUniforms_t dirLight;
@@ -89,7 +89,7 @@
     dirLight.specularLoc = glGetUniformLocation(self.hProgram, "directionalLight.specular");
     NSAssert(dirLight.specularLoc != -1, @"failed to get uniform location");
 
-    [self setDirLightUniforms:dirLight];
+    self.dirLightUniforms = dirLight;
 
     // load spot light uniforms
     spotLightUniforms_t spotLight;
@@ -124,18 +124,18 @@
     spotLight.quadraticLoc = glGetUniformLocation(self.hProgram, "spotLight.quadratic");
     NSAssert(spotLight.quadraticLoc != -1, @"failed to get uniform location");
 
-    [self setSpotLightUniforms:spotLight];
+    self.spotLightUniforms = spotLight;
 
     // model matrix uniform location
-    [self setModelMatrixLocation:glGetUniformLocation(self.hProgram, (const GLchar *)"model")];
+    self.modelMatrixLocation = glGetUniformLocation(self.hProgram, (const GLchar *)"model");
     NSAssert(self.modelMatrixLocation != -1, @"failed to get model matrix uniform location");
 
     // view position uniform location
-    [self setViewPositionLocation:glGetUniformLocation(self.hProgram, "viewPos")];
+    self.viewPositionLocation = glGetUniformLocation(self.hProgram, "viewPos");
     NSAssert(self.viewPositionLocation != -1, @"failed to get uniform location");
 
     // uniform buffer for view and projection matrix
-    [self setHUBO:[NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:self.hProgram]];
+    self.hUBO = [NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:self.hProgram];
     NSAssert(self.hUBO != 0, @"failed to get uniform buffer handle");
 
     CHECK_GL_ERROR();
@@ -236,7 +236,7 @@
 
     for (NSString* key in geometry.textureDictionary) {
         if ([key isEqualToString:@"diffuseTexture"]) {
-            NFRDataMapGL* textureGL = [geometry.textureDictionary objectForKey:key];
+            NFRDataMapGL* textureGL = (geometry.textureDictionary)[key];
             [textureGL activateTexture:GL_TEXTURE0 withUniformLocation:self.materialUniforms.diffuseMapLoc];
         }
     }
@@ -255,7 +255,7 @@
     // TODO: only if debug then deactivate all textures
     //
     for (id key in geometry.textureDictionary) {
-        NFRDataMapGL* textureGL = [geometry.textureDictionary objectForKey:key];
+        NFRDataMapGL* textureGL = (geometry.textureDictionary)[key];
         [textureGL deactivateTexture];
     }
 

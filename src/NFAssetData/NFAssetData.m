@@ -53,26 +53,26 @@
         return GLKMatrix4RotateY(modelMatrix, angle);
     };
 
-    GLKMatrix4 model = [[self.subsetArray objectAtIndex:0] subsetModelMat];
-    [[self.subsetArray objectAtIndex:0] setSubsetModelMat:transformBlock(model, secsElapsed)];
+    GLKMatrix4 model = [(self.subsetArray)[0] subsetModelMat];
+    [(self.subsetArray)[0] setSubsetModelMat:transformBlock(model, secsElapsed)];
 
     // update geometry object model matrix
     for (NFAssetSubset *subset in self.subsetArray) {
         GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.modelMatrix, subset.subsetModelMat);
-        [self.geometry setModelMatrix:renderModelMat];
+        (self.geometry).modelMatrix = renderModelMat;
     }
 }
 
 - (void) applyUnitScalarMatrix {
-    GLKMatrix4 model = [[self.subsetArray objectAtIndex:0] unitScalarMatrix];
+    GLKMatrix4 model = [(self.subsetArray)[0] unitScalarMatrix];
     //[[self.subsetArray objectAtIndex:0] setUnitScalarMatrix:[[self.subsetArray objectAtIndex:0] modelMatrix]];
-    [[self.subsetArray objectAtIndex:0] setSubsetModelMat:model];
+    [(self.subsetArray)[0] setSubsetModelMat:model];
 }
 
 - (void) applyOriginCenterMatrix {
-    GLKMatrix4 model = [[self.subsetArray objectAtIndex:0] originCenterMatrix];
+    GLKMatrix4 model = [(self.subsetArray)[0] originCenterMatrix];
     //[[self.subsetArray objectAtIndex:0] setOriginCenterMatrix:[[self.subsetArray objectAtIndex:0] modelMatrix]];
-    [[self.subsetArray objectAtIndex:0] setSubsetModelMat:model];
+    [(self.subsetArray)[0] setSubsetModelMat:model];
 }
 
 - (void) generateRenderables {
@@ -85,7 +85,7 @@
     // TODO: need a much cleaner way of handling the NFRBufferAttributes vertex format
     //
     NF_VERTEX_FORMAT vertexFormat;
-    NFAssetSubset* testSubset = [self.subsetArray objectAtIndex:0];
+    NFAssetSubset* testSubset = (self.subsetArray)[0];
     vertexFormat = testSubset.vertexFormat;
 
     NFRBufferAttributes* bufferAttribs = [[[NFRBufferAttributes alloc] initWithFormat:vertexFormat] autorelease];
@@ -93,20 +93,20 @@
     NFRBuffer* vertexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeVertex usingAttributes:bufferAttribs] autorelease];
     NFRBuffer* indexBuffer = [[[NFRBuffer alloc] initWithType:kBufferTypeIndex usingAttributes:bufferAttribs] autorelease];
 
-    [self.geometry setVertexBuffer:vertexBuffer];
-    [self.geometry setIndexBuffer:indexBuffer];
+    (self.geometry).vertexBuffer = vertexBuffer;
+    (self.geometry).indexBuffer = indexBuffer;
 
     for (NFAssetSubset *subset in self.subsetArray) {
-        NFSurfaceModel *surface = [subset surfaceModel];
+        NFSurfaceModel *surface = subset.surfaceModel;
         if (surface) {
-            [self.geometry setSurfaceModel:surface];
+            (self.geometry).surfaceModel = surface;
             [self.geometry syncSurfaceModel];
         }
 
-        [self.geometry setMode:subset.mode];
+        (self.geometry).mode = subset.mode;
 
         GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.modelMatrix, subset.subsetModelMat);
-        [self.geometry setModelMatrix:renderModelMat];
+        (self.geometry).modelMatrix = renderModelMat;
 
         NFR_BUFFER_DATA_TYPE vertexBufferType = kBufferDataTypeUnknown;
         switch (subset.vertexFormat) {

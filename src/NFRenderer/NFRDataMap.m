@@ -33,17 +33,17 @@
 }
 
 - (void) dealloc {
-    if ([self data] != NULL) {
-        free([self data]);
+    if (self.data != NULL) {
+        free(self.data);
     }
     [super dealloc];
 }
 
 - (void) loadWithData:(GLubyte *)pData ofSize:(CGRect)rect ofType:(GLenum)type withFormat:(GLenum)format {
-    [self setWidth:CGRectGetWidth(rect)];
-    [self setHeight:CGRectGetHeight(rect)];
-    [self setFormat:format];
-    [self setType:type];
+    self.width = CGRectGetWidth(rect);
+    self.height = CGRectGetHeight(rect);
+    self.format = format;
+    self.type = type;
 
     //
     // TODO: add support for additional types and formats
@@ -75,14 +75,14 @@
             break;
     }
 
-    [self setRowByteSize:rect.size.width * typeSize * componentsPerElt];
-    [self setSize:rect.size.height * [self rowByteSize]];
+    self.rowByteSize = rect.size.width * typeSize * componentsPerElt;
+    self.size = rect.size.height * self.rowByteSize;
 
-    GLubyte *pDataCopy = (GLubyte *)malloc([self size]);
+    GLubyte *pDataCopy = (GLubyte *)malloc(self.size);
     NSAssert(pDataCopy != NULL, @"ERROR: failed to allocate image data buffer");
 
     memcpy(pDataCopy, pData, [self size]);
-    [self setData:pDataCopy];
+    self.data = pDataCopy;
 }
 
 @end

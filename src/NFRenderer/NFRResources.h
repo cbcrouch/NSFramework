@@ -28,7 +28,7 @@
 @property (nonatomic, assign, readonly) NF_VERTEX_FORMAT format;
 
 - (instancetype) init __attribute__((unavailable("ERROR: format must be provided upon initialization")));
-- (instancetype) initWithFormat:(NF_VERTEX_FORMAT)format;
+- (instancetype) initWithFormat:(NF_VERTEX_FORMAT)format NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -62,7 +62,7 @@ typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
 @property (nonatomic, assign, readonly) GLuint bufferHandle;
 
 - (instancetype) init __attribute__((unavailable("ERROR: type and attributes must be provided upon initialization")));
-- (instancetype) initWithType:(NFR_BUFFER_TYPE)type usingAttributes:(NFRBufferAttributes*)bufferAttributes;
+- (instancetype) initWithType:(NFR_BUFFER_TYPE)type usingAttributes:(NFRBufferAttributes*)bufferAttributes NS_DESIGNATED_INITIALIZER;
 
 - (void) loadData:(void*)pData ofType:(NFR_BUFFER_DATA_TYPE)dataType numberOfElements:(NSUInteger)numElements;
 

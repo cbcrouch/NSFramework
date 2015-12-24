@@ -13,14 +13,14 @@
 
 - (void) loadProgramInputPoints {
     // shader uniforms
-    [self setTextureUniform:glGetUniformLocation(self.hProgram, "screenTexture")];
+    self.textureUniform = glGetUniformLocation(self.hProgram, "screenTexture");
     NSAssert(self.textureUniform != -1, @"failed to get uniform location");
 
     // shader attributes
-    [self setVertexAttribute:glGetAttribLocation(self.hProgram, "v_position")];
+    self.vertexAttribute = glGetAttribLocation(self.hProgram, "v_position");
     NSAssert(self.vertexAttribute != -1, @"Failed to bind attribute");
 
-    [self setTexCoordAttribute:glGetAttribLocation(self.hProgram, "v_texcoord")];
+    self.texCoordAttribute = glGetAttribLocation(self.hProgram, "v_texcoord");
     NSAssert(self.texCoordAttribute != -1, @"Failed to bind attribute");
 
     CHECK_GL_ERROR();

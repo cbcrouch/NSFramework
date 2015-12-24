@@ -16,21 +16,21 @@
 
 - (void) loadProgramInputPoints {
     // shader attributes
-    [self setVertexAttribute:glGetAttribLocation(self.hProgram, "v_position")];
+    self.vertexAttribute = glGetAttribLocation(self.hProgram, "v_position");
     NSAssert(self.vertexAttribute != -1, @"Failed to bind attribute");
 
-    [self setNormalAttribute:glGetAttribLocation(self.hProgram, "v_normal")];
+    self.normalAttribute = glGetAttribLocation(self.hProgram, "v_normal");
     NSAssert(self.normalAttribute != -1, @"Failed to bind attribute");
 
-    [self setColorAttribute:glGetAttribLocation(self.hProgram, "v_color")];
+    self.colorAttribute = glGetAttribLocation(self.hProgram, "v_color");
     NSAssert(self.colorAttribute != -1, @"Failed to bind attribute");
 
     // setup uniform for model matrix
-    [self setModelMatrixLocation:glGetUniformLocation(self.hProgram, (const GLchar *)"model")];
+    self.modelMatrixLocation = glGetUniformLocation(self.hProgram, (const GLchar *)"model");
     NSAssert(self.modelMatrixLocation != -1, @"Failed to get model matrix uniform location");
 
     // uniform buffer for view and projection matrix
-    [self setHUBO:[NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:self.hProgram]];
+    self.hUBO = [NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:self.hProgram];
     NSAssert(self.hUBO != 0, @"failed to get uniform buffer handle");
 
     CHECK_GL_ERROR();

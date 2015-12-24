@@ -108,15 +108,15 @@
 - (void) tearDown {
     GLuint tempTextureID = self.colorAttachmentTex;
     glDeleteTextures(1, &tempTextureID);
-    [self setColorAttachmentTex:tempTextureID];
+    self.colorAttachmentTex = tempTextureID;
 
     GLuint tempRBO = self.hRBO;
     glDeleteRenderbuffers(1, &tempRBO);
-    [self setHRBO:tempRBO];
+    self.hRBO = tempRBO;
 
     GLuint tempFBO = _hFBO;
     glDeleteFramebuffers(1, &tempFBO);
-    [self setHFBO:tempFBO];
+    self.hFBO = tempFBO;
 
     CHECK_GL_ERROR();
 }

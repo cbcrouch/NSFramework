@@ -147,7 +147,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     NSTrackingAreaOptions trackingOptions = NSTrackingCursorUpdate | NSTrackingEnabledDuringMouseDrag |
         NSTrackingMouseEnteredAndExited | NSTrackingActiveInActiveApp;
 
-    m_trackingArea = [[NSTrackingArea alloc] initWithRect:[self bounds] options:trackingOptions owner:self userInfo:nil];
+    m_trackingArea = [[NSTrackingArea alloc] initWithRect:self.bounds options:trackingOptions owner:self userInfo:nil];
     [self addTrackingArea:m_trackingArea];
 }
 
@@ -192,8 +192,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
                                                object:self];
 
     // setup to handle mouse moved events
-    [[self window] makeFirstResponder:self];
-    [[self window] setAcceptsMouseMovedEvents:YES];
+    [self.window makeFirstResponder:self];
+    [self.window setAcceptsMouseMovedEvents:YES];
 }
 
 // method is called only once after the OpenGL context is made the current context, subclasses that
@@ -219,7 +219,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     [super lockFocus];
 
     NSOpenGLContext* context = self.glContext;
-    if ([context view] != self) {
+    if (context.view != self) {
         // unlike NSOpenGLView custom NSView does not export a -prepareOpenGL method to override
         // therefore it must be called explicitly once the focus has been locked (won't have a valid
         // frame buffer until the focus has been locked)
@@ -232,7 +232,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
         // it would appear that when setting an NSView to the NSOpenGLContext it does attempt to
         // send a prepareOpenGL selector the NSView whether or not it is implemented
-        [context setView:self];
+        context.view = self;
     }
 }
 
@@ -244,10 +244,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 - (void) drawRect:(CGRect)dirtyRect {
     // NOTE: the renderer draws on a secondary thread through the display link while the resize call
     //       occurs on the main thread hence the context lock to keep the threads in sync
-    CGLLockContext([self.glContext CGLContextObj]);
+    CGLLockContext((self.glContext).CGLContextObj);
 
     // NOTE: not using dirtyRect since it will only contain the portion of the view that needs updating
-    CGRect rect = [self bounds];
+    CGRect rect = self.bounds;
     [self.glRenderer resizeToRect:rect];
 
     // use CGSize if not supporting multiple viewports per renderer
@@ -263,7 +263,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     // would need ability to resize a specified viewport
 
 
-    CGLUnlockContext([self.glContext CGLContextObj]);
+    CGLUnlockContext((self.glContext).CGLContextObj);
 }
 
 - (void) setupTiming {
@@ -322,10 +322,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //       the ability to set the function called or insertTest will have to query state from
     //       the application
     //
-    [self interpretKeyEvents:[NSArray arrayWithObjects:theEvent, nil]];
+    [self interpretKeyEvents:@[theEvent]];
 
 
-    unichar key = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
+    unichar key = [theEvent.charactersIgnoringModifiers characterAtIndex:0];
     switch (key) {
         case 'w':
             [self.camera setTranslationState:kCameraStateActFwd];
@@ -369,7 +369,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             break;
 
         case ' ':
-            [self.glRenderer setStepTransforms:!self.glRenderer.stepTransforms];
+            (self.glRenderer).stepTransforms = !self.glRenderer.stepTransforms;
             break;
 
         default:
@@ -378,7 +378,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 }
 
 - (void) keyUp:(NSEvent *)theEvent {
-    unichar key = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
+    unichar key = [theEvent.charactersIgnoringModifiers characterAtIndex:0];
     switch (key) {
         case 'w':
             [self.camera setTranslationState:kCameraStateNilFwd];
@@ -499,7 +499,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //       (should most likely increment by the last angular increment
     //
 
-    CGPoint point = CGEventGetLocation([theEvent CGEvent]);
+    CGPoint point = CGEventGetLocation(theEvent.CGEvent);
 
     CGPoint centerPoint;
     CGDirectDisplayID displayId = CGMainDisplayID();
@@ -657,8 +657,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     NSAssert(rv == kCVReturnSuccess, @"Failed to set display link callback");
 
     // convert NSGL objects to CGL objects
-    CGLContextObj cglContext = [self.glContext CGLContextObj];
-    CGLPixelFormatObj cglPixelFormat = [self.pixelFormat CGLPixelFormatObj];
+    CGLContextObj cglContext = (self.glContext).CGLContextObj;
+    CGLPixelFormatObj cglPixelFormat = (self.pixelFormat).CGLPixelFormatObj;
 
     // set the display link for the current OpenGL context
     rv = CVDisplayLinkSetCurrentCGDisplayFromOpenGLContext(self.displayLink, cglContext, cglPixelFormat);
@@ -724,7 +724,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
     // when resizing the view, reshape is called automatically on the main thread
     // add a mutex around to avoid the threads accessing the context simultaneously	when resizing
-    CGLLockContext([self.glContext CGLContextObj]);
+    CGLLockContext((self.glContext).CGLContextObj);
 
 
     //
@@ -753,8 +753,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     [self.glRenderer renderFrame];
 
     // swap front and back buffers
-    CGLFlushDrawable([self.glContext CGLContextObj]);
-    CGLUnlockContext([self.glContext CGLContextObj]);
+    CGLFlushDrawable((self.glContext).CGLContextObj);
+    CGLUnlockContext((self.glContext).CGLContextObj);
 
     //
     // TODO: measure the frame rate and display as FPS and a running average of us per frame

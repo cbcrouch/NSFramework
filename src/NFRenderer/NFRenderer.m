@@ -108,7 +108,7 @@
 
     viewportArray[0].uniqueId = 1;
     viewportArray[0].viewRect = CGRectMake(0.0f, 0.0f, (CGFloat)DEFAULT_VIEWPORT_WIDTH, (CGFloat)DEFAULT_VIEWPORT_HEIGHT);
-    [self setViewports:[NSArray arrayWithObjects:viewportArray count:MAX_NUM_VIEWPORTS]];
+    self.viewports = [NSArray arrayWithObjects:viewportArray count:MAX_NUM_VIEWPORTS];
 
     // shader objects
     m_phongObject = [[NFRUtils createProgramObject:@"DefaultModel"] retain];
@@ -126,10 +126,10 @@
 
     // render requests
     m_renderRequest = [[[NFRRenderRequest alloc] init] retain];
-    [m_renderRequest setProgram:m_phongObject];
+    m_renderRequest.program = m_phongObject;
 
     m_debugRenderRequest = [[[NFRRenderRequest alloc] init] retain];
-    [m_debugRenderRequest setProgram:m_debugObject];
+    m_debugRenderRequest.program = m_debugObject;
 
 
     //
@@ -138,7 +138,7 @@
     m_renderTarget = [[[NFRRenderTarget alloc] init] retain];
 
     m_displayTarget = [[[NFRDisplayTarget alloc] init] retain];
-    [m_displayTarget setTransferSource:m_renderTarget];
+    m_displayTarget.transferSource = m_renderTarget;
 
 
 
@@ -199,7 +199,7 @@
     //
     //ASSET_TYPE assetType = kSolidCylinder;
     ASSET_TYPE assetType = kSolidCone;
-    m_pProceduralData = [NFAssetLoader allocAssetDataOfType:assetType withArgs:[NSNumber numberWithUnsignedInteger:kVertexFormatDefault], nil];
+    m_pProceduralData = [NFAssetLoader allocAssetDataOfType:assetType withArgs:@(kVertexFormatDefault), nil];
 
     GLKVector3 position = GLKVector3Make(1.0f, 1.0f, -1.0f);
 
@@ -282,8 +282,8 @@
     [m_debugCmdBuffer addGeometry:m_spotLight.geometry];
 
     // add command buffers to render requests
-    [[m_renderRequest commandBufferArray] addObject:m_defaultCmdBuffer];
-    [[m_debugRenderRequest commandBufferArray] addObject:m_debugCmdBuffer];
+    [m_renderRequest.commandBufferArray addObject:m_defaultCmdBuffer];
+    [m_debugRenderRequest.commandBufferArray addObject:m_debugCmdBuffer];
 
     return self;
 }
@@ -381,7 +381,7 @@
     //
     // TODO: move/merge this into NFRViewport or keep separate and rename NFRViewport
     //
-    NFViewport *viewport = [self.viewports objectAtIndex:0];
+    NFViewport *viewport = (self.viewports)[0];
     if (viewport.viewRect.size.width != CGRectGetWidth(rect) || viewport.viewRect.size.height != CGRectGetHeight(rect)) {
         viewport.viewRect = rect;
         glViewport((GLint)0, (GLint)0, (GLsizei)CGRectGetWidth(rect), (GLsizei)CGRectGetHeight(rect));

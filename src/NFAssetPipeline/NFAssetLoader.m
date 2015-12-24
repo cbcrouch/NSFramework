@@ -42,12 +42,12 @@
             //
             [wavefrontObj parseFile];
 
-            if ([[[wavefrontObj object] textureCoords] count] == 0) {
-                [[wavefrontObj object] calculateTextureCoordinates];
+            if (wavefrontObj.object.textureCoords.count == 0) {
+                [wavefrontObj.object calculateTextureCoordinates];
             }
 
-            if ([[[wavefrontObj object] normals] count] == 0) {
-                [[wavefrontObj object] calculateNormals];
+            if (wavefrontObj.object.normals.count == 0) {
+                [wavefrontObj.object calculateNormals];
             }
 
 
@@ -55,27 +55,27 @@
             // TODO: only one Wavefront object is currently supported, will need to update
             //       when support has been added for multiple Wavefront objects
             //
-            [asset setNumberOfSubsets:[[[wavefrontObj object] groups] count]];
+            [asset setNumberOfSubsets:wavefrontObj.object.groups.count];
 
             NSUInteger index = 0;
-            for (WFGroup *group in [[wavefrontObj object] groups]) {
-                [asset addSubsetWithIndices:[group faceStrArray] ofObject:[wavefrontObj object] atIndex:index];
+            for (WFGroup *group in wavefrontObj.object.groups) {
+                [asset addSubsetWithIndices:group.faceStrArray ofObject:wavefrontObj.object atIndex:index];
                 ++index;
             }
 
 
             // loop through all values and convert them into NFLightingModel objects
             NSMutableArray *surfaceModels = [[[NSMutableArray alloc] init] autorelease];
-            for (NFSurfaceModel *surface in [wavefrontObj materialsArray]) {
+            for (NFSurfaceModel *surface in wavefrontObj.materialsArray) {
                 // would convert the asset surface model to the internal framework
                 // representation here if they were different
                 [surfaceModels addObject:surface];
             }
 
-            [asset setSurfaceModelArray:surfaceModels];
+            asset.surfaceModelArray = surfaceModels;
 
             NFSurfaceModel * (^findSurfaceModel)(NSString *) = ^ NFSurfaceModel * (NSString *name) {
-                for (NFSurfaceModel *surface in [asset surfaceModelArray]) {
+                for (NFSurfaceModel *surface in asset.surfaceModelArray) {
                     if (surface.name == name) {
                         return surface;
                     }
@@ -84,11 +84,11 @@
             };
 
             NSInteger subsetIndex = 0;
-            for (WFGroup *group in [[wavefrontObj object] groups]) {
+            for (WFGroup *group in wavefrontObj.object.groups) {
                 // NOTE: subsets are 1-1 with the groups, this code will need to be udpated
                 //       when support for multiple objects is added
-                NFAssetSubset *subset = [[asset subsetArray] objectAtIndex:subsetIndex];
-                subset.surfaceModel = findSurfaceModel([group materialName]);
+                NFAssetSubset *subset = asset.subsetArray[subsetIndex];
+                subset.surfaceModel = findSurfaceModel(group.materialName);
                 ++subsetIndex;
             }
         }
@@ -105,23 +105,23 @@
 
             asset.surfaceModelArray = surfaceModels;
 
-            for (NFAssetSubset *subset in [asset subsetArray]) {
-                subset.surfaceModel = [surfaceModels objectAtIndex:0];
+            for (NFAssetSubset *subset in asset.subsetArray) {
+                subset.surfaceModel = surfaceModels[0];
             }
         }
         break;
 
         case kGridWireframe:
             [asset createGridOfSize:4];
-            for (NFAssetSubset *subset in [asset subsetArray]) {
-                [subset setDrawMode:kDrawLines];
+            for (NFAssetSubset *subset in asset.subsetArray) {
+                subset.drawMode = kDrawLines;
             }
         break;
 
         case kAxisWireframe:
             [asset createAxisOfSize:10];
-            for (NFAssetSubset *subset in [asset subsetArray]) {
-                [subset setDrawMode:kDrawLines];
+            for (NFAssetSubset *subset in asset.subsetArray) {
+                subset.drawMode = kDrawLines;
             }
         break;
 
@@ -149,8 +149,8 @@
                 [surfaceModels addObject:surface];
 
                 asset.surfaceModelArray = surfaceModels;
-                for (NFAssetSubset *subset in [asset subsetArray]) {
-                    subset.surfaceModel = [surfaceModels objectAtIndex:0];
+                for (NFAssetSubset *subset in asset.subsetArray) {
+                    subset.surfaceModel = surfaceModels[0];
                 }
             }
         }
@@ -175,8 +175,8 @@
                 [surfaceModels addObject:surface];
 
                 asset.surfaceModelArray = surfaceModels;
-                for (NFAssetSubset *subset in [asset subsetArray]) {
-                    subset.surfaceModel = [surfaceModels objectAtIndex:0];
+                for (NFAssetSubset *subset in asset.subsetArray) {
+                    subset.surfaceModel = surfaceModels[0];
                 }
             }
         }
@@ -201,8 +201,8 @@
                 [surfaceModels addObject:surface];
 
                 asset.surfaceModelArray = surfaceModels;
-                for (NFAssetSubset *subset in [asset subsetArray]) {
-                    subset.surfaceModel = [surfaceModels objectAtIndex:0];
+                for (NFAssetSubset *subset in asset.subsetArray) {
+                    subset.surfaceModel = surfaceModels[0];
                 }
             }
         }

@@ -50,6 +50,6 @@ typedef NS_ENUM(NSUInteger, BUFFER_TYPE) {
 //
 // TODO: would ideally prefer something a little cleaner than passing a raw OpenGL handle
 //
-- (GLuint) getColorAttachmentHandle;
+@property (nonatomic, getter=getColorAttachmentHandle, readonly) GLuint colorAttachmentHandle;
 
 @end

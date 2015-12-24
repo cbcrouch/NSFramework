@@ -46,19 +46,19 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
 + (id<NFRProgram>) createProgramObject:(NSString *)programName {
     if ([programName isEqualToString:@"DefaultModel"]) {
         NFRDefaultProgram* programObj = [[[NFRDefaultProgram alloc] init] autorelease];
-        [programObj setHProgram:[NFRUtils createProgram:programName]];
+        programObj.hProgram = [NFRUtils createProgram:programName];
         [programObj loadProgramInputPoints];
         return programObj;
     }
     else if ([programName isEqualToString:@"Debug"]) {
         NFRDebugProgram* programObj = [[[NFRDebugProgram alloc] init] autorelease];
-        [programObj setHProgram:[NFRUtils createProgram:programName]];
+        programObj.hProgram = [NFRUtils createProgram:programName];
         [programObj loadProgramInputPoints];
         return programObj;
     }
     else if ([programName isEqualToString:@"Display"]) {
         NFRDisplayProgram* programObj = [[[NFRDisplayProgram alloc] init] autorelease];
-        [programObj setHProgram:[NFRUtils createProgram:programName]];
+        programObj.hProgram = [NFRUtils createProgram:programName];
         [programObj loadProgramInputPoints];
         return programObj;
     }
@@ -446,11 +446,11 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
     glBindBuffer(GL_UNIFORM_BUFFER, hUBO);
 
     // will allocate buffer's internal storage
-    glBufferData(GL_UNIFORM_BUFFER, [dataArray count] * matrixSize, NULL, GL_STATIC_READ);
+    glBufferData(GL_UNIFORM_BUFFER, dataArray.count * matrixSize, NULL, GL_STATIC_READ);
 
     GLKMatrix4 matrix;
-    for (int i=0; i<[dataArray count]; ++i) {
-        NSValue* valueObj = [dataArray objectAtIndex:i];
+    for (int i=0; i<dataArray.count; ++i) {
+        NSValue* valueObj = dataArray[i];
         [valueObj getValue:&matrix];
         glBufferSubData(GL_UNIFORM_BUFFER, (GLintptr)(i * offset), matrixSize, matrix.m);
     }

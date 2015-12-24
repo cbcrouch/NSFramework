@@ -52,11 +52,11 @@ static const char *g_normType = @encode(GLKVector3);
 // g_paramType
 
 GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *line, NSString *prefix) {
-    NSString *truncLine = [line substringFromIndex:[prefix length]];
+    NSString *truncLine = [line substringFromIndex:prefix.length];
     NSArray *words = [truncLine componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     GLKVector3 vec3;
     for (int i=0; i<3; ++i) {
-        vec3.v[i] = [[words objectAtIndex:i] floatValue];
+        vec3.v[i] = [words[i] floatValue];
     }
     return vec3;
 };
@@ -106,18 +106,18 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     //       performed to allow artist to draw on a "flat" model surface)
     //
 
-    NSUInteger vertexCount = [[self vertices] count];
+    NSUInteger vertexCount = self.vertices.count;
     for (WFGroup* group in self.groups) {
         NSAssert([[group faceStrArray] count] % 3 == 0, @"ERROR: face string array can only process triangles");
-        NSMutableArray* faceStrings = [group faceStrArray];
-        NSUInteger faceCount = [faceStrings count];
+        NSMutableArray* faceStrings = group.faceStrArray;
+        NSUInteger faceCount = faceStrings.count;
 
         BOOL hasNormals = NO;
         NSArray *groupParts = [faceStrings[0] componentsSeparatedByString:@"/"];
-        for (NSInteger i=0; i<[groupParts count]; ++i) {
-            NSInteger intValue = [[groupParts objectAtIndex:i] integerValue];
+        for (NSInteger i=0; i<groupParts.count; ++i) {
+            NSInteger intValue = [groupParts[i] integerValue];
             switch (i) {
-                case kGroupIndexNorm: normalizeObjIndex(intValue, [self.normals count]);
+                case kGroupIndexNorm: normalizeObjIndex(intValue, (self.normals).count);
                     hasNormals = YES;
                     break;
                 default: break;
@@ -127,7 +127,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
         for (int i=0; i<faceCount; ++i) {
             int index = -1;
             if (hasNormals) {
-                index = [[[faceStrings[i] componentsSeparatedByString:@"/"] objectAtIndex:0] intValue];
+                index = [faceStrings[i] componentsSeparatedByString:@"/"][0].intValue;
             }
             else {
                 index = [faceStrings[i] intValue];
@@ -136,7 +136,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
 
             GLKVector3 vertex;
-            NSValue *value = [self.vertices objectAtIndex:index];
+            NSValue *value = (self.vertices)[index];
             [value getValue:&vertex];
 
             // simple UV mapping algorithm (basically treat model as if it is spherical)
@@ -215,13 +215,13 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
                 //
                 // TODO: have not yet tested updating face strings that already contain normals
                 //
-                int normCoordIndex = [[[faceStrings[i] componentsSeparatedByString:@"/"] objectAtIndex:2] intValue];
-                NSString* str = [NSString stringWithFormat:@"%d/%d/%d", index+1, normCoordIndex, (int)([self.textureCoords count])];
-                [[group faceStrArray] setObject:str atIndexedSubscript:i];
+                int normCoordIndex = [faceStrings[i] componentsSeparatedByString:@"/"][2].intValue;
+                NSString* str = [NSString stringWithFormat:@"%d/%d/%d", index+1, normCoordIndex, (int)((self.textureCoords).count)];
+                [group.faceStrArray setObject:str atIndexedSubscript:i];
             }
             else {
-                NSString* str = [NSString stringWithFormat:@"%d/%d", index+1, (int)([self.textureCoords count])];
-                [[group faceStrArray] setObject:str atIndexedSubscript:i];
+                NSString* str = [NSString stringWithFormat:@"%d/%d", index+1, (int)((self.textureCoords).count)];
+                [group.faceStrArray setObject:str atIndexedSubscript:i];
             }
         }
     }
@@ -241,7 +241,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     //
     // NOTE: Wavefront obj normals are per-vertex
     //
-    NSUInteger vertexCount = [[self vertices] count];
+    NSUInteger vertexCount = self.vertices.count;
     NFVertex_t vertexArray[vertexCount];
     for (int i=0; i<vertexCount; ++i) {
         GLKVector3 vert;
@@ -263,8 +263,8 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
     for (WFGroup* group in self.groups) {
         NSAssert([[group faceStrArray] count] % 3 == 0, @"ERROR: face string array can only process triangles");
-        NSMutableArray* faceStrings = [group faceStrArray];
-        NSUInteger faceCount = [faceStrings count];
+        NSMutableArray* faceStrings = group.faceStrArray;
+        NSUInteger faceCount = faceStrings.count;
 
         //
         // NOTE: test one face to see if it contains a texture coordinate, doing this rather than checking if
@@ -273,10 +273,10 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
         //
         BOOL hasTextureCoordinates = NO;
         NSArray *groupParts = [faceStrings[0] componentsSeparatedByString:@"/"];
-        for (NSInteger i=0; i<[groupParts count]; ++i) {
-            NSInteger intValue = [[groupParts objectAtIndex:i] integerValue];
+        for (NSInteger i=0; i<groupParts.count; ++i) {
+            NSInteger intValue = [groupParts[i] integerValue];
             switch (i) {
-                case kGroupIndexTex: normalizeObjIndex(intValue, [self.textureCoords count]);
+                case kGroupIndexTex: normalizeObjIndex(intValue, (self.textureCoords).count);
                     hasTextureCoordinates = YES;
                     break;
                 default: break;
@@ -292,9 +292,9 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
             int index2 = -1;
             int index3 = -1;
             if (hasTextureCoordinates) {
-                index1 = [[[faceStrings[i] componentsSeparatedByString:@"/"] objectAtIndex:0] intValue];
-                index2 = [[[faceStrings[i + 1] componentsSeparatedByString:@"/"] objectAtIndex:0] intValue];
-                index3 = [[[faceStrings[i + 2] componentsSeparatedByString:@"/"] objectAtIndex:0] intValue];
+                index1 = [faceStrings[i] componentsSeparatedByString:@"/"][0].intValue;
+                index2 = [faceStrings[i + 1] componentsSeparatedByString:@"/"][0].intValue;
+                index3 = [faceStrings[i + 2] componentsSeparatedByString:@"/"][0].intValue;
             }
             else {
                 index1 = [faceStrings[i] intValue];
@@ -332,7 +332,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
         for (int i=0; i<faceCount; ++i) {
             int index = -1;
             if (hasTextureCoordinates) {
-                index = [[[faceStrings[i] componentsSeparatedByString:@"/"] objectAtIndex:0] intValue];
+                index = [faceStrings[i] componentsSeparatedByString:@"/"][0].intValue;
             }
             else {
                 index = [faceStrings[i] intValue];
@@ -349,13 +349,13 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
             // v1/vt1 v2/vt2 v3/vt3 v4/vt4
             // v1//vn1 v2//vn2 v3//vn3
             if (hasTextureCoordinates) {
-                int texCoordIndex = [[[faceStrings[i] componentsSeparatedByString:@"/"] objectAtIndex:1] intValue];
-                NSString* str = [NSString stringWithFormat:@"%d/%d/%d", index+1, texCoordIndex, (int)([self.normals count])];
-                [[group faceStrArray] setObject:str atIndexedSubscript:i];
+                int texCoordIndex = [faceStrings[i] componentsSeparatedByString:@"/"][1].intValue;
+                NSString* str = [NSString stringWithFormat:@"%d/%d/%d", index+1, texCoordIndex, (int)((self.normals).count)];
+                [group.faceStrArray setObject:str atIndexedSubscript:i];
             }
             else {
-                NSString* str = [NSString stringWithFormat:@"%d//%d", index+1, (int)([self.normals count])];
-                [[group faceStrArray] setObject:str atIndexedSubscript:i];
+                NSString* str = [NSString stringWithFormat:@"%d//%d", index+1, (int)((self.normals).count)];
+                [group.faceStrArray setObject:str atIndexedSubscript:i];
             }
         }
     }
@@ -403,7 +403,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 + (NSArray *) componentsFromWavefrontObjLine:(NSString *)line withPrefix:(NSString *)prefix {
     // NOTE: there can be an indeterminant amount of white space after the prefix, need
     //       to remove leading and trailing whitespace as well as the prefix
-    NSString *truncLine = [line substringFromIndex:[prefix length]];
+    NSString *truncLine = [line substringFromIndex:prefix.length];
 
     // remove leading whitespace
     NSRange range = [truncLine rangeOfString:@"^\\s*" options:NSRegularExpressionSearch];
@@ -445,7 +445,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     NSStringEncoding encoding;
 
     // record copy of obj path
-    self.objPath = [filePath stringByDeletingLastPathComponent];
+    self.objPath = filePath.stringByDeletingLastPathComponent;
 
     // to remove file extension if needed
     //NSString *fileName = [[filePath lastPathComponent] stringByDeletingPathExtension];
@@ -516,7 +516,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
         //
 
         if ([line hasPrefix:g_matPrefix]) {
-            NSString *path = [self.objPath stringByAppendingPathComponent:[line substringFromIndex:[g_matPrefix length]]];
+            NSString *path = [self.objPath stringByAppendingPathComponent:[line substringFromIndex:g_matPrefix.length]];
             [self parseMaterialFile:path];
         }
         else if ([line hasPrefix:g_objPrefix]) {
@@ -525,12 +525,12 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
             // TODO: only storing one object name for now, will need to eventually handle N
             //
 
-            NSString *objName = [line substringFromIndex:[g_objPrefix length]];
+            NSString *objName = [line substringFromIndex:g_objPrefix.length];
 
-            [self.object setObjectName:objName];
+            (self.object).objectName = objName;
         }
         else if ([line hasPrefix:g_groupPrefix]) {
-            NSString *groupName = [line substringFromIndex:[g_groupPrefix length]];
+            NSString *groupName = [line substringFromIndex:g_groupPrefix.length];
 
             // allocate a new group (which will be the current active group) and add to object's group array
             self.activeGroup = [[[WFGroup alloc] init] autorelease];
@@ -541,7 +541,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
         }
         else if ([line hasPrefix:g_useMatPrefix]) {
-            NSString *matName = [line substringFromIndex:[g_useMatPrefix length]];
+            NSString *matName = [line substringFromIndex:g_useMatPrefix.length];
 
             if (![matName isEqualToString:@"(null)"] && ![matName isEqualToString:@"null"]) {
                 self.activeGroup.materialName = matName;
@@ -571,7 +571,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
                 //       so the material name can be set
                 //
                 NFSurfaceModel *defaultSurface = [NFSurfaceModel defaultSurfaceModel];
-                [[self materialsArray] addObject:defaultSurface];
+                [self.materialsArray addObject:defaultSurface];
 
                 self.activeGroup.materialName = defaultSurface.name;
             }
@@ -618,10 +618,10 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
 
             // check if face is a triangle or a quad (quads need to be converted into triangles)
-            if ([faceIndexArray count] == 3) {
+            if (faceIndexArray.count == 3) {
                 [self.activeGroup.faceStrArray addObjectsFromArray:faceIndexArray];
             }
-            else if ([faceIndexArray count] == 4) {
+            else if (faceIndexArray.count == 4) {
                 // triangles per cube quad in Wavefront obj file
                 // 0 1 2
                 // 0 2 3
@@ -645,9 +645,9 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 - (void) parseVertexArray:(NSArray *)vertexArray {
     // parse vertex
     GLKVector3 vertex;
-    vertex.x = [[vertexArray objectAtIndex:0] floatValue];
-    vertex.y = [[vertexArray objectAtIndex:1] floatValue];
-    vertex.z = [[vertexArray objectAtIndex:2] floatValue];
+    vertex.x = [vertexArray[0] floatValue];
+    vertex.y = [vertexArray[1] floatValue];
+    vertex.z = [vertexArray[2] floatValue];
 
     // add vertex to parent class NSAssetData
     NSValue *value = [NSValue value:&vertex withObjCType:g_vertexType];
@@ -657,12 +657,12 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 - (void) parseTextureCoordArray:(NSArray *)texCoordArray {
     // parse texture coord
     GLKVector3 texCoord;
-    texCoord.s = [[texCoordArray objectAtIndex:0] floatValue];
-    texCoord.t = [[texCoordArray objectAtIndex:1] floatValue];
+    texCoord.s = [texCoordArray[0] floatValue];
+    texCoord.t = [texCoordArray[1] floatValue];
 
     // if texture coordiante supports depth use it
-    if ([texCoordArray count] > 2) {
-        texCoord.p = [[texCoordArray objectAtIndex:2] floatValue];
+    if (texCoordArray.count > 2) {
+        texCoord.p = [texCoordArray[2] floatValue];
     }
     else {
         texCoord.p = 0.0f;
@@ -676,9 +676,9 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 - (void) parseNormalVectorArray:(NSArray *)normVectorArray {
     // parse normal vector
     GLKVector3 normal;
-    normal.x = [[normVectorArray objectAtIndex:0] floatValue];
-    normal.y = [[normVectorArray objectAtIndex:1] floatValue];
-    normal.z = [[normVectorArray objectAtIndex:2] floatValue];
+    normal.x = [normVectorArray[0] floatValue];
+    normal.y = [normVectorArray[1] floatValue];
+    normal.z = [normVectorArray[2] floatValue];
 
     // add normal to parent NSAssetData
     NSValue *value = [NSValue value:&normal withObjCType:g_normType];
@@ -733,16 +733,16 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
                 //NSValue *value = [NSValue value:&mat withObjCType:g_matType];
                 //[self.materials addObject:value];
             //}
-            mat.name = [line substringFromIndex:[g_newMatPrefix length]];
+            mat.name = [line substringFromIndex:g_newMatPrefix.length];
             matValid = YES;
         }
         else if ([line hasPrefix:g_NsPrefix]) {
-            NSString *truncLine = [line substringFromIndex:[g_NsPrefix length]];
-            mat.Ns = [truncLine floatValue];
+            NSString *truncLine = [line substringFromIndex:g_NsPrefix.length];
+            mat.Ns = truncLine.floatValue;
         }
         else if ([line hasPrefix:g_NiPrefix]) {
-            NSString *truncLine = [line substringFromIndex:[g_NiPrefix length]];
-            mat.Ni = [truncLine floatValue];
+            NSString *truncLine = [line substringFromIndex:g_NiPrefix.length];
+            mat.Ni = truncLine.floatValue;
         }
         else if ([line hasPrefix:g_TrPrefix]) {
             //NSString *truncLine = [line substringFromIndex:[g_TrPrefix length]];
@@ -763,8 +763,8 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
             // d -halo 1.0
         }
         else if ([line hasPrefix:g_ilPrefix]) {
-            NSString *truncLine = [line substringFromIndex:[g_ilPrefix length]];
-            mat.illum = [truncLine integerValue];
+            NSString *truncLine = [line substringFromIndex:g_ilPrefix.length];
+            mat.illum = truncLine.integerValue;
 
             //
             // TODO: will need to parse the illumination model definition when converting the
@@ -798,7 +798,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
         }
         else if ([line hasPrefix:g_mapKdPrefix]) {
 
-            NSString *mapFile = [line substringFromIndex:[g_mapKdPrefix length]];
+            NSString *mapFile = [line substringFromIndex:g_mapKdPrefix.length];
             mat.map_Kd = [self parseTextureFile:mapFile];
 
             // should record the file name + path and then perform the parse in the
@@ -809,7 +809,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
     if (matValid == YES) {
         // finished parsing material add it to the object's materials array
-        [[self materialsArray] addObject:mat];
+        [self.materialsArray addObject:mat];
     }
 }
 
@@ -826,7 +826,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     //
     // use NSImage NSBitmapImageRep to load TIFF, BMP, JPEG, GIF, PNG, DIB, ICO
     // to get a complete list of all supported image formats use the NSImage method imageFileTypes
-    NSBitmapImageRep *imageClass = [[NSBitmapImageRep alloc] initWithData:[nsimage TIFFRepresentation]];
+    NSBitmapImageRep *imageClass = [[NSBitmapImageRep alloc] initWithData:nsimage.TIFFRepresentation];
 
     CGImageRef cgImage = imageClass.CGImage;
     NSAssert(cgImage != NULL, @"ERROR: NSBitmapImageRep has a NULL CGImage");
@@ -844,7 +844,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     CGColorSpaceModel colorModel = CGColorSpaceGetModel(colorSpace);
     CGBitmapInfo bitmapInfo = (CGBitmapInfo)kCGImageAlphaNone;
     if (colorModel == kCGColorSpaceModelRGB) {
-        if ([imageClass hasAlpha]) {
+        if (imageClass.alpha) {
             //
             // TODO: remove all OpenGL dependencies from asset parsing/processing by defining common data types
             //
@@ -866,7 +866,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     }
 
     // check if sample size is the same as unsigned byte size
-    if ([imageClass bitsPerSample] / CHAR_BIT == sizeof(GLubyte)) {
+    if (imageClass.bitsPerSample / CHAR_BIT == sizeof(GLubyte)) {
         type = GL_UNSIGNED_BYTE;
     }
     else {

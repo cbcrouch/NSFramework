@@ -30,7 +30,7 @@ static NSArray * (^convertCfloatArrayToNS)(float[3]) = ^ NSArray * (float triple
     NSMutableArray *tempArray = [[[NSMutableArray alloc] init] autorelease];
     NSNumber *tempNum;
     for (int i=0; i<3; ++i) {
-        tempNum = [NSNumber numberWithFloat:triplet[i]];
+        tempNum = @(triplet[i]);
         [tempArray addObject:tempNum];
     }
     return [[tempArray copy] autorelease];

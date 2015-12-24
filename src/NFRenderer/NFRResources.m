@@ -94,9 +94,9 @@
 }
 
 - (void) loadData:(void*)pData ofType:(NFR_BUFFER_DATA_TYPE)dataType numberOfElements:(NSUInteger)numElements {
-    [self setBufferDataPointer:pData];
-    [self setBufferDataType:dataType];
-    [self setNumberOfElements:numElements];
+    self.bufferDataPointer = pData;
+    self.bufferDataType = dataType;
+    self.numberOfElements = numElements;
 
     GLsizeiptr elementSize;
     GLenum glBufferType;
@@ -127,7 +127,7 @@
             break;
     }
 
-    [self setBufferDataSize:numElements*elementSize];
+    self.bufferDataSize = numElements*elementSize;
 
     glBindBuffer(glBufferType, self.bufferHandle);
     glBufferData(glBufferType, numElements * elementSize, pData, GL_STATIC_DRAW);
@@ -173,8 +173,8 @@
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, [dataMap format], [dataMap width], [dataMap height], 0,
-                 [dataMap format], [dataMap type], [dataMap data]);
+    glTexImage2D(GL_TEXTURE_2D, 0, dataMap.format, dataMap.width, dataMap.height, 0,
+                 dataMap.format, dataMap.type, dataMap.data);
     glBindTexture(GL_TEXTURE_2D, 0);
 
     CHECK_GL_ERROR();
@@ -220,7 +220,7 @@
     //
     // TODO: iteratre through each data map and convert it into a NFRDataMapGL
     //
-    NFRDataMap *diffuseMap = [self.surfaceModel map_Kd];
+    NFRDataMap *diffuseMap = (self.surfaceModel).map_Kd;
 
     NFRDataMapGL* mapGL = [[[NFRDataMapGL alloc] init] autorelease];
     [mapGL syncDataMap:diffuseMap];
@@ -228,7 +228,7 @@
     NSString* uniformName = @"diffuseTexture";
 
     // make sure that the textureDictionary will hold onto the mapGL reference
-    [self.textureDictionary setObject:mapGL forKey:uniformName];
+    (self.textureDictionary)[uniformName] = mapGL;
 }
 
 - (void)dealloc {

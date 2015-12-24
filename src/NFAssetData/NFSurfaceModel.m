@@ -15,7 +15,7 @@
 
 + (NFSurfaceModel *) defaultSurfaceModel {
     NFSurfaceModel *surface = [[[NFSurfaceModel alloc] init] autorelease];
-    [surface setName:@"NSGLFramework_defaultSurfaceModel"];
+    surface.name = @"NSGLFramework_defaultSurfaceModel";
 
 
 #define USE_HARDCODED_TEX 1
@@ -80,12 +80,12 @@
     free(DefaultTexture);
 #endif
 
-    [surface setMap_Kd:diffuse];
+    surface.map_Kd = diffuse;
 
-    [surface setKa:GLKVector3Make(1.0f, 1.0f, 1.0f)];
-    [surface setKd:GLKVector3Make(1.0f, 1.0f, 1.0f)];
-    [surface setKs:GLKVector3Make(0.2f, 0.2f, 0.2f)];
-    [surface setNs:10.0f];
+    surface.Ka = GLKVector3Make(1.0f, 1.0f, 1.0f);
+    surface.Kd = GLKVector3Make(1.0f, 1.0f, 1.0f);
+    surface.Ks = GLKVector3Make(0.2f, 0.2f, 0.2f);
+    surface.Ns = 10.0f;
 
     return surface;
 }

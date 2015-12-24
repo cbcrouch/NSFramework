@@ -34,7 +34,7 @@
     //
     for (NFAssetSubset *subset in self.assetData.subsetArray) {
         GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.assetData.modelMatrix, subset.subsetModelMat);
-        [self.assetData.geometry setModelMatrix:renderModelMat];
+        (self.assetData.geometry).modelMatrix = renderModelMat;
     }
 }
 
@@ -50,7 +50,7 @@
         //
 
         // point light geometry will be a sphere
-        _assetData = [NFAssetLoader allocAssetDataOfType:kSolidUVSphere withArgs:[NSNumber numberWithUnsignedInteger:kVertexFormatDebug], nil];
+        _assetData = [NFAssetLoader allocAssetDataOfType:kSolidUVSphere withArgs:@(kVertexFormatDebug), nil];
         [_assetData generateRenderables];
 
         _position = GLKVector3Make(2.0f, 1.0f, 0.0f);
@@ -128,7 +128,7 @@
 
     for (NFAssetSubset *subset in self.assetData.subsetArray) {
         GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.assetData.modelMatrix, subset.subsetModelMat);
-        [self.assetData.geometry setModelMatrix:renderModelMat];
+        (self.assetData.geometry).modelMatrix = renderModelMat;
     }
 }
 
@@ -147,7 +147,7 @@
         //       white texture and the rest of the cylinder a flat gray to visualize which direction the
         //       the light vector is going
         //
-        _assetData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:[NSNumber numberWithUnsignedInteger:kVertexFormatDebug], nil];
+        _assetData = [NFAssetLoader allocAssetDataOfType:kSolidCylinder withArgs:@(kVertexFormatDebug), nil];
         [_assetData generateRenderables];
 
         _position = GLKVector3Make(-2.0f, 2.0f, 1.0f);
@@ -223,7 +223,7 @@
 
     for (NFAssetSubset *subset in self.assetData.subsetArray) {
         GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.assetData.modelMatrix, subset.subsetModelMat);
-        [self.assetData.geometry setModelMatrix:renderModelMat];
+        (self.assetData.geometry).modelMatrix = renderModelMat;
     }
 }
 
@@ -250,7 +250,7 @@
         //
         // TODO: pass in values for height and slices for the cone
         //
-        _assetData = [NFAssetLoader allocAssetDataOfType:kSolidCone withArgs:[NSNumber numberWithUnsignedInteger:kVertexFormatDebug], nil];
+        _assetData = [NFAssetLoader allocAssetDataOfType:kSolidCone withArgs:@(kVertexFormatDebug), nil];
         [_assetData generateRenderables];
 
         _position = GLKVector3Make(-2.0f, 1.0f, 2.0f);
