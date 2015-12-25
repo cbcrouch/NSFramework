@@ -117,7 +117,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 }
 
 - (void) execStartupSequence {
-
     m_input = NO;
 
     [self setupTiming];
@@ -280,6 +279,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     return YES;
 }
 
+
 // default is NO, return YES to be set a mouseDown message for an initial mouse-down event
 //
 // TODO: determine if this is needed to capture mouseMoved events
@@ -294,108 +294,84 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     NSString* string = (NSString*)insertString;
 
     //
-    // TODO: use block dictionary to execute desired behavior
+    // TODO: should make dictionary a class member or static so it's not created/destroyed every key press
     //
-
-    // http://stackoverflow.com/questions/19067785/switch-case-on-nsstring-in-objective-c
-    // http://stackoverflow.com/questions/8161737/can-objective-c-switch-on-nsstring
-
-/*
-    switch (string) {
-        case 'w':
+    typedef void (^CaseBlock)();
+    NSDictionary* caseDict = @{
+        @"w": ^{
             [self.camera setTranslationState:kCameraStateActFwd];
-            break;
+        },
+        @"s": ^{
+            [self.camera setTranslationState:kCameraStateActBack];
+        },
+        @"a": ^{
+            [self.camera setTranslationState:kCameraStateActLeft];
+        },
+        @"d": ^{
+            [self.camera setTranslationState:kCameraStateActRight];
+        },
 
-        default:
-            break;
+        //
+        // TODO: add ability/state to move camera up/down
+        //
+
+        @"i": ^{
+            NSLog(@"saving current camera state...");
+            [self.camera saveState];
+        },
+        @"o": ^{
+            NSLog(@"resetting camera look direction...");
+            [self.camera resetLookDirection];
+            self->m_verticalAngle = self.camera.pitch;
+            self->m_horizontalAngle = self.camera.yaw;
+            self->m_input = YES;
+        },
+        @"p": ^{
+            NSLog(@"resetting camera state...");
+            [self.camera resetState];
+            self->m_verticalAngle = self.camera.pitch;
+            self->m_horizontalAngle = self.camera.yaw;
+            self->m_input = YES;
+        },
+        @" ": ^{
+            (self.glRenderer).stepTransforms = !self.glRenderer.stepTransforms;
+        }
+    };
+
+    CaseBlock block = (CaseBlock)caseDict[string];
+    if (block != nil) {
+        block();
     }
-*/
-    NSLog(@"%@", string);
 }
 
 - (void) keyDown:(NSEvent *)theEvent {
-
-    //
-    // TODO: if this works as intended need to also use in keyUp, this will either require that
-    //       the ability to set the function called or insertTest will have to query state from
-    //       the application
-    //
+    // send event to system input manager to be interpreted as text
     [self interpretKeyEvents:@[theEvent]];
-
-
-    unichar key = [theEvent.charactersIgnoringModifiers characterAtIndex:0];
-    switch (key) {
-        case 'w':
-            [self.camera setTranslationState:kCameraStateActFwd];
-            break;
-
-        case 's':
-            [self.camera setTranslationState:kCameraStateActBack];
-            break;
-
-        case 'a':
-            [self.camera setTranslationState:kCameraStateActLeft];
-            break;
-
-        case 'd':
-            [self.camera setTranslationState:kCameraStateActRight];
-            break;
-
-            //
-            // TODO: add ability/state to move camera up/down
-            //
-
-        case 'i':
-            NSLog(@"saving current camera state...");
-            [self.camera saveState];
-            break;
-
-        case 'o':
-            NSLog(@"resetting camera look direction...");
-            [self.camera resetLookDirection];
-            m_verticalAngle = self.camera.pitch;
-            m_horizontalAngle = self.camera.yaw;
-            m_input = YES;
-            break;
-
-        case 'p':
-            NSLog(@"resetting camera state...");
-            [self.camera resetState];
-            m_verticalAngle = self.camera.pitch;
-            m_horizontalAngle = self.camera.yaw;
-            m_input = YES;
-            break;
-
-        case ' ':
-            (self.glRenderer).stepTransforms = !self.glRenderer.stepTransforms;
-            break;
-
-        default:
-            break;
-    }
 }
 
 - (void) keyUp:(NSEvent *)theEvent {
-    unichar key = [theEvent.charactersIgnoringModifiers characterAtIndex:0];
-    switch (key) {
-        case 'w':
+    //
+    // TODO: should make dictionary a class member or static so it's not created/destroyed every key press
+    //
+    typedef void (^CaseBlock)();
+    NSDictionary* caseDict = @{
+        @"w": ^{
             [self.camera setTranslationState:kCameraStateNilFwd];
-            break;
-
-        case 's':
+        },
+        @"s": ^{
             [self.camera setTranslationState:kCameraStateNilBack];
-            break;
-
-        case 'a':
+        },
+        @"a": ^{
             [self.camera setTranslationState:kCameraStateNilLeft];
-            break;
-
-        case 'd':
+        },
+        @"d": ^{
             [self.camera setTranslationState:kCameraStateNilRight];
-            break;
-
-        default:
-            break;
+        }
+    };
+    
+    CaseBlock block = (CaseBlock)caseDict[theEvent.characters];
+    if (block != nil) {
+        block();
     }
 }
 
@@ -451,30 +427,9 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 }
 
 - (void) mouseMoved:(NSEvent *)theEvent {
-/*
-    static const float ROTATION_GAIN = 0.008f;
-    //static const float MOVEMENT_GAIN = 2.0f;
-
-    GLKVector2 rotationDelta;
-    rotationDelta.x = [theEvent deltaX] * ROTATION_GAIN;
-    rotationDelta.y = [theEvent deltaY] * ROTATION_GAIN;
-
-    m_horizontalAngle += rotationDelta.x;
-    m_verticalAngle -= rotationDelta.y;
-
-    // limit pitch to straight up or straight down
-    float limit = M_PI / 2.0f - 0.01f;
-    m_verticalAngle = MAX(-limit, m_verticalAngle);
-    m_verticalAngle = MIN(+limit, m_verticalAngle);
-
-    // keep longitude in sane range by wrapping
-    if (m_horizontalAngle > M_PI) {
-        m_horizontalAngle -= M_PI * 2.0f;
-    }
-    else if (m_horizontalAngle < -M_PI) {
-        m_horizontalAngle += M_PI * 2.0f;
-    }
-*/
+    //
+    // TODO: in release/game mode should move the camera when the mouse is moved
+    //
 }
 
 
