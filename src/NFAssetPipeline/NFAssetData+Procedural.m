@@ -80,7 +80,7 @@ static const char *g_faceType = @encode(NFFace_t);
     [pSubset allocateIndicesWithNumElts:numVertices];
     [pSubset loadIndexData:indices ofSize:(numVertices * sizeof(GLushort))];
 
-    self.subsetArray = [[NSArray alloc] initWithObjects:(id)pSubset, nil];
+    self.subsetArray = @[(id)pSubset];
 }
 
 -(void) createAxisOfSize:(NSInteger)size {
@@ -163,7 +163,7 @@ static const char *g_faceType = @encode(NFFace_t);
     [pSubset allocateVerticesOfType:kVertexFormatDebug withNumVertices:numVertices];
     [pSubset loadVertexData:vertices ofType:kVertexFormatDebug withNumVertices:numVertices];
 
-    self.subsetArray = [[NSArray alloc] initWithObjects:(id)pSubset, nil];
+    self.subsetArray = @[(id)pSubset];
 }
 
 - (void) createPlaneOfSize:(NSInteger)size {
@@ -248,7 +248,7 @@ static const char *g_faceType = @encode(NFFace_t);
     // encode the faces into an array
     NSValue *value1 = [NSValue value:&face1 withObjCType:g_faceType];
     NSValue *value2 = [NSValue value:&face2 withObjCType:g_faceType];
-    NSArray *array = [[NSArray alloc] initWithObjects:value1, value2, nil];
+    NSArray *array = @[value1, value2];
 
     for (int i=0; i<4; ++i) {
         GLKVector4 vertexNormal = [NFAssetUtils calculateAreaWeightedNormalOfIndex:i withFaces:array];
@@ -266,7 +266,7 @@ static const char *g_faceType = @encode(NFFace_t);
     [pSubset allocateVerticesOfType:kVertexFormatDefault withNumVertices:numVertices];
     [pSubset loadVertexData:vertices ofType:kVertexFormatDefault withNumVertices:numVertices];
 
-    self.subsetArray = [[NSArray alloc] initWithObjects:(id)pSubset, nil];
+    self.subsetArray = @[(id)pSubset];
 }
 
 - (void) createUVSphereWithRadius:(float)radius withStacks:(int)stacks withSlices:(int)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
@@ -437,7 +437,7 @@ static const char *g_faceType = @encode(NFFace_t);
     [pSubset allocateIndicesWithNumElts:numIndices];
     [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
 
-    self.subsetArray = [[NSArray alloc] initWithObjects:(id)pSubset, nil];
+    self.subsetArray = @[(id)pSubset];
 }
 
 - (void) createCylinderWithRadius:(float)radius ofHeight:(float)height withSlices:(NSInteger)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
@@ -627,7 +627,7 @@ static const char *g_faceType = @encode(NFFace_t);
         [pSubset loadVertexData:vertices ofType:kVertexFormatDebug withNumVertices:numVertices];
     }
 
-    self.subsetArray = [[NSArray alloc] initWithObjects:(id)pSubset, nil];
+    self.subsetArray = @[(id)pSubset];
 }
 
 - (void) createConeWithRadius:(float)radius ofHeight:(float)height withSlices:(NSInteger)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
@@ -774,7 +774,7 @@ static const char *g_faceType = @encode(NFFace_t);
         [pSubset loadVertexData:vertices ofType:kVertexFormatDebug withNumVertices:numVertices];
     }
 
-    self.subsetArray = [[NSArray alloc] initWithObjects:(id)pSubset, nil];
+    self.subsetArray = @[(id)pSubset];
 }
 
 @end
