@@ -9,19 +9,34 @@
 
 @interface NFRRenderTarget : NSObject
 
-typedef NS_ENUM(NSUInteger, TARGET_TYPE) {
-    //
-    // TODO: need format types for render buffer and texture targets
-    //
-    kColorBuffer,
-    kDepthBuffer,
-    kStencilBuffer
-};
 
-typedef NS_ENUM(NSUInteger, BUFFER_TYPE) {
+//
+// TODO: need to update options to configure both attachments to use and the backings for each
+//
+
+// target is the framebuffer attachment
+
+// buffer type is the backing to use
+
+
+typedef NS_ENUM(NSUInteger, NF_BUFFER_TYPE) {
     kTextureBuffer,
     kRenderBuffer
 };
+
+typedef NS_ENUM(NSUInteger, NF_ATTACHMENT_TYPE) {
+    kColorAttachment,
+    kDepthAttachment,
+    kStencilAttachment,
+    kDepthStencilAttachment
+};
+
+typedef struct NFFrameBacking_t {
+    NF_BUFFER_TYPE bufferType;
+    NF_ATTACHMENT_TYPE attachmentType;
+} NFFrameBacking_t;
+
+
 
 // for a framebuffer to be complete it needs at least
 // - at least one attached buffer (color, depth, or stencil buffer)
@@ -36,7 +51,16 @@ typedef NS_ENUM(NSUInteger, BUFFER_TYPE) {
 @property (nonatomic, assign) uint32_t width;
 @property (nonatomic, assign) uint32_t height;
 
-//- (instancetype) initWithWidth:(uint32_t)width withHeight:(uint32_t)height;
+
+
+//
+// TODO: may need to break out the init so there can be a method for adding attachment/buffers
+//
+
+- (instancetype) initWithWidth:(uint32_t)width withHeight:(uint32_t)height NS_DESIGNATED_INITIALIZER;
+//- (instancetype) initWithWidth:(uint32_t)width withHeight:(uint32_t)height ofBufferType:(NF_BUFFER_TYPE)type;
+
+
 
 //
 // TODO: should try to avoid having an externally facing enable/disable methods
@@ -45,6 +69,8 @@ typedef NS_ENUM(NSUInteger, BUFFER_TYPE) {
 - (void) disable;
 
 - (void) resizeWithWidth:(uint32_t)width withHeight:(uint32_t)height;
+
+- (void) addAttachment:(NF_ATTACHMENT_TYPE)attachmentType withBackingBuffer:(NF_BUFFER_TYPE)bufferType;
 
 
 //

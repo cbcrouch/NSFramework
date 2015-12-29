@@ -250,7 +250,12 @@
     glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
     //glClearColor(0.05f, 0.05f, 0.05f, 1.0f); // use with GL_FRAMEBUFFER_SRGB enabled
 
+    //
+    // TODO: modify depth function to increase near view precision
+    //
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
     glEnable(GL_CULL_FACE);
 
     //
