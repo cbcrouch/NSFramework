@@ -2,7 +2,7 @@
 //  NFRDisplayTarget.m
 //  NSFramework
 //
-//  Copyright © 2015 Casey Crouch. All rights reserved.
+//  Copyright © 2016 Casey Crouch. All rights reserved.
 //
 
 #import "NFRDisplayTarget.h"

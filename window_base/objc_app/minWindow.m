@@ -2,7 +2,7 @@
 //  minWindow.m
 //  objc_app
 //
-//  Copyright (c) 2015 Casey Crouch. All rights reserved.
+//  Copyright (c) 2016 Casey Crouch. All rights reserved.
 //
 
 
@@ -85,6 +85,12 @@
 }
 
 - (void) applicationDidFinishLaunching:(NSNotification*)notification {
+
+    //
+    // TODO: monitor all events and determine which will need to be handled when manually
+    //       handling the event loop
+    //
+
     id ehObj = [NSEvent addLocalMonitorForEventsMatchingMask:NSKeyDownMask handler:^(NSEvent *event) {
         //
         // TODO: send event data to desired method based on type

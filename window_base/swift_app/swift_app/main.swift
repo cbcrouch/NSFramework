@@ -2,7 +2,7 @@
 //  main.swift
 //  swift_app
 //
-//  Copyright (c) 2015 Casey Crouch. All rights reserved.
+//  Copyright (c) 2016 Casey Crouch. All rights reserved.
 //
 
 
@@ -61,7 +61,13 @@ class ApplicationDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(notification: NSNotification) {
+
+        //
+        // TODO: monitor all events and determine which will need to be handled when manually
+        //       handling the event loop
+        //
         let mask = (NSEventMask.KeyDownMask)
+
         let _ : AnyObject! = NSEvent.addLocalMonitorForEventsMatchingMask(mask, handler: { (event: (NSEvent!)) -> NSEvent in
             //
             // TODO: send event data to desired method based on type

@@ -2,22 +2,13 @@
 //  NFRRenderTarget.h
 //  NSFramework
 //
-//  Copyright © 2015 Casey Crouch. All rights reserved.
+//  Copyright © 2016 Casey Crouch. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 
+
 @interface NFRRenderTarget : NSObject
-
-
-//
-// TODO: need to update options to configure both attachments to use and the backings for each
-//
-
-// target is the framebuffer attachment
-
-// buffer type is the backing to use
-
 
 typedef NS_ENUM(NSUInteger, NF_BUFFER_TYPE) {
     kTextureBuffer,

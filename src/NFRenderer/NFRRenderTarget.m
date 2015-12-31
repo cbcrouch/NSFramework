@@ -2,7 +2,7 @@
 //  NFRRenderTarget.m
 //  NSFramework
 //
-//  Copyright © 2015 Casey Crouch. All rights reserved.
+//  Copyright © 2016 Casey Crouch. All rights reserved.
 //
 
 #import "NFRRenderTarget.h"
@@ -95,7 +95,6 @@
 - (void) buildRenderBufferWithWidth:(uint32_t)width withHeight:(uint32_t)height {
 
 
-    //self.bufferType = kTextureBuffer;
     self.bufferType = kRenderBuffer;
 
 
