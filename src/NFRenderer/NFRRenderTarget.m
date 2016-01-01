@@ -16,14 +16,21 @@
 
 @property (nonatomic, assign) GLuint hFBO;
 
-@property (nonatomic, assign) NF_BUFFER_TYPE bufferType;
+//
+// TODO: need a better way to store handles
+//
 @property (nonatomic, assign) GLuint hRBO;
 @property (nonatomic, assign) GLuint hTex;
 
 //
-// TODO: add a handle for accessing the depth and stencil attachment
+// TODO: should probably be using an array for the attachments
 //
 @property (nonatomic, assign, readwrite) GLuint colorAttachmentHandle;
+
+@property (nonatomic, assign, readwrite) GLuint depthAttachmentHandle;
+@property (nonatomic, assign, readwrite) GLuint stencilAttachmentHandle;
+@property (nonatomic, assign, readwrite) GLuint deptjStencilAttachmentHandle;
+
 
 - (void) buildRenderBufferWithWidth:(uint32_t)width withHeight:(uint32_t)height;
 - (void) tearDown;
@@ -67,57 +74,100 @@
     [self resizeWithWidth:self.width withHeight:_height];
 }
 
-//
-// TODO: add an init method that has width and height params
-//
-
 - (instancetype) initWithWidth:(uint32_t)width withHeight:(uint32_t)height {
     self = [super init];
     if (self != nil) {
-        //
-        // TODO: add support for different types/formats of framebuffers and render-to-texture
-        //
         _width = width;
         _height = height;
+
+        //
+        // TODO: is there a way to an OpenGL FBO to work with GL_FRAMEBUFFER_SRGB ??
+        //
+
+        // create frame buffer
+        GLuint tempFBO;
+        glGenFramebuffers(1, &tempFBO);
+        _hFBO = tempFBO;
+        CHECK_GL_ERROR();
+
         [self buildRenderBufferWithWidth:_width withHeight:_height];
     }
     return self;
 }
 
 - (instancetype) init {
+    //
+    // TODO: use global config / default width, height
+    //
     self = [self initWithWidth:1280 withHeight:720];
     return self;
 }
 
+- (void) dealloc {
+    [self tearDown];
+}
+
+- (void) addAttachment:(NF_ATTACHMENT_TYPE)attachmentType withBackingBuffer:(NF_BUFFER_TYPE)bufferType {
+    //
+    // TODO: add an attachment to the framebuffer object
+    //
+
+    switch (bufferType) {
+        case kRenderBuffer: {
+            // create and initialize render buffer
+            GLuint tempRBO;
+            glGenRenderbuffers(1, &tempRBO);
+            self.hRBO = tempRBO;
+            glBindRenderbuffer(GL_RENDERBUFFER, self.hRBO);
+
+            //
+            // TODO: use attachment type to correctly setup buffer storage
+            //
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, self.width, self.height);
+
+            glBindRenderbuffer(GL_RENDERBUFFER, 0);
+            CHECK_GL_ERROR();
+        }
+        break;
+
+        case kTextureBuffer:
+            //
+            // TODO: implement
+            //
+            self.colorAttachmentHandle = [NFRRenderTarget generateAttachmentTextureWithWidth:self.width
+                withHeight:self.height withDepth:GL_FALSE withStencil:GL_FALSE];
+            break;
+
+        default:
+            break;
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, _hFBO);
+
+    //
+    // TODO: setup using attachment type
+    //
+/*
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, self.colorAttachmentHandle, 0);
+
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, self.hRBO);
+*/
+
+    // move frame buffer complete out to addAttachment or bind call ??
+    NSAssert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, @"framebuffer object not complete");
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    CHECK_GL_ERROR();
+}
+
 //
-// TODO: add param indicating buffer type and use for render to texture
+// TODO: replace this method with addAttachment
 //
 - (void) buildRenderBufferWithWidth:(uint32_t)width withHeight:(uint32_t)height {
 
+    NF_BUFFER_TYPE bufferType = kRenderBuffer;
 
-    self.bufferType = kRenderBuffer;
-
-
-    NFFrameBacking_t colorTetxture;
-    colorTetxture.bufferType = kTextureBuffer;
-    colorTetxture.attachmentType = kColorAttachment;
-
-    NFFrameBacking_t depthStencil;
-    depthStencil.bufferType = kRenderBuffer;
-    depthStencil.attachmentType = kDepthStencilAttachment;
-
-
-    //
-    // TODO: is there a way to an OpenGL FBO to work with GL_FRAMEBUFFER_SRGB ??
-    //
-
-    // create frame buffer
-    GLuint tempFBO;
-    glGenFramebuffers(1, &tempFBO);
-    _hFBO = tempFBO;
-
-
-    if (self.bufferType == kRenderBuffer) {
+    if (bufferType == kRenderBuffer) {
         // create and initialize render buffer
         GLuint tempRBO;
         glGenRenderbuffers(1, &tempRBO);
@@ -135,11 +185,7 @@
     glBindFramebuffer(GL_FRAMEBUFFER, _hFBO);
 
 
-    //
-    // TODO: need to update options to configure both attachments to use and the backings for each
-    //
-
-    if (self.bufferType == kRenderBuffer) {
+    if (bufferType == kRenderBuffer) {
 
         // add a color attachment
         self.colorAttachmentHandle = [NFRRenderTarget generateAttachmentTextureWithWidth:width withHeight:height withDepth:GL_FALSE withStencil:GL_FALSE];
@@ -173,12 +219,12 @@
     // TODO: correctly clean all this up
     //
 
-    if (self.bufferType == kRenderBuffer) {
-        GLuint tempRBO = self.hRBO;
-        glDeleteRenderbuffers(1, &tempRBO);
-        self.hRBO = tempRBO;
-    }
-    // else ...
+//    if (self.bufferType == kRenderBuffer) {
+//        GLuint tempRBO = self.hRBO;
+//        glDeleteRenderbuffers(1, &tempRBO);
+//        self.hRBO = tempRBO;
+//    }
+//    // else ...
 
     GLuint tempFBO = _hFBO;
     glDeleteFramebuffers(1, &tempFBO);
@@ -199,12 +245,6 @@
     //
 }
 
-- (void) addAttachment:(NF_ATTACHMENT_TYPE)attachmentType withBackingBuffer:(NF_BUFFER_TYPE)bufferType {
-    //
-    // TODO: add an attachment to the framebuffer object
-    //
-}
-
 - (void) enable {
     glBindFramebuffer(GL_FRAMEBUFFER, self.hFBO);
     NSAssert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, @"framebuffer object not complete");
@@ -214,14 +254,6 @@
 - (void) disable {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     CHECK_GL_ERROR();
-}
-
-- (GLuint) getColorAttachmentHandle {
-    return self.colorAttachmentHandle;
-}
-
-- (void) dealloc {
-    [self tearDown];
 }
 
 @end

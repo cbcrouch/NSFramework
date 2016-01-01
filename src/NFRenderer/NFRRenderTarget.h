@@ -29,8 +29,9 @@ typedef struct NFFrameBacking_t {
 
 
 
+
 // for a framebuffer to be complete it needs at least
-// - at least one attached buffer (color, depth, or stencil buffer)
+// - one attached buffer (color, depth, or stencil buffer)
 // - there should be at least one color attachment
 // - all attachments need to be complete (reserved memory)
 // - each buffer should have the same number of samples
@@ -42,15 +43,11 @@ typedef struct NFFrameBacking_t {
 @property (nonatomic, assign) uint32_t width;
 @property (nonatomic, assign) uint32_t height;
 
-
-
-//
-// TODO: may need to break out the init so there can be a method for adding attachment/buffers
-//
-
 - (instancetype) initWithWidth:(uint32_t)width withHeight:(uint32_t)height NS_DESIGNATED_INITIALIZER;
-//- (instancetype) initWithWidth:(uint32_t)width withHeight:(uint32_t)height ofBufferType:(NF_BUFFER_TYPE)type;
 
+- (void) resizeWithWidth:(uint32_t)width withHeight:(uint32_t)height;
+
+- (void) addAttachment:(NF_ATTACHMENT_TYPE)attachmentType withBackingBuffer:(NF_BUFFER_TYPE)bufferType;
 
 
 //
@@ -59,14 +56,11 @@ typedef struct NFFrameBacking_t {
 - (void) enable;
 - (void) disable;
 
-- (void) resizeWithWidth:(uint32_t)width withHeight:(uint32_t)height;
 
-- (void) addAttachment:(NF_ATTACHMENT_TYPE)attachmentType withBackingBuffer:(NF_BUFFER_TYPE)bufferType;
+@property (nonatomic, assign, readonly) GLuint colorAttachmentHandle;
 
-
-//
-// TODO: would ideally prefer something a little cleaner than passing a raw OpenGL handle
-//
-@property (nonatomic, readonly) GLuint colorAttachmentHandle;
+@property (nonatomic, assign, readonly) GLuint depthAttachmentHandle;
+@property (nonatomic, assign, readonly) GLuint stencilAttachmentHandle;
+@property (nonatomic, assign, readonly) GLuint deptjStencilAttachmentHandle;
 
 @end
