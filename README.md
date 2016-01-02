@@ -36,7 +36,7 @@ Xcode 7.x
 
 ### Building
 
-Launch XCode and build
+Launch XCode and build.
 
 Internals
 ---------
