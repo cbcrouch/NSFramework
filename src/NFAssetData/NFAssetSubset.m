@@ -73,7 +73,7 @@
         case kDrawTriangles: self.mode = GL_TRIANGLES; break;
 
         default:
-            NSAssert(NO, @"ERROR: setDrawMode received unknown type");
+            NSAssert(nil, @"ERROR: setDrawMode received unknown type");
             break;
     }
 }

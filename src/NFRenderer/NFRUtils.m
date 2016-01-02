@@ -300,7 +300,7 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
             break;
 
         default:
-            NSAssert(NO, @"ERROR: check shader received unknown status to check shader/program against");
+            NSAssert(nil, @"ERROR: check shader received unknown status to check shader/program against");
             break;
     }
 

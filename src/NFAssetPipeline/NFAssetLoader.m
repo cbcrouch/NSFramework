@@ -215,7 +215,7 @@
             //
 
         default:
-            NSAssert(NO, @"ERROR: received unknown type for loading asset");
+            NSAssert(nil, @"ERROR: received unknown type for loading asset");
         break;
     }
 

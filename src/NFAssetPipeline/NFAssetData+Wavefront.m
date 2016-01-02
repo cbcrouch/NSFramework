@@ -83,7 +83,7 @@
                 case kGroupIndexVertex: vertIndex = normalizeObjIndex(intValue, wfObj.vertices.count); break;
                 case kGroupIndexTex: texIndex = normalizeObjIndex(intValue, wfObj.textureCoords.count); break;
                 case kGroupIndexNorm: normIndex = normalizeObjIndex(intValue, wfObj.normals.count); break;
-                default: NSAssert(NO, @"Error, unknown face index type"); break;
+                default: NSAssert(nil, @"Error, unknown face index type"); break;
             }
         }
 

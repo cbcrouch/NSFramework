@@ -860,7 +860,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
         }
     }
     else {
-        NSAssert(NO, @"ERROR: unsupported color model");
+        NSAssert(nil, @"ERROR: unsupported color model");
     }
 
     // check if sample size is the same as unsigned byte size
@@ -868,7 +868,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
         type = GL_UNSIGNED_BYTE;
     }
     else {
-        NSAssert(NO, @"ERROR: unsupported sample type");
+        NSAssert(nil, @"ERROR: unsupported sample type");
     }
 
     GLubyte *pData = (GLubyte *)malloc(mapSize.size.height * rowByteSize);

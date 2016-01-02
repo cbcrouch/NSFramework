@@ -108,8 +108,41 @@
 }
 
 - (void) addAttachment:(NF_ATTACHMENT_TYPE)attachmentType withBackingBuffer:(NF_BUFFER_TYPE)bufferType {
+
     //
-    // TODO: add an attachment to the framebuffer object
+    // TODO: rename glAttachmentStorageType or similiar
+    //
+    GLenum glAttachmentType = GL_INVALID_ENUM;
+
+    GLenum glFrameAttachmentType = GL_INVALID_ENUM;
+    switch (attachmentType) {
+        case kColorAttachment:
+            //glAttachmentType = ...
+            glFrameAttachmentType = GL_COLOR_ATTACHMENT0;
+            break;
+
+        case kDepthAttachment:
+            //glAttachmentType = ...
+            glFrameAttachmentType = GL_DEPTH_ATTACHMENT;
+            break;
+
+        case kStencilAttachment:
+            //glAttachmentType = ...
+            glFrameAttachmentType = GL_STENCIL_ATTACHMENT;
+            break;
+
+        case kDepthStencilAttachment:
+            glAttachmentType = GL_DEPTH24_STENCIL8;
+            glFrameAttachmentType = GL_DEPTH_STENCIL_ATTACHMENT;
+            break;
+
+        default:
+            NSAssert(nil, @"ERROR: unknown or unsupported attachment added to render target");
+            break;
+    }
+
+    //
+    // TODO: helper methods for creating buffers, use glAttachmentType and glFrameAttachmentType as inputs
     //
 
     switch (bufferType) {
@@ -119,45 +152,43 @@
             glGenRenderbuffers(1, &tempRBO);
             self.hRBO = tempRBO;
             glBindRenderbuffer(GL_RENDERBUFFER, self.hRBO);
-
-            //
-            // TODO: use attachment type to correctly setup buffer storage
-            //
-            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, self.width, self.height);
-
+            glRenderbufferStorage(GL_RENDERBUFFER, glAttachmentType, self.width, self.height);
             glBindRenderbuffer(GL_RENDERBUFFER, 0);
-            CHECK_GL_ERROR();
+
+            // attach render buffer to the frame buffer
+            glBindFramebuffer(GL_FRAMEBUFFER, _hFBO);
+            glFramebufferRenderbuffer(GL_FRAMEBUFFER, glFrameAttachmentType, GL_RENDERBUFFER, self.hRBO);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
         }
         break;
 
-        case kTextureBuffer:
+        case kTextureBuffer: {
+
             //
-            // TODO: implement
+            // TODO: fold generateAttachmentTexture into here
             //
             self.colorAttachmentHandle = [NFRRenderTarget generateAttachmentTextureWithWidth:self.width
                 withHeight:self.height withDepth:GL_FALSE withStencil:GL_FALSE];
-            break;
+
+            glBindFramebuffer(GL_FRAMEBUFFER, _hFBO);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, glFrameAttachmentType, GL_TEXTURE_2D, self.colorAttachmentHandle, 0);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        }
+        break;
 
         default:
+            NSAssert(nil, @"ERROR: unknown or unsupported buffer type added to render target");
             break;
     }
-
-    glBindFramebuffer(GL_FRAMEBUFFER, _hFBO);
-
-    //
-    // TODO: setup using attachment type
-    //
-/*
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, self.colorAttachmentHandle, 0);
-
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, self.hRBO);
-*/
-
-    // move frame buffer complete out to addAttachment or bind call ??
-    NSAssert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, @"framebuffer object not complete");
-    
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     CHECK_GL_ERROR();
+
+
+    //
+    // TODO: move frame buffer complete out to addAttachment or bind call ??
+    //
+    glBindFramebuffer(GL_FRAMEBUFFER, _hFBO);
+    NSAssert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, @"framebuffer object not complete");
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 //

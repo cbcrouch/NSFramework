@@ -99,7 +99,7 @@
 
 + (GLKVector4) calculateAngleWeightedNormalOfVertex:(GLfloat[4])vertex withFaces:(NSArray *)faceArray {
 
-    NSAssert(NO, @"ERROR: this function is NOT implemented, yet...");
+    NSAssert(nil, @"ERROR: this function is NOT implemented, yet...");
 
     GLKVector4 vector;
     memset(&vector, 0x00, sizeof(GLKVector4));

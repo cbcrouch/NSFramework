@@ -29,7 +29,6 @@ typedef struct NFFrameBacking_t {
 
 
 
-
 // for a framebuffer to be complete it needs at least
 // - one attached buffer (color, depth, or stencil buffer)
 // - there should be at least one color attachment
