@@ -16,20 +16,19 @@
 
 @property (nonatomic, assign) GLuint hFBO;
 
+
 //
-// TODO: need a better way to store handles
+// TODO: delete these two properties once moved over to addAttachment method
 //
 @property (nonatomic, assign) GLuint hRBO;
-@property (nonatomic, assign) GLuint hTex;
-
-//
-// TODO: should probably be using an array for the attachments
-//
 @property (nonatomic, assign, readwrite) GLuint colorAttachmentHandle;
 
-@property (nonatomic, assign, readwrite) GLuint depthAttachmentHandle;
-@property (nonatomic, assign, readwrite) GLuint stencilAttachmentHandle;
-@property (nonatomic, assign, readwrite) GLuint deptjStencilAttachmentHandle;
+
+@property (nonatomic, assign, readwrite) NFRRenderTargetAttachment_t colorAttachment;
+@property (nonatomic, assign, readwrite) NFRRenderTargetAttachment_t depthAttachment;
+@property (nonatomic, assign, readwrite) NFRRenderTargetAttachment_t stencilAttachment;
+@property (nonatomic, assign, readwrite) NFRRenderTargetAttachment_t depthStencilAttachment;
+
 
 
 - (void) buildRenderBufferWithWidth:(uint32_t)width withHeight:(uint32_t)height;
@@ -41,6 +40,9 @@
 
 @implementation NFRRenderTarget
 
+//
+// TODO: delete this method once moved over to addAtachment method
+//
 + (GLuint) generateAttachmentTextureWithWidth:(uint32_t)width withHeight:(uint32_t)height withDepth:(GLboolean)depthAttachment withStencil:(GLboolean)stencilAttachment {
     GLuint textureID;
     glGenTextures(1, &textureID);
@@ -107,33 +109,70 @@
     [self tearDown];
 }
 
-- (void) addAttachment:(NF_ATTACHMENT_TYPE)attachmentType withBackingBuffer:(NF_BUFFER_TYPE)bufferType {
+//
+// TODO: seperate depth and stencil attachments need to be tested
+//
+- (void) addAttachment:(NFR_ATTACHMENT_TYPE)attachmentType withBackingBuffer:(NFR_TARGET_BUFFER_TYPE)bufferType {
+    GLuint tempHandle = 0;
+    switch (bufferType) {
+        case kRenderBuffer: glGenRenderbuffers(1, &tempHandle); break;
+        case kTextureBuffer: glGenTextures(1, &tempHandle); break;
+        default:
+            NSAssert(nil, @"ERROR: unknown or unsupported buffer type added to render target");
+            break;
+    }
 
-    //
-    // TODO: rename glAttachmentStorageType or similiar
-    //
-    GLenum glAttachmentType = GL_INVALID_ENUM;
+    NFRRenderTargetAttachment_t tempAttachment;
+    tempAttachment.handle = tempHandle;
+    tempAttachment.type = bufferType;
 
+    GLenum glInternalStorageType = GL_INVALID_ENUM;
+    GLenum glFormatType = GL_INVALID_ENUM;
+    GLenum glDataType = GL_INVALID_ENUM;
     GLenum glFrameAttachmentType = GL_INVALID_ENUM;
+
+    //
+    // TODO: look into adding support for 32 bit (float and uint) depth buffers
+    //
     switch (attachmentType) {
         case kColorAttachment:
-            //glAttachmentType = ...
+            glInternalStorageType = GL_RGB;
+            glFormatType = GL_RGB;
+            glDataType = GL_UNSIGNED_BYTE;
+
             glFrameAttachmentType = GL_COLOR_ATTACHMENT0;
+
+            self.colorAttachment = tempAttachment;
             break;
 
         case kDepthAttachment:
-            //glAttachmentType = ...
+            glInternalStorageType = GL_DEPTH_COMPONENT24;
+            glFormatType = GL_DEPTH_COMPONENT;
+            glDataType = GL_UNSIGNED_BYTE;
+
             glFrameAttachmentType = GL_DEPTH_ATTACHMENT;
+
+            self.depthAttachment = tempAttachment;
             break;
 
         case kStencilAttachment:
-            //glAttachmentType = ...
+            glInternalStorageType = GL_STENCIL;
+            glFormatType = GL_STENCIL_INDEX;
+            glDataType = GL_UNSIGNED_BYTE;
+
             glFrameAttachmentType = GL_STENCIL_ATTACHMENT;
+
+            self.stencilAttachment = tempAttachment;
             break;
 
         case kDepthStencilAttachment:
-            glAttachmentType = GL_DEPTH24_STENCIL8;
+            glInternalStorageType = GL_DEPTH24_STENCIL8;
+            glFormatType = GL_DEPTH_STENCIL;
+            glDataType = GL_UNSIGNED_INT_24_8;
+
             glFrameAttachmentType = GL_DEPTH_STENCIL_ATTACHMENT;
+
+            self.depthStencilAttachment = tempAttachment;
             break;
 
         default:
@@ -141,45 +180,29 @@
             break;
     }
 
-    //
-    // TODO: helper methods for creating buffers, use glAttachmentType and glFrameAttachmentType as inputs
-    //
+    if (bufferType == kRenderBuffer) {
+        glBindRenderbuffer(GL_RENDERBUFFER, tempHandle);
+        glRenderbufferStorage(GL_RENDERBUFFER, glInternalStorageType, self.width, self.height);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-    switch (bufferType) {
-        case kRenderBuffer: {
-            // create and initialize render buffer
-            GLuint tempRBO;
-            glGenRenderbuffers(1, &tempRBO);
-            self.hRBO = tempRBO;
-            glBindRenderbuffer(GL_RENDERBUFFER, self.hRBO);
-            glRenderbufferStorage(GL_RENDERBUFFER, glAttachmentType, self.width, self.height);
-            glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-            // attach render buffer to the frame buffer
-            glBindFramebuffer(GL_FRAMEBUFFER, _hFBO);
-            glFramebufferRenderbuffer(GL_FRAMEBUFFER, glFrameAttachmentType, GL_RENDERBUFFER, self.hRBO);
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        }
-        break;
-
-        case kTextureBuffer: {
-
-            //
-            // TODO: fold generateAttachmentTexture into here
-            //
-            self.colorAttachmentHandle = [NFRRenderTarget generateAttachmentTextureWithWidth:self.width
-                withHeight:self.height withDepth:GL_FALSE withStencil:GL_FALSE];
-
-            glBindFramebuffer(GL_FRAMEBUFFER, _hFBO);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, glFrameAttachmentType, GL_TEXTURE_2D, self.colorAttachmentHandle, 0);
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        }
-        break;
-
-        default:
-            NSAssert(nil, @"ERROR: unknown or unsupported buffer type added to render target");
-            break;
+        // attach render buffer to the frame buffer
+        glBindFramebuffer(GL_FRAMEBUFFER, _hFBO);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, glFrameAttachmentType, GL_RENDERBUFFER, tempHandle);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
+    else if (bufferType == kTextureBuffer) {
+        glBindTexture(GL_TEXTURE_2D, tempHandle);
+        glTexImage2D(GL_TEXTURE_2D, 0, glInternalStorageType, self.width, self.height, 0, glFormatType, glDataType, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        // attach texture to the frame buffer
+        glBindFramebuffer(GL_FRAMEBUFFER, _hFBO);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, glFrameAttachmentType, GL_TEXTURE_2D, tempHandle, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
     CHECK_GL_ERROR();
 
 
@@ -196,7 +219,7 @@
 //
 - (void) buildRenderBufferWithWidth:(uint32_t)width withHeight:(uint32_t)height {
 
-    NF_BUFFER_TYPE bufferType = kRenderBuffer;
+    NFR_TARGET_BUFFER_TYPE bufferType = kRenderBuffer;
 
     if (bufferType == kRenderBuffer) {
         // create and initialize render buffer

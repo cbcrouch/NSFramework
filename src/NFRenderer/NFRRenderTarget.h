@@ -10,23 +10,26 @@
 
 @interface NFRRenderTarget : NSObject
 
-typedef NS_ENUM(NSUInteger, NF_BUFFER_TYPE) {
+typedef NS_ENUM(NSUInteger, NFR_TARGET_BUFFER_TYPE) {
     kTextureBuffer,
     kRenderBuffer
 };
 
-typedef NS_ENUM(NSUInteger, NF_ATTACHMENT_TYPE) {
+typedef NS_ENUM(NSUInteger, NFR_ATTACHMENT_TYPE) {
     kColorAttachment,
     kDepthAttachment,
     kStencilAttachment,
     kDepthStencilAttachment
 };
 
-typedef struct NFFrameBacking_t {
-    NF_BUFFER_TYPE bufferType;
-    NF_ATTACHMENT_TYPE attachmentType;
-} NFFrameBacking_t;
 
+//
+// TODO: use this struct for attachment handles (could also use a better name
+//
+typedef struct NFRRenderTargetAttachment_t {
+    NSUInteger handle;
+    NFR_TARGET_BUFFER_TYPE type;
+} NFRRenderTargetAttachment_t;
 
 
 // for a framebuffer to be complete it needs at least
@@ -46,7 +49,8 @@ typedef struct NFFrameBacking_t {
 
 - (void) resizeWithWidth:(uint32_t)width withHeight:(uint32_t)height;
 
-- (void) addAttachment:(NF_ATTACHMENT_TYPE)attachmentType withBackingBuffer:(NF_BUFFER_TYPE)bufferType;
+
+- (void) addAttachment:(NFR_ATTACHMENT_TYPE)attachmentType withBackingBuffer:(NFR_TARGET_BUFFER_TYPE)bufferType;
 
 
 //
@@ -56,10 +60,16 @@ typedef struct NFFrameBacking_t {
 - (void) disable;
 
 
+@property (nonatomic, assign, readonly) NFRRenderTargetAttachment_t colorAttachment;
+@property (nonatomic, assign, readonly) NFRRenderTargetAttachment_t depthAttachment;
+@property (nonatomic, assign, readonly) NFRRenderTargetAttachment_t stencilAttachment;
+@property (nonatomic, assign, readonly) NFRRenderTargetAttachment_t depthStencilAttachment;
+
+
+//
+// TODO: modify NFRDisplayTarget to use the colorAttachment struct property
+//
 @property (nonatomic, assign, readonly) GLuint colorAttachmentHandle;
 
-@property (nonatomic, assign, readonly) GLuint depthAttachmentHandle;
-@property (nonatomic, assign, readonly) GLuint stencilAttachmentHandle;
-@property (nonatomic, assign, readonly) GLuint deptjStencilAttachmentHandle;
 
 @end
