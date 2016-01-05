@@ -49,7 +49,6 @@ typedef struct NFRRenderTargetAttachment_t {
 
 - (void) resizeWithWidth:(uint32_t)width withHeight:(uint32_t)height;
 
-
 - (void) addAttachment:(NFR_ATTACHMENT_TYPE)attachmentType withBackingBuffer:(NFR_TARGET_BUFFER_TYPE)bufferType;
 
 
@@ -64,12 +63,5 @@ typedef struct NFRRenderTargetAttachment_t {
 @property (nonatomic, assign, readonly) NFRRenderTargetAttachment_t depthAttachment;
 @property (nonatomic, assign, readonly) NFRRenderTargetAttachment_t stencilAttachment;
 @property (nonatomic, assign, readonly) NFRRenderTargetAttachment_t depthStencilAttachment;
-
-
-//
-// TODO: modify NFRDisplayTarget to use the colorAttachment struct property
-//
-@property (nonatomic, assign, readonly) GLuint colorAttachmentHandle;
-
 
 @end
