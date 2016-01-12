@@ -59,12 +59,23 @@
 
     id<NFRProgram> m_phongShader;
     id<NFRProgram> m_debugShader;
+    id<NFRProgram> m_depthShader;
 
     NFRCommandBufferDefault* m_defaultCmdBuffer;
     NFRCommandBufferDebug* m_debugCmdBuffer;
 
     NFRRenderRequest* m_renderRequest;
     NFRRenderRequest* m_debugRenderRequest;
+
+
+    //
+    // TODO: need to add a display target and possibly render target for
+    //       drawing and retrieving the depth information, will also need
+    //       a render request for each light
+    //
+    NFRCommandBufferDefault* m_depthCmdBuffer;
+    NFRRenderRequest* m_depthRenderRequest;
+
 
     NFRRenderTarget* m_renderTarget;
     NFRDisplayTarget* m_displayTarget;
@@ -113,10 +124,12 @@
     // shader objects
     m_phongShader = [NFRUtils createProgramObject:@"DefaultModel"];
     m_debugShader = [NFRUtils createProgramObject:@"Debug"];
+    m_depthShader = [NFRUtils createProgramObject:@"Depth"];
 
     // command buffers
     m_defaultCmdBuffer = [[NFRCommandBufferDefault alloc] init];
     m_debugCmdBuffer = [[NFRCommandBufferDebug alloc] init];
+    m_depthCmdBuffer = [[NFRCommandBufferDefault alloc] init];
 
 
     //
@@ -130,6 +143,9 @@
 
     m_debugRenderRequest = [[NFRRenderRequest alloc] init];
     m_debugRenderRequest.program = m_debugShader;
+
+    m_depthRenderRequest = [[NFRRenderRequest alloc] init];
+    m_depthRenderRequest.program = m_depthShader;
 
 
     //
@@ -294,9 +310,19 @@
     [m_debugCmdBuffer addGeometry:m_dirLight.geometry];
     [m_debugCmdBuffer addGeometry:m_spotLight.geometry];
 
+
+    [m_depthCmdBuffer addGeometry:m_pAsset.geometry];
+    [m_depthCmdBuffer addGeometry:m_planeData.geometry];
+    [m_depthCmdBuffer addGeometry:m_pProceduralData.geometry];
+
+
     // add command buffers to render requests
     [m_renderRequest.commandBufferArray addObject:m_defaultCmdBuffer];
     [m_debugRenderRequest.commandBufferArray addObject:m_debugCmdBuffer];
+
+
+    [m_depthRenderRequest.commandBufferArray addObject:m_depthCmdBuffer];
+
 
     return self;
 }

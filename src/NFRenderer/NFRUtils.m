@@ -16,6 +16,7 @@
 
 #import "NFRDefaultProgram.h"
 #import "NFRDebugProgram.h"
+#import "NFRDepthProgram.h"
 #import "NFRDisplayProgram.h"
 
 
@@ -52,6 +53,12 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
     }
     else if ([programName isEqualToString:@"Debug"]) {
         NFRDebugProgram* programObj = [[NFRDebugProgram alloc] init];
+        programObj.hProgram = [NFRUtils createProgram:programName];
+        [programObj loadProgramInputPoints];
+        return programObj;
+    }
+    else if ([programName isEqualToString:@"Depth"]) {
+        NFRDepthProgram* programObj = [[NFRDepthProgram alloc] init];
         programObj.hProgram = [NFRUtils createProgram:programName];
         [programObj loadProgramInputPoints];
         return programObj;

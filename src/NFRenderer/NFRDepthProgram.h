@@ -18,6 +18,11 @@
 
 @interface NFRDepthProgram : NSObject <NFRProgram>
 
+@property (nonatomic, assign) GLint vertexAttribute;
+
+@property (nonatomic, assign) GLint projectionViewLocation;
+@property (nonatomic, assign) GLint modelMatrixLocation;
+
 @property (nonatomic, readwrite, assign) GLuint hProgram;
 
 @end
