@@ -75,7 +75,17 @@
     //
     NFRCommandBufferDefault* m_depthCmdBuffer;
     NFRRenderRequest* m_depthRenderRequest;
+    NFRRenderTarget* m_depthRenderTarget;
 
+    //
+    // TODO: implement these to get shadow maps for each light, can start
+    //       by just rendering shadows for the directional light
+    //
+/*
+    NFRCommandBufferDefault* m_shadowMapCmdBuffers[3];
+    NFRRenderRequest* m_shadowMapRequests[3];
+    NFRRenderTarget* m_shadowMapTargets[3];
+*/
 
     NFRRenderTarget* m_renderTarget;
     NFRDisplayTarget* m_displayTarget;
@@ -155,10 +165,13 @@
     [m_renderTarget addAttachment:kColorAttachment withBackingBuffer:kTextureBuffer];
     [m_renderTarget addAttachment:kDepthStencilAttachment withBackingBuffer:kRenderBuffer];
 
+    m_depthRenderTarget = [[NFRRenderTarget alloc] init];
+    [m_depthRenderTarget addAttachment:kColorAttachment withBackingBuffer:kRenderBuffer];
 
     //
-    // TODO: create a shadow render target for each light
+    // TODO: use a depth attachment without stencil buffer to increase shadow precision
     //
+    [m_depthRenderTarget addAttachment:kDepthStencilAttachment withBackingBuffer:kTextureBuffer];
 
 
     m_displayTarget = [[NFRDisplayTarget alloc] init];
@@ -353,6 +366,23 @@
     //       some circumstances when first starting up the application the renderer can attempt
     //       to draw into a frame buffer before it is ready
     //
+
+#if 1
+    [m_depthRenderTarget enable];
+
+    //
+    // TODO: still need to set the view and projection matrix for the depth program and can
+    //       then focus on transfering the depth buffer to the display so can visually
+    //       inspect the generated shadow map
+    //
+
+    glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+    [m_depthRenderRequest process];
+
+    [m_depthRenderTarget disable];
+#endif
+
 
 #define USE_RENDER_TARGET 1
 
