@@ -57,8 +57,8 @@
     NFPointLight* m_pointLight;
     NFSpotLight* m_spotLight;
 
-    id<NFRProgram> m_phongObject;
-    id<NFRProgram> m_debugObject;
+    id<NFRProgram> m_phongShader;
+    id<NFRProgram> m_debugShader;
 
     NFRCommandBufferDefault* m_defaultCmdBuffer;
     NFRCommandBufferDebug* m_debugCmdBuffer;
@@ -111,8 +111,8 @@
     self.viewports = [NSArray arrayWithObjects:viewportArray count:MAX_NUM_VIEWPORTS];
 
     // shader objects
-    m_phongObject = [NFRUtils createProgramObject:@"DefaultModel"];
-    m_debugObject = [NFRUtils createProgramObject:@"Debug"];
+    m_phongShader = [NFRUtils createProgramObject:@"DefaultModel"];
+    m_debugShader = [NFRUtils createProgramObject:@"Debug"];
 
     // command buffers
     m_defaultCmdBuffer = [[NFRCommandBufferDefault alloc] init];
@@ -126,16 +126,24 @@
 
     // render requests
     m_renderRequest = [[NFRRenderRequest alloc] init];
-    m_renderRequest.program = m_phongObject;
+    m_renderRequest.program = m_phongShader;
 
     m_debugRenderRequest = [[NFRRenderRequest alloc] init];
-    m_debugRenderRequest.program = m_debugObject;
+    m_debugRenderRequest.program = m_debugShader;
 
 
     //
-    // TODO: move render target ownership into the render request
+    // TODO: move render target ownership into the render request ??
     //
     m_renderTarget = [[NFRRenderTarget alloc] init];
+    [m_renderTarget addAttachment:kColorAttachment withBackingBuffer:kTextureBuffer];
+    [m_renderTarget addAttachment:kDepthStencilAttachment withBackingBuffer:kRenderBuffer];
+
+
+    //
+    // TODO: create a shadow render target for each light
+    //
+
 
     m_displayTarget = [[NFRDisplayTarget alloc] init];
     m_displayTarget.transferSource = m_renderTarget;
@@ -307,10 +315,10 @@
     //       renderer is not updating the UBO every frame
     //
 
-    [m_phongObject updateViewPosition:viewPosition];
-    [m_phongObject updateViewMatrix:viewMatrix projectionMatrix:projection];
+    [m_phongShader updateViewPosition:viewPosition];
+    [m_phongShader updateViewMatrix:viewMatrix projectionMatrix:projection];
 
-    [m_debugObject updateViewMatrix:viewMatrix projectionMatrix:projection];
+    [m_debugShader updateViewMatrix:viewMatrix projectionMatrix:projection];
 }
 
 - (void) renderFrame {

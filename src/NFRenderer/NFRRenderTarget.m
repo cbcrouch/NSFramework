@@ -52,12 +52,6 @@
         glGenFramebuffers(1, &tempFBO);
         _hFBO = tempFBO;
         CHECK_GL_ERROR();
-
-        //
-        // TODO: attachments should be added manually outside of the class
-        //
-        [self addAttachment:kColorAttachment withBackingBuffer:kTextureBuffer];
-        [self addAttachment:kDepthStencilAttachment withBackingBuffer:kRenderBuffer];
     }
     return self;
 }

@@ -7,6 +7,12 @@
 
 #version 410
 
+
+//
+// TODO: add support for shadow maps
+//
+
+
 layout(std140) uniform UBOData {
     mat4 view;
     mat4 projection;
@@ -22,10 +28,10 @@ layout (location = 0) in vec4 v_position;
 layout (location = 1) in vec4 v_normal;
 layout (location = 2) in vec3 v_texcoord;
 
-
 out vec3 f_normal;
 out vec3 f_position;
 out vec2 f_texcoord;
+
 
 void main() {
     f_position = vec3(model * v_position);

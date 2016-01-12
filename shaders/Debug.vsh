@@ -28,5 +28,5 @@ void main() {
     f_normal = mat3(transpose(inverse(model))) * v_normal;
     f_color = v_color;
 
-    gl_Position = UBO.projection * UBO.view *  model * vec4(v_position, 1.0f);
+    gl_Position = UBO.projection * UBO.view * model * vec4(v_position, 1.0f);
 }

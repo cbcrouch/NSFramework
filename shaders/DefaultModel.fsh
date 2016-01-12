@@ -70,6 +70,11 @@ struct spotLight_t {
 };
 
 
+//
+// TODO: add support for shadow maps
+//
+
+
 uniform vec3 viewPos;
 
 //uniform bool useBlinnSpecular;
