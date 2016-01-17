@@ -167,11 +167,7 @@
 
     m_depthRenderTarget = [[NFRRenderTarget alloc] init];
     [m_depthRenderTarget addAttachment:kColorAttachment withBackingBuffer:kRenderBuffer];
-
-    //
-    // TODO: use a depth attachment without stencil buffer to increase shadow precision
-    //
-    [m_depthRenderTarget addAttachment:kDepthStencilAttachment withBackingBuffer:kTextureBuffer];
+    [m_depthRenderTarget addAttachment:kDepthAttachment withBackingBuffer:kTextureBuffer];
 
 
     m_displayTarget = [[NFRDisplayTarget alloc] init];
@@ -340,7 +336,6 @@
     return self;
 }
 
-
 - (void) updateFrameWithTime:(float)secsElapsed withViewPosition:(GLKVector3)viewPosition withViewMatrix:(GLKMatrix4)viewMatrix withProjection:(GLKMatrix4)projection {
     if (self.stepTransforms) {
         [m_pAsset stepTransforms:secsElapsed];
@@ -357,6 +352,19 @@
     [m_phongShader updateViewPosition:viewPosition];
     [m_phongShader updateViewMatrix:viewMatrix projectionMatrix:projection];
 
+
+    //
+    // TODO: still need to set the view and projection matrix for the depth program and can
+    //       then focus on transfering the depth buffer to the display so can visually
+    //       inspect the generated shadow map
+    //
+
+    // view matrix should just be light's model matrix ??
+    // may need to construct projection matrix here ??
+
+    //[m_depthShader updateViewMatrix:m_dirLight.view projectionMatrix:m_dirLight.projection];
+
+
     [m_debugShader updateViewMatrix:viewMatrix projectionMatrix:projection];
 }
 
@@ -367,15 +375,14 @@
     //       to draw into a frame buffer before it is ready
     //
 
+
 #if 1
     [m_depthRenderTarget enable];
 
     //
-    // TODO: still need to set the view and projection matrix for the depth program and can
-    //       then focus on transfering the depth buffer to the display so can visually
-    //       inspect the generated shadow map
+    // TODO: once render target is setup to only use the depth buffer will no longer need
+    //       to clear the stencil buffer as well
     //
-
     glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     [m_depthRenderRequest process];
@@ -407,7 +414,7 @@
 #if USE_RENDER_TARGET
     [m_renderTarget disable];
 
-    [m_displayTarget processTransfer];
+    [m_displayTarget processTransferOfAttachment:kColorAttachment];
 #endif
 }
 

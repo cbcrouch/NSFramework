@@ -14,8 +14,12 @@
 @property (nonatomic, assign) GLsizei width;
 @property (nonatomic, assign) GLsizei height;
 
+//
+// TODO: allow for chaining display targets together by definimg a transfer protol
+//       that both render targets and display targets adhere to
+//
 @property (nonatomic, strong) NFRRenderTarget* transferSource;
 
-- (void) processTransfer;
+- (void) processTransferOfAttachment:(NFR_ATTACHMENT_TYPE)attachmentType;
 
 @end

@@ -92,7 +92,7 @@
     GLenum glFrameAttachmentType = GL_INVALID_ENUM;
 
     //
-    // TODO: look into adding support for 32 bit (float and uint) depth buffers
+    // TODO: look into adding support for 32 bit uint depth buffers
     //
     switch (attachmentType) {
         case kColorAttachment:
@@ -106,9 +106,9 @@
             break;
 
         case kDepthAttachment:
-            glInternalStorageType = GL_DEPTH_COMPONENT24;
+            glInternalStorageType = GL_DEPTH_COMPONENT;
             glFormatType = GL_DEPTH_COMPONENT;
-            glDataType = GL_UNSIGNED_BYTE;
+            glDataType = GL_FLOAT;
 
             glFrameAttachmentType = GL_DEPTH_ATTACHMENT;
 

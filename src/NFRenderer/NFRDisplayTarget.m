@@ -25,12 +25,6 @@
 
 @implementation NFRDisplayTarget
 
-- (void) setTransferSource:(NFRRenderTarget *)transferSource {
-    _transferSource = transferSource;
-
-    self.transferTexHandle = (GLuint)transferSource.colorAttachment.handle;
-}
-
 - (instancetype) init {
     self = [super init];
     if (self != nil) {
@@ -89,9 +83,29 @@
     return self;
 }
 
-
-- (void) processTransfer {
+- (void) processTransferOfAttachment:(NFR_ATTACHMENT_TYPE)attachmentType {
     NSAssert(self.transferSource != nil, @"attempted to use display target without setting a transfer source");
+
+    switch (attachmentType) {
+        case kColorAttachment:
+            self.transferTexHandle = (GLuint)self.transferSource.colorAttachment.handle;
+            break;
+
+        case kDepthAttachment:
+            self.transferTexHandle = (GLuint)self.transferSource.depthAttachment.handle;
+            break;
+
+        case kStencilAttachment:
+            self.transferTexHandle = (GLuint)self.transferSource.stencilAttachment.handle;
+            break;
+
+        case kDepthStencilAttachment:
+            self.transferTexHandle = (GLuint)self.transferSource.depthStencilAttachment.handle;
+            break;
+
+        default:
+            break;
+    }
 
     //
     // TODO: this is really inefficient and should be fixed
