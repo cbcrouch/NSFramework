@@ -16,6 +16,10 @@
     self.textureUniform = glGetUniformLocation(self.hProgram, "screenTexture");
     NSAssert(self.textureUniform != -1, @"failed to get uniform location");
 
+    //
+    // TODO: load all uniforms and subroutines once added to the shader
+    //
+
     // shader attributes
     self.vertexAttribute = glGetAttribLocation(self.hProgram, "v_position");
     NSAssert(self.vertexAttribute != -1, @"Failed to bind attribute");

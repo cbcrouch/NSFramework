@@ -17,12 +17,61 @@ in vec2 f_texcoord;
 out vec4 color;
 
 
+
+//
+// TODO: add subroutines for color effects, kernels, and depth buffer display
+//
+
+
+
+//
+// TODO: set a uniform or subroutine for displaying depth buffer ?? or just #if it for now ??
+//       (will need to update the display target processTransfer method with the
+//       ability to specify which render target attachment to use)
+//
+/*
+//out vec4 color;
+//in vec2 TexCoords;
+//uniform sampler2D depthMap;
+
+uniform float near_plane;
+uniform float far_plane;
+ 
+// TODO: only linearize depth values if a perspective projection matrix was used (point and spot lights)
+
+float LinearizeDepth(float depth) {
+    float z = depth * 2.0 - 1.0; // Back to NDC
+    return (2.0 * near_plane * far_plane) / (far_plane + near_plane - z * (far_plane - near_plane));
+}
+
+void main() {
+    float depthValue = texture(depthMap, TexCoords).r;
+    // color = vec4(vec3(LinearizeDepth(depthValue) / far_plane), 1.0); // perspective
+    color = vec4(vec3(depthValue), 1.0); // orthographic
+}
+*/
+
+
+
 //
 // TODO: clean this up and organize into a post-processing effects mechanism
 //
 
 const float offset = 1.0f / 300.0f; // 3x3 kernel
-//const float offset = 1.0f / 500.0f; // 5x5 kernel
+//const float offset = 1.0f / 500.0f; // 5x5 kernel ??
+
+
+const float sharpenKernel[9] = float[](-1, -1, -1,
+                                -1,  9, -1,
+                                -1, -1, -1);
+
+const float blurKernel[9] = float[](1.0 / 16, 2.0 / 16, 1.0 / 16,
+                                    2.0 / 16, 4.0 / 16, 2.0 / 16,
+                                    1.0 / 16, 2.0 / 16, 1.0 / 16);
+
+const float edgeDetectKernel[9] = float[](1, 1, 1,
+                                          1, -8, 1,
+                                          1, 1, 1);
 
 
 void main (void) {
@@ -36,7 +85,13 @@ void main (void) {
 
 
     // default
+#if 1
     color = texture(screenTexture, f_texcoord);
+#else
+    // display depth information
+    float depthValue = texture(screenTexture, f_texcoord).r;
+    color = vec4(vec3(depthValue), 1.0);
+#endif
 
 
 #if 0
@@ -50,20 +105,11 @@ void main (void) {
                              vec2(0.0f,    -offset),  // bottom-center
                              vec2(offset,  -offset)); // bottom-right
 
-    // sharpen
-//    float kernel[9] = float[](-1, -1, -1,
-//                              -1,  9, -1,
-//                              -1, -1, -1);
 
-    // blur
-//    float kernel[9] = float[](1.0 / 16, 2.0 / 16, 1.0 / 16,
-//                              2.0 / 16, 4.0 / 16, 2.0 / 16,
-//                              1.0 / 16, 2.0 / 16, 1.0 / 16);
+    //float kernel[9] = sharpenKernel;
+    float kernel[9] = blurKernel;
+    //float kernel[9] = edgeDetectKernel;
 
-    // edge detection
-    float kernel[9] = float[](1, 1, 1,
-                              1, -8, 1,
-                              1, 1, 1);
 
     vec3 sampleTex[9];
     for(int i = 0; i < 9; i++) {

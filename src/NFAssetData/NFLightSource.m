@@ -42,6 +42,10 @@
     return _assetData.geometry;
 }
 
+- (GLKMatrix4) getViewMatrix {
+    return _assetData.modelMatrix;
+}
+
 - (instancetype) init {
     self = [super init];
     if (self != nil) {
@@ -132,6 +136,10 @@
     return _assetData.geometry;
 }
 
+- (GLKMatrix4) getViewMatrix {
+    return _assetData.modelMatrix;
+}
+
 - (instancetype) init {
     self = [super init];
     if (self != nil) {
@@ -152,14 +160,18 @@
         _assetData.modelMatrix = GLKMatrix4Scale(_assetData.modelMatrix, 0.065f, 0.065f, 0.065f);
 
 
-        GLKVector3 orig = GLKVector3Make(0.0f, -1.0f, 0.0f);
-        orig = GLKVector3Normalize(orig);
+        //
+        // TODO: need to correctly setup the directional light's view matrix to get rendering depth buffer working
+        //
+
+        GLKVector3 modelVec = GLKVector3Make(0.0f, -1.0f, 0.0f);
+        modelVec = GLKVector3Normalize(modelVec);
 
         // NOTE: this should always make the geometry face the origin
         GLKVector3 dest = GLKVector3MultiplyScalar(_position, -1.0f);
         dest = GLKVector3Normalize(dest);
 
-        GLKQuaternion rotationQuat = [NFUtils rotateVector:orig toDirection:dest];
+        GLKQuaternion rotationQuat = [NFUtils rotateVector:modelVec toDirection:dest];
 
         // NOTE: this will make the bottom face of the cylinder point towards the origin
         GLKMatrix4 rotationMatrix = GLKMatrix4MakeWithQuaternion(rotationQuat);
@@ -223,6 +235,10 @@
     return _assetData.geometry;
 }
 
+- (GLKMatrix4) getViewMatrix {
+    return _assetData.modelMatrix;
+}
+
 - (instancetype) init {
     self = [super init];
     if (self != nil) {
@@ -250,14 +266,14 @@
         _assetData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, _position.x, _position.y, _position.z);
         _assetData.modelMatrix = GLKMatrix4Scale(_assetData.modelMatrix, 0.085f, 0.085f, 0.085f);
 
-        GLKVector3 orig = GLKVector3Make(0.0f, -1.0f, 0.0f);
-        orig = GLKVector3Normalize(orig);
+        GLKVector3 modelVec = GLKVector3Make(0.0f, -1.0f, 0.0f);
+        modelVec = GLKVector3Normalize(modelVec);
 
         // NOTE: this should always make the geometry face the origin
         GLKVector3 dest = GLKVector3MultiplyScalar(_position, -1.0f);
         dest = GLKVector3Normalize(dest);
 
-        GLKQuaternion rotationQuat = [NFUtils rotateVector:orig toDirection:dest];
+        GLKQuaternion rotationQuat = [NFUtils rotateVector:modelVec toDirection:dest];
 
         // NOTE: this will make the bottom face of the cylinder point towards the origin
         GLKMatrix4 rotationMatrix = GLKMatrix4MakeWithQuaternion(rotationQuat);

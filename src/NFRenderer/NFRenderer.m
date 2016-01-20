@@ -95,6 +95,12 @@
 
 @end
 
+
+
+#define RENDER_DEPTH_BUFFER 0
+#define DIRECTIONAL_LIGHT_TARGET 0
+
+
 #pragma mark - NSGLRenderer Implementation
 @implementation NFRenderer
 
@@ -163,7 +169,14 @@
     //
     m_renderTarget = [[NFRRenderTarget alloc] init];
     [m_renderTarget addAttachment:kColorAttachment withBackingBuffer:kTextureBuffer];
-    [m_renderTarget addAttachment:kDepthStencilAttachment withBackingBuffer:kRenderBuffer];
+
+    //
+    // TODO: switch back to a depth/stencil attachment with a render buffer backing once
+    //       able to confirm that display depth texture works correctly
+    //
+    //[m_renderTarget addAttachment:kDepthStencilAttachment withBackingBuffer:kRenderBuffer];
+    [m_renderTarget addAttachment:kDepthAttachment withBackingBuffer:kTextureBuffer];
+
 
     m_depthRenderTarget = [[NFRRenderTarget alloc] init];
     [m_depthRenderTarget addAttachment:kColorAttachment withBackingBuffer:kRenderBuffer];
@@ -171,7 +184,13 @@
 
 
     m_displayTarget = [[NFRDisplayTarget alloc] init];
+
+#if DIRECTIONAL_LIGHT_TARGET
+    m_displayTarget.transferSource = m_depthRenderTarget;
+#else
     m_displayTarget.transferSource = m_renderTarget;
+#endif
+
 
 
 
@@ -241,19 +260,14 @@
     //m_pProceduralData.modelMatrix = GLKMatrix4Scale(m_pProceduralData.modelMatrix, 0.35f, 0.35f, 0.35f);
     m_pProceduralData.modelMatrix = GLKMatrix4Scale(m_pProceduralData.modelMatrix, 0.5f, 0.5f, 0.5f);
 
-    //
-    // NOTE: can't use the actual position but need to use the normal vector of the fact that you want
-    //       to rotate towards a given destination, and the destination vector must be a vector from the
-    //       position of the normal vector to the desired location that normal vector will face
-    //
-    GLKVector3 orig = GLKVector3Make(0.0f, 1.0f, 0.0f);
-    orig = GLKVector3Normalize(orig);
+    GLKVector3 modelVec = GLKVector3Make(0.0f, 1.0f, 0.0f);
+    modelVec = GLKVector3Normalize(modelVec);
 
     // NOTE: this should always make the geometry face the origin
     GLKVector3 dest = GLKVector3MultiplyScalar(position, -1.0f);
     dest = GLKVector3Normalize(dest);
 
-    GLKQuaternion rotationQuat = [NFUtils rotateVector:orig toDirection:dest];
+    GLKQuaternion rotationQuat = [NFUtils rotateVector:modelVec toDirection:dest];
 
     // NOTE: this will make the top face of the cylinder point towards the origin
     GLKMatrix4 rotationMatrix = GLKMatrix4MakeWithQuaternion(rotationQuat);
@@ -353,6 +367,7 @@
     [m_phongShader updateViewMatrix:viewMatrix projectionMatrix:projection];
 
 
+
     //
     // TODO: still need to set the view and projection matrix for the depth program and can
     //       then focus on transfering the depth buffer to the display so can visually
@@ -360,9 +375,14 @@
     //
 
     // view matrix should just be light's model matrix ??
+
     // may need to construct projection matrix here ??
 
-    //[m_depthShader updateViewMatrix:m_dirLight.view projectionMatrix:m_dirLight.projection];
+    //GLKMatrix4 p = GLKMatrix4MakeOrtho(left, right, bottom, top, nearZ, farZ);
+    GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-10.0, 10.0, -10.0, 10.0, 1.0, 50.0);
+
+    [m_depthShader updateViewMatrix:[m_dirLight getViewMatrix] projectionMatrix:orthoProj];
+
 
 
     [m_debugShader updateViewMatrix:viewMatrix projectionMatrix:projection];
@@ -376,26 +396,14 @@
     //
 
 
-#if 1
     [m_depthRenderTarget enable];
-
-    //
-    // TODO: once render target is setup to only use the depth buffer will no longer need
-    //       to clear the stencil buffer as well
-    //
     glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
     [m_depthRenderRequest process];
-
     [m_depthRenderTarget disable];
-#endif
 
 
-#define USE_RENDER_TARGET 1
 
-#if USE_RENDER_TARGET
     [m_renderTarget enable]; // sets FBO to be drawn to
-#endif
 
     //
     // TODO: move clear call setting into render request and start implementing shadow mapping
@@ -411,11 +419,15 @@
     [m_renderRequest process];
     [m_debugRenderRequest process];
 
-#if USE_RENDER_TARGET
     [m_renderTarget disable];
 
+
+#if RENDER_DEPTH_BUFFER
+    [m_displayTarget processTransferOfAttachment:kDepthAttachment];
+#else
     [m_displayTarget processTransferOfAttachment:kColorAttachment];
 #endif
+
 }
 
 - (void) resizeToRect:(CGRect)rect {

@@ -21,6 +21,9 @@
 
 @property (nonatomic, assign) GLKVector3 position;
 @property (nonatomic, readonly, strong) NFRGeometry* geometry;
+
+- (GLKMatrix4) getViewMatrix;
+
 @end
 
 //
