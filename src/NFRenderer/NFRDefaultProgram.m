@@ -152,13 +152,21 @@
 
 
 //
+// TODO: need to modify updateLightSpaceMatrix to take an object (wrapping a GLKMatrix4)
+//
+
+//
 // TODO: make sure this method gets removed after the light space matrix gets moved into
 //       each light object (should then be able to update them on the loadLight call)
 //
-- (void) updateLightSpaceMatrix:(GLKMatrix4)lightSpaceMatrix {
+- (void) updateLightSpaceMatrix:(NSValue*)matValue {
+    GLKMatrix4 lightSpaceMatrix;
+    [matValue getValue:&lightSpaceMatrix];
+
     glProgramUniformMatrix4fv(self.hProgram, self.lightSpaceMatrixLoc, 1, GL_FALSE, lightSpaceMatrix.m);
     CHECK_GL_ERROR();
 }
+
 
 
 - (void) configureVertexInput:(NFRBufferAttributes*)bufferAttributes {

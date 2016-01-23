@@ -83,7 +83,12 @@ typedef struct spotLightUniforms_t {
 //       matrix uniforms into the light uniform structs
 //
 @property (nonatomic, assign) GLint lightSpaceMatrixLoc;
-- (void) updateLightSpaceMatrix:(GLKMatrix4)lightSpaceMatrix;
+
+//
+// TODO: need to modify updateLightSpaceMatrix to take an object (wrapping a GLKMatrix4)
+//
+//- (void) updateLightSpaceMatrix:(GLKMatrix4)lightSpaceMatrix;
+- (void) updateLightSpaceMatrix:(NSValue*)matValue;
 
 
 @property (nonatomic, assign) GLuint hUBO;

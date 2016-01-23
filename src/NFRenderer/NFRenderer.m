@@ -419,12 +419,10 @@
     //       in the NFRDefaultModel loadLight method
     //
     if ([m_phongShader respondsToSelector:@selector(updateLightSpaceMatrix:)]) {
-        //
-        // TODO: need to convert light space matrix into an object
-        //
-        //[m_phongShader performSelector:@selector(updateLightSpaceMatrix:) withObject:lightViewMat];
+        static const char *matrixType = @encode(GLKMatrix4);
+        NSValue* valueObj = [NSValue value:&lightViewMat withObjCType:matrixType];
+        [m_phongShader performSelector:@selector(updateLightSpaceMatrix:) withObject:valueObj];
     }
-
 
 
 #if 0
@@ -444,7 +442,6 @@
     //2016-01-20 22:39:13.401 NSFramework[1126:31405]     0.000000 0.885625 0.464402 0.000000
     //2016-01-20 22:39:13.401 NSFramework[1126:31405]     0.892330 -0.209623 0.399756 0.000000
     //2016-01-20 22:39:13.401 NSFramework[1126:31405]     -0.004503 -0.678654 -3.858495 1.000000
-
 
 
     [m_debugShader updateViewMatrix:viewMatrix projectionMatrix:projection];
