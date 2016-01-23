@@ -74,6 +74,11 @@ typedef struct spotLightUniforms_t {
 @property (nonatomic, assign) pointLightUniforms_t pointLightUniforms;
 @property (nonatomic, assign) spotLightUniforms_t spotLightUniforms;
 
+
+@property (nonatomic, assign) GLint shadowMapUniform;
+- (void) setShadowMap:(NSValue*)valueObj;
+
+
 @property (nonatomic, assign) GLint modelMatrixLocation;
 @property (nonatomic, assign) GLint viewPositionLocation;
 
@@ -82,7 +87,7 @@ typedef struct spotLightUniforms_t {
 // TODO: after getting basic directional light working move light space
 //       matrix uniforms into the light uniform structs
 //
-@property (nonatomic, assign) GLint lightSpaceMatrixLoc;
+@property (nonatomic, assign) GLint lightSpaceMatrixUniform;
 
 //
 // TODO: need to modify updateLightSpaceMatrix to take an object (wrapping a GLKMatrix4)

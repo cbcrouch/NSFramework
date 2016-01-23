@@ -85,6 +85,10 @@ uniform directionalLight_t directionalLight;
 uniform pointLight_t pointlight;
 uniform spotLight_t spotLight;
 
+
+uniform sampler2D shadowMap;
+
+
 in vec3 f_position;
 in vec3 f_normal;
 in vec2 f_texcoord;
@@ -244,10 +248,17 @@ vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 vie
 }
 
 void main() {
+
+
+    //
+    // TODO: remove this shadow map usage after having implemented the shadow map lookup, is
+    //       simply here so that the uniform doesnt' get stripped out
+    //
+    vec3 testSample = texture(shadowMap, vec2(0.0, 0.0)).xyz;
+
+
     vec3 viewDir = normalize(viewPos - f_position);
-
     vec3 result = vec3(0);
-
 
 #define USE_DIRECTIONAL_LIGHT  1
 #define USE_POINT_LIGHT        1

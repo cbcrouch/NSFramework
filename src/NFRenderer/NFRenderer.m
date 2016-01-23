@@ -463,9 +463,18 @@
     [m_depthRenderRequest process];
     [m_depthRenderTarget disable];
 
+
     //
-    // TODO: need to get the shadow map texture (depth tex attachment) pass into the default model shader
+    // TODO: need a better to get the shadow map texture (depth tex attachment) pass into the
+    //       default model shader for each light
     //
+    if ([m_phongShader respondsToSelector:@selector(setShadowMap:)]) {
+        static const char *handleType = @encode(GLint);
+        GLint depthTexHandle = (GLint)m_depthRenderTarget.depthAttachment.handle;
+        NSValue* valueObj = [NSValue value:&depthTexHandle withObjCType:handleType];
+        [m_phongShader performSelector:@selector(setShadowMap:) withObject:valueObj];
+    }
+
 
     [m_renderTarget enable]; // sets FBO to be drawn to
 

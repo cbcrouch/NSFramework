@@ -12,6 +12,15 @@
 
 #import "NFRResources.h"
 
+/*
+@interface NFRDefaultProgram()
+{
+    GLint m_shadowMapHandle;
+}
+
+@end
+*/
+
 @implementation NFRDefaultProgram
 
 - (void) loadProgramInputPoints {
@@ -132,11 +141,14 @@
 
 
     //
-    // TODO: remove this uniform location once the directional light is working
-    //       correctly, each light struct should have a light space matrix uniform
+    // TODO: remove these uniform locations once the directional light is working correctly,
+    //       each light struct should have a light space matrix and shadow map uniform
     //
-    self.lightSpaceMatrixLoc = glGetUniformLocation(self.hProgram, (const GLchar *)"lightSpace");
-    NSAssert(self.lightSpaceMatrixLoc != -1, @"failed to get light space matrix uniform location");
+    self.lightSpaceMatrixUniform = glGetUniformLocation(self.hProgram, (const GLchar *)"lightSpace");
+    NSAssert(self.lightSpaceMatrixUniform != -1, @"failed to get light space matrix uniform location");
+
+    self.shadowMapUniform = glGetUniformLocation(self.hProgram, (const GLchar *)"shadowMap");
+    NSAssert(self.shadowMapUniform != -1, @"failed to get shadow map uniform location");
 
 
     // view position uniform location
@@ -163,7 +175,21 @@
     GLKMatrix4 lightSpaceMatrix;
     [matValue getValue:&lightSpaceMatrix];
 
-    glProgramUniformMatrix4fv(self.hProgram, self.lightSpaceMatrixLoc, 1, GL_FALSE, lightSpaceMatrix.m);
+    glProgramUniformMatrix4fv(self.hProgram, self.lightSpaceMatrixUniform, 1, GL_FALSE, lightSpaceMatrix.m);
+    CHECK_GL_ERROR();
+}
+
+- (void) setShadowMap:(NSValue*)valueObj {
+    GLint textureId;
+    [valueObj getValue:&textureId];
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, textureId);
+
+    glUseProgram(self.hProgram);
+    glUniform1i(self.shadowMapUniform, GL_TEXTURE1 - GL_TEXTURE0);
+    glUseProgram(0);
+
     CHECK_GL_ERROR();
 }
 
