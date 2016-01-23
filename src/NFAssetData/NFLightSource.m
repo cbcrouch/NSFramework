@@ -43,7 +43,10 @@
 }
 
 - (GLKMatrix4) getViewMatrix {
-    return _assetData.modelMatrix;
+    //
+    // TODO: calculate, or return if already calculated, view matrix
+    //
+    return GLKMatrix4Identity;
 }
 
 - (instancetype) init {
@@ -137,7 +140,10 @@
 }
 
 - (GLKMatrix4) getViewMatrix {
-    return _assetData.modelMatrix;
+    //
+    // TODO: calculate, or return if already calculated, view matrix
+    //
+    return GLKMatrix4Identity;
 }
 
 - (instancetype) init {
@@ -236,7 +242,10 @@
 }
 
 - (GLKMatrix4) getViewMatrix {
-    return _assetData.modelMatrix;
+    //
+    // TODO: calculate, or return if already calculated, view matrix
+    //
+    return GLKMatrix4Identity;
 }
 
 - (instancetype) init {

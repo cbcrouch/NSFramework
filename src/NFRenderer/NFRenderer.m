@@ -463,7 +463,9 @@
     [m_depthRenderRequest process];
     [m_depthRenderTarget disable];
 
-
+    //
+    // TODO: need to get the shadow map texture (depth tex attachment) pass into the default model shader
+    //
 
     [m_renderTarget enable]; // sets FBO to be drawn to
 
