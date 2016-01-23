@@ -22,6 +22,13 @@ uniform mat4 model;
 
 
 //
+// TODO: add support for passing in a light space matrix for each active light
+//
+uniform mat4 lightSpace;
+out vec4 f_posLightSpace;
+
+
+//
 // TODO: make position and normal vec3
 //
 layout (location = 0) in vec4 v_position;
@@ -37,6 +44,8 @@ void main() {
     f_position = vec3(model * v_position);
     f_normal = mat3(transpose(inverse(model))) * v_normal.xyz;
     f_texcoord = v_texcoord.xy;
+
+    f_posLightSpace = lightSpace * v_position;
 
     gl_Position = UBO.projection * UBO.view *  model * v_position;
 }

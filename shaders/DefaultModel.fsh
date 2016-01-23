@@ -89,6 +89,12 @@ in vec3 f_position;
 in vec3 f_normal;
 in vec2 f_texcoord;
 
+//
+// TODO: light space vector needs to have multiple inputs, one per each light
+//
+in vec4 f_posLightSpace;
+
+
 out vec4 color;
 
 

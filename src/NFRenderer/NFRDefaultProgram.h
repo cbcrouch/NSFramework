@@ -77,6 +77,15 @@ typedef struct spotLightUniforms_t {
 @property (nonatomic, assign) GLint modelMatrixLocation;
 @property (nonatomic, assign) GLint viewPositionLocation;
 
+
+//
+// TODO: after getting basic directional light working move light space
+//       matrix uniforms into the light uniform structs
+//
+@property (nonatomic, assign) GLint lightSpaceMatrixLoc;
+- (void) updateLightSpaceMatrix:(GLKMatrix4)lightSpaceMatrix;
+
+
 @property (nonatomic, assign) GLuint hUBO;
 
 @property (nonatomic, readwrite, assign) GLuint hProgram;

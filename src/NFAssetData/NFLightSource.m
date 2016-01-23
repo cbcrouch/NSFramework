@@ -159,9 +159,9 @@
         _assetData.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, _position.x, _position.y, _position.z);
         _assetData.modelMatrix = GLKMatrix4Scale(_assetData.modelMatrix, 0.065f, 0.065f, 0.065f);
 
-
         //
-        // TODO: need to correctly setup the directional light's view matrix to get rendering depth buffer working
+        // TODO: need to move the light view matrix calculation into the light's implementation class and
+        //       make sure that it gets updated everytime a light is moved
         //
 
         GLKVector3 modelVec = GLKVector3Make(0.0f, -1.0f, 0.0f);

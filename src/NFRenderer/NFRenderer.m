@@ -13,11 +13,20 @@
 #import "NFRDisplayTarget.h"
 #import "NFRRenderRequest.h"
 
+
+
 //
 // TODO: move NFAssetLoader and NFLightSource module test code into NFSimulation module once it has been stubbed out
 //
 #import "NFAssetLoader.h"
 #import "NFLightSource.h"
+
+//
+// TODO: remove NFRDefaultProgram module once light space matrix has been moved into the light classes
+//       and then the uniform update can occur in NFRDefaultProgram loadLight method
+//
+#import "NFRDefaultProgram.h"
+
 
 
 // NOTE: because both gl.h and gl3.h are included will get symbols for deprecated GL functions
@@ -190,8 +199,6 @@
 #else
     m_displayTarget.transferSource = m_renderTarget;
 #endif
-
-
 
 
     NSString *fileNamePath;
@@ -369,19 +376,74 @@
 
 
     //
-    // TODO: still need to set the view and projection matrix for the depth program and can
-    //       then focus on transfering the depth buffer to the display so can visually
-    //       inspect the generated shadow map
+    // TODO need a faster way of building view matrices
     //
+    GLKVector3 eye = GLKVector3Make(-2.0f, 2.0f, 1.0f);
+    //GLKVector3 eye = GLKVector3Make(-4.0f, 4.0f, 2.0f);
 
-    // view matrix should just be light's model matrix ??
+    GLKVector3 dest = GLKVector3Make(0.0f, 0.0f, 0.0f);
 
-    // may need to construct projection matrix here ??
+    GLKVector3 hyp = GLKVector3Subtract(eye, dest);
+    hyp = GLKVector3Normalize(hyp);
 
-    //GLKMatrix4 p = GLKMatrix4MakeOrtho(left, right, bottom, top, nearZ, farZ);
-    GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-10.0, 10.0, -10.0, 10.0, 1.0, 50.0);
+    float yaw = -M_PI + atan2f(hyp.x, hyp.z);
+    float pitch = -atan2(hyp.y, hyp.y) / 2.0f;
 
-    [m_depthShader updateViewMatrix:[m_dirLight getViewMatrix] projectionMatrix:orthoProj];
+    GLKVector3 look;
+    float r = cosf(pitch);
+    look.x = r * sinf(yaw);
+    look.y = sinf(pitch);
+    look.z = r * cosf(yaw);
+
+    GLKVector3 right;
+    right.x = sinf(yaw - M_PI_2);
+    right.y = 0.0f;
+    right.z = cosf(yaw - M_PI_2);
+
+    GLKVector3 up = GLKVector3CrossProduct(right, look);
+
+    GLKMatrix4 lightViewMat = GLKMatrix4MakeLookAt(eye.x, eye.y, eye.z,
+                                       look.x, look.y, look.z,
+                                       up.x, up.y, up.z);
+
+
+    GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-10.0, 10.0, -10.0, 10.0, 0.1, 50.0);
+    //GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-1.0, 1.0, -1.0, 1.0, 1.0, 50.0);
+
+    [m_depthShader updateViewMatrix:lightViewMat projectionMatrix:orthoProj];
+    //[m_depthShader updateViewMatrix:lightViewMat projectionMatrix:projection];
+
+
+    //
+    // TODO: move the light space matrix into the light classes and have the uniform get updated
+    //       in the NFRDefaultModel loadLight method
+    //
+    if ([m_phongShader respondsToSelector:@selector(updateLightSpaceMatrix:)]) {
+        //
+        // TODO: need to convert light space matrix into an object
+        //
+        //[m_phongShader performSelector:@selector(updateLightSpaceMatrix:) withObject:lightViewMat];
+    }
+
+
+
+#if 0
+    //GLKMatrix4 outputMatrix = [m_dirLight getViewMatrix];
+    GLKMatrix4 outputMatrix = lightViewMat;
+
+    NSLog(@"outputMatrix:");
+    NSLog(@"    %f %f %f %f", outputMatrix.m00, outputMatrix.m01, outputMatrix.m02, outputMatrix.m03);
+    NSLog(@"    %f %f %f %f", outputMatrix.m10, outputMatrix.m11, outputMatrix.m12, outputMatrix.m13);
+    NSLog(@"    %f %f %f %f", outputMatrix.m20, outputMatrix.m21, outputMatrix.m22, outputMatrix.m23);
+    NSLog(@"    %f %f %f %f", outputMatrix.m30, outputMatrix.m31, outputMatrix.m32, outputMatrix.m33);
+#endif
+
+    // rough estimate of directional lights view mstric
+    //2016-01-20 22:39:13.384 NSFramework[1126:31405] viewMatrix:
+    //2016-01-20 22:39:13.401 NSFramework[1126:31405]     0.451383 0.414400 -0.790270 0.000000
+    //2016-01-20 22:39:13.401 NSFramework[1126:31405]     0.000000 0.885625 0.464402 0.000000
+    //2016-01-20 22:39:13.401 NSFramework[1126:31405]     0.892330 -0.209623 0.399756 0.000000
+    //2016-01-20 22:39:13.401 NSFramework[1126:31405]     -0.004503 -0.678654 -3.858495 1.000000
 
 
 
@@ -397,7 +459,10 @@
 
 
     [m_depthRenderTarget enable];
-    glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glClear(GL_DEPTH_BUFFER_BIT);
+    //
+    // TODO: cull front face prior to render then reset to back face
+    //
     [m_depthRenderRequest process];
     [m_depthRenderTarget disable];
 

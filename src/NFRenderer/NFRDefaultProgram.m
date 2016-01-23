@@ -130,6 +130,15 @@
     self.modelMatrixLocation = glGetUniformLocation(self.hProgram, (const GLchar *)"model");
     NSAssert(self.modelMatrixLocation != -1, @"failed to get model matrix uniform location");
 
+
+    //
+    // TODO: remove this uniform location once the directional light is working
+    //       correctly, each light struct should have a light space matrix uniform
+    //
+    self.lightSpaceMatrixLoc = glGetUniformLocation(self.hProgram, (const GLchar *)"lightSpace");
+    NSAssert(self.lightSpaceMatrixLoc != -1, @"failed to get light space matrix uniform location");
+
+
     // view position uniform location
     self.viewPositionLocation = glGetUniformLocation(self.hProgram, "viewPos");
     NSAssert(self.viewPositionLocation != -1, @"failed to get uniform location");
@@ -140,6 +149,17 @@
 
     CHECK_GL_ERROR();
 }
+
+
+//
+// TODO: make sure this method gets removed after the light space matrix gets moved into
+//       each light object (should then be able to update them on the loadLight call)
+//
+- (void) updateLightSpaceMatrix:(GLKMatrix4)lightSpaceMatrix {
+    glProgramUniformMatrix4fv(self.hProgram, self.lightSpaceMatrixLoc, 1, GL_FALSE, lightSpaceMatrix.m);
+    CHECK_GL_ERROR();
+}
+
 
 - (void) configureVertexInput:(NFRBufferAttributes*)bufferAttributes {
     glBindVertexArray(bufferAttributes.hVAO);

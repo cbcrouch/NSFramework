@@ -29,6 +29,7 @@ out vec4 color;
 //       (will need to update the display target processTransfer method with the
 //       ability to specify which render target attachment to use)
 //
+
 /*
 //out vec4 color;
 //in vec2 TexCoords;
@@ -36,17 +37,19 @@ out vec4 color;
 
 uniform float near_plane;
 uniform float far_plane;
- 
-// TODO: only linearize depth values if a perspective projection matrix was used (point and spot lights)
 
-float LinearizeDepth(float depth) {
+//
+// TODO: only linearize depth values if a perspective projection matrix was used (point and spot lights)
+//
+
+float linearizeDepth(float depth) {
     float z = depth * 2.0 - 1.0; // Back to NDC
     return (2.0 * near_plane * far_plane) / (far_plane + near_plane - z * (far_plane - near_plane));
 }
 
-void main() {
+void grayScaleDepth() {
     float depthValue = texture(depthMap, TexCoords).r;
-    // color = vec4(vec3(LinearizeDepth(depthValue) / far_plane), 1.0); // perspective
+    //color = vec4(vec3(LinearizeDepth(depthValue) / far_plane), 1.0); // perspective
     color = vec4(vec3(depthValue), 1.0); // orthographic
 }
 */
@@ -84,14 +87,16 @@ void main (void) {
     //    color = vec4(average, average, average, 1.0);
 
 
+
     // default
 #if 1
     color = texture(screenTexture, f_texcoord);
 #else
-    // display depth information
+    // grayscale depth values
     float depthValue = texture(screenTexture, f_texcoord).r;
     color = vec4(vec3(depthValue), 1.0);
 #endif
+
 
 
 #if 0
@@ -107,8 +112,8 @@ void main (void) {
 
 
     //float kernel[9] = sharpenKernel;
-    float kernel[9] = blurKernel;
-    //float kernel[9] = edgeDetectKernel;
+    //float kernel[9] = blurKernel;
+    float kernel[9] = edgeDetectKernel;
 
 
     vec3 sampleTex[9];
