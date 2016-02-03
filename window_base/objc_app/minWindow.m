@@ -91,7 +91,7 @@
     //       handling the event loop
     //
 
-    id ehObj = [NSEvent addLocalMonitorForEventsMatchingMask:NSKeyDownMask handler:^(NSEvent *event) {
+    id evObj = [NSEvent addLocalMonitorForEventsMatchingMask:NSKeyDownMask handler:^(NSEvent *event) {
         //
         // TODO: send event data to desired method based on type
         //
@@ -100,7 +100,7 @@
         }    
         return event;
     }];
-    NSAssert(ehObj != nil, @"event handler object is nil");
+    NSAssert(evObj != nil, @"event handler object is nil");
     
     // NOTE: application will get event before view
     [self.window makeFirstResponder:self.view];
@@ -122,12 +122,72 @@
 @end
 
 
-int main (int argc, char* argv[])
+
+@interface NFApplication : NSApplication
 {
+    BOOL shouldKeepRunning;
+}
+
+- (void) run;
+- (void) terminate:(id)sender;
+
+@end
+
+
+@implementation NFApplication
+
+- (void) run {
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:NSApplicationWillFinishLaunchingNotification object:NSApp];
+
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:NSApplicationDidFinishLaunchingNotification object:NSApp];
+
+    shouldKeepRunning = YES;
+    while(shouldKeepRunning) {
+        NSEvent *event = [self
+            nextEventMatchingMask:NSAnyEventMask
+            untilDate:[NSDate distantFuture]
+            inMode:NSDefaultRunLoopMode
+            dequeue:YES];
+
+        [self sendEvent:event];
+        [self updateWindows];
+    };
+}
+
+- (void) terminate:(id)sender {
+    //
+    // TODO: most likely don't need to call parent class terminate but should
+    //       double check with all the documentation to be sure
+    //
+    //[super terminate:sender];
+    
+    shouldKeepRunning = NO;
+}
+
+@end
+
+
+int main (int argc, char* argv[]) {
+
     [[NSAutoreleasePool alloc] init];
     
+    
+    //
+    // TODO: load and read Info.plist here
+    //
+    
+    
     [NSApplication sharedApplication];
+    
+    
+    //
+    // TODO: should calls to NSApp be replaced by the same calls only on
+    //       the manually implemented principal class ?? (most likely yes)
+    //
     [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+
 
     NSMenu* menubar = [[[NSMenu alloc] init] autorelease];
     NSMenuItem* appMenuItem = [[[NSMenuItem alloc] init] autorelease];
@@ -151,6 +211,7 @@ int main (int argc, char* argv[])
     [window setTitle:appName];
     [window makeKeyAndOrderFront:nil];
 
+
     [NSApp activateIgnoringOtherApps:YES];
     
     
@@ -158,11 +219,14 @@ int main (int argc, char* argv[])
     [window setDelegate:windowDelegate];
     
     ApplicationDelegate* applicationDelegate = [[[ApplicationDelegate alloc] initWithWindow:window] autorelease];
+
+
     [NSApp setDelegate:applicationDelegate];
-    
     
     [NSApp run];
 
     [NSApp terminate:nil];
+
+
     return 0;
 }
