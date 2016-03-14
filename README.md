@@ -16,6 +16,9 @@ Swift, that are designed to be full streamlined and programatic replacements for
 standard delegates that are used in NSFramework. The goal is that in time NSFramework can be independent
 from both Interface Builder and Xcode.
 
+2016 UPDATE: I'm currently enrolled in an ECE masters program, hobby project updates will now be few and far
+between. Expect minor activity during breaks from school at best.
+
 Dependencies
 ------------
 
