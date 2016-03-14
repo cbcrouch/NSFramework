@@ -102,7 +102,8 @@ in vec4 f_posLightSpace;
 out vec4 color;
 
 
-vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir);
+vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir, float shadow);
+
 vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir);
 vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir);
 
@@ -120,7 +121,7 @@ vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 vie
 //}
 
 
-vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir) {
+vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir, float shadow) {
     vec3 lightDir = normalize(-light.direction);
     vec3 norm = normalize(normal);
 
@@ -151,7 +152,11 @@ vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosi
 
     vec3 specular = light.specular * spec * material.specular;
 
-    return (ambient + diffuse + specular);
+    //
+    //
+    //
+    return (ambient + ((1.0 - shadow) * (diffuse + specular)));
+    //return (ambient + diffuse + specular);
 }
 
 vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir) {
@@ -247,14 +252,42 @@ vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 vie
     return(ambient + diffuse + specular);
 }
 
+
+float shadow_calculation(vec4 frag_pos_light_space) {
+
+    //
+    // TODO: verify and cleanup
+    //
+
+    // perspective divide and transform to [0, 1] range
+    vec3 projCoords = frag_pos_light_space.xyz / frag_pos_light_space.w;
+    projCoords = projCoords * 0.5 + 0.5;
+
+
+    // rename closestDepth to shadowDepth and/or currentDepth to lightDepth ???
+
+    // get closet depth value from light's perspective using [0,1] range frag_pos_light_space as coords
+    float closestDepth = texture(shadowMap, projCoords.xy).r;
+
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+
+    // check wheter current frag pos is in shadow
+    float shadowVal = currentDepth > closestDepth ? 1.0 : 0.0;
+
+    return shadowVal;
+}
+
+
 void main() {
 
 
-    //
-    // TODO: remove this shadow map usage after having implemented the shadow map lookup, is
-    //       simply here so that the uniform doesnt' get stripped out
-    //
-    vec3 testSample = texture(shadowMap, vec2(0.0, 0.0)).xyz;
+#if 0
+    float shadowVal = shadow_calculation(f_posLightSpace);
+#else
+    float throwaway = texture(shadowMap, vec2(0.0, 0.0)).r;
+    float shadowVal = 0.0;
+#endif
 
 
     vec3 viewDir = normalize(viewPos - f_position);
@@ -266,7 +299,7 @@ void main() {
 
 
 #if USE_DIRECTIONAL_LIGHT
-    result += calc_directional_light(directionalLight, f_normal, f_position, viewDir);
+    result += calc_directional_light(directionalLight, f_normal, f_position, viewDir, shadowVal);
 #else
     vec3 directionalOutput = calc_directional_light(directionalLight, f_normal, f_position, viewDir);
     directionalOutput = result;
@@ -288,9 +321,8 @@ void main() {
 #endif
 
     //
-    // TODO: add gamma correction (find some assets with a rendered frame for reference), note that
-    //       currently using an SRGB framebuffer which will make the final frame appear roughly gamma
-    //       correct with a gamma of 2.2 but will not allow for the user to tweak their gamma
+    // TODO: add gamma correction (find some assets with a rendered frame for reference), and
+    //       setup to allow for the user to tweak their gamma
     //
     float gamma = 2.2f;
     result = pow(result, vec3(1.0f/gamma));

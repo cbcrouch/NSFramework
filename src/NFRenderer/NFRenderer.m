@@ -380,6 +380,7 @@
     //
     GLKVector3 eye = GLKVector3Make(-2.0f, 2.0f, 1.0f);
     //GLKVector3 eye = GLKVector3Make(-4.0f, 4.0f, 2.0f);
+    //GLKVector3 eye = GLKVector3Make(-2.0f, 4.0f, -1.0f);
 
     GLKVector3 dest = GLKVector3Make(0.0f, 0.0f, 0.0f);
 
@@ -406,9 +407,14 @@
                                        look.x, look.y, look.z,
                                        up.x, up.y, up.z);
 
-
+    //
+    // TODO: settle on a good projection matrix
+    //
     GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-10.0, 10.0, -10.0, 10.0, 0.1, 50.0);
-    //GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-1.0, 1.0, -1.0, 1.0, 1.0, 50.0);
+    //GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-10.0, 10.0, -10.0, 10.0, -10.0, 10.0);
+    //GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-1.0, 1.0, -1.0, 1.0, 0.5, 50.0);
+    //GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-10.0, 10.0, -10.0, 10.0, 1.0, 7.5);
+
 
     [m_depthShader updateViewMatrix:lightViewMat projectionMatrix:orthoProj];
     //[m_depthShader updateViewMatrix:lightViewMat projectionMatrix:projection];
@@ -419,29 +425,15 @@
     //       in the NFRDefaultModel loadLight method
     //
     if ([m_phongShader respondsToSelector:@selector(updateLightSpaceMatrix:)]) {
+        //
+        // NOTE: should make sure that the light space matrix calculation only happens once
+        //
+        GLKMatrix4 lightSpaceMat = GLKMatrix4Multiply(orthoProj, lightViewMat);
+
         static const char *matrixType = @encode(GLKMatrix4);
-        NSValue* valueObj = [NSValue value:&lightViewMat withObjCType:matrixType];
+        NSValue* valueObj = [NSValue value:&lightSpaceMat withObjCType:matrixType];
         [m_phongShader performSelector:@selector(updateLightSpaceMatrix:) withObject:valueObj];
     }
-
-
-#if 0
-    //GLKMatrix4 outputMatrix = [m_dirLight getViewMatrix];
-    GLKMatrix4 outputMatrix = lightViewMat;
-
-    NSLog(@"outputMatrix:");
-    NSLog(@"    %f %f %f %f", outputMatrix.m00, outputMatrix.m01, outputMatrix.m02, outputMatrix.m03);
-    NSLog(@"    %f %f %f %f", outputMatrix.m10, outputMatrix.m11, outputMatrix.m12, outputMatrix.m13);
-    NSLog(@"    %f %f %f %f", outputMatrix.m20, outputMatrix.m21, outputMatrix.m22, outputMatrix.m23);
-    NSLog(@"    %f %f %f %f", outputMatrix.m30, outputMatrix.m31, outputMatrix.m32, outputMatrix.m33);
-#endif
-
-    // rough estimate of directional lights view mstric
-    //2016-01-20 22:39:13.384 NSFramework[1126:31405] viewMatrix:
-    //2016-01-20 22:39:13.401 NSFramework[1126:31405]     0.451383 0.414400 -0.790270 0.000000
-    //2016-01-20 22:39:13.401 NSFramework[1126:31405]     0.000000 0.885625 0.464402 0.000000
-    //2016-01-20 22:39:13.401 NSFramework[1126:31405]     0.892330 -0.209623 0.399756 0.000000
-    //2016-01-20 22:39:13.401 NSFramework[1126:31405]     -0.004503 -0.678654 -3.858495 1.000000
 
 
     [m_debugShader updateViewMatrix:viewMatrix projectionMatrix:projection];

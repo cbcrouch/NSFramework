@@ -44,8 +44,7 @@ void main() {
     f_position = vec3(model * v_position);
     f_normal = mat3(transpose(inverse(model))) * v_normal.xyz;
     f_texcoord = v_texcoord.xy;
-
-    f_posLightSpace = lightSpace * v_position;
+    f_posLightSpace = lightSpace * vec4(f_position, 1.0);
 
     gl_Position = UBO.projection * UBO.view *  model * v_position;
 }

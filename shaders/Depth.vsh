@@ -23,6 +23,6 @@ uniform mat4 model;
 layout (location = 0) in vec4 v_position;
 
 void main() {
-    //gl_Position = projectionView * model * vec4(v_position, 1.0f);
+    //gl_Position = projectionView * model * vec4(v_position.xyz, 1.0f);
     gl_Position = projectionView * model * v_position;
 }
