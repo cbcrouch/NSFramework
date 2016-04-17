@@ -108,7 +108,8 @@ func main() -> Int32 {
     let appName = NSProcessInfo.processInfo().processName
 
     let quitTitle = "Quit " + appName
-    let quitMenuItem = NSMenuItem(title: quitTitle, action: Selector("terminate:"), keyEquivalent: "q")
+    let quitMenuItem = NSMenuItem(title: quitTitle, action: #selector(nsApp.terminate(_:)), keyEquivalent: "q")
+
 
     appMenu.addItem(quitMenuItem)
     appMenuItem.submenu = appMenu
@@ -118,7 +119,7 @@ func main() -> Int32 {
     //let windowMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask
 
     let win = NSWindow(contentRect: NSMakeRect(100, 100, 600, 200), styleMask: NSTitledWindowMask,
-        backing: NSBackingStoreType.Buffered, `defer`: true)
+        backing: NSBackingStoreType.Buffered, defer: true)
 
     win.cascadeTopLeftFromPoint(NSMakePoint(20, 20))
     win.title = appName
