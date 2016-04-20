@@ -144,12 +144,10 @@
         postNotificationName:NSApplicationDidFinishLaunchingNotification object:NSApp];
 
     shouldKeepRunning = YES;
+    
     while(shouldKeepRunning) {
-        NSEvent *event = [self
-            nextEventMatchingMask:NSAnyEventMask
-            untilDate:[NSDate distantFuture]
-            inMode:NSDefaultRunLoopMode
-            dequeue:YES];
+        NSEvent *event = [self nextEventMatchingMask:NSAnyEventMask
+            untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES];
 
         [self sendEvent:event];
         [self updateWindows];
@@ -161,7 +159,7 @@
     // TODO: most likely don't need to call parent class terminate but should
     //       double check with all the documentation to be sure
     //
-    //[super terminate:sender];
+    [super terminate:sender];
     
     shouldKeepRunning = NO;
 }
@@ -172,26 +170,84 @@
 int main (int argc, char* argv[]) {
 
     [[NSAutoreleasePool alloc] init];
-    
-    
-    //
-    // TODO: load and read Info.plist here
-    //
-    
-    
-    [NSApplication sharedApplication];
-    
-    
-    //
-    // TODO: should calls to NSApp be replaced by the same calls only on
-    //       the manually implemented principal class ?? (most likely yes)
-    //
-    [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 
+    
+#define USE_MANUAL_EVENT_LOOP 1
+
+//
+//
+//
+#if USE_MANUAL_EVENT_LOOP
+
+    NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+    Class principalClass = NSClassFromString([infoDictionary objectForKey:@"NSPrincipalClass"]);
+    NSApplication *applicationObject = [principalClass sharedApplication];
+    
+    [applicationObject setActivationPolicy:NSApplicationActivationPolicyRegular];
 
     NSMenu* menubar = [[[NSMenu alloc] init] autorelease];
     NSMenuItem* appMenuItem = [[[NSMenuItem alloc] init] autorelease];
     [menubar addItem:appMenuItem];
+    
+    [applicationObject setMainMenu:menubar];
+
+    //
+    // TODO: this is getting other stuff in the application menu other than the quit option
+    //       as well as not getting the correct process name
+    //
+
+    NSMenu* appMenu = [[[NSMenu alloc] init] autorelease];
+    NSString* appName = [[NSProcessInfo processInfo] processName];
+    
+    NSString* quitTitle = [@"Quit " stringByAppendingString:appName];
+    NSMenuItem* quitMenuItem = [[[NSMenuItem alloc] initWithTitle:quitTitle
+        action:@selector(terminate:) keyEquivalent:@"q"] autorelease];
+
+    [appMenu addItem:quitMenuItem];
+    [appMenuItem setSubmenu:appMenu];
+
+    NSWindow* window = [[[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 200, 200)
+        styleMask:NSTitledWindowMask backing:NSBackingStoreBuffered defer:NO] autorelease];
+
+    [window cascadeTopLeftFromPoint:NSMakePoint(20,20)];
+    [window setTitle:appName];
+    [window makeKeyAndOrderFront:nil];
+
+    [applicationObject activateIgnoringOtherApps:YES];    
+    
+    WindowDelegate* windowDelegate = [[[WindowDelegate alloc] init] autorelease];
+    [window setDelegate:windowDelegate];
+    
+    ApplicationDelegate* applicationDelegate = [[[ApplicationDelegate alloc] initWithWindow:window] autorelease];
+    [applicationObject setDelegate:applicationDelegate];
+
+
+    //
+    // TODO: manual event loop will get a key event on Cmd-Q but does not exit application, while
+    //       the NSApp event loop will handle this correctly, need to fix so works as intended
+    //
+    
+    if ([applicationObject respondsToSelector:@selector(run)]) {
+        [applicationObject performSelectorOnMainThread:@selector(run) withObject:nil waitUntilDone:YES];
+    }
+
+    //[applicationObject terminate:nil];
+
+//
+//
+//
+#else
+//
+//
+//
+
+    [NSApplication sharedApplication];
+    [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+
+    NSMenu* menubar = [[[NSMenu alloc] init] autorelease];
+    NSMenuItem* appMenuItem = [[[NSMenuItem alloc] init] autorelease];
+    [menubar addItem:appMenuItem];
+    
     [NSApp setMainMenu:menubar];
 
     NSMenu* appMenu = [[[NSMenu alloc] init] autorelease];
@@ -211,22 +267,23 @@ int main (int argc, char* argv[]) {
     [window setTitle:appName];
     [window makeKeyAndOrderFront:nil];
 
-
     [NSApp activateIgnoringOtherApps:YES];
-    
-    
+
     WindowDelegate* windowDelegate = [[[WindowDelegate alloc] init] autorelease];
     [window setDelegate:windowDelegate];
     
     ApplicationDelegate* applicationDelegate = [[[ApplicationDelegate alloc] initWithWindow:window] autorelease];
 
-
     [NSApp setDelegate:applicationDelegate];
-    
+
     [NSApp run];
 
     [NSApp terminate:nil];
 
+#endif
+//
+//
+//
 
     return 0;
 }
