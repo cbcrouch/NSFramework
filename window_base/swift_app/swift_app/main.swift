@@ -10,7 +10,6 @@ import Foundation
 import Cocoa
 
 class NFView: NSView {
-
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         //commonInit()
@@ -82,6 +81,29 @@ class ApplicationDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
+/*
+class Application: NSApplication {
+    var shouldKeepRunning: Bool
+
+    override init() {
+        shouldKeepRunning = false
+        super.init()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func run() {
+        //
+    }
+
+    override func terminate(sender: AnyObject?) {
+        //
+    }
+}
+*/
+
 
 func main() -> Int32 {
     for argument in Process.arguments {
@@ -141,19 +163,9 @@ func main() -> Int32 {
     let applicationDelegate = ApplicationDelegate(window: win)
     nsApp.delegate = applicationDelegate
 
-
-    //
-    // TODO: decided what style to use and determine if can get menu bar to appear activated while
-    //       setting ignore other apps to true
-    //
-    //NSApplication.sharedApplication().activateIgnoringOtherApps(true)
-    //nsApp.activateIgnoringOtherApps(true)
+    nsApp.activateIgnoringOtherApps(true)
 
 
-    //
-    // TODO: do these two calls ultimately result in running the same code ??
-    //
-    //NSRunLoop.mainRunLoop().run()
     nsApp.run()
 
 

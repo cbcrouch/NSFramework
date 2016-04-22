@@ -137,11 +137,28 @@
 @implementation NFApplication
 
 - (void) run {
+
+    NSLog(@"NFApplication run method called");
+/*
     [[NSNotificationCenter defaultCenter]
         postNotificationName:NSApplicationWillFinishLaunchingNotification object:NSApp];
 
     [[NSNotificationCenter defaultCenter]
         postNotificationName:NSApplicationDidFinishLaunchingNotification object:NSApp];
+*/
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:NSApplicationWillFinishLaunchingNotification object:self];
+
+
+    //
+    // TODO: this method is the key to hooking everything up, need to pull it apart and
+    //       find out if it can be manually implemented
+    //
+    [self finishLaunching];
+
+
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:NSApplicationDidFinishLaunchingNotification object:self];
 
     shouldKeepRunning = YES;
     
@@ -181,8 +198,12 @@ int main (int argc, char* argv[]) {
 
     NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
     Class principalClass = NSClassFromString([infoDictionary objectForKey:@"NSPrincipalClass"]);
-    NSApplication *applicationObject = [principalClass sharedApplication];
     
+
+    //NSApplication *applicationObject = [principalClass sharedApplication];
+    NFApplication *applicationObject = [principalClass sharedApplication];
+    
+
     [applicationObject setActivationPolicy:NSApplicationActivationPolicyRegular];
 
     NSMenu* menubar = [[[NSMenu alloc] init] autorelease];
@@ -191,13 +212,11 @@ int main (int argc, char* argv[]) {
     
     [applicationObject setMainMenu:menubar];
 
-    //
-    // TODO: this is getting other stuff in the application menu other than the quit option
-    //       as well as not getting the correct process name
-    //
 
     NSMenu* appMenu = [[[NSMenu alloc] init] autorelease];
     NSString* appName = [[NSProcessInfo processInfo] processName];
+    
+    NSLog(@"appName: %@", appName);
     
     NSString* quitTitle = [@"Quit " stringByAppendingString:appName];
     NSMenuItem* quitMenuItem = [[[NSMenuItem alloc] initWithTitle:quitTitle
@@ -213,7 +232,7 @@ int main (int argc, char* argv[]) {
     [window setTitle:appName];
     [window makeKeyAndOrderFront:nil];
 
-    [applicationObject activateIgnoringOtherApps:YES];    
+    [applicationObject activateIgnoringOtherApps:YES];
     
     WindowDelegate* windowDelegate = [[[WindowDelegate alloc] init] autorelease];
     [window setDelegate:windowDelegate];
@@ -231,7 +250,8 @@ int main (int argc, char* argv[]) {
         [applicationObject performSelectorOnMainThread:@selector(run) withObject:nil waitUntilDone:YES];
     }
 
-    //[applicationObject terminate:nil];
+
+    [applicationObject terminate:nil];
 
 //
 //
@@ -273,7 +293,6 @@ int main (int argc, char* argv[]) {
     [window setDelegate:windowDelegate];
     
     ApplicationDelegate* applicationDelegate = [[[ApplicationDelegate alloc] initWithWindow:window] autorelease];
-
     [NSApp setDelegate:applicationDelegate];
 
     [NSApp run];
