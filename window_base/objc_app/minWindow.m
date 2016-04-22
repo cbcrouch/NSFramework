@@ -84,6 +84,12 @@
     return self;
 }
 
+/*
+- (void) applicationWillFinishLaunching:(NSNotification*)notification {
+    NSLog(@"application will finish launching");
+}
+*/
+
 - (void) applicationDidFinishLaunching:(NSNotification*)notification {
 
     //
@@ -131,14 +137,18 @@
 - (void) run;
 - (void) terminate:(id)sender;
 
+//
+// TODO: override requestUserAttention method to prevent app icon from bouncing in the dock
+//
+
 @end
 
 
 @implementation NFApplication
 
 - (void) run {
-
     NSLog(@"NFApplication run method called");
+
 /*
     [[NSNotificationCenter defaultCenter]
         postNotificationName:NSApplicationWillFinishLaunchingNotification object:NSApp];
@@ -146,28 +156,31 @@
     [[NSNotificationCenter defaultCenter]
         postNotificationName:NSApplicationDidFinishLaunchingNotification object:NSApp];
 */
-    [[NSNotificationCenter defaultCenter]
-        postNotificationName:NSApplicationWillFinishLaunchingNotification object:self];
 
-
-    //
-    // TODO: this method is the key to hooking everything up, need to pull it apart and
-    //       find out if it can be manually implemented
-    //
-    [self finishLaunching];
-
-
-    [[NSNotificationCenter defaultCenter]
-        postNotificationName:NSApplicationDidFinishLaunchingNotification object:self];
+    @autoreleasepool {
+        // finishLaunching method will activate the app, open any files specified by the NSOpen
+        // user default, and unhighlight the app's icon (will also post willFinish and didFinish
+        // notifications)
+        [self finishLaunching];
+    }
 
     shouldKeepRunning = YES;
     
+    //
+    // TODO: it appears that the menu bar and associated menus / menu items will not get
+    //       correctly updated until a user event is generated, should try posting a
+    //       dummy user event here to force the update (eventual will want to figure out
+    //       how to do it manually)
+    //
+    
     while(shouldKeepRunning) {
-        NSEvent *event = [self nextEventMatchingMask:NSAnyEventMask
-            untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES];
+        @autoreleasepool {
+            NSEvent *event = [self nextEventMatchingMask:NSAnyEventMask
+                untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES];
 
-        [self sendEvent:event];
-        [self updateWindows];
+            [self sendEvent:event];
+            [self updateWindows];
+        }
     };
 }
 
@@ -188,13 +201,6 @@ int main (int argc, char* argv[]) {
 
     [[NSAutoreleasePool alloc] init];
 
-    
-#define USE_MANUAL_EVENT_LOOP 1
-
-//
-//
-//
-#if USE_MANUAL_EVENT_LOOP
 
     NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
     Class principalClass = NSClassFromString([infoDictionary objectForKey:@"NSPrincipalClass"]);
@@ -208,22 +214,21 @@ int main (int argc, char* argv[]) {
 
     NSMenu* menubar = [[[NSMenu alloc] init] autorelease];
     NSMenuItem* appMenuItem = [[[NSMenuItem alloc] init] autorelease];
-    [menubar addItem:appMenuItem];
     
+    [menubar addItem:appMenuItem];
     [applicationObject setMainMenu:menubar];
 
 
     NSMenu* appMenu = [[[NSMenu alloc] init] autorelease];
     NSString* appName = [[NSProcessInfo processInfo] processName];
-    
-    NSLog(@"appName: %@", appName);
-    
+
     NSString* quitTitle = [@"Quit " stringByAppendingString:appName];
     NSMenuItem* quitMenuItem = [[[NSMenuItem alloc] initWithTitle:quitTitle
         action:@selector(terminate:) keyEquivalent:@"q"] autorelease];
 
     [appMenu addItem:quitMenuItem];
     [appMenuItem setSubmenu:appMenu];
+
 
     NSWindow* window = [[[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 200, 200)
         styleMask:NSTitledWindowMask backing:NSBackingStoreBuffered defer:NO] autorelease];
@@ -242,67 +247,22 @@ int main (int argc, char* argv[]) {
 
 
     //
-    // TODO: manual event loop will get a key event on Cmd-Q but does not exit application, while
-    //       the NSApp event loop will handle this correctly, need to fix so works as intended
+    // TODO: need to get window to update the menu so that it is populated, currently need to
+    //       select something else and then return focus to the minWindow for the menu to populate
     //
     
+    // these didn't work
+    //[appMenu update];
+    //[applicationObject setWindowsNeedUpdate:YES];
+
+
     if ([applicationObject respondsToSelector:@selector(run)]) {
         [applicationObject performSelectorOnMainThread:@selector(run) withObject:nil waitUntilDone:YES];
     }
 
 
+    // here just in case something unexpected causes the run loop to exit
     [applicationObject terminate:nil];
-
-//
-//
-//
-#else
-//
-//
-//
-
-    [NSApplication sharedApplication];
-    [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
-
-    NSMenu* menubar = [[[NSMenu alloc] init] autorelease];
-    NSMenuItem* appMenuItem = [[[NSMenuItem alloc] init] autorelease];
-    [menubar addItem:appMenuItem];
-    
-    [NSApp setMainMenu:menubar];
-
-    NSMenu* appMenu = [[[NSMenu alloc] init] autorelease];
-    NSString* appName = [[NSProcessInfo processInfo] processName];
-    
-    NSString* quitTitle = [@"Quit " stringByAppendingString:appName];
-    NSMenuItem* quitMenuItem = [[[NSMenuItem alloc] initWithTitle:quitTitle
-        action:@selector(terminate:) keyEquivalent:@"q"] autorelease];
-
-    [appMenu addItem:quitMenuItem];
-    [appMenuItem setSubmenu:appMenu];
-
-    NSWindow* window = [[[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 200, 200)
-        styleMask:NSTitledWindowMask backing:NSBackingStoreBuffered defer:NO] autorelease];
-
-    [window cascadeTopLeftFromPoint:NSMakePoint(20,20)];
-    [window setTitle:appName];
-    [window makeKeyAndOrderFront:nil];
-
-    [NSApp activateIgnoringOtherApps:YES];
-
-    WindowDelegate* windowDelegate = [[[WindowDelegate alloc] init] autorelease];
-    [window setDelegate:windowDelegate];
-    
-    ApplicationDelegate* applicationDelegate = [[[ApplicationDelegate alloc] initWithWindow:window] autorelease];
-    [NSApp setDelegate:applicationDelegate];
-
-    [NSApp run];
-
-    [NSApp terminate:nil];
-
-#endif
-//
-//
-//
 
     return 0;
 }
