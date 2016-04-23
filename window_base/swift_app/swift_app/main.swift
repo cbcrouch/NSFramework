@@ -78,6 +78,9 @@ class ApplicationDelegate: NSObject, NSApplicationDelegate {
         self._window.makeFirstResponder(self._nfView)
 
         print("application did finish launching", terminator: "\n")
+
+
+        NSApp.activateIgnoringOtherApps(true)
     }
 }
 
@@ -157,13 +160,19 @@ func main() -> Int32 {
     //    let moc = delegate.managedObjectContext
     //}
 
+
     let windowDelegate = WindowDelegate()
     win.delegate = windowDelegate
 
     let applicationDelegate = ApplicationDelegate(window: win)
     nsApp.delegate = applicationDelegate
 
-    nsApp.activateIgnoringOtherApps(true)
+
+    //
+    // TODO: this needs to occur at the very end of the applicationDidFinishLaunching in
+    //       order to correctly populate the menu bar and items
+    //
+    //nsApp.activateIgnoringOtherApps(true)
 
 
     nsApp.run()

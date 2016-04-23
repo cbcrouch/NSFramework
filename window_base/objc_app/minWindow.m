@@ -6,10 +6,71 @@
 //
 
 
-// clang -Wall minWindow.m -framework Cocoa -x objective-c -o objc_app
-
+// clang -Wall minWindow.m -fobjc-arc -framework Cocoa -x objective-c -o objc_app
 
 #import <Cocoa/Cocoa.h>
+
+
+
+@interface NFApplication : NSApplication
+{
+    BOOL shouldKeepRunning;
+}
+
+- (void) run;
+- (void) terminate:(id)sender;
+
+//
+// TODO: override requestUserAttention method to prevent app icon from bouncing in the dock
+//
+
+@end
+
+
+@implementation NFApplication
+
+- (void) run {
+    NSLog(@"NFApplication run method called");
+
+/*
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:NSApplicationWillFinishLaunchingNotification object:NSApp];
+
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:NSApplicationDidFinishLaunchingNotification object:NSApp];
+*/
+
+    @autoreleasepool {
+        // finishLaunching method will activate the app, open any files specified by the NSOpen
+        // user default, and unhighlight the app's icon (will also post willFinish and didFinish
+        // notifications)
+        [self finishLaunching];
+    }
+
+    shouldKeepRunning = YES;
+
+    while(shouldKeepRunning) {
+        @autoreleasepool {
+            NSEvent *event = [self nextEventMatchingMask:NSAnyEventMask
+                untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES];
+
+            [self sendEvent:event];
+            [self updateWindows];
+        }
+    };
+}
+
+- (void) terminate:(id)sender {
+    //
+    // TODO: most likely don't need to call parent class terminate but should
+    //       double check with all the documentation to be sure
+    //
+    [super terminate:sender];
+    
+    shouldKeepRunning = NO;
+}
+
+@end
 
 
 @interface NFView : NSView
@@ -61,15 +122,30 @@
 
 @interface ApplicationDelegate : NSObject <NSApplicationDelegate>
 
-@property (nonatomic, retain) NSWindow* window;
-@property (nonatomic, retain) NFView* view;
+//
+// TODO: should have a weak reference to the NFApplicationObject and start the application simulation loop
+//
+
+//
+// TODO: should move the window (as a weak reference) to the WindowDelegate and create
+//       the view and menu there
+//
+
+@property (nonatomic, weak) NFApplication* application;
+
+@property (nonatomic, strong) NSWindow* window;
+@property (nonatomic, strong) NFView* view;
 
 - (instancetype) initWithWindow:(NSWindow*)window;
+- (instancetype) initWithApplication:(NFApplication*)application;
+
 - (void) applicationDidFinishLaunching:(NSNotification*)notification;
 
 @end
 
 @implementation ApplicationDelegate
+
+@synthesize application = _application;
 
 @synthesize window = _window;
 @synthesize view = _view;
@@ -78,11 +154,21 @@
     self = [super init];
     if (self != nil) {
         _window = window;
-        _view = [[[NFView alloc] initWithFrame:_window.contentView.frame] autorelease];
+        _view = [[NFView alloc] initWithFrame:_window.contentView.frame];
         [_window.contentView addSubview:_view];
     }
     return self;
 }
+
+
+- (instancetype) initWithApplication:(NFApplication*)application {
+    self = [super init];
+    if (self != nil) {
+        _application = application;
+    }
+    return self;
+}
+
 
 /*
 - (void) applicationWillFinishLaunching:(NSNotification*)notification {
@@ -111,6 +197,9 @@
     // NOTE: application will get event before view
     [self.window makeFirstResponder:self.view];
 
+
+    [NSApp activateIgnoringOtherApps:YES];
+
     NSLog(@"application did finish launching");
 }
 
@@ -129,131 +218,54 @@
 
 
 
-@interface NFApplication : NSApplication
-{
-    BOOL shouldKeepRunning;
-}
-
-- (void) run;
-- (void) terminate:(id)sender;
-
-//
-// TODO: override requestUserAttention method to prevent app icon from bouncing in the dock
-//
-
-@end
-
-
-@implementation NFApplication
-
-- (void) run {
-    NSLog(@"NFApplication run method called");
-
-/*
-    [[NSNotificationCenter defaultCenter]
-        postNotificationName:NSApplicationWillFinishLaunchingNotification object:NSApp];
-
-    [[NSNotificationCenter defaultCenter]
-        postNotificationName:NSApplicationDidFinishLaunchingNotification object:NSApp];
-*/
-
-    @autoreleasepool {
-        // finishLaunching method will activate the app, open any files specified by the NSOpen
-        // user default, and unhighlight the app's icon (will also post willFinish and didFinish
-        // notifications)
-        [self finishLaunching];
-    }
-
-    shouldKeepRunning = YES;
-    
-    //
-    // TODO: it appears that the menu bar and associated menus / menu items will not get
-    //       correctly updated until a user event is generated, should try posting a
-    //       dummy user event here to force the update (eventual will want to figure out
-    //       how to do it manually)
-    //
-    
-    while(shouldKeepRunning) {
-        @autoreleasepool {
-            NSEvent *event = [self nextEventMatchingMask:NSAnyEventMask
-                untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES];
-
-            [self sendEvent:event];
-            [self updateWindows];
-        }
-    };
-}
-
-- (void) terminate:(id)sender {
-    //
-    // TODO: most likely don't need to call parent class terminate but should
-    //       double check with all the documentation to be sure
-    //
-    [super terminate:sender];
-    
-    shouldKeepRunning = NO;
-}
-
-@end
-
-
 int main (int argc, char* argv[]) {
-
-    [[NSAutoreleasePool alloc] init];
-
-
     NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
     Class principalClass = NSClassFromString([infoDictionary objectForKey:@"NSPrincipalClass"]);
-    
+
 
     //NSApplication *applicationObject = [principalClass sharedApplication];
     NFApplication *applicationObject = [principalClass sharedApplication];
-    
 
     [applicationObject setActivationPolicy:NSApplicationActivationPolicyRegular];
 
-    NSMenu* menubar = [[[NSMenu alloc] init] autorelease];
-    NSMenuItem* appMenuItem = [[[NSMenuItem alloc] init] autorelease];
-    
-    [menubar addItem:appMenuItem];
-    [applicationObject setMainMenu:menubar];
 
-
-    NSMenu* appMenu = [[[NSMenu alloc] init] autorelease];
     NSString* appName = [[NSProcessInfo processInfo] processName];
 
-    NSString* quitTitle = [@"Quit " stringByAppendingString:appName];
-    NSMenuItem* quitMenuItem = [[[NSMenuItem alloc] initWithTitle:quitTitle
-        action:@selector(terminate:) keyEquivalent:@"q"] autorelease];
+
+
+    NSMenu* menubar = [[NSMenu alloc] init];
+    NSMenuItem* appMenuItem = [[NSMenuItem alloc] init];
+
+    [menubar addItem:appMenuItem];
+
+    NSMenu* appMenu = [[NSMenu alloc] init];
+    NSMenuItem* quitMenuItem = [[NSMenuItem alloc] initWithTitle:[@"Quit " stringByAppendingString:appName]
+        action:@selector(terminate:) keyEquivalent:@"q"];
 
     [appMenu addItem:quitMenuItem];
     [appMenuItem setSubmenu:appMenu];
+    
+    [applicationObject setMainMenu:menubar];
 
 
-    NSWindow* window = [[[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 200, 200)
-        styleMask:NSTitledWindowMask backing:NSBackingStoreBuffered defer:NO] autorelease];
+
+    NSWindow* window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 200, 200)
+        styleMask:NSTitledWindowMask backing:NSBackingStoreBuffered defer:NO];
 
     [window cascadeTopLeftFromPoint:NSMakePoint(20,20)];
     [window setTitle:appName];
     [window makeKeyAndOrderFront:nil];
 
-    [applicationObject activateIgnoringOtherApps:YES];
-    
-    WindowDelegate* windowDelegate = [[[WindowDelegate alloc] init] autorelease];
+
+    //
+    // TODO: rename WindowDelegate and ApplicationDelegate to NFWindowDelegate and NFApplicationDelegate
+    //
+    WindowDelegate* windowDelegate = [[WindowDelegate alloc] init];
     [window setDelegate:windowDelegate];
-    
-    ApplicationDelegate* applicationDelegate = [[[ApplicationDelegate alloc] initWithWindow:window] autorelease];
+
+    ApplicationDelegate* applicationDelegate = [[ApplicationDelegate alloc] initWithWindow:window];
     [applicationObject setDelegate:applicationDelegate];
 
-
-    //
-    // TODO: need to get window to update the menu so that it is populated, currently need to
-    //       select something else and then return focus to the minWindow for the menu to populate
-    //
-    
-    // these didn't work
-    //[appMenu update];
-    //[applicationObject setWindowsNeedUpdate:YES];
 
 
     if ([applicationObject respondsToSelector:@selector(run)]) {

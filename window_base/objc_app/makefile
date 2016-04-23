@@ -10,11 +10,6 @@ TARGET     = min_objc
 #BUILD      = DEBUG
 LANG       = OBJC
 
-###############################################################################
-#
-# NOTE: for most projects should not need to modify anything below
-#
-###############################################################################
 
 #
 # TODO: setup auto-dependency generation
