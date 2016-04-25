@@ -11,11 +11,7 @@
 #import <Cocoa/Cocoa.h>
 
 
-
 @interface NFApplication : NSApplication
-{
-    BOOL shouldKeepRunning;
-}
 
 - (void) run;
 - (void) terminate:(id)sender;
@@ -23,22 +19,18 @@
 //
 // TODO: override requestUserAttention method to prevent app icon from bouncing in the dock
 //
-
 @end
 
+@interface NFApplication()
+{
+    BOOL shouldKeepRunning;
+}
+@end
 
 @implementation NFApplication
 
 - (void) run {
     NSLog(@"NFApplication run method called");
-
-/*
-    [[NSNotificationCenter defaultCenter]
-        postNotificationName:NSApplicationWillFinishLaunchingNotification object:NSApp];
-
-    [[NSNotificationCenter defaultCenter]
-        postNotificationName:NSApplicationDidFinishLaunchingNotification object:NSApp];
-*/
 
     @autoreleasepool {
         // finishLaunching method will activate the app, open any files specified by the NSOpen
@@ -122,21 +114,8 @@
 
 @interface ApplicationDelegate : NSObject <NSApplicationDelegate>
 
-//
-// TODO: should have a weak reference to the NFApplicationObject and start the application simulation loop
-//
-
-//
-// TODO: should move the window (as a weak reference) to the WindowDelegate and create
-//       the view and menu there
-//
-
 @property (nonatomic, weak) NFApplication* application;
 
-@property (nonatomic, strong) NSWindow* window;
-@property (nonatomic, strong) NFView* view;
-
-- (instancetype) initWithWindow:(NSWindow*)window;
 - (instancetype) initWithApplication:(NFApplication*)application;
 
 - (void) applicationDidFinishLaunching:(NSNotification*)notification;
@@ -145,22 +124,6 @@
 
 @implementation ApplicationDelegate
 
-@synthesize application = _application;
-
-@synthesize window = _window;
-@synthesize view = _view;
-
-- (instancetype) initWithWindow:(NSWindow*)window {
-    self = [super init];
-    if (self != nil) {
-        _window = window;
-        _view = [[NFView alloc] initWithFrame:_window.contentView.frame];
-        [_window.contentView addSubview:_view];
-    }
-    return self;
-}
-
-
 - (instancetype) initWithApplication:(NFApplication*)application {
     self = [super init];
     if (self != nil) {
@@ -168,13 +131,6 @@
     }
     return self;
 }
-
-
-/*
-- (void) applicationWillFinishLaunching:(NSNotification*)notification {
-    NSLog(@"application will finish launching");
-}
-*/
 
 - (void) applicationDidFinishLaunching:(NSNotification*)notification {
 
@@ -193,10 +149,6 @@
         return event;
     }];
     NSAssert(evObj != nil, @"event handler object is nil");
-    
-    // NOTE: application will get event before view
-    [self.window makeFirstResponder:self.view];
-
 
     [NSApp activateIgnoringOtherApps:YES];
 
@@ -206,16 +158,50 @@
 @end
 
 
+//
+// TODO: it seems like the window and it's view may be better of being handled by an NSWindowController
+//       (theoretically there could be multiple windows e.g. splash screen, windowed, and full screen)
+//
+
 @interface WindowDelegate : NSObject <NSWindowDelegate>
+
+@property (nonatomic, weak) NSWindow* window;
+@property (nonatomic, strong) NFView* view;
+
+- (instancetype) initWithWindow:(NSWindow*)window;
+
+- (void) populateMenuBar:(NSMenuItem*)menuBarItem withAppName:(NSString*)appName;
 - (void) windowWillClose:(NSNotification*)notification;
 @end
 
 @implementation WindowDelegate
+
+- (instancetype) initWithWindow:(NSWindow*)window {
+    self = [super init];
+    if (self != nil) {
+        _window = window;
+        _view = [[NFView alloc] initWithFrame:_window.contentView.frame];
+        [_window.contentView addSubview:_view];
+        
+        // NOTE: application will get event before view        
+        [_window makeFirstResponder:_view];
+    }
+    return self;
+}
+
+- (void) populateMenuBar:(NSMenuItem*)menuBarItem withAppName:(NSString*)appName {
+    NSMenu* appMenu = [[NSMenu alloc] init];
+    NSMenuItem* quitMenuItem = [[NSMenuItem alloc] initWithTitle:[@"Quit " stringByAppendingString:appName]
+        action:@selector(terminate:) keyEquivalent:@"q"];
+
+    [appMenu addItem:quitMenuItem];
+    [menuBarItem setSubmenu:appMenu];
+}
+
 - (void) windowWillClose:(NSNotification*)notification {
     NSLog(@"window will close");
 }
 @end
-
 
 
 int main (int argc, char* argv[]) {
@@ -231,20 +217,10 @@ int main (int argc, char* argv[]) {
 
     NSString* appName = [[NSProcessInfo processInfo] processName];
 
-
-
     NSMenu* menubar = [[NSMenu alloc] init];
     NSMenuItem* appMenuItem = [[NSMenuItem alloc] init];
 
     [menubar addItem:appMenuItem];
-
-    NSMenu* appMenu = [[NSMenu alloc] init];
-    NSMenuItem* quitMenuItem = [[NSMenuItem alloc] initWithTitle:[@"Quit " stringByAppendingString:appName]
-        action:@selector(terminate:) keyEquivalent:@"q"];
-
-    [appMenu addItem:quitMenuItem];
-    [appMenuItem setSubmenu:appMenu];
-    
     [applicationObject setMainMenu:menubar];
 
 
@@ -260,12 +236,14 @@ int main (int argc, char* argv[]) {
     //
     // TODO: rename WindowDelegate and ApplicationDelegate to NFWindowDelegate and NFApplicationDelegate
     //
-    WindowDelegate* windowDelegate = [[WindowDelegate alloc] init];
+    WindowDelegate* windowDelegate = [[WindowDelegate alloc] initWithWindow:window];
     [window setDelegate:windowDelegate];
 
-    ApplicationDelegate* applicationDelegate = [[ApplicationDelegate alloc] initWithWindow:window];
+    ApplicationDelegate* applicationDelegate = [[ApplicationDelegate alloc] initWithApplication:applicationObject];
     [applicationObject setDelegate:applicationDelegate];
 
+
+    [windowDelegate populateMenuBar:appMenuItem withAppName:appName];
 
 
     if ([applicationObject respondsToSelector:@selector(run)]) {
