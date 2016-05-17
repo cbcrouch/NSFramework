@@ -5,6 +5,8 @@
 //  Copyright (c) 2016 Casey Crouch. All rights reserved.
 //
 
+// swiftc main.swift -o swift_app
+// swiftc main.swift -framework Cocoa -o swift_app
 
 import Foundation
 import Cocoa
@@ -34,6 +36,7 @@ class NFView: NSView {
     }
 }
 
+
 class WindowDelegate: NSObject, NSWindowDelegate {
     func windowWillClose(notification: NSNotification) {
         print("WindowDelegate windowWillClose called", terminator: "\n")
@@ -41,16 +44,40 @@ class WindowDelegate: NSObject, NSWindowDelegate {
     }
 }
 
+// https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ApplicationKit/Classes/NSWindowController_Class/
+
+
+class WindowController: NSWindowController {
+    var _nfView: NFView
+    unowned var _window: NSWindow
+
+    override init(window: NSWindow?) {
+        _window = window!
+        _nfView = NFView(frame: self._window.contentView!.frame)
+
+        super.init(window: window)
+
+        _window.contentView!.addSubview(self._nfView)
+        _window.makeFirstResponder(self._nfView)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+
 class ApplicationDelegate: NSObject, NSApplicationDelegate {
     var _nfView: NFView
     var _window: NSWindow
 
     init(window: NSWindow) {
-        self._window = window
+        _window = window
 
         // add the applications view to the window
-        self._nfView = NFView(frame: self._window.contentView!.frame)
-        self._window.contentView!.addSubview(self._nfView)
+        _nfView = NFView(frame: self._window.contentView!.frame)
+        _window.contentView!.addSubview(self._nfView)
+        _window.makeFirstResponder(self._nfView)
 
         //
         // NOTE: if had been using a nib the following would occur
@@ -61,12 +88,7 @@ class ApplicationDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(notification: NSNotification) {
 
-        //
-        // TODO: monitor all events and determine which will need to be handled when manually
-        //       handling the event loop
-        //
         let mask = (NSEventMask.KeyDownMask)
-
         let _ : AnyObject! = NSEvent.addLocalMonitorForEventsMatchingMask(mask, handler: { (event: (NSEvent!)) -> NSEvent in
             //
             // TODO: send event data to desired method based on type
@@ -75,21 +97,24 @@ class ApplicationDelegate: NSObject, NSApplicationDelegate {
             return event
         })
 
-        self._window.makeFirstResponder(self._nfView)
-
         print("application did finish launching", terminator: "\n")
 
 
+        //
+        // TODO: insert code here to initialize your application here
+        //
         NSApp.activateIgnoringOtherApps(true)
     }
 }
 
-/*
+
+//
+// TODO: implement this like the ObjC example and use in place of default NSApplication
+//
 class Application: NSApplication {
-    var shouldKeepRunning: Bool
+    var shouldKeepRunning: Bool = false
 
     override init() {
-        shouldKeepRunning = false
         super.init()
     }
     
@@ -98,6 +123,8 @@ class Application: NSApplication {
     }
 
     override func run() {
+        shouldKeepRunning = true
+ 
         //
     }
 
@@ -105,7 +132,7 @@ class Application: NSApplication {
         //
     }
 }
-*/
+
 
 
 func main() -> Int32 {

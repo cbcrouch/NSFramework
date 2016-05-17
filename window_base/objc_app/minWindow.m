@@ -152,9 +152,20 @@
 
     [NSApp activateIgnoringOtherApps:YES];
 
+    //
+    // TODO: insert code here to initialize your application here
+    //
     NSLog(@"application did finish launching");
 }
 
+//
+// TODO: enable this after adding and enabling the red close button
+//
+/*
+-(BOOL) applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)app {
+    return YES;
+}
+*/
 @end
 
 
@@ -189,6 +200,11 @@
     return self;
 }
 
+//
+// TODO: might be a decent idea to move this to a window controller class, because
+//       in the Cocoa model multiple windows could exist but there is only menu bar
+//       so the controller would be responsible for updating coordinating changes
+//
 - (void) populateMenuBar:(NSMenuItem*)menuBarItem withAppName:(NSString*)appName {
     NSMenu* appMenu = [[NSMenu alloc] init];
     NSMenuItem* quitMenuItem = [[NSMenuItem alloc] initWithTitle:[@"Quit " stringByAppendingString:appName]
