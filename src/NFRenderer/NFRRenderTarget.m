@@ -155,6 +155,23 @@
         glTexImage2D(GL_TEXTURE_2D, 0, glInternalStorageType, self.width, self.height, 0, glFormatType, glDataType, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        //
+        // TODO: this is to ensure that depth maps (primarily used for shadow maps) don't use repeat
+        //       which could cause shadowing outside the region for which a light could shadow (this
+        //       option/code-path should be made more explicit)
+        //
+        if(glFormatType == GL_DEPTH_COMPONENT) {
+
+            //
+            // TODO: also when the depth map is used as a shadow map will need to write 1.0 values into the
+            //       edges of the map to prevent shadows from be extended outside the region of the light caster
+            //
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        }
+
         glBindTexture(GL_TEXTURE_2D, 0);
 
         // attach texture to the frame buffer

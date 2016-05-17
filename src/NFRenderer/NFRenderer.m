@@ -410,11 +410,12 @@
     //
     // TODO: settle on a good projection matrix
     //
-    GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-10.0, 10.0, -10.0, 10.0, 0.1, 50.0);
-    //GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-10.0, 10.0, -10.0, 10.0, -10.0, 10.0);
-    //GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-1.0, 1.0, -1.0, 1.0, 0.5, 50.0);
-    //GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-10.0, 10.0, -10.0, 10.0, 1.0, 7.5);
+    //GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-10.0, 10.0, -10.0, 10.0, 0.1, 50.0);
+    GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-10.0, 10.0, -10.0, 10.0, -2.0, 5.0); // for testing light/shadow cutoff correction
 
+    //
+    // TODO: try using a perspective projection for the spotlight shadow map
+    //
 
     [m_depthShader updateViewMatrix:lightViewMat projectionMatrix:orthoProj];
     //[m_depthShader updateViewMatrix:lightViewMat projectionMatrix:projection];
@@ -429,6 +430,7 @@
         // NOTE: should make sure that the light space matrix calculation only happens once
         //
         GLKMatrix4 lightSpaceMat = GLKMatrix4Multiply(orthoProj, lightViewMat);
+        //GLKMatrix4 lightSpaceMat = GLKMatrix4Multiply(projection, lightViewMat);
 
         static const char *matrixType = @encode(GLKMatrix4);
         NSValue* valueObj = [NSValue value:&lightSpaceMat withObjCType:matrixType];
@@ -449,11 +451,11 @@
 
     [m_depthRenderTarget enable];
     glClear(GL_DEPTH_BUFFER_BIT);
-    //
-    // TODO: cull front face prior to render then reset to back face
-    //
+    glCullFace(GL_FRONT);
     [m_depthRenderRequest process];
     [m_depthRenderTarget disable];
+
+    glCullFace(GL_BACK);
 
 
     //

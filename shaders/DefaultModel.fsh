@@ -252,17 +252,18 @@ vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 vie
     return(ambient + diffuse + specular);
 }
 
-
-float shadow_calculation(vec4 frag_pos_light_space) {
-
-    //
-    // TODO: verify and cleanup
-    //
+//
+// NOTE: this is for directional lights only
+//
+float shadow_calculation(vec4 frag_pos_light_space, vec3 normal, vec3 lightDir) {
 
     // perspective divide and transform to [0, 1] range
     vec3 projCoords = frag_pos_light_space.xyz / frag_pos_light_space.w;
     projCoords = projCoords * 0.5 + 0.5;
 
+    if(projCoords.z > 1.0f) {
+        return 0.0f;
+    }
 
     // rename closestDepth to shadowDepth and/or currentDepth to lightDepth ???
 
@@ -272,8 +273,15 @@ float shadow_calculation(vec4 frag_pos_light_space) {
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
 
+    //
+    // NOTE: was originally using a maximum bias of 0.05 and a minimum of 0.005 but this was casuing
+    //       the shadow on the sphere to get clipped around the base when the bottom most vertex of
+    //       the sphere was shared with the "ground" plane (should revisit these values)
+    //
+    float bias = max(0.00125 * (1.0 - dot(f_normal, lightDir)), 0.0005);
+
     // check wheter current frag pos is in shadow
-    float shadowVal = currentDepth > closestDepth ? 1.0 : 0.0;
+    float shadowVal = currentDepth - bias > closestDepth ? 1.0 : 0.0;
 
     return shadowVal;
 }
@@ -281,9 +289,8 @@ float shadow_calculation(vec4 frag_pos_light_space) {
 
 void main() {
 
-
-#if 0
-    float shadowVal = shadow_calculation(f_posLightSpace);
+#if 1
+    float shadowVal = shadow_calculation(f_posLightSpace, f_normal, normalize(-directionalLight.direction));
 #else
     float throwaway = texture(shadowMap, vec2(0.0, 0.0)).r;
     float shadowVal = 0.0;
@@ -294,8 +301,8 @@ void main() {
     vec3 result = vec3(0);
 
 #define USE_DIRECTIONAL_LIGHT  1
-#define USE_POINT_LIGHT        1
-#define USE_SPOT_LIGHT         1
+#define USE_POINT_LIGHT        0
+#define USE_SPOT_LIGHT         0
 
 
 #if USE_DIRECTIONAL_LIGHT

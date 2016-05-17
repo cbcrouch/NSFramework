@@ -289,6 +289,11 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 //}
 
 
+//
+// TODO: for NSResponder methods (insertText, keyDown, etc.) push the event onto a stack so that the
+//       method can return right away and the processing of the event can be done on another thread
+//
+
 - (void) insertText:(id)insertString {
     NSAssert([insertString isKindOfClass:[NSString class]], @"insertText called with an id that is not a string");
     NSString* string = (NSString*)insertString;
