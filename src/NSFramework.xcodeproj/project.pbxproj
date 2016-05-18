@@ -34,8 +34,8 @@
 		235F39691B2D969E00B3CBA5 /* NFRDataMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 235F39681B2D969E00B3CBA5 /* NFRDataMap.m */; };
 		2374621C1C00F64B006EC923 /* Display.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 2374621A1C00F64B006EC923 /* Display.fsh */; };
 		2374621D1C00F64B006EC923 /* Display.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 2374621B1C00F64B006EC923 /* Display.vsh */; };
-		237F8A711C45971000036EA7 /* Depth.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 237F8A6F1C45970F00036EA7 /* Depth.fsh */; };
-		237F8A721C45971000036EA7 /* Depth.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 237F8A701C45971000036EA7 /* Depth.vsh */; };
+		237F8A711C45971000036EA7 /* DirectionalDepthMap.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 237F8A6F1C45970F00036EA7 /* DirectionalDepthMap.fsh */; };
+		237F8A721C45971000036EA7 /* DirectionalDepthMap.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 237F8A701C45971000036EA7 /* DirectionalDepthMap.vsh */; };
 		237F8A751C459A4C00036EA7 /* NFRDepthProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 237F8A741C459A4C00036EA7 /* NFRDepthProgram.m */; };
 		238156211A16A1460018ECF3 /* NFSimulation.m in Sources */ = {isa = PBXBuildFile; fileRef = 238156201A16A1460018ECF3 /* NFSimulation.m */; };
 		238156241A16A1A10018ECF3 /* NFCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 238156231A16A1A10018ECF3 /* NFCamera.m */; };
@@ -46,6 +46,9 @@
 		23C2D8AC1B3C988A00A7CA49 /* NFRDefaultProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 23C2D8AB1B3C988A00A7CA49 /* NFRDefaultProgram.m */; };
 		23C2D8AF1B3C98A500A7CA49 /* NFRDebugProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 23C2D8AE1B3C98A500A7CA49 /* NFRDebugProgram.m */; };
 		23C2D8B21B3C995500A7CA49 /* NFRResources.m in Sources */ = {isa = PBXBuildFile; fileRef = 23C2D8B11B3C995500A7CA49 /* NFRResources.m */; };
+		23DF9DA11CECD1D0004F1153 /* PointDepthMap.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 23DF9D9E1CECD1D0004F1153 /* PointDepthMap.fsh */; };
+		23DF9DA21CECD1D0004F1153 /* PointDepthMap.gsh in Resources */ = {isa = PBXBuildFile; fileRef = 23DF9D9F1CECD1D0004F1153 /* PointDepthMap.gsh */; };
+		23DF9DA31CECD1D0004F1153 /* PointDepthMap.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 23DF9DA01CECD1D0004F1153 /* PointDepthMap.vsh */; };
 		23E9874018DCAC7000F76B1A /* NFAssetData+Wavefront.m in Sources */ = {isa = PBXBuildFile; fileRef = 23E9873F18DCAC7000F76B1A /* NFAssetData+Wavefront.m */; };
 		23EB03261ACCDA6200084CEF /* DefaultModel.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 23EB03241ACCDA6200084CEF /* DefaultModel.fsh */; };
 		23EB03271ACCDA6200084CEF /* DefaultModel.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 23EB03251ACCDA6200084CEF /* DefaultModel.vsh */; };
@@ -97,8 +100,8 @@
 		235F39681B2D969E00B3CBA5 /* NFRDataMap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFRDataMap.m; path = NFRenderer/NFRDataMap.m; sourceTree = "<group>"; };
 		2374621A1C00F64B006EC923 /* Display.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Display.fsh; path = ../shaders/Display.fsh; sourceTree = "<group>"; };
 		2374621B1C00F64B006EC923 /* Display.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Display.vsh; path = ../shaders/Display.vsh; sourceTree = "<group>"; };
-		237F8A6F1C45970F00036EA7 /* Depth.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Depth.fsh; path = ../shaders/Depth.fsh; sourceTree = "<group>"; };
-		237F8A701C45971000036EA7 /* Depth.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Depth.vsh; path = ../shaders/Depth.vsh; sourceTree = "<group>"; };
+		237F8A6F1C45970F00036EA7 /* DirectionalDepthMap.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = DirectionalDepthMap.fsh; path = ../shaders/DirectionalDepthMap.fsh; sourceTree = "<group>"; };
+		237F8A701C45971000036EA7 /* DirectionalDepthMap.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = DirectionalDepthMap.vsh; path = ../shaders/DirectionalDepthMap.vsh; sourceTree = "<group>"; };
 		237F8A731C459A4C00036EA7 /* NFRDepthProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFRDepthProgram.h; path = NFRenderer/NFRDepthProgram.h; sourceTree = "<group>"; };
 		237F8A741C459A4C00036EA7 /* NFRDepthProgram.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFRDepthProgram.m; path = NFRenderer/NFRDepthProgram.m; sourceTree = "<group>"; };
 		2381561F1A16A1460018ECF3 /* NFSimulation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFSimulation.h; path = NFSimulation/NFSimulation.h; sourceTree = "<group>"; };
@@ -120,6 +123,9 @@
 		23C2D8B01B3C995500A7CA49 /* NFRResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFRResources.h; path = NFRenderer/NFRResources.h; sourceTree = "<group>"; };
 		23C2D8B11B3C995500A7CA49 /* NFRResources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFRResources.m; path = NFRenderer/NFRResources.m; sourceTree = "<group>"; };
 		23C2D8B31B3C9B1500A7CA49 /* NFRProgramProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFRProgramProtocol.h; path = NFRenderer/NFRProgramProtocol.h; sourceTree = "<group>"; };
+		23DF9D9E1CECD1D0004F1153 /* PointDepthMap.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = PointDepthMap.fsh; path = ../shaders/PointDepthMap.fsh; sourceTree = "<group>"; };
+		23DF9D9F1CECD1D0004F1153 /* PointDepthMap.gsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = PointDepthMap.gsh; path = ../shaders/PointDepthMap.gsh; sourceTree = "<group>"; };
+		23DF9DA01CECD1D0004F1153 /* PointDepthMap.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = PointDepthMap.vsh; path = ../shaders/PointDepthMap.vsh; sourceTree = "<group>"; };
 		23E9873E18DCAC7000F76B1A /* NFAssetData+Wavefront.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NFAssetData+Wavefront.h"; path = "NFAssetPipeline/NFAssetData+Wavefront.h"; sourceTree = "<group>"; };
 		23E9873F18DCAC7000F76B1A /* NFAssetData+Wavefront.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NFAssetData+Wavefront.m"; path = "NFAssetPipeline/NFAssetData+Wavefront.m"; sourceTree = "<group>"; };
 		23EB03241ACCDA6200084CEF /* DefaultModel.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = DefaultModel.fsh; path = ../shaders/DefaultModel.fsh; sourceTree = "<group>"; };
@@ -191,12 +197,11 @@
 		233797F51885E21600399EBA /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
+				23DF9D9D1CECCE5D004F1153 /* ShadowMapping */,
 				233797F61885E23600399EBA /* Debug.fsh */,
 				233797F71885E23600399EBA /* Debug.vsh */,
 				23EB03241ACCDA6200084CEF /* DefaultModel.fsh */,
 				23EB03251ACCDA6200084CEF /* DefaultModel.vsh */,
-				237F8A6F1C45970F00036EA7 /* Depth.fsh */,
-				237F8A701C45971000036EA7 /* Depth.vsh */,
 				2374621A1C00F64B006EC923 /* Display.fsh */,
 				2374621B1C00F64B006EC923 /* Display.vsh */,
 			);
@@ -323,6 +328,18 @@
 			name = NFRShaderPrograms;
 			sourceTree = "<group>";
 		};
+		23DF9D9D1CECCE5D004F1153 /* ShadowMapping */ = {
+			isa = PBXGroup;
+			children = (
+				23DF9D9E1CECD1D0004F1153 /* PointDepthMap.fsh */,
+				23DF9D9F1CECD1D0004F1153 /* PointDepthMap.gsh */,
+				23DF9DA01CECD1D0004F1153 /* PointDepthMap.vsh */,
+				237F8A6F1C45970F00036EA7 /* DirectionalDepthMap.fsh */,
+				237F8A701C45971000036EA7 /* DirectionalDepthMap.vsh */,
+			);
+			name = ShadowMapping;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -375,17 +392,20 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				23DF9DA31CECD1D0004F1153 /* PointDepthMap.vsh in Resources */,
+				23DF9DA11CECD1D0004F1153 /* PointDepthMap.fsh in Resources */,
 				2374621C1C00F64B006EC923 /* Display.fsh in Resources */,
 				233797FB1885E23600399EBA /* Debug.vsh in Resources */,
 				233797FA1885E23600399EBA /* Debug.fsh in Resources */,
 				2374621D1C00F64B006EC923 /* Display.vsh in Resources */,
 				234E2CCC188382CC00AF8F23 /* InfoPlist.strings in Resources */,
-				237F8A721C45971000036EA7 /* Depth.vsh in Resources */,
+				237F8A721C45971000036EA7 /* DirectionalDepthMap.vsh in Resources */,
 				23EB03261ACCDA6200084CEF /* DefaultModel.fsh in Resources */,
 				23EB03271ACCDA6200084CEF /* DefaultModel.vsh in Resources */,
 				234E2CDA188382CC00AF8F23 /* Images.xcassets in Resources */,
-				237F8A711C45971000036EA7 /* Depth.fsh in Resources */,
+				237F8A711C45971000036EA7 /* DirectionalDepthMap.fsh in Resources */,
 				234E2CD2188382CC00AF8F23 /* Credits.rtf in Resources */,
+				23DF9DA21CECD1D0004F1153 /* PointDepthMap.gsh in Resources */,
 				234E2CD8188382CC00AF8F23 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -57,7 +57,7 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
         [programObj loadProgramInputPoints];
         return programObj;
     }
-    else if ([programName isEqualToString:@"Depth"]) {
+    else if ([programName isEqualToString:@"DirectionalDepthMap"]) {
         NFRDepthProgram* programObj = [[NFRDepthProgram alloc] init];
         programObj.hProgram = [NFRUtils createProgram:programName];
         [programObj loadProgramInputPoints];

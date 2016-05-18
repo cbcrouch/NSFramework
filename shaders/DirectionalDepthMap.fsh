@@ -1,5 +1,5 @@
 //
-//  Depth.fsh
+//  DirectionalDepthMap.fsh
 //  NSFramework
 //
 //  Copyright (c) 2016 Casey Crouch. All rights reserved.

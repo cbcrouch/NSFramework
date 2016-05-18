@@ -77,6 +77,7 @@
     switch (bufferType) {
         case kRenderBuffer: glGenRenderbuffers(1, &tempHandle); break;
         case kTextureBuffer: glGenTextures(1, &tempHandle); break;
+        case kCubeMapBuffer: glGenTextures(1, &tempHandle); break;
         default:
             NSAssert(nil, @"ERROR: unknown or unsupported buffer type added to render target");
             break;
@@ -149,6 +150,40 @@
         glBindFramebuffer(GL_FRAMEBUFFER, _hFBO);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, glFrameAttachmentType, GL_RENDERBUFFER, tempHandle);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+    else if(bufferType == kCubeMapBuffer) {
+
+        //
+        // TODO: verify implementation for kCubeMapBuffer works as intended
+        //
+        glBindTexture(GL_TEXTURE_CUBE_MAP, tempHandle);
+
+        for(GLuint i=0; i<6; ++i) {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+i, 0, glInternalStorageType, self.width, self.height,
+                0, glFormatType, glDataType, NULL);
+        }
+
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+
+        // attach to frame buffer
+        glBindFramebuffer(GL_FRAMEBUFFER, _hFBO);
+        glFramebufferTexture(GL_FRAMEBUFFER, glFrameAttachmentType, tempHandle, 0);
+
+        //
+        // TODO: should setup depth component only framebuffers to not render to any color buffer
+        //
+        //glDrawBuffer(GL_NONE);
+        //glReadBuffer(GL_NONE);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     }
     else if (bufferType == kTextureBuffer) {
         glBindTexture(GL_TEXTURE_2D, tempHandle);

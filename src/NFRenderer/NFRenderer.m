@@ -77,18 +77,21 @@
     NFRRenderRequest* m_debugRenderRequest;
 
 
-    //
-    // TODO: need to add a display target and possibly render target for
-    //       drawing and retrieving the depth information, will also need
-    //       a render request for each light
-    //
+    // depth map for directional light shadow
     NFRCommandBufferDefault* m_depthCmdBuffer;
     NFRRenderRequest* m_depthRenderRequest;
     NFRRenderTarget* m_depthRenderTarget;
 
+
+    // depth (cube) map for point light shadow
+    NFRCommandBufferDefault* m_pointLightDepthCmdBuffer;
+    NFRRenderRequest* m_pointLightDepthRenderRequest;
+    NFRRenderTarget* m_pointLightDepthRenderTarget;
+
+
     //
-    // TODO: implement these to get shadow maps for each light, can start
-    //       by just rendering shadows for the directional light
+    // TODO: implement a way to batch shadow generation for N lights of the three given types
+    //       (directional, point light, spotlight)
     //
 /*
     NFRCommandBufferDefault* m_shadowMapCmdBuffers[3];
@@ -149,7 +152,7 @@
     // shader objects
     m_phongShader = [NFRUtils createProgramObject:@"DefaultModel"];
     m_debugShader = [NFRUtils createProgramObject:@"Debug"];
-    m_depthShader = [NFRUtils createProgramObject:@"Depth"];
+    m_depthShader = [NFRUtils createProgramObject:@"DirectionalDepthMap"];
 
     // command buffers
     m_defaultCmdBuffer = [[NFRCommandBufferDefault alloc] init];
@@ -157,10 +160,22 @@
     m_depthCmdBuffer = [[NFRCommandBufferDefault alloc] init];
 
 
+
     //
-    // TODO: add a render request that will render to a depth buffer for shadow mapping
-    //       (will need one render request per dynamic light)
+    // TODO: setup for rendering the point light shadow into a depth cube map
     //
+    //NFRCommandBufferDefault* m_pointLightDepthCmdBuffer;
+    //NFRRenderRequest* m_pointLightDepthRenderRequest;
+    //NFRRenderTarget* m_pointLightDepthRenderTarget;
+
+
+    //
+    // TODO: will most likely need a custom shader for point light shadow maps since they
+    //       use a cube map texture render target (as well as custom drawing logic to handle
+    //       multiple transforms)
+    //
+
+
 
     // render requests
     m_renderRequest = [[NFRRenderRequest alloc] init];

@@ -12,6 +12,7 @@
 
 typedef NS_ENUM(NSUInteger, NFR_TARGET_BUFFER_TYPE) {
     kTextureBuffer,
+    kCubeMapBuffer,
     kRenderBuffer
 };
 
