@@ -410,8 +410,10 @@
     //
     // TODO: settle on a good projection matrix
     //
-    //GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-10.0, 10.0, -10.0, 10.0, 0.1, 50.0);
-    GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-10.0, 10.0, -10.0, 10.0, -2.0, 5.0); // for testing light/shadow cutoff correction
+    //GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-10.0, 10.0, -10.0, 10.0, -1.0, 20.0);
+    GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-2.5, 2.5, -2.5, 2.5, -1.0, 20.0);
+
+    //GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-10.0, 10.0, -10.0, 10.0, -2.0, 5.0); // for testing light/shadow cutoff correction
 
     //
     // TODO: try using a perspective projection for the spotlight shadow map

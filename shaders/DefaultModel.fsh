@@ -256,7 +256,6 @@ vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 vie
 // NOTE: this is for directional lights only
 //
 float shadow_calculation(vec4 frag_pos_light_space, vec3 normal, vec3 lightDir) {
-
     // perspective divide and transform to [0, 1] range
     vec3 projCoords = frag_pos_light_space.xyz / frag_pos_light_space.w;
     projCoords = projCoords * 0.5 + 0.5;
@@ -265,12 +264,6 @@ float shadow_calculation(vec4 frag_pos_light_space, vec3 normal, vec3 lightDir) 
         return 0.0f;
     }
 
-    // rename closestDepth to shadowDepth and/or currentDepth to lightDepth ???
-
-    // get closet depth value from light's perspective using [0,1] range frag_pos_light_space as coords
-    float closestDepth = texture(shadowMap, projCoords.xy).r;
-
-    // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
 
     //
@@ -280,8 +273,25 @@ float shadow_calculation(vec4 frag_pos_light_space, vec3 normal, vec3 lightDir) 
     //
     float bias = max(0.00125 * (1.0 - dot(f_normal, lightDir)), 0.0005);
 
+#define USE_SIMPLE_PCF 0
+
+#if USE_SIMPLE_PCF
+    float shadowVal = 0.0;
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    for (int x=-1; x<2; ++x) {
+        for(int y=-1; y<2; ++y) {
+            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x,y)*texelSize).r;
+            shadowVal += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+        }
+    }
+    shadowVal /= 9.0;
+#else
+    // get closet depth value from light's perspective using [0,1] range frag_pos_light_space as coords
+    float closestDepth = texture(shadowMap, projCoords.xy).r;
+
     // check wheter current frag pos is in shadow
     float shadowVal = currentDepth - bias > closestDepth ? 1.0 : 0.0;
+#endif
 
     return shadowVal;
 }
