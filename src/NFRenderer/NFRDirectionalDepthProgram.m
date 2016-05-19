@@ -1,18 +1,18 @@
 //
-//  NFRDepthProgram.m
+//  NFRDirectionalDepthProgram.m
 //  NSFramework
 //
 //  Copyright © 2016 Casey Crouch. All rights reserved.
 //
 
-#import "NFRDepthProgram.h"
+#import "NFRDirectionalDepthProgram.h"
 
 #import "NFCommonTypes.h"
 #import "NFRUtils.h"
 
 #import "NFRResources.h"
 
-@implementation NFRDepthProgram
+@implementation NFRDirectionalDepthProgram
 
 - (void) loadProgramInputPoints {
     // shader attributes

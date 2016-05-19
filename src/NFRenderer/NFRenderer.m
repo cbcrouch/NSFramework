@@ -68,7 +68,8 @@
 
     id<NFRProgram> m_phongShader;
     id<NFRProgram> m_debugShader;
-    id<NFRProgram> m_depthShader;
+    id<NFRProgram> m_directionalDepthShader;
+    id<NFRProgram> m_pointDepthShader;
 
     NFRCommandBufferDefault* m_defaultCmdBuffer;
     NFRCommandBufferDebug* m_debugCmdBuffer;
@@ -152,29 +153,20 @@
     // shader objects
     m_phongShader = [NFRUtils createProgramObject:@"DefaultModel"];
     m_debugShader = [NFRUtils createProgramObject:@"Debug"];
-    m_depthShader = [NFRUtils createProgramObject:@"DirectionalDepthMap"];
+    m_directionalDepthShader = [NFRUtils createProgramObject:@"DirectionalDepthMap"];
+
+
+#define POINT_DEPTH_SAHDER_ENABLED 0
+
+#if POINT_DEPTH_SAHDER_ENABLED
+    m_pointDepthShader = [NFRUtils createProgramObject:@"PointDepthMap"];
+#endif
 
     // command buffers
     m_defaultCmdBuffer = [[NFRCommandBufferDefault alloc] init];
     m_debugCmdBuffer = [[NFRCommandBufferDebug alloc] init];
     m_depthCmdBuffer = [[NFRCommandBufferDefault alloc] init];
-
-
-
-    //
-    // TODO: setup for rendering the point light shadow into a depth cube map
-    //
-    //NFRCommandBufferDefault* m_pointLightDepthCmdBuffer;
-    //NFRRenderRequest* m_pointLightDepthRenderRequest;
-    //NFRRenderTarget* m_pointLightDepthRenderTarget;
-
-
-    //
-    // TODO: will most likely need a custom shader for point light shadow maps since they
-    //       use a cube map texture render target (as well as custom drawing logic to handle
-    //       multiple transforms)
-    //
-
+    m_pointLightDepthCmdBuffer = [[NFRCommandBufferDefault alloc] init];
 
 
     // render requests
@@ -185,7 +177,10 @@
     m_debugRenderRequest.program = m_debugShader;
 
     m_depthRenderRequest = [[NFRRenderRequest alloc] init];
-    m_depthRenderRequest.program = m_depthShader;
+    m_depthRenderRequest.program = m_directionalDepthShader;
+
+    m_pointLightDepthRenderRequest = [[NFRRenderRequest alloc] init];
+    m_pointLightDepthRenderRequest.program = m_pointDepthShader;
 
 
     //
@@ -206,6 +201,12 @@
     [m_depthRenderTarget addAttachment:kColorAttachment withBackingBuffer:kRenderBuffer];
     [m_depthRenderTarget addAttachment:kDepthAttachment withBackingBuffer:kTextureBuffer];
 
+
+    m_pointLightDepthRenderTarget = [[NFRRenderTarget alloc] init];
+#if POINT_DEPTH_SAHDER_ENABLED
+    [m_pointLightDepthRenderTarget addAttachment:kColorAttachment withBackingBuffer:kRenderBuffer];
+    [m_pointLightDepthRenderTarget addAttachment:kDepthAttachment withBackingBuffer:kCubeMapBuffer];
+#endif
 
     m_displayTarget = [[NFRDisplayTarget alloc] init];
 
@@ -355,10 +356,15 @@
     [m_debugCmdBuffer addGeometry:m_dirLight.geometry];
     [m_debugCmdBuffer addGeometry:m_spotLight.geometry];
 
-
     [m_depthCmdBuffer addGeometry:m_pAsset.geometry];
     [m_depthCmdBuffer addGeometry:m_planeData.geometry];
     [m_depthCmdBuffer addGeometry:m_pProceduralData.geometry];
+
+
+    //
+    // TODO: add geometry to point depth command buffer, setup point light transforms, and
+    //       render to the depth cube map
+    //
 
 
     // add command buffers to render requests
@@ -434,7 +440,7 @@
     // TODO: try using a perspective projection for the spotlight shadow map
     //
 
-    [m_depthShader updateViewMatrix:lightViewMat projectionMatrix:orthoProj];
+    [m_directionalDepthShader updateViewMatrix:lightViewMat projectionMatrix:orthoProj];
     //[m_depthShader updateViewMatrix:lightViewMat projectionMatrix:projection];
 
 

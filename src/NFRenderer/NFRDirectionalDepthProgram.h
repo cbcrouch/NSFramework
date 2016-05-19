@@ -1,5 +1,5 @@
 //
-//  NFRDepthProgram.h
+//  NFRDirectionalDepthProgram.h
 //  NSFramework
 //
 //  Copyright © 2016 Casey Crouch. All rights reserved.
@@ -16,7 +16,7 @@
 #import "NFRProgramProtocol.h"
 
 
-@interface NFRDepthProgram : NSObject <NFRProgram>
+@interface NFRDirectionalDepthProgram : NSObject <NFRProgram>
 
 @property (nonatomic, assign) GLint vertexAttribute;
 

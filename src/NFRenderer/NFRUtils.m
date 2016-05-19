@@ -16,7 +16,8 @@
 
 #import "NFRDefaultProgram.h"
 #import "NFRDebugProgram.h"
-#import "NFRDepthProgram.h"
+#import "NFRDirectionalDepthProgram.h"
+#import "NFRPointDepthProgram.h"
 #import "NFRDisplayProgram.h"
 
 
@@ -58,7 +59,13 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
         return programObj;
     }
     else if ([programName isEqualToString:@"DirectionalDepthMap"]) {
-        NFRDepthProgram* programObj = [[NFRDepthProgram alloc] init];
+        NFRDirectionalDepthProgram* programObj = [[NFRDirectionalDepthProgram alloc] init];
+        programObj.hProgram = [NFRUtils createProgram:programName];
+        [programObj loadProgramInputPoints];
+        return programObj;
+    }
+    else if ([programName isEqualToString:@"PointDepthMap"]) {
+        NFRPointDepthProgram* programObj = [[NFRPointDepthProgram alloc] init];
         programObj.hProgram = [NFRUtils createProgram:programName];
         [programObj loadProgramInputPoints];
         return programObj;
@@ -74,7 +81,7 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
     }
     return nil;
 }
-
+/*
 + (GLuint) createProgramWithVertexSource:(NSString *)vertexSource withFragmentSource:(NSString *)fragmentSource {
     GLuint hProgram = 0;
     GLuint hVertexShader = 0;
@@ -117,7 +124,7 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
 
     return hProgram;
 }
-
+*/
 + (GLuint) createProgram:(NSString *)programName {
     GLuint hProgram = 0;
     GLuint hVertexShader = 0;
@@ -135,6 +142,16 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
     [NFRUtils checkShader:hVertexShader ofType:kVertexShader againstStatus:kCompileStatus];
     CHECK_GL_ERROR();
 #endif
+
+
+    //
+    // TODO: need to load the point depth map shaders including a geometry shader
+    //
+
+    // change load shader source to return NULL if the shader wasn't found, that way can detect
+    // if a geometry shader (or other type) is available
+
+
 
     // create fragment shader
     hFragShader = glCreateShader(GL_FRAGMENT_SHADER);
