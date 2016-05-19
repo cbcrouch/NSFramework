@@ -33,7 +33,7 @@ typedef NS_ENUM(NSUInteger, SHADER_TYPE) {
 
     //kTessControlShader,
     //kTessEvaluationShader,
-    //kGeometryShader,
+    kGeometryShader,
 
     kFragmentShader,
 

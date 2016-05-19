@@ -154,13 +154,7 @@
     m_phongShader = [NFRUtils createProgramObject:@"DefaultModel"];
     m_debugShader = [NFRUtils createProgramObject:@"Debug"];
     m_directionalDepthShader = [NFRUtils createProgramObject:@"DirectionalDepthMap"];
-
-
-#define POINT_DEPTH_SAHDER_ENABLED 0
-
-#if POINT_DEPTH_SAHDER_ENABLED
     m_pointDepthShader = [NFRUtils createProgramObject:@"PointDepthMap"];
-#endif
 
     // command buffers
     m_defaultCmdBuffer = [[NFRCommandBufferDefault alloc] init];
@@ -203,10 +197,16 @@
 
 
     m_pointLightDepthRenderTarget = [[NFRRenderTarget alloc] init];
-#if POINT_DEPTH_SAHDER_ENABLED
-    [m_pointLightDepthRenderTarget addAttachment:kColorAttachment withBackingBuffer:kRenderBuffer];
-    [m_pointLightDepthRenderTarget addAttachment:kDepthAttachment withBackingBuffer:kCubeMapBuffer];
-#endif
+    //[m_pointLightDepthRenderTarget addAttachment:kColorAttachment withBackingBuffer:kRenderBuffer];
+
+    @try {
+        [m_pointLightDepthRenderTarget addAttachment:kDepthAttachment withBackingBuffer:kCubeMapBuffer];
+    }
+    @catch(NSException* exception){
+        NSLog(@"ERROR: failed to create cube map depth buffer attachment");
+    }
+
+
 
     m_displayTarget = [[NFRDisplayTarget alloc] init];
 
@@ -361,19 +361,19 @@
     [m_depthCmdBuffer addGeometry:m_pProceduralData.geometry];
 
 
+
     //
     // TODO: add geometry to point depth command buffer, setup point light transforms, and
     //       render to the depth cube map
     //
 
 
+
     // add command buffers to render requests
     [m_renderRequest.commandBufferArray addObject:m_defaultCmdBuffer];
     [m_debugRenderRequest.commandBufferArray addObject:m_debugCmdBuffer];
 
-
     [m_depthRenderRequest.commandBufferArray addObject:m_depthCmdBuffer];
-
 
     return self;
 }

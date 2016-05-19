@@ -129,10 +129,15 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
     GLuint hProgram = 0;
     GLuint hVertexShader = 0;
     GLuint hFragShader = 0;
+    GLuint hGeometryShader = 0;
+
     NSString* vertexSource = [NFRUtils loadShaderSourceWithName:programName ofType:kVertexShader];
     NSString* fragmentSource = [NFRUtils loadShaderSourceWithName:programName ofType:kFragmentShader];
+    NSString* geometrySource = [NFRUtils loadShaderSourceWithName:programName ofType:kGeometryShader];
+
     const GLchar *vs_source = [vertexSource cStringUsingEncoding:NSASCIIStringEncoding];
     const GLchar *fs_source = [fragmentSource cStringUsingEncoding:NSASCIIStringEncoding];
+    const GLchar *gs_source = [geometrySource cStringUsingEncoding:NSASCIIStringEncoding];
 
     // create vertex shader
     hVertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -145,11 +150,21 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
 
 
     //
-    // TODO: need to load the point depth map shaders including a geometry shader
+    // TODO: cleanup geometry shader code
     //
 
-    // change load shader source to return NULL if the shader wasn't found, that way can detect
-    // if a geometry shader (or other type) is available
+
+    // create geometry shader if one exists
+    if(gs_source) {
+        hGeometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+
+        glShaderSource(hGeometryShader, 1, &gs_source, 0);
+        glCompileShader(hGeometryShader);
+#ifdef DEBUG
+        [NFRUtils checkShader:hGeometryShader ofType:kGeometryShader againstStatus:kCompileStatus];
+        CHECK_GL_ERROR();
+#endif
+    }
 
 
 
@@ -165,6 +180,17 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
     // create shader program
     hProgram = glCreateProgram();
     glAttachShader(hProgram, hVertexShader);
+
+
+    //
+    // TODO: try restructuring this so there doesn't have to be if checks everywhere to see
+    //       if a specific (optional) shader type is supported
+    //
+    if(gs_source) {
+        glAttachShader(hProgram, hGeometryShader);
+    }
+
+
     glAttachShader(hProgram, hFragShader);
     glLinkProgram(hProgram);
 #ifdef DEBUG
@@ -254,6 +280,7 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
     switch (type) {
         case kVertexShader: fileExt = @"vsh"; break;
         case kFragmentShader: fileExt = @"fsh"; break;
+        case kGeometryShader: fileExt = @"gsh"; break;
         default:
             NSAssert(YES, @"Error: load shader source called for an unknown shader type");
             break;
@@ -266,7 +293,11 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
     //
 
     filePathName = [[NSBundle mainBundle] pathForResource:shaderName ofType:fileExt];
-    NSAssert(filePathName != nil, @"Failed to find path to %@.%@", shaderName, fileExt);
+    if (nil == filePathName) {
+        // if shader doesn't not exist then return nil, not all shader programs will have all
+        // shaders for all the supported pipeline stages
+        return nil;
+    }
 
     NSFileHandle *shaderFileHandle;
     shaderFileHandle = [NSFileHandle fileHandleForReadingAtPath:filePathName];
