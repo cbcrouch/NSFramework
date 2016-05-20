@@ -196,15 +196,15 @@
     [m_depthRenderTarget addAttachment:kDepthAttachment withBackingBuffer:kTextureBuffer];
 
 
-    m_pointLightDepthRenderTarget = [[NFRRenderTarget alloc] init];
+    m_pointLightDepthRenderTarget = [[NFRRenderTarget alloc] initWithWidth:1024 withHeight:1024];
+
+    //
+    // TODO: shouldn't need a render buffer for the point light depth maps, though need to make sure that
+    //       OpenGL and the render target implementation can handle it
+    //
     //[m_pointLightDepthRenderTarget addAttachment:kColorAttachment withBackingBuffer:kRenderBuffer];
 
-    @try {
-        [m_pointLightDepthRenderTarget addAttachment:kDepthAttachment withBackingBuffer:kCubeMapBuffer];
-    }
-    @catch(NSException* exception){
-        NSLog(@"ERROR: failed to create cube map depth buffer attachment");
-    }
+    [m_pointLightDepthRenderTarget addAttachment:kDepthAttachment withBackingBuffer:kCubeMapBuffer];
 
 
 

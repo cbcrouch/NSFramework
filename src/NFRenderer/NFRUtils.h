@@ -30,15 +30,11 @@
 
 typedef NS_ENUM(NSUInteger, SHADER_TYPE) {
     kVertexShader,
-
     //kTessControlShader,
     //kTessEvaluationShader,
     kGeometryShader,
-
     kFragmentShader,
-
     //kComputeShader,
-
     kProgram
 };
 

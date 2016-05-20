@@ -158,27 +158,10 @@
         //
         glBindTexture(GL_TEXTURE_CUBE_MAP, tempHandle);
 
-
-
-
-        CHECK_GL_ERROR();
-
-        //
-        // TODO: need to update render target to allow for setting a resolution, cube maps can only have a square resolution
-        //
-        _width = 1024;
-        _height = 1024;
-
-
         for(GLuint i=0; i<6; ++i) {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+i, 0, glInternalStorageType, self.width, self.height,
                 0, glFormatType, glDataType, NULL);
         }
-
-        CHECK_GL_ERROR();
-
-
-
 
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
