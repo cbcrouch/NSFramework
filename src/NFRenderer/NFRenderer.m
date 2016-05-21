@@ -37,6 +37,9 @@
 #import <GLKit/GLKit.h>
 
 
+static uint32_t const SHADOW_WIDTH = 1024;
+static uint32_t const SHADOW_HEIGHT = 1024;
+
 
 @interface NFViewport : NSObject
 @property (nonatomic, assign) NFViewportId uniqueId;
@@ -196,7 +199,7 @@
     [m_depthRenderTarget addAttachment:kDepthAttachment withBackingBuffer:kTextureBuffer];
 
 
-    m_pointLightDepthRenderTarget = [[NFRRenderTarget alloc] initWithWidth:1024 withHeight:1024];
+    m_pointLightDepthRenderTarget = [[NFRRenderTarget alloc] initWithWidth:SHADOW_WIDTH withHeight:SHADOW_HEIGHT];
 
     //
     // TODO: shouldn't need a render buffer for the point light depth maps, though need to make sure that
@@ -442,6 +445,55 @@
 
     [m_directionalDepthShader updateViewMatrix:lightViewMat projectionMatrix:orthoProj];
     //[m_depthShader updateViewMatrix:lightViewMat projectionMatrix:projection];
+
+
+
+
+    //
+    // TODO: implement the NFRDepthProgram class so this data can be passed on to the point depth shader
+    //
+
+#if 0
+    float aspect = (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT;
+    float near = 1.0f;
+    float far = 25.0f;
+    GLKMatrix4 pointShadowProj = GLKMatrix4MakePerspective(M_PI/2.0f, aspect, near, far);
+
+    GLKVector3 yNegUp = GLKVector3Make(0.0, -1.0, 0.0);
+    GLKVector3 zPosUp = GLKVector3Make(0.0, 0.0, 1.0);
+    GLKVector3 zNegUp = GLKVector3Make(0.0, 0.0, -1.0);
+
+    GLKVector3 pointLightPos = GLKVector3Make(1.0f, 1.0f, 1.0f);
+
+    GLKVector3 temp;
+    GLKMatrix4 shadowTransforms[6];
+
+    temp = GLKVector3Add(pointLightPos, GLKVector3Make(1.0, 0.0, 0.0));
+    shadowTransforms[0] = GLKMatrix4MakeLookAt(pointLightPos.x, pointLightPos.y, pointLightPos.z, temp.x, temp.y, temp.z, yNegUp.x, yNegUp.y, yNegUp.z);
+
+    temp = GLKVector3Add(pointLightPos, GLKVector3Make(-1.0, 0.0, 0.0));
+    shadowTransforms[1] = GLKMatrix4MakeLookAt(pointLightPos.x, pointLightPos.y, pointLightPos.z, temp.x, temp.y, temp.z, yNegUp.x, yNegUp.y, yNegUp.z);
+
+    temp = GLKVector3Add(pointLightPos, GLKVector3Make(0.0, 1.0, 0.0));
+    shadowTransforms[2] = GLKMatrix4MakeLookAt(pointLightPos.x, pointLightPos.y, pointLightPos.z, temp.x, temp.y, temp.z, zPosUp.x, zPosUp.y, zPosUp.z);
+
+    temp = GLKVector3Add(pointLightPos, GLKVector3Make(0.0, -1.0, 0.0));
+    shadowTransforms[3] = GLKMatrix4MakeLookAt(pointLightPos.x, pointLightPos.y, pointLightPos.z, temp.x, temp.y, temp.z, zNegUp.x, zNegUp.y, zNegUp.z);
+
+    temp = GLKVector3Add(pointLightPos, GLKVector3Make(0.0, 0.0, 1.0));
+    shadowTransforms[4] = GLKMatrix4MakeLookAt(pointLightPos.x, pointLightPos.y, pointLightPos.z, temp.x, temp.y, temp.z, yNegUp.x, yNegUp.y, yNegUp.z);
+
+    temp = GLKVector3Add(pointLightPos, GLKVector3Make(0.0, 0.0, -1.0));
+    shadowTransforms[5] = GLKMatrix4MakeLookAt(pointLightPos.x, pointLightPos.y, pointLightPos.z, temp.x, temp.y, temp.z, yNegUp.x, yNegUp.y, yNegUp.z);
+
+#endif
+
+    //
+    // TODO: update the point depth shader (m_pointDepthShader)
+    //
+
+
+
 
 
     //
