@@ -20,10 +20,10 @@
     NSAssert(self.vertexAttribute != -1, @"Failed to bind attribute");
 
     // shader uniforms
-    self.projectionViewLocation = glGetUniformLocation(self.hProgram, (const GLchar *)"projectionView");
+    self.projectionViewLocation = glGetUniformLocation(self.hProgram, "projectionView");
     NSAssert(self.projectionViewLocation != -1, @"Failed to projectionView matrix uniform location");
 
-    self.modelMatrixLocation = glGetUniformLocation(self.hProgram, (const GLchar *)"model");
+    self.modelMatrixLocation = glGetUniformLocation(self.hProgram, "model");
     NSAssert(self.modelMatrixLocation != -1, @"Failed to get model matrix uniform location");
 
     CHECK_GL_ERROR();

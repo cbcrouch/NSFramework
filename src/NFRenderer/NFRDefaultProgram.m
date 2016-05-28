@@ -136,7 +136,7 @@
     self.spotLightUniforms = spotLight;
 
     // model matrix uniform location
-    self.modelMatrixLocation = glGetUniformLocation(self.hProgram, (const GLchar *)"model");
+    self.modelMatrixLocation = glGetUniformLocation(self.hProgram, "model");
     NSAssert(self.modelMatrixLocation != -1, @"failed to get model matrix uniform location");
 
 
@@ -144,10 +144,10 @@
     // TODO: remove these uniform locations once the directional light is working correctly,
     //       each light struct should have a light space matrix and shadow map uniform
     //
-    self.lightSpaceMatrixUniform = glGetUniformLocation(self.hProgram, (const GLchar *)"lightSpace");
+    self.lightSpaceMatrixUniform = glGetUniformLocation(self.hProgram, "lightSpace");
     NSAssert(self.lightSpaceMatrixUniform != -1, @"failed to get light space matrix uniform location");
 
-    self.shadowMapUniform = glGetUniformLocation(self.hProgram, (const GLchar *)"shadowMap");
+    self.shadowMapUniform = glGetUniformLocation(self.hProgram, "shadowMap");
     NSAssert(self.shadowMapUniform != -1, @"failed to get shadow map uniform location");
 
 

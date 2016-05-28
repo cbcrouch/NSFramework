@@ -26,7 +26,7 @@
     NSAssert(self.colorAttribute != -1, @"Failed to bind attribute");
 
     // setup uniform for model matrix
-    self.modelMatrixLocation = glGetUniformLocation(self.hProgram, (const GLchar *)"model");
+    self.modelMatrixLocation = glGetUniformLocation(self.hProgram, "model");
     NSAssert(self.modelMatrixLocation != -1, @"Failed to get model matrix uniform location");
 
     // uniform buffer for view and projection matrix

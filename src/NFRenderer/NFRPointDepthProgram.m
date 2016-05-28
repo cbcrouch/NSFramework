@@ -21,16 +21,16 @@
     NSAssert(self.vertexAttribute != -1, @"Failed to bind attribute");
 
     // shader uniforms
-    self.modelMatrixLocation = glGetUniformLocation(self.hProgram, (const GLchar *)"model");
+    self.modelMatrixLocation = glGetUniformLocation(self.hProgram, "model");
     NSAssert(self.modelMatrixLocation != -1, @"Failed to get uniform location");
 
-    self.shadowTransformsLocation = glGetUniformLocation(self.hProgram, (const GLchar *)"shadowTransforms");
+    self.shadowTransformsLocation = glGetUniformLocation(self.hProgram, "shadowTransforms");
     NSAssert(self.shadowTransformsLocation != -1, @"Failed to get uniform location");
 
-    self.lightPositionLocation = glGetUniformLocation(self.hProgram, (const GLchar *)"lightPos");
+    self.lightPositionLocation = glGetUniformLocation(self.hProgram, "lightPos");
     NSAssert(self.lightPositionLocation != -1, @"Failed to get uniform location");
 
-    self.farPlaneLocation = glGetUniformLocation(self.hProgram, (const GLchar *)"farPlane");
+    self.farPlaneLocation = glGetUniformLocation(self.hProgram, "farPlane");
     NSAssert(self.farPlaneLocation != -1, @"Failed to get uniform location");
 
     CHECK_GL_ERROR();
