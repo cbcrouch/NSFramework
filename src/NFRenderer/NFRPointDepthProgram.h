@@ -20,4 +20,20 @@
 
 @property (nonatomic, readwrite, assign) GLuint hProgram;
 
+// vertex shader
+@property (nonatomic, assign) GLint vertexAttribute;
+@property (nonatomic, assign) GLint modelMatrixLocation;
+
+// geometry shader
+@property (nonatomic, assign) GLint shadowTransformsLocation;
+
+// fragment shader
+@property (nonatomic, assign) GLint lightPositionLocation;
+@property (nonatomic, assign) GLint farPlaneLocation;
+
+
+- (void) updateFarPlane:(GLfloat)farPlane;
+- (void) updateLightPosition:(GLKVector3)lightPosition;
+- (void) updateCubeMapTransforms:(GLKMatrix4[6])cubeMapTransforms;
+
 @end
