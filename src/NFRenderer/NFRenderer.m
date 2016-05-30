@@ -453,7 +453,6 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     // TODO: implement the NFRDepthProgram class so this data can be passed on to the point depth shader
     //
 
-#if 0
     float aspect = (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT;
     float near = 1.0f;
     float far = 25.0f;
@@ -470,27 +469,42 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
     temp = GLKVector3Add(pointLightPos, GLKVector3Make(1.0, 0.0, 0.0));
     shadowTransforms[0] = GLKMatrix4MakeLookAt(pointLightPos.x, pointLightPos.y, pointLightPos.z, temp.x, temp.y, temp.z, yNegUp.x, yNegUp.y, yNegUp.z);
+    shadowTransforms[0] = GLKMatrix4Multiply(pointShadowProj, shadowTransforms[0]);
 
     temp = GLKVector3Add(pointLightPos, GLKVector3Make(-1.0, 0.0, 0.0));
     shadowTransforms[1] = GLKMatrix4MakeLookAt(pointLightPos.x, pointLightPos.y, pointLightPos.z, temp.x, temp.y, temp.z, yNegUp.x, yNegUp.y, yNegUp.z);
+    shadowTransforms[1] = GLKMatrix4Multiply(pointShadowProj, shadowTransforms[1]);
 
     temp = GLKVector3Add(pointLightPos, GLKVector3Make(0.0, 1.0, 0.0));
     shadowTransforms[2] = GLKMatrix4MakeLookAt(pointLightPos.x, pointLightPos.y, pointLightPos.z, temp.x, temp.y, temp.z, zPosUp.x, zPosUp.y, zPosUp.z);
+    shadowTransforms[2] = GLKMatrix4Multiply(pointShadowProj, shadowTransforms[2]);
 
     temp = GLKVector3Add(pointLightPos, GLKVector3Make(0.0, -1.0, 0.0));
     shadowTransforms[3] = GLKMatrix4MakeLookAt(pointLightPos.x, pointLightPos.y, pointLightPos.z, temp.x, temp.y, temp.z, zNegUp.x, zNegUp.y, zNegUp.z);
+    shadowTransforms[3] = GLKMatrix4Multiply(pointShadowProj, shadowTransforms[3]);
 
     temp = GLKVector3Add(pointLightPos, GLKVector3Make(0.0, 0.0, 1.0));
     shadowTransforms[4] = GLKMatrix4MakeLookAt(pointLightPos.x, pointLightPos.y, pointLightPos.z, temp.x, temp.y, temp.z, yNegUp.x, yNegUp.y, yNegUp.z);
+    shadowTransforms[4] = GLKMatrix4Multiply(pointShadowProj, shadowTransforms[4]);
 
     temp = GLKVector3Add(pointLightPos, GLKVector3Make(0.0, 0.0, -1.0));
     shadowTransforms[5] = GLKMatrix4MakeLookAt(pointLightPos.x, pointLightPos.y, pointLightPos.z, temp.x, temp.y, temp.z, yNegUp.x, yNegUp.y, yNegUp.z);
+    shadowTransforms[5] = GLKMatrix4Multiply(pointShadowProj, shadowTransforms[5]);
 
-#endif
 
     //
     // TODO: update the point depth shader (m_pointDepthShader)
     //
+
+    //- (void) updateFarPlane:(GLfloat)farPlane;
+    //- (void) updateLightPosition:(GLKVector3)lightPosition;
+    //- (void) updateCubeMapTransforms:(GLKMatrix4[6])cubeMapTransforms;
+
+/*
+    if ([m_pointDepthShader respondsToSelector:@selector(updateFarPlane:)]) {
+        [m_pointDepthShader performSelector:@selector(updateFarPlane:) withObject:@(farPlane)];
+    }
+*/
 
 
 

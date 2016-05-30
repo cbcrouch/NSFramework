@@ -24,8 +24,14 @@
     self.modelMatrixLocation = glGetUniformLocation(self.hProgram, "model");
     NSAssert(self.modelMatrixLocation != -1, @"Failed to get uniform location");
 
-    self.shadowTransformsLocation = glGetUniformLocation(self.hProgram, "shadowTransforms");
-    NSAssert(self.shadowTransformsLocation != -1, @"Failed to get uniform location");
+    NSMutableArray* tempArray = [[NSMutableArray alloc] init];
+    for (int i=0; i<6; ++i) {
+        NSString* uniformStr = [NSString stringWithFormat:@"shadowTransforms[%d]", i];
+        GLint transformLocation = glGetUniformLocation(self.hProgram, [uniformStr UTF8String]);
+        NSAssert(transformLocation != -1, @"Failed to get uniform location");
+        [tempArray addObject:@(transformLocation)];
+    }
+    self.shadowTransformsArray = [[NSArray alloc] initWithArray:tempArray];
 
     self.lightPositionLocation = glGetUniformLocation(self.hProgram, "lightPos");
     NSAssert(self.lightPositionLocation != -1, @"Failed to get uniform location");
@@ -59,22 +65,33 @@
 
 - (void) drawGeometry:(NFRGeometry*)geometry {
     //
+    // TODO: implement
+    //
+
+    NSLog(@"WARNING: NFRPointDepthProgram drawGeometry called but not implemented");
 }
 
+//
+// TODO: try using glUniform* instead of glProgramUniform* as it could be faster
+//
+
 - (void) updateFarPlane:(GLfloat)farPlane {
-    //
+    glProgramUniform1f(self.hProgram, self.farPlaneLocation, farPlane);
+    CHECK_GL_ERROR();
 }
 
 - (void) updateLightPosition:(GLKVector3)lightPosition {
-    //
+    glProgramUniform3f(self.hProgram, self.lightPositionLocation, lightPosition.x, lightPosition.y, lightPosition.z);
+    CHECK_GL_ERROR();
 }
 
 - (void) updateCubeMapTransforms:(GLKMatrix4[6])cubeMapTransforms {
-
-    //
-    // TODO: set shadow transforms for point depth cube map
-    //
-
+    for (int i=0; i<6; ++i) {
+        GLint tempLocation = (GLint)[self.shadowTransformsArray[i] integerValue];
+        NSAssert(tempLocation != -1, @"Failed to get uniform location");
+        glProgramUniformMatrix4fv(self.hProgram, tempLocation, 1, GL_FALSE, cubeMapTransforms[i].m);
+    }
+    CHECK_GL_ERROR();
 }
 
 - (void) updateModelMatrix:(GLKMatrix4)modelMatrix {

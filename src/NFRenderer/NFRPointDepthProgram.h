@@ -25,7 +25,7 @@
 @property (nonatomic, assign) GLint modelMatrixLocation;
 
 // geometry shader
-@property (nonatomic, assign) GLint shadowTransformsLocation;
+@property (nonatomic, retain) NSArray* shadowTransformsArray;
 
 // fragment shader
 @property (nonatomic, assign) GLint lightPositionLocation;
