@@ -64,10 +64,17 @@
 }
 
 - (void) drawGeometry:(NFRGeometry*)geometry {
-    //
-    // TODO: implement
-    //
-    NSLog(@"WARNING: NFRPointDepthProgram drawGeometry called but not implemented");
+    glBindVertexArray(geometry.vertexBuffer.bufferAttributes.hVAO);
+
+    [self updateModelMatrix:geometry.modelMatrix];
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geometry.indexBuffer.bufferHandle);
+    glDrawElements(geometry.mode, (GLsizei)geometry.indexBuffer.numberOfElements, GL_UNSIGNED_SHORT, NULL);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(0);
+
+    CHECK_GL_ERROR();
 }
 
 //

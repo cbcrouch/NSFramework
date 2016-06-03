@@ -365,17 +365,17 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     [m_debugCmdBuffer addGeometry:m_dirLight.geometry];
     [m_debugCmdBuffer addGeometry:m_spotLight.geometry];
 
+
+    // directional shadow map
     [m_depthCmdBuffer addGeometry:m_pAsset.geometry];
     [m_depthCmdBuffer addGeometry:m_planeData.geometry];
     [m_depthCmdBuffer addGeometry:m_pProceduralData.geometry];
 
 
-
-    //
-    // TODO: add geometry to point depth command buffer, setup point light transforms, and
-    //       render to the depth cube map
-    //
-
+    // point light shadow map
+    [m_pointLightDepthCmdBuffer addGeometry:m_pAsset.geometry];
+    [m_pointLightDepthCmdBuffer addGeometry:m_planeData.geometry];
+    [m_pointLightDepthCmdBuffer addGeometry:m_pProceduralData.geometry];
 
 
     // add command buffers to render requests
@@ -383,6 +383,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     [m_debugRenderRequest.commandBufferArray addObject:m_debugCmdBuffer];
 
     [m_depthRenderRequest.commandBufferArray addObject:m_depthCmdBuffer];
+    [m_pointLightDepthRenderRequest.commandBufferArray addObject:m_pointLightDepthCmdBuffer];
 
     return self;
 }
@@ -465,10 +466,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     GLKVector3 zPosUp = GLKVector3Make(0.0, 0.0, 1.0);
     GLKVector3 zNegUp = GLKVector3Make(0.0, 0.0, -1.0);
 
-    //
-    // TODO: replace with actual point light position once this is working
-    //
-    GLKVector3 pointLightPos = GLKVector3Make(1.0f, 1.0f, 1.0f);
+    GLKVector3 pointLightPos = m_pointLight.position;
 
     GLKVector3 temp;
     GLKMatrix4 shadowTransforms[6];
@@ -508,12 +506,18 @@ static uint32_t const SHADOW_HEIGHT = 1024;
         [m_pointDepthShader performSelector:@selector(updateLightPosition:) withObject:valueObj];
     }
 
-    //
-    // TODO: update the point depth shader cube map transforms
-    //
+    if ([m_pointDepthShader respondsToSelector:@selector(updateCubeMapTransforms:)]) {
+        static const char* matType = @encode(GLKMatrix4);
+        NSMutableArray* transformsArray = [[NSMutableArray alloc] initWithCapacity:6];
 
-    //- (void) updateCubeMapTransforms:(NSArray*)objArray;
+        for (int i=0; i<6; ++i) {
+            NSValue* valueObj = [NSValue value:&(shadowTransforms[i]) withObjCType:matType];
+            [transformsArray addObject:valueObj];
+        }
 
+        [m_pointDepthShader performSelector:@selector(updateCubeMapTransforms:) withObject:transformsArray];
+    }
+    
     //
     //
     //
@@ -547,6 +551,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //
 
 
+    // directional light shadow map
     [m_depthRenderTarget enable];
     glClear(GL_DEPTH_BUFFER_BIT);
     glCullFace(GL_FRONT);
@@ -556,8 +561,20 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     glCullFace(GL_BACK);
 
 
+    // point light shadow map
+    [m_pointLightDepthRenderTarget enable];
+    glClear(GL_DEPTH_BUFFER_BIT);
+    [m_pointLightDepthRenderRequest process];
+    [m_pointLightDepthRenderTarget disable];
+
+
     //
-    // TODO: need a better to get the shadow map texture (depth tex attachment) pass into the
+    // TODO: need to try and visualize the drawn depth cube map or start feeding it into
+    //       the default shader for rendering point light shadows
+    //
+
+    //
+    // TODO: need a better way to get the shadow map texture (depth tex attachment) pass into the
     //       default model shader for each light
     //
     if ([m_phongShader respondsToSelector:@selector(setShadowMap:)]) {
