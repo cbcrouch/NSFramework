@@ -32,8 +32,8 @@
 @property (nonatomic, assign) GLint farPlaneLocation;
 
 
-- (void) updateFarPlane:(GLfloat)farPlane;
-- (void) updateLightPosition:(GLKVector3)lightPosition;
-- (void) updateCubeMapTransforms:(GLKMatrix4[6])cubeMapTransforms;
+- (void) updateFarPlane:(NSNumber*)value;
+- (void) updateLightPosition:(NSValue*)valueObject;
+- (void) updateCubeMapTransforms:(NSArray*)objArray;
 
 @end

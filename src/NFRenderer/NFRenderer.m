@@ -27,6 +27,12 @@
 //
 #import "NFRDefaultProgram.h"
 
+//
+// TODO: try restructing so that the uniforms for the point depth program can be updated elsewhere
+//       so that this dependency can be removed (this module should ideally have no internal knowledge
+//       of shaders if possible)
+//
+#import "NFRPointDepthProgram.h"
 
 
 // NOTE: because both gl.h and gl3.h are included will get symbols for deprecated GL functions
@@ -446,11 +452,8 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     [m_directionalDepthShader updateViewMatrix:lightViewMat projectionMatrix:orthoProj];
     //[m_depthShader updateViewMatrix:lightViewMat projectionMatrix:projection];
 
-
-
-
     //
-    // TODO: implement the NFRDepthProgram class so this data can be passed on to the point depth shader
+    //
     //
 
     float aspect = (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT;
@@ -462,6 +465,9 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     GLKVector3 zPosUp = GLKVector3Make(0.0, 0.0, 1.0);
     GLKVector3 zNegUp = GLKVector3Make(0.0, 0.0, -1.0);
 
+    //
+    // TODO: replace with actual point light position once this is working
+    //
     GLKVector3 pointLightPos = GLKVector3Make(1.0f, 1.0f, 1.0f);
 
     GLKVector3 temp;
@@ -492,22 +498,25 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     shadowTransforms[5] = GLKMatrix4Multiply(pointShadowProj, shadowTransforms[5]);
 
 
-    //
-    // TODO: update the point depth shader (m_pointDepthShader)
-    //
-
-    //- (void) updateFarPlane:(GLfloat)farPlane;
-    //- (void) updateLightPosition:(GLKVector3)lightPosition;
-    //- (void) updateCubeMapTransforms:(GLKMatrix4[6])cubeMapTransforms;
-
-/*
     if ([m_pointDepthShader respondsToSelector:@selector(updateFarPlane:)]) {
-        [m_pointDepthShader performSelector:@selector(updateFarPlane:) withObject:@(farPlane)];
+        [m_pointDepthShader performSelector:@selector(updateFarPlane:) withObject:@(far)];
     }
-*/
 
+    if ([m_pointDepthShader respondsToSelector:@selector(updateLightPosition:)]) {
+        static const char* vecType = @encode(GLKVector3);
+        NSValue* valueObj = [NSValue value:&pointLightPos withObjCType:vecType];
+        [m_pointDepthShader performSelector:@selector(updateLightPosition:) withObject:valueObj];
+    }
 
+    //
+    // TODO: update the point depth shader cube map transforms
+    //
 
+    //- (void) updateCubeMapTransforms:(NSArray*)objArray;
+
+    //
+    //
+    //
 
 
     //

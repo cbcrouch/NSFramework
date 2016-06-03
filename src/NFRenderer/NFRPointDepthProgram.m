@@ -67,7 +67,6 @@
     //
     // TODO: implement
     //
-
     NSLog(@"WARNING: NFRPointDepthProgram drawGeometry called but not implemented");
 }
 
@@ -75,21 +74,29 @@
 // TODO: try using glUniform* instead of glProgramUniform* as it could be faster
 //
 
-- (void) updateFarPlane:(GLfloat)farPlane {
+- (void) updateFarPlane:(NSNumber*)value {
+    GLfloat farPlane = [value floatValue];
     glProgramUniform1f(self.hProgram, self.farPlaneLocation, farPlane);
     CHECK_GL_ERROR();
 }
 
-- (void) updateLightPosition:(GLKVector3)lightPosition {
+- (void) updateLightPosition:(NSValue*)valueObject {
+    GLKVector3 lightPosition;
+    [valueObject getValue:&lightPosition];
     glProgramUniform3f(self.hProgram, self.lightPositionLocation, lightPosition.x, lightPosition.y, lightPosition.z);
     CHECK_GL_ERROR();
 }
 
-- (void) updateCubeMapTransforms:(GLKMatrix4[6])cubeMapTransforms {
+- (void) updateCubeMapTransforms:(NSArray*)objArray {
     for (int i=0; i<6; ++i) {
         GLint tempLocation = (GLint)[self.shadowTransformsArray[i] integerValue];
         NSAssert(tempLocation != -1, @"Failed to get uniform location");
-        glProgramUniformMatrix4fv(self.hProgram, tempLocation, 1, GL_FALSE, cubeMapTransforms[i].m);
+
+        GLKMatrix4 cubeMapTransform;
+        NSValue* valueObj = [objArray objectAtIndex:i];
+        [valueObj getValue:&cubeMapTransform];
+
+        glProgramUniformMatrix4fv(self.hProgram, tempLocation, 1, GL_FALSE, cubeMapTransform.m);
     }
     CHECK_GL_ERROR();
 }
