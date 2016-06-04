@@ -141,7 +141,7 @@
 
 
     //
-    // TODO: remove these uniform locations once the directional light is working correctly,
+    // TODO: remove these uniform locations once the shadow maps are working correctly,
     //       each light struct should have a light space matrix and shadow map uniform
     //
     self.lightSpaceMatrixUniform = glGetUniformLocation(self.hProgram, "lightSpace");
@@ -149,6 +149,9 @@
 
     self.shadowMapUniform = glGetUniformLocation(self.hProgram, "shadowMap");
     NSAssert(self.shadowMapUniform != -1, @"failed to get shadow map uniform location");
+
+    self.pointShadowMapUniform = glGetUniformLocation(self.hProgram, "pointShadowMap");
+    NSAssert(self.shadowMapUniform != -1, @"failed to get point shadow map uniform location");
 
 
     // view position uniform location
@@ -183,6 +186,9 @@
     GLint textureId;
     [valueObj getValue:&textureId];
 
+    //
+    // TODO: need a much better way of setting the texture num than hardcoding it
+    //
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, textureId);
 
@@ -193,7 +199,19 @@
     CHECK_GL_ERROR();
 }
 
+- (void) setPointShadowMap:(NSValue*)valueObj {
+    GLint textureId;
+    [valueObj getValue:&textureId];
 
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
+
+    glUseProgram(self.hProgram);
+    glUniform1i(self.pointShadowMapUniform, GL_TEXTURE2 - GL_TEXTURE0);
+    glUseProgram(0);
+
+    CHECK_GL_ERROR();
+}
 
 - (void) configureVertexInput:(NFRBufferAttributes*)bufferAttributes {
     glBindVertexArray(bufferAttributes.hVAO);

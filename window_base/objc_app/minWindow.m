@@ -201,7 +201,7 @@
 }
 
 //
-// TODO: might be a decent idea to move this to a window controller class, because
+// TODO: might be a decent idea to move this to an application delegate class, because
 //       in the Cocoa model multiple windows could exist but there is only menu bar
 //       so the controller would be responsible for updating coordinating changes
 //
@@ -266,9 +266,6 @@ int main (int argc, char* argv[]) {
         [applicationObject performSelectorOnMainThread:@selector(run) withObject:nil waitUntilDone:YES];
     }
 
-
-    // here just in case something unexpected causes the run loop to exit
     [applicationObject terminate:nil];
-
     return 0;
 }

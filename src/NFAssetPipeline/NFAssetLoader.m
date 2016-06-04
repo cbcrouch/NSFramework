@@ -95,7 +95,10 @@
         break;
 
         case kSolidPlane: {
-            [asset createPlaneOfSize:4];
+
+            //[asset createPlaneOfSize:4];
+            [asset createPlaneOfSize:16];
+
             // NOTE: default draw mode should work
 
             NFSurfaceModel *surface = [NFSurfaceModel defaultSurfaceModel];

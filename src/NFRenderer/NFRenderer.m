@@ -368,13 +368,13 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
     // directional shadow map
     [m_depthCmdBuffer addGeometry:m_pAsset.geometry];
-    [m_depthCmdBuffer addGeometry:m_planeData.geometry];
+    //[m_depthCmdBuffer addGeometry:m_planeData.geometry];
     [m_depthCmdBuffer addGeometry:m_pProceduralData.geometry];
 
 
     // point light shadow map
     [m_pointLightDepthCmdBuffer addGeometry:m_pAsset.geometry];
-    [m_pointLightDepthCmdBuffer addGeometry:m_planeData.geometry];
+    //[m_pointLightDepthCmdBuffer addGeometry:m_planeData.geometry];
     [m_pointLightDepthCmdBuffer addGeometry:m_pProceduralData.geometry];
 
 
@@ -453,14 +453,21 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     [m_directionalDepthShader updateViewMatrix:lightViewMat projectionMatrix:orthoProj];
     //[m_depthShader updateViewMatrix:lightViewMat projectionMatrix:projection];
 
+
     //
-    //
+    // TODO: need a good way to visualize the generated cude map since it appears it could be incorrect
+    //       (could place it around the scene like a skybox ??)
     //
 
     float aspect = (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT;
+
+    //float near = 0.0125f;
     float near = 1.0f;
-    float far = 25.0f;
-    GLKMatrix4 pointShadowProj = GLKMatrix4MakePerspective(M_PI/2.0f, aspect, near, far);
+
+    float far = 100.0f;
+
+    //GLKMatrix4 pointShadowProj = GLKMatrix4MakePerspective((float)M_PI_2, aspect, near, far);
+    GLKMatrix4 pointShadowProj = GLKMatrix4MakePerspective((float)M_PI_4, aspect, near, far);
 
     GLKVector3 yNegUp = GLKVector3Make(0.0, -1.0, 0.0);
     GLKVector3 zPosUp = GLKVector3Make(0.0, 0.0, 1.0);
@@ -564,14 +571,12 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     // point light shadow map
     [m_pointLightDepthRenderTarget enable];
     glClear(GL_DEPTH_BUFFER_BIT);
+    glCullFace(GL_FRONT);
     [m_pointLightDepthRenderRequest process];
     [m_pointLightDepthRenderTarget disable];
 
+    glCullFace(GL_BACK);
 
-    //
-    // TODO: need to try and visualize the drawn depth cube map or start feeding it into
-    //       the default shader for rendering point light shadows
-    //
 
     //
     // TODO: need a better way to get the shadow map texture (depth tex attachment) pass into the
@@ -582,6 +587,13 @@ static uint32_t const SHADOW_HEIGHT = 1024;
         GLint depthTexHandle = (GLint)m_depthRenderTarget.depthAttachment.handle;
         NSValue* valueObj = [NSValue value:&depthTexHandle withObjCType:handleType];
         [m_phongShader performSelector:@selector(setShadowMap:) withObject:valueObj];
+    }
+
+    if ([m_phongShader respondsToSelector:@selector(setPointShadowMap:)]) {
+        static const char *handleType = @encode(GLint);
+        GLint depthTexHandle = (GLint)m_pointLightDepthRenderTarget.depthAttachment.handle;
+        NSValue* valueObj = [NSValue value:&depthTexHandle withObjCType:handleType];
+        [m_phongShader performSelector:@selector(setPointShadowMap:) withObject:valueObj];
     }
 
 

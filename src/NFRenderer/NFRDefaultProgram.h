@@ -76,7 +76,10 @@ typedef struct spotLightUniforms_t {
 
 
 @property (nonatomic, assign) GLint shadowMapUniform;
+@property (nonatomic, assign) GLint pointShadowMapUniform;
+
 - (void) setShadowMap:(NSValue*)valueObj;
+- (void) setPointShadowMap:(NSValue*)valueObj;
 
 
 @property (nonatomic, assign) GLint modelMatrixLocation;

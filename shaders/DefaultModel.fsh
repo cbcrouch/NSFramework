@@ -87,6 +87,7 @@ uniform spotLight_t spotLight;
 
 
 uniform sampler2D shadowMap;
+uniform samplerCube pointShadowMap;
 
 
 in vec3 f_position;
@@ -103,8 +104,7 @@ out vec4 color;
 
 
 vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir, float shadow);
-
-vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir);
+vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir, float shadow);
 vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir);
 
 
@@ -159,7 +159,7 @@ vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosi
     //return (ambient + diffuse + specular);
 }
 
-vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir) {
+vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir, float shadow) {
     vec3 lightDir = normalize(light.position - fragPosition);
     vec3 norm = normalize(normal);
 
@@ -195,7 +195,11 @@ vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 v
     diffuse  *= attenuation;
     specular *= attenuation;
 
-    return(ambient + diffuse + specular);
+    //
+    //
+    //
+    return (ambient + ((1.0 - shadow) * (diffuse + specular)));
+    //return (ambient + diffuse + specular);
 }
 
 vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir) {
@@ -297,6 +301,32 @@ float shadow_calculation(vec4 frag_pos_light_space, vec3 normal, vec3 lightDir) 
 }
 
 
+//
+// TODO: need to debug why the cube map is not getting drawn
+//
+float point_shadow_calculation(pointLight_t light, vec3 fragPosition) {
+
+    vec3 fragToLight = fragPosition - light.position;
+    float closestDepth = texture(pointShadowMap, fragToLight).r;
+
+    //
+    // TODO: make far plane a uniform
+    //
+    float farPlane = 100.0f;
+
+    closestDepth *= farPlane;
+    float currentDepth = length(fragToLight);
+
+    //float bias = 0.05;
+    float bias = 0.00125;
+    float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
+
+
+    return shadow;
+}
+
+
+
 void main() {
 
 #if 1
@@ -307,26 +337,34 @@ void main() {
 #endif
 
 
+#if 1
+    float pointShadowVal = point_shadow_calculation(pointlight, f_position);
+#else
+    float pointThrowaway = texture(pointShadowMap, vec3(0.0, 0.0, 0.0)).r;
+    float pointShadowVal = 0.0;
+#endif
+
+
     vec3 viewDir = normalize(viewPos - f_position);
     vec3 result = vec3(0);
 
-#define USE_DIRECTIONAL_LIGHT  1
-#define USE_POINT_LIGHT        0
+#define USE_DIRECTIONAL_LIGHT  0
+#define USE_POINT_LIGHT        1
 #define USE_SPOT_LIGHT         0
 
 
 #if USE_DIRECTIONAL_LIGHT
     result += calc_directional_light(directionalLight, f_normal, f_position, viewDir, shadowVal);
 #else
-    vec3 directionalOutput = calc_directional_light(directionalLight, f_normal, f_position, viewDir);
+    vec3 directionalOutput = calc_directional_light(directionalLight, f_normal, f_position, viewDir, shadowVal);
     directionalOutput = result;
 #endif
 
 
 #if USE_POINT_LIGHT
-    result += calc_point_light(pointlight, f_normal, f_position, viewDir);
+    result += calc_point_light(pointlight, f_normal, f_position, viewDir, pointShadowVal);
 #else
-    vec3 pointOutput = calc_point_light(pointlight, f_normal, f_position, viewDir);
+    vec3 pointOutput = calc_point_light(pointlight, f_normal, f_position, viewDir, pointShadowVal);
     pointOutput = result;
 #endif
 
