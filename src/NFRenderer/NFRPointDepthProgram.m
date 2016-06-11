@@ -27,7 +27,7 @@
     NSMutableArray* tempArray = [[NSMutableArray alloc] init];
     for (int i=0; i<6; ++i) {
         NSString* uniformStr = [NSString stringWithFormat:@"shadowTransforms[%d]", i];
-        GLint transformLocation = glGetUniformLocation(self.hProgram, [uniformStr UTF8String]);
+        GLint transformLocation = glGetUniformLocation(self.hProgram, uniformStr.UTF8String);
         NSAssert(transformLocation != -1, @"Failed to get uniform location");
         [tempArray addObject:@(transformLocation)];
     }
@@ -82,7 +82,7 @@
 //
 
 - (void) updateFarPlane:(NSNumber*)value {
-    GLfloat farPlane = [value floatValue];
+    GLfloat farPlane = value.floatValue;
     glProgramUniform1f(self.hProgram, self.farPlaneLocation, farPlane);
     CHECK_GL_ERROR();
 }
@@ -100,7 +100,7 @@
         NSAssert(tempLocation != -1, @"Failed to get uniform location");
 
         GLKMatrix4 cubeMapTransform;
-        NSValue* valueObj = [objArray objectAtIndex:i];
+        NSValue* valueObj = objArray[i];
         [valueObj getValue:&cubeMapTransform];
 
         glProgramUniformMatrix4fv(self.hProgram, tempLocation, 1, GL_FALSE, cubeMapTransform.m);
