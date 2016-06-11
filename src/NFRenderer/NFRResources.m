@@ -134,6 +134,63 @@
 @end
 
 
+@interface NFRCubeMapGL()
+@property (nonatomic, assign, readwrite) GLuint textureID;
+@property (nonatomic, assign, readwrite) BOOL validTexture;
+@end
+
+@implementation NFRCubeMapGL
+
+- (instancetype) init {
+    self = [super init];
+    if (self) {
+        _validTexture = NO;
+    }
+    return self;
+}
+
+- (void) dealloc {
+    if (self.isTextureValid) {
+        GLuint texId = self.textureID;
+        glDeleteTextures(1, &texId);
+    }
+}
+
+- (void) syncCubeMap:(NFRCubeMap*)cubeMap {
+    GLuint texId;
+    glGenTextures(1, &texId);
+    self.textureID = texId;
+
+    glBindTexture(GL_TEXTURE_CUBE_MAP, self.textureID);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    for (int i=0; i<6; ++i) {
+        GLubyte* pData = cubeMap.data[i];
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, cubeMap.format, cubeMap.width, cubeMap.height, 0,
+                     cubeMap.format, cubeMap.type, pData);
+    }
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+    CHECK_GL_ERROR();
+    [self setValidTexture:YES];
+}
+
+- (void) activateTexture:(GLint)textureUnitNum withUniformLocation:(GLint)uniformLocation {
+    glActiveTexture(textureUnitNum);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, self.textureID);
+    glUniform1i(uniformLocation, textureUnitNum - GL_TEXTURE0);
+    CHECK_GL_ERROR();
+}
+
+- (void) deactivateTexture {
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+}
+
+@end
 
 
 @interface NFRDataMapGL()
@@ -154,7 +211,7 @@
 - (void) dealloc {
     if (self.isTextureValid) {
         GLuint texId = self.textureID;
-        glDeleteTextures(1, &(texId));
+        glDeleteTextures(1, &texId);
     }
 }
 
@@ -168,6 +225,7 @@
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
     glTexImage2D(GL_TEXTURE_2D, 0, dataMap.format, dataMap.width, dataMap.height, 0,
                  dataMap.format, dataMap.type, dataMap.data);
     glBindTexture(GL_TEXTURE_2D, 0);

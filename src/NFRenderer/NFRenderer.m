@@ -34,6 +34,12 @@
 //
 #import "NFRPointDepthProgram.h"
 
+//
+// TODO: setup a cube map and render as an environment map
+//
+#import "NFRDataMap.h"
+
+
 
 // NOTE: because both gl.h and gl3.h are included will get symbols for deprecated GL functions
 //       and they should absolutely not be used
@@ -74,6 +80,8 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     NFDirectionalLight* m_dirLight;
     NFPointLight* m_pointLight;
     NFSpotLight* m_spotLight;
+
+    NFRCubeMap* m_skyBox;
 
     id<NFRProgram> m_phongShader;
     id<NFRProgram> m_debugShader;
@@ -263,6 +271,16 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
     //[m_pAsset applyOriginCenterMatrix];
     //[m_pAsset applyUnitScalarMatrix]; // use for teapot
+
+
+
+    //
+    // TODO: load sky box, will need an NFRCubeMapGL object implemented as well and possibly a custom shader
+    //       for rendering the sky box to prevent having to add it to the default shader (since the idea is
+    //       to not have to use it long term)
+    //
+
+    // m_skyBox
 
 
 
@@ -524,10 +542,6 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
         [m_pointDepthShader performSelector:@selector(updateCubeMapTransforms:) withObject:transformsArray];
     }
-    
-    //
-    //
-    //
 
 
     //

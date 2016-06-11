@@ -53,6 +53,26 @@ typedef NS_ENUM(NSUInteger, DATA_MAP_FILTER) {
 
 
 
+@interface NFRCubeMap : NSObject
+
+@property (nonatomic, assign) GLuint width;
+@property (nonatomic, assign) GLuint height;
+
+@property (nonatomic, assign) GLenum format;
+@property (nonatomic, assign) GLenum type;
+
+@property (nonatomic, assign, readonly) GLsizei size;
+@property (nonatomic, assign, readonly) GLuint rowByteSize;
+@property (nonatomic, assign, readonly) GLubyte** data;
+
+//@property (nonatomic, strong) NFRCubeMapSampler* sampler;
+
+- (void) loadFace:(GLint)faceIndex withData:(GLubyte *)pData ofSize:(CGRect)rect ofType:(GLenum)type withFormat:(GLenum)format;
+
+@end
+
+
+
 //
 // TODO: should expand NFDataMap to support cube map textures, array textures, and buffer textures
 //

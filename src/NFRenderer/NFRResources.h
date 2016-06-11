@@ -70,6 +70,24 @@ typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
 
 
 
+
+@interface NFRCubeMapGL : NSObject
+
+@property (nonatomic, assign, readonly) GLuint textureID;
+
+@property (nonatomic, assign, readonly, getter=isTextureValid) BOOL validTexture;
+
+
+- (void) syncCubeMap:(NFRCubeMap*)cubeMap;
+
+- (void) activateTexture:(GLint)textureUnitNum withUniformLocation:(GLint)uniformLocation;
+- (void) deactivateTexture;
+
+@end
+
+
+
+
 @interface NFRDataMapGL : NSObject
 
 @property (nonatomic, assign, readonly) GLuint textureID;
