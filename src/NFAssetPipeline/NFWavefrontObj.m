@@ -394,7 +394,6 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 // parseParamArray
 
 - (void) parseMaterialFile:(NSString *)file;
-- (NFRDataMap *) parseTextureFile:(NSString *)file;
 
 @end
 
@@ -795,9 +794,9 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
             mat.Ke = wfParseVector3(line, g_KePrefix);
         }
         else if ([line hasPrefix:g_mapKdPrefix]) {
-
             NSString *mapFile = [line substringFromIndex:g_mapKdPrefix.length];
-            mat.map_Kd = [self parseTextureFile:mapFile];
+            NSString *imgPath = [self.objPath stringByAppendingPathComponent:mapFile];
+            mat.map_Kd = [NFAssetUtils parseTextureFile:imgPath];
 
             // should record the file name + path and then perform the parse in the
             // category of NFAssetData in order to avoid introducing a renderer specific
@@ -809,119 +808,6 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
         // finished parsing material add it to the object's materials array
         [self.materialsArray addObject:mat];
     }
-}
-
-- (NFRDataMap *) parseTextureFile:(NSString *)file {
-    // NOTE: not using the GLK texture loader class since I want to store the texture in both
-    //       my own OpenGL specific format and as an NSImage for displaying in a utility window
-
-    NSString *imgPath = [self.objPath stringByAppendingPathComponent:file];
-    NSImage *nsimage = [[NSImage alloc] initWithContentsOfFile:imgPath];
-
-    //
-    // TODO: switch off the file name extension to use the correct representation when loading
-    //       the NSBitmapImage object
-    //
-    // use NSImage NSBitmapImageRep to load TIFF, BMP, JPEG, GIF, PNG, DIB, ICO
-    // to get a complete list of all supported image formats use the NSImage method imageFileTypes
-    NSBitmapImageRep *imageClass = [[NSBitmapImageRep alloc] initWithData:nsimage.TIFFRepresentation];
-
-    CGImageRef cgImage = imageClass.CGImage;
-    NSAssert(cgImage != NULL, @"ERROR: NSBitmapImageRep has a NULL CGImage");
-
-    CGRect mapSize = CGRectMake(0.0, 0.0, CGImageGetWidth(cgImage), CGImageGetHeight(cgImage));
-    size_t rowByteSize = CGImageGetBytesPerRow(cgImage);
-
-    GLenum format = GL_INVALID_ENUM;
-    GLenum type = GL_INVALID_ENUM;
-
-    size_t bitsPerComponent = CGImageGetBitsPerComponent(cgImage);
-    //size_t bitsPerPixel = CGImageGetBitsPerPixel(cgImage); // not currently needed
-
-    CGColorSpaceRef colorSpace = CGImageGetColorSpace(cgImage);
-    CGColorSpaceModel colorModel = CGColorSpaceGetModel(colorSpace);
-    CGBitmapInfo bitmapInfo = (CGBitmapInfo)kCGImageAlphaNone;
-    if (colorModel == kCGColorSpaceModelRGB) {
-        if (imageClass.alpha) {
-            //
-            // TODO: remove all OpenGL dependencies from asset parsing/processing by defining common data types
-            //
-            format = GL_RGBA;
-            bitmapInfo = kCGBitmapByteOrderDefault | kCGImageAlphaPremultipliedLast;
-        }
-        else {
-            format = GL_RGB;
-            // NOTE: as stated by the Apple developer docs for the CGBitmapContextCreate function
-            // "The constants for specifying the alpha channel information are declared with the CGImageAlphaInfo type but can be passed to this parameter safely."
-            bitmapInfo = (CGBitmapInfo)kCGImageAlphaNoneSkipLast;
-
-            NSAssert(bitsPerComponent == 8, @"ERROR: RGB images currently only support 8 bits per component");
-            rowByteSize = CGRectGetWidth(mapSize) * 4;
-        }
-    }
-    else {
-        NSAssert(nil, @"ERROR: unsupported color model");
-    }
-
-    // check if sample size is the same as unsigned byte size
-    if (imageClass.bitsPerSample / CHAR_BIT == sizeof(GLubyte)) {
-        type = GL_UNSIGNED_BYTE;
-    }
-    else {
-        NSAssert(nil, @"ERROR: unsupported sample type");
-    }
-
-    GLubyte *pData = (GLubyte *)malloc(mapSize.size.height * rowByteSize);
-    NSAssert(pData != NULL, @"ERROR: failed to allocate image data buffer");
-
-    BOOL flipVertical = YES;
-    CGContextRef context = CGBitmapContextCreate(pData, CGRectGetWidth(mapSize), CGRectGetHeight(mapSize),
-                                                 bitsPerComponent, rowByteSize, CGImageGetColorSpace(cgImage),
-                                                 bitmapInfo);
-
-    CGContextSetBlendMode(context, kCGBlendModeCopy);
-    if (flipVertical) {
-        CGContextTranslateCTM(context, 0.0, CGRectGetHeight(mapSize));
-        CGContextScaleCTM(context, 1.0, -1.0);
-    }
-    // copy cgImage into the image data buffer provided in the CG context
-    CGContextDrawImage(context, CGRectMake(0.0, 0.0, CGRectGetWidth(mapSize), CGRectGetHeight(mapSize)), cgImage);
-    CGContextRelease(context);
-
-
-#if 0
-    int winStyleMask = NSTitledWindowMask | NSClosableWindowMask;
-    // NSMiniaturizableWindowMask | NSResizableWindowMask
-    // NSTexturedBackgroundWindowMask
-    // NSBorderlessWindowMask // use to make it a splash screen
-
-    CGRect imageRect = CGRectMake(0, 0, [nsimage size].width, [nsimage size].height);
-
-    NSWindow *imageWindow = [[NSWindow alloc] initWithContentRect:imageRect
-                                                        styleMask:winStyleMask
-                                                          backing:NSBackingStoreBuffered
-                                                            defer:NO];
-    NSImageView *imageView = [[NSImageView alloc] initWithFrame:imageRect];
-
-    [imageView setImage:nsimage];
-    [imageView setBounds:imageRect];
-    [[imageWindow contentView] addSubview:imageView];
-
-    [imageWindow setHasShadow:YES];
-    [imageWindow center];
-    [imageWindow makeKeyAndOrderFront:self]; // will issue a dispaly call to all sub views
-    //[imageView display]; // explicit call not currently needed but may be in future versions of OS X
-
-#endif
-
-
-    NFRDataMap *dataMap = [[NFRDataMap alloc] init];
-    [dataMap loadWithData:pData ofSize:mapSize ofType:type withFormat:format];
-
-    NSAssert(pData != NULL, @"ERROR: image data buffer pointer was set to NULL prior to freeing memory");
-    free(pData);
-
-    return dataMap;
 }
 
 @end

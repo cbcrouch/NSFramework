@@ -10,6 +10,7 @@
 #import <GLKit/GLKit.h>
 
 #import "NFCommonTypes.h"
+#import "NFRResources.h"
 
 
 @interface NFAssetUtils : NSObject
@@ -18,5 +19,7 @@
 
 + (GLKVector4) calculateAreaWeightedNormalOfIndex:(GLushort)index withFaces:(NSArray *)faceArray;
 + (GLKVector4) calculateAngleWeightedNormalOfVertex:(GLfloat[4])vertex withFaces:(NSArray *)faceArray;
+
++ (NFRDataMap *) parseTextureFile:(NSString *)file;
 
 @end
