@@ -37,6 +37,7 @@
 //
 // TODO: setup a cube map and render as an environment map
 //
+#import "NFAssetUtils.h"
 #import "NFRDataMap.h"
 
 
@@ -273,15 +274,33 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //[m_pAsset applyUnitScalarMatrix]; // use for teapot
 
 
-
     //
     // TODO: load sky box, will need an NFRCubeMapGL object implemented as well and possibly a custom shader
     //       for rendering the sky box to prevent having to add it to the default shader (since the idea is
     //       to not have to use it long term)
     //
 
-    // m_skyBox
+    NSString* cubeMapPath = @"/Users/cayce/Developer/NSGL/Textures/Yokohama3";
+    m_skyBox = [[NFRCubeMap alloc] init];
 
+    // faces must be loaded in the same order as the GL cube map positions
+    NFRDataMap* dataMap = [NFAssetUtils parseTextureFile:[cubeMapPath stringByAppendingPathComponent:@"posx.jpg"]];
+    [m_skyBox loadFace:0 withData:dataMap.data ofSize:CGRectMake(0.0f, 0.0f, (float)dataMap.width, (float)dataMap.height) ofType:dataMap.type withFormat:dataMap.format];
+
+    dataMap = [NFAssetUtils parseTextureFile:[cubeMapPath stringByAppendingPathComponent:@"negx.jpg"]];
+    [m_skyBox loadFace:1 withData:dataMap.data ofSize:CGRectMake(0.0f, 0.0f, (float)dataMap.width, (float)dataMap.height) ofType:dataMap.type withFormat:dataMap.format];
+
+    dataMap = [NFAssetUtils parseTextureFile:[cubeMapPath stringByAppendingPathComponent:@"posy.jpg"]];
+    [m_skyBox loadFace:2 withData:dataMap.data ofSize:CGRectMake(0.0f, 0.0f, (float)dataMap.width, (float)dataMap.height) ofType:dataMap.type withFormat:dataMap.format];
+
+    dataMap = [NFAssetUtils parseTextureFile:[cubeMapPath stringByAppendingPathComponent:@"negy.jpg"]];
+    [m_skyBox loadFace:3 withData:dataMap.data ofSize:CGRectMake(0.0f, 0.0f, (float)dataMap.width, (float)dataMap.height) ofType:dataMap.type withFormat:dataMap.format];
+
+    dataMap = [NFAssetUtils parseTextureFile:[cubeMapPath stringByAppendingPathComponent:@"posz.jpg"]];
+    [m_skyBox loadFace:4 withData:dataMap.data ofSize:CGRectMake(0.0f, 0.0f, (float)dataMap.width, (float)dataMap.height) ofType:dataMap.type withFormat:dataMap.format];
+
+    dataMap = [NFAssetUtils parseTextureFile:[cubeMapPath stringByAppendingPathComponent:@"negz.jpg"]];
+    [m_skyBox loadFace:5 withData:dataMap.data ofSize:CGRectMake(0.0f, 0.0f, (float)dataMap.width, (float)dataMap.height) ofType:dataMap.type withFormat:dataMap.format];
 
 
     m_axisData = [NFAssetLoader allocAssetDataOfType:kAxisWireframe withArgs:nil];
@@ -367,10 +386,16 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //
     //
 
+
+    //
+    // TODO: command buffer should have a generic add resource method
+    //
+
     // add renderables to command buffers
     [m_defaultCmdBuffer addGeometry:m_pAsset.geometry];
     [m_defaultCmdBuffer addGeometry:m_planeData.geometry];
     [m_defaultCmdBuffer addGeometry:m_pProceduralData.geometry];
+
 
     [m_defaultCmdBuffer addLight:m_pointLight];
     [m_defaultCmdBuffer addLight:m_dirLight];
