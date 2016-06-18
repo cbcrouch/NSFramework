@@ -83,6 +83,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     NFSpotLight* m_spotLight;
 
     NFRCubeMap* m_skyBox;
+    NFAssetData* m_skyBoxGeometry;
 
     id<NFRProgram> m_phongShader;
     id<NFRProgram> m_debugShader;
@@ -303,13 +304,20 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     [m_skyBox loadFace:5 withData:dataMap.data ofSize:CGRectMake(0.0f, 0.0f, (float)dataMap.width, (float)dataMap.height) ofType:dataMap.type withFormat:dataMap.format];
 
 
+    //
+    // TODO: need to generate a cube for the sky box geometry and implement the basic sky box shader
+    //
+
+    //m_skyBoxGeometry = [NFAssetLoader allocAssetDataOfType:kCubeMapGeometry withArgs:nil];
+    //[m_skyBoxGeometry generateRenderables];
+
+
+
     m_axisData = [NFAssetLoader allocAssetDataOfType:kAxisWireframe withArgs:nil];
     [m_axisData generateRenderables];
 
-
     m_gridData = [NFAssetLoader allocAssetDataOfType:kGridWireframe withArgs:nil];
     [m_gridData generateRenderables];
-
 
     m_planeData = [NFAssetLoader allocAssetDataOfType:kSolidPlane withArgs:nil];
     [m_planeData generateRenderables];

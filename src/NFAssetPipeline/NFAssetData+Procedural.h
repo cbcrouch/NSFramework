@@ -9,6 +9,9 @@
 
 @interface NFAssetData (Procedural)
 
+//
+// TODO: should be taking floats instead of ints for size of grid, axis, plane, and cube
+//
 
 //
 // TODO: the following two methods could be moved to an NFAssetData (Debug) module once the
@@ -20,6 +23,7 @@
 
 - (void) createPlaneOfSize:(NSInteger)size;
 
+- (void) createCubeMapGeometryOfSize:(NSInteger)size;
 
 //
 // TODO: should also generate an icoshedron sphere (icosphere)

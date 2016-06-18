@@ -269,6 +269,41 @@ static const char *g_faceType = @encode(NFFace_t);
     self.subsetArray = @[(id)pSubset];
 }
 
+
+- (void) createCubeMapGeometryOfSize:(NSInteger)size {
+    //
+    // TOOD: implement with cube map texture coordinates
+    //
+
+    // posx
+    // negx
+    // posy
+    // negy
+    // posz
+    // negz
+
+/*
+    const NSInteger numVertices = 4;
+    NFVertex_t vertices[numVertices];
+
+    const NSInteger numIndices = 6;
+    GLushort indices[numIndices];
+
+    //
+
+    NFAssetSubset *pSubset = [[NFAssetSubset alloc] init];
+
+    [pSubset allocateIndicesWithNumElts:numIndices];
+    [pSubset loadIndexData:indices ofSize:(numIndices * sizeof(GLushort))];
+
+    [pSubset allocateVerticesOfType:kVertexFormatDefault withNumVertices:numVertices];
+    [pSubset loadVertexData:vertices ofType:kVertexFormatDefault withNumVertices:numVertices];
+
+    self.subsetArray = @[(id)pSubset];
+*/
+}
+
+
 - (void) createUVSphereWithRadius:(float)radius withStacks:(int)stacks withSlices:(int)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
     const NSInteger numVertices = (stacks+1) * (slices+1) + 1;
     const NSInteger numIndices = stacks * slices * 3 * 2;

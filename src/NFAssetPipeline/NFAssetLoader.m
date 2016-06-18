@@ -91,8 +91,30 @@
                 subset.surfaceModel = findSurfaceModel(group.materialName);
                 ++subsetIndex;
             }
+
+/*
+            for (NFAssetSubset *subset in asset.subsetArray) {
+                GLushort *pIndices = subset.indices;
+                for (int i=0; i<subset.numIndices; i+=3) {
+                    NSLog(@"%d, %d, %d", pIndices[0], pIndices[1], pIndices[2]);
+                    pIndices += 3;
+                }
+
+                NFVertex_t *pVertices = (NFVertex_t*)subset.vertices;
+                for (int i=0; i<subset.numVertices; ++i) {
+                    NSLog(@"pos: %f, %f, %f", pVertices->pos[0], pVertices->pos[1], pVertices->pos[2]);
+                    NSLog(@"tex: %f, %f", pVertices->texCoord[0], pVertices->texCoord[1]);
+                    NSLog(@"norm: %f, %f, %f", pVertices->norm[0], pVertices->norm[1], pVertices->norm[2]);
+                    pVertices++;
+                }
+            }
+*/
         }
         break;
+
+            //
+            // TODO: parse arg for size and pass along to asset generation for plane, grid, axis, and cube
+            //
 
         case kSolidPlane: {
 
@@ -102,12 +124,10 @@
             // NOTE: default draw mode should work
 
             NFSurfaceModel *surface = [NFSurfaceModel defaultSurfaceModel];
-
             NSMutableArray *surfaceModels = [[NSMutableArray alloc] init];
             [surfaceModels addObject:surface];
 
             asset.surfaceModelArray = surfaceModels;
-
             for (NFAssetSubset *subset in asset.subsetArray) {
                 subset.surfaceModel = surfaceModels[0];
             }
@@ -126,6 +146,20 @@
             for (NFAssetSubset *subset in asset.subsetArray) {
                 subset.drawMode = kDrawLines;
             }
+        break;
+
+        case kCubeMapGeometry: {
+            [asset createCubeMapGeometryOfSize:1];
+
+            NFSurfaceModel *surface = [NFSurfaceModel defaultSurfaceModel];
+            NSMutableArray *surfaceModels = [[NSMutableArray alloc] init];
+            [surfaceModels addObject:surface];
+
+            asset.surfaceModelArray = surfaceModels;
+            for (NFAssetSubset *subset in asset.subsetArray) {
+                subset.surfaceModel = surfaceModels[0];
+            }
+        }
         break;
 
             //

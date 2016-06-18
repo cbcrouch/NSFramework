@@ -16,6 +16,7 @@ typedef NS_ENUM(NSUInteger, ASSET_TYPE) {
     kSolidPlane,
     kGridWireframe,
     kAxisWireframe,
+    kCubeMapGeometry,
     kSolidUVSphere,
     kSolidCylinder,
     kSolidCone
