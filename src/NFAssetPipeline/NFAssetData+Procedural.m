@@ -269,26 +269,62 @@ static const char *g_faceType = @encode(NFFace_t);
     self.subsetArray = @[(id)pSubset];
 }
 
-
 - (void) createCubeMapGeometryOfSize:(NSInteger)size {
-    //
-    // TOOD: implement with cube map texture coordinates
-    //
-
-    // posx
-    // negx
-    // posy
-    // negy
-    // posz
-    // negz
-
-/*
-    const NSInteger numVertices = 4;
+    const NSInteger numVertices = 36;
     NFVertex_t vertices[numVertices];
+
+    memset(vertices, 0x00, numVertices * sizeof(NFVertex_t));
+
+    vertices[0].pos[0] = -1.0f;     vertices[0].pos[1] = 1.0f;      vertices[0].pos[2] = -1.0f;
+    vertices[1].pos[0] = -1.0f;     vertices[1].pos[1] = -1.0f;     vertices[1].pos[2] = -1.0f;
+    vertices[2].pos[0] = 1.0f;      vertices[2].pos[1] = -1.0f;     vertices[2].pos[2] = -1.0f;
+    vertices[3].pos[0] = 1.0f;      vertices[3].pos[1] = -1.0f;     vertices[3].pos[2] = -1.0f;
+    vertices[4].pos[0] = 1.0f;      vertices[4].pos[1] = 1.0f;      vertices[4].pos[2] = -1.0f;
+    vertices[5].pos[0] = -1.0f;     vertices[5].pos[1] = 1.0f;      vertices[5].pos[2] = -1.0f;
+
+    vertices[6].pos[0] = -1.0f;     vertices[6].pos[1] = -1.0f;     vertices[6].pos[2] = -1.0f;
+    vertices[7].pos[0] = -1.0f;     vertices[7].pos[1] = -1.0f;     vertices[7].pos[2] = -1.0f;
+    vertices[8].pos[0] = -1.0f;     vertices[8].pos[1] = 1.0f;      vertices[8].pos[2] = -1.0f;
+    vertices[9].pos[0] = -1.0f;     vertices[9].pos[1] = 1.0f;      vertices[9].pos[2] = -1.0f;
+    vertices[10].pos[0] = -1.0f;    vertices[10].pos[1] = 1.0f;     vertices[10].pos[2] = -1.0f;
+    vertices[11].pos[0] = -1.0f;    vertices[11].pos[1] = -1.0f;    vertices[11].pos[2] = -1.0f;
+
+    vertices[12].pos[0] = 1.0f;     vertices[12].pos[1] = -1.0f;    vertices[12].pos[2] = -1.0f;
+    vertices[13].pos[0] = 1.0f;     vertices[13].pos[1] = -1.0f;    vertices[13].pos[2] = 1.0f;
+    vertices[14].pos[0] = 1.0f;     vertices[14].pos[1] = 1.0f;     vertices[14].pos[2] = 1.0f;
+    vertices[15].pos[0] = 1.0f;     vertices[15].pos[1] = 1.0f;     vertices[15].pos[2] = 1.0f;
+    vertices[16].pos[0] = 1.0f;     vertices[16].pos[1] = 1.0f;     vertices[16].pos[2] = -1.0f;
+    vertices[17].pos[0] = 1.0f;     vertices[17].pos[1] = -1.0f;    vertices[17].pos[2] = -1.0f;
+
+    vertices[18].pos[0] = -1.0f;    vertices[18].pos[1] = -1.0f;    vertices[18].pos[2] = 1.0f;
+    vertices[19].pos[0] = -1.0f;    vertices[19].pos[1] = 1.0f;     vertices[19].pos[2] = 1.0f;
+    vertices[20].pos[0] = 1.0f;     vertices[20].pos[1] = 1.0f;     vertices[20].pos[2] = 1.0f;
+    vertices[21].pos[0] = 1.0f;     vertices[21].pos[1] = 1.0f;     vertices[21].pos[2] = 1.0f;
+    vertices[22].pos[0] = 1.0f;     vertices[22].pos[1] = -1.0f;    vertices[22].pos[2] = 1.0f;
+    vertices[23].pos[0] = -1.0f;    vertices[23].pos[1] = -1.0f;    vertices[23].pos[2] = 1.0f;
+
+    vertices[24].pos[0] = -1.0f;    vertices[24].pos[1] = 1.0f;     vertices[24].pos[2] = -1.0f;
+    vertices[25].pos[0] = 1.0f;     vertices[25].pos[1] = 1.0f;     vertices[25].pos[2] = -1.0f;
+    vertices[26].pos[0] = 1.0f;     vertices[26].pos[1] = 1.0f;     vertices[26].pos[2] = 1.0f;
+    vertices[27].pos[0] = 1.0f;     vertices[27].pos[1] = 1.0f;     vertices[27].pos[2] = 1.0f;
+    vertices[28].pos[0] = -1.0f;    vertices[28].pos[1] = 1.0f;     vertices[28].pos[2] = 1.0f;
+    vertices[29].pos[0] = -1.0f;    vertices[29].pos[1] = 1.0f;     vertices[29].pos[2] = -1.0f;
+
+    vertices[30].pos[0] = -1.0f;    vertices[30].pos[1] = -1.0f;    vertices[30].pos[2] = -1.0f;
+    vertices[31].pos[0] = -1.0f;    vertices[31].pos[1] = -1.0f;    vertices[31].pos[2] = -1.0f;
+    vertices[32].pos[0] = 1.0f;     vertices[32].pos[1] = -1.0f;    vertices[32].pos[2] = 1.0f;
+    vertices[33].pos[0] = 1.0f;     vertices[33].pos[1] = -1.0f;    vertices[33].pos[2] = 1.0f;
+    vertices[34].pos[0] = -1.0f;    vertices[34].pos[1] = -1.0f;    vertices[34].pos[2] = 1.0f;
+    vertices[35].pos[0] = 1.0f;     vertices[35].pos[1] = -1.0f;    vertices[35].pos[2] = -1.0f;
+
 
     const NSInteger numIndices = 6;
     GLushort indices[numIndices];
 
+    memset(indices, 0x00, numIndices * sizeof(GLushort));
+
+    //
+    // TODO: may not need any indices or texture coordinates and normals for the vertices
     //
 
     NFAssetSubset *pSubset = [[NFAssetSubset alloc] init];
@@ -300,7 +336,6 @@ static const char *g_faceType = @encode(NFFace_t);
     [pSubset loadVertexData:vertices ofType:kVertexFormatDefault withNumVertices:numVertices];
 
     self.subsetArray = @[(id)pSubset];
-*/
 }
 
 

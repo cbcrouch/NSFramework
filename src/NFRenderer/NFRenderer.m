@@ -308,8 +308,8 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     // TODO: need to generate a cube for the sky box geometry and implement the basic sky box shader
     //
 
-    //m_skyBoxGeometry = [NFAssetLoader allocAssetDataOfType:kCubeMapGeometry withArgs:nil];
-    //[m_skyBoxGeometry generateRenderables];
+    m_skyBoxGeometry = [NFAssetLoader allocAssetDataOfType:kCubeMapGeometry withArgs:nil];
+    [m_skyBoxGeometry generateRenderables];
 
 
 
