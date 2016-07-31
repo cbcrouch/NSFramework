@@ -19,6 +19,7 @@
 #import "NFRDirectionalDepthProgram.h"
 #import "NFRPointDepthProgram.h"
 #import "NFRDisplayProgram.h"
+#import "NFRCubeMapProgram.h"
 
 
 #ifdef DEBUG
@@ -72,6 +73,12 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
     }
     else if ([programName isEqualToString:@"Display"]) {
         NFRDisplayProgram* programObj = [[NFRDisplayProgram alloc] init];
+        programObj.hProgram = [NFRUtils createProgram:programName];
+        [programObj loadProgramInputPoints];
+        return programObj;
+    }
+    else if ([programName isEqualToString:@"CubeMap"]) {
+        NFRCubeMapProgram* programObj = [[NFRCubeMapProgram alloc] init];
         programObj.hProgram = [NFRUtils createProgram:programName];
         [programObj loadProgramInputPoints];
         return programObj;

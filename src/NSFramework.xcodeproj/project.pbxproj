@@ -34,6 +34,9 @@
 		235F39691B2D969E00B3CBA5 /* NFRDataMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 235F39681B2D969E00B3CBA5 /* NFRDataMap.m */; };
 		2374621C1C00F64B006EC923 /* Display.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 2374621A1C00F64B006EC923 /* Display.fsh */; };
 		2374621D1C00F64B006EC923 /* Display.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 2374621B1C00F64B006EC923 /* Display.vsh */; };
+		237513131D4E50FA00E48EB2 /* CubeMap.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 237513111D4E50FA00E48EB2 /* CubeMap.fsh */; };
+		237513141D4E50FA00E48EB2 /* CubeMap.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 237513121D4E50FA00E48EB2 /* CubeMap.vsh */; };
+		237513171D4E6B1D00E48EB2 /* NFRCubeMapProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 237513161D4E6B1D00E48EB2 /* NFRCubeMapProgram.m */; };
 		237F8A711C45971000036EA7 /* DirectionalDepthMap.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 237F8A6F1C45970F00036EA7 /* DirectionalDepthMap.fsh */; };
 		237F8A721C45971000036EA7 /* DirectionalDepthMap.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 237F8A701C45971000036EA7 /* DirectionalDepthMap.vsh */; };
 		237F8A751C459A4C00036EA7 /* NFRDirectionalDepthProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 237F8A741C459A4C00036EA7 /* NFRDirectionalDepthProgram.m */; };
@@ -101,6 +104,10 @@
 		235F39681B2D969E00B3CBA5 /* NFRDataMap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFRDataMap.m; path = NFRenderer/NFRDataMap.m; sourceTree = "<group>"; };
 		2374621A1C00F64B006EC923 /* Display.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Display.fsh; path = ../shaders/Display.fsh; sourceTree = "<group>"; };
 		2374621B1C00F64B006EC923 /* Display.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Display.vsh; path = ../shaders/Display.vsh; sourceTree = "<group>"; };
+		237513111D4E50FA00E48EB2 /* CubeMap.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = CubeMap.fsh; path = ../shaders/CubeMap.fsh; sourceTree = "<group>"; };
+		237513121D4E50FA00E48EB2 /* CubeMap.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = CubeMap.vsh; path = ../shaders/CubeMap.vsh; sourceTree = "<group>"; };
+		237513151D4E6B1D00E48EB2 /* NFRCubeMapProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFRCubeMapProgram.h; path = NFRenderer/NFRCubeMapProgram.h; sourceTree = "<group>"; };
+		237513161D4E6B1D00E48EB2 /* NFRCubeMapProgram.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFRCubeMapProgram.m; path = NFRenderer/NFRCubeMapProgram.m; sourceTree = "<group>"; };
 		237F8A6F1C45970F00036EA7 /* DirectionalDepthMap.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = DirectionalDepthMap.fsh; path = ../shaders/DirectionalDepthMap.fsh; sourceTree = "<group>"; };
 		237F8A701C45971000036EA7 /* DirectionalDepthMap.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = DirectionalDepthMap.vsh; path = ../shaders/DirectionalDepthMap.vsh; sourceTree = "<group>"; };
 		237F8A731C459A4C00036EA7 /* NFRDirectionalDepthProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFRDirectionalDepthProgram.h; path = NFRenderer/NFRDirectionalDepthProgram.h; sourceTree = "<group>"; };
@@ -201,6 +208,8 @@
 			isa = PBXGroup;
 			children = (
 				23DF9D9D1CECCE5D004F1153 /* ShadowMapping */,
+				237513111D4E50FA00E48EB2 /* CubeMap.fsh */,
+				237513121D4E50FA00E48EB2 /* CubeMap.vsh */,
 				233797F61885E23600399EBA /* Debug.fsh */,
 				233797F71885E23600399EBA /* Debug.vsh */,
 				23EB03241ACCDA6200084CEF /* DefaultModel.fsh */,
@@ -329,6 +338,8 @@
 				23530A181C02621F00F6B252 /* NFRDisplayProgram.m */,
 				23DF9DA41CECDD09004F1153 /* NFRPointDepthProgram.h */,
 				23DF9DA51CECDD09004F1153 /* NFRPointDepthProgram.m */,
+				237513151D4E6B1D00E48EB2 /* NFRCubeMapProgram.h */,
+				237513161D4E6B1D00E48EB2 /* NFRCubeMapProgram.m */,
 			);
 			name = NFRShaderPrograms;
 			sourceTree = "<group>";
@@ -400,10 +411,12 @@
 				23DF9DA31CECD1D0004F1153 /* PointDepthMap.vsh in Resources */,
 				23DF9DA11CECD1D0004F1153 /* PointDepthMap.fsh in Resources */,
 				2374621C1C00F64B006EC923 /* Display.fsh in Resources */,
+				237513141D4E50FA00E48EB2 /* CubeMap.vsh in Resources */,
 				233797FB1885E23600399EBA /* Debug.vsh in Resources */,
 				233797FA1885E23600399EBA /* Debug.fsh in Resources */,
 				2374621D1C00F64B006EC923 /* Display.vsh in Resources */,
 				234E2CCC188382CC00AF8F23 /* InfoPlist.strings in Resources */,
+				237513131D4E50FA00E48EB2 /* CubeMap.fsh in Resources */,
 				237F8A721C45971000036EA7 /* DirectionalDepthMap.vsh in Resources */,
 				23EB03261ACCDA6200084CEF /* DefaultModel.fsh in Resources */,
 				23EB03271ACCDA6200084CEF /* DefaultModel.vsh in Resources */,
@@ -427,6 +440,7 @@
 				232BDD981A15A17500BB8A6C /* NFUtils.m in Sources */,
 				238156241A16A1A10018ECF3 /* NFCamera.m in Sources */,
 				23875B291C050BD8008065B8 /* NFRRenderRequest.m in Sources */,
+				237513171D4E6B1D00E48EB2 /* NFRCubeMapProgram.m in Sources */,
 				234E2CD5188382CC00AF8F23 /* AppDelegate.m in Sources */,
 				234E2CCE188382CC00AF8F23 /* main.m in Sources */,
 				23875B2C1C050CD6008065B8 /* NFRRenderTarget.m in Sources */,

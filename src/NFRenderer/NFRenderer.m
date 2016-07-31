@@ -89,6 +89,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     id<NFRProgram> m_debugShader;
     id<NFRProgram> m_directionalDepthShader;
     id<NFRProgram> m_pointDepthShader;
+    id<NFRProgram> m_cubeMapShader;
 
     NFRCommandBufferDefault* m_defaultCmdBuffer;
     NFRCommandBufferDebug* m_debugCmdBuffer;
@@ -96,18 +97,15 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     NFRRenderRequest* m_renderRequest;
     NFRRenderRequest* m_debugRenderRequest;
 
-
     // depth map for directional light shadow
     NFRCommandBufferDefault* m_depthCmdBuffer;
     NFRRenderRequest* m_depthRenderRequest;
     NFRRenderTarget* m_depthRenderTarget;
 
-
     // depth (cube) map for point light shadow
     NFRCommandBufferDefault* m_pointLightDepthCmdBuffer;
     NFRRenderRequest* m_pointLightDepthRenderRequest;
     NFRRenderTarget* m_pointLightDepthRenderTarget;
-
 
     //
     // TODO: implement a way to batch shadow generation for N lights of the three given types
@@ -303,13 +301,17 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     dataMap = [NFAssetUtils parseTextureFile:[cubeMapPath stringByAppendingPathComponent:@"negz.jpg"]];
     [m_skyBox loadFace:5 withData:dataMap.data ofSize:CGRectMake(0.0f, 0.0f, (float)dataMap.width, (float)dataMap.height) ofType:dataMap.type withFormat:dataMap.format];
 
-
-    //
-    // TODO: need to generate a cube for the sky box geometry and implement the basic sky box shader
-    //
-
     m_skyBoxGeometry = [NFAssetLoader allocAssetDataOfType:kCubeMapGeometry withArgs:nil];
     [m_skyBoxGeometry generateRenderables];
+
+
+    //
+    // TODO: implement the basic sky box shader
+    //
+
+    m_cubeMapShader = [NFRUtils createProgramObject:@"CubeMap"];
+
+
 
 
 
