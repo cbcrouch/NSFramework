@@ -18,8 +18,9 @@
 @interface NFRCubeMapProgram : NSObject <NFRProgram>
 
 @property (nonatomic, assign) GLint vertexAttribute;
-@property (nonatomic, assign) GLint texCoordAttribute;
 @property (nonatomic, assign) GLint textureUniform;
+
+@property (nonatomic, assign) GLuint hUBO;
 
 @property (nonatomic, readwrite, assign) GLuint hProgram;
 
