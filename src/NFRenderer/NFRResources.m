@@ -10,6 +10,7 @@
 #import "NFCommonTypes.h"
 #import "NFRUtils.h"
 
+
 @interface NFRBufferAttributes()
 @property (nonatomic, assign, readwrite) GLuint hVAO;
 @end
@@ -34,7 +35,6 @@
 }
 
 @end
-
 
 
 @interface NFRBuffer()
@@ -249,12 +249,9 @@
 @end
 
 
-
-
 @interface NFRGeometry()
 @property (nonatomic, strong, readwrite) NSMutableDictionary* textureDictionary;
 @end
-
 
 @implementation NFRGeometry
 
@@ -277,12 +274,17 @@
 
     NFRDataMapGL* mapGL = [[NFRDataMapGL alloc] init];
     [mapGL syncDataMap:diffuseMap];
-
-    NSString* uniformName = @"diffuseTexture";
-
-    // make sure that the textureDictionary will hold onto the mapGL reference
-    (self.textureDictionary)[uniformName] = mapGL;
+    (self.textureDictionary)[@"diffuseTexture"] = mapGL;
 }
 
+- (void) assignCubeMap:(NFRCubeMap*)cubeMap {
+    //
+    // TODO: implement more robust support for pairing a cube map with geometry
+    //
+
+    NFRCubeMapGL* cubeMapGL = [[NFRCubeMapGL alloc] init];
+    [cubeMapGL syncCubeMap:cubeMap];
+    (self.textureDictionary)[@"cubeMap"] = cubeMapGL;
+}
 
 @end

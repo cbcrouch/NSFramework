@@ -69,14 +69,11 @@ typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
 @end
 
 
-
-
 @interface NFRCubeMapGL : NSObject
 
 @property (nonatomic, assign, readonly) GLuint textureID;
 
 @property (nonatomic, assign, readonly, getter=isTextureValid) BOOL validTexture;
-
 
 - (void) syncCubeMap:(NFRCubeMap*)cubeMap;
 
@@ -84,8 +81,6 @@ typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
 - (void) deactivateTexture;
 
 @end
-
-
 
 
 @interface NFRDataMapGL : NSObject
@@ -103,7 +98,6 @@ typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
 @end
 
 
-
 @interface NFRGeometry : NSObject
 
 @property (nonatomic, strong) NFRBuffer* vertexBuffer;
@@ -116,4 +110,6 @@ typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
 @property (nonatomic, strong, readonly) NSMutableDictionary* textureDictionary;
 
 - (void) syncSurfaceModel;
+- (void) assignCubeMap:(NFRCubeMap*)cubeMap;
+
 @end

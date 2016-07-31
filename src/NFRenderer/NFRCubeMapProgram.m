@@ -31,11 +31,6 @@
 
 }
 
-
-//
-// TODO: finish implementing (need ability to set cube map textures)
-//
-
 - (void) configureVertexInput:(NFRBufferAttributes*)bufferAttributes {
     glBindVertexArray(bufferAttributes.hVAO);
     glEnableVertexAttribArray(self.vertexAttribute);
@@ -58,16 +53,21 @@
 }
 
 - (void) drawGeometry:(NFRGeometry*)geometry {
+    for (NSString* key in geometry.textureDictionary) {
+        if ([key isEqualToString:@"cubeMap"]) {
+            NFRCubeMapGL* cubeMapGL = (geometry.textureDictionary)[key];
+            [cubeMapGL activateTexture:GL_TEXTURE0 withUniformLocation:self.textureUniform];
+        }
+    }
+
     glBindVertexArray(geometry.vertexBuffer.bufferAttributes.hVAO);
-
-    //
-    // TODO: draw without indices
-    //
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geometry.indexBuffer.bufferHandle);
-    //glDrawElements(geometry.mode, (GLsizei)geometry.indexBuffer.numberOfElements, GL_UNSIGNED_SHORT, NULL);
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
+    glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
+
+    for (id key in geometry.textureDictionary) {
+        NFRDataMapGL* cubeMapGL = (geometry.textureDictionary)[key];
+        [cubeMapGL deactivateTexture];
+    }
 
     CHECK_GL_ERROR();
 }

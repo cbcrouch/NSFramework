@@ -12,14 +12,6 @@
 
 #import "NFRResources.h"
 
-/*
-@interface NFRDefaultProgram()
-{
-    GLint m_shadowMapHandle;
-}
-
-@end
-*/
 
 @implementation NFRDefaultProgram
 

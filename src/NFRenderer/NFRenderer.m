@@ -83,7 +83,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     NFSpotLight* m_spotLight;
 
     NFRCubeMap* m_skyBox;
-    NFAssetData* m_skyBoxGeometry;
+    NFAssetData* m_skyBoxData;
 
     id<NFRProgram> m_phongShader;
     id<NFRProgram> m_debugShader;
@@ -301,16 +301,21 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     dataMap = [NFAssetUtils parseTextureFile:[cubeMapPath stringByAppendingPathComponent:@"negz.jpg"]];
     [m_skyBox loadFace:5 withData:dataMap.data ofSize:CGRectMake(0.0f, 0.0f, (float)dataMap.width, (float)dataMap.height) ofType:dataMap.type withFormat:dataMap.format];
 
-    m_skyBoxGeometry = [NFAssetLoader allocAssetDataOfType:kCubeMapGeometry withArgs:nil];
-    [m_skyBoxGeometry generateRenderables];
+    m_skyBoxData = [NFAssetLoader allocAssetDataOfType:kCubeMapGeometry withArgs:nil];
+    [m_skyBoxData generateRenderables];
+
+    [m_skyBoxData.geometry assignCubeMap:m_skyBox];
 
 
     //
-    // TODO: implement the basic sky box shader
+    // TODO: cube map shader will need a render target and associated objects to draw it
     //
-
     m_cubeMapShader = [NFRUtils createProgramObject:@"CubeMap"];
 
+
+    //
+    // TODO: ensure depth writing is off when drawing sky box then enable again glDepthMask(GL_FALSE)/glDepthMask(GL_TRUE)
+    //
 
 
 

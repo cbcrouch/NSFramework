@@ -26,4 +26,6 @@
 
 - (void) loadProgramInputPoints;
 
+//- (void) setCubeMap:(NSValue*)valueObj;
+
 @end
