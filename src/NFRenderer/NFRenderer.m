@@ -97,6 +97,10 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     NFRRenderRequest* m_renderRequest;
     NFRRenderRequest* m_debugRenderRequest;
 
+    // background sky box
+    NFRCommandBufferDefault* m_skyBoxCmdBuffer;
+    NFRRenderRequest* m_skyBoxRenderRequest;
+
     // depth map for directional light shadow
     NFRCommandBufferDefault* m_depthCmdBuffer;
     NFRRenderRequest* m_depthRenderRequest;
@@ -167,18 +171,20 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     viewportArray[0].viewRect = CGRectMake(0.0f, 0.0f, (CGFloat)DEFAULT_VIEWPORT_WIDTH, (CGFloat)DEFAULT_VIEWPORT_HEIGHT);
     self.viewports = [NSArray arrayWithObjects:viewportArray count:MAX_NUM_VIEWPORTS];
 
+
     // shader objects
     m_phongShader = [NFRUtils createProgramObject:@"DefaultModel"];
     m_debugShader = [NFRUtils createProgramObject:@"Debug"];
     m_directionalDepthShader = [NFRUtils createProgramObject:@"DirectionalDepthMap"];
     m_pointDepthShader = [NFRUtils createProgramObject:@"PointDepthMap"];
+    m_cubeMapShader = [NFRUtils createProgramObject:@"CubeMap"];
 
     // command buffers
     m_defaultCmdBuffer = [[NFRCommandBufferDefault alloc] init];
     m_debugCmdBuffer = [[NFRCommandBufferDebug alloc] init];
     m_depthCmdBuffer = [[NFRCommandBufferDefault alloc] init];
     m_pointLightDepthCmdBuffer = [[NFRCommandBufferDefault alloc] init];
-
+    m_skyBoxCmdBuffer = [[NFRCommandBufferDefault alloc] init];
 
     // render requests
     m_renderRequest = [[NFRRenderRequest alloc] init];
@@ -192,6 +198,9 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
     m_pointLightDepthRenderRequest = [[NFRRenderRequest alloc] init];
     m_pointLightDepthRenderRequest.program = m_pointDepthShader;
+
+    m_skyBoxRenderRequest = [[NFRRenderRequest alloc] init];
+    m_skyBoxRenderRequest.program = m_cubeMapShader;
 
 
     //
@@ -222,7 +231,6 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //[m_pointLightDepthRenderTarget addAttachment:kColorAttachment withBackingBuffer:kRenderBuffer];
 
     [m_pointLightDepthRenderTarget addAttachment:kDepthAttachment withBackingBuffer:kCubeMapBuffer];
-
 
 
     m_displayTarget = [[NFRDisplayTarget alloc] init];
@@ -307,19 +315,6 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     [m_skyBoxData.geometry assignCubeMap:m_skyBox];
 
 
-    //
-    // TODO: cube map shader will need a render target and associated objects to draw it
-    //
-    m_cubeMapShader = [NFRUtils createProgramObject:@"CubeMap"];
-
-
-    //
-    // TODO: ensure depth writing is off when drawing sky box then enable again glDepthMask(GL_FALSE)/glDepthMask(GL_TRUE)
-    //
-
-
-
-
     m_axisData = [NFAssetLoader allocAssetDataOfType:kAxisWireframe withArgs:nil];
     [m_axisData generateRenderables];
 
@@ -397,10 +392,6 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
     CHECK_GL_ERROR();
 
-    //
-    //
-    //
-
 
     //
     // TODO: command buffer should have a generic add resource method
@@ -423,18 +414,19 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     [m_debugCmdBuffer addGeometry:m_dirLight.geometry];
     [m_debugCmdBuffer addGeometry:m_spotLight.geometry];
 
+    // sky box
+    [m_skyBoxCmdBuffer addGeometry:m_skyBoxData.geometry];
+    [m_skyBoxRenderRequest.commandBufferArray addObject:m_skyBoxCmdBuffer];
 
     // directional shadow map
     [m_depthCmdBuffer addGeometry:m_pAsset.geometry];
     //[m_depthCmdBuffer addGeometry:m_planeData.geometry];
     [m_depthCmdBuffer addGeometry:m_pProceduralData.geometry];
 
-
     // point light shadow map
     [m_pointLightDepthCmdBuffer addGeometry:m_pAsset.geometry];
     //[m_pointLightDepthCmdBuffer addGeometry:m_planeData.geometry];
     [m_pointLightDepthCmdBuffer addGeometry:m_pProceduralData.geometry];
-
 
     // add command buffers to render requests
     [m_renderRequest.commandBufferArray addObject:m_defaultCmdBuffer];
@@ -663,7 +655,12 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    
+
+    // render sky box background
+    glDepthMask(GL_FALSE);
+    [m_skyBoxRenderRequest process];
+    glDepthMask(GL_TRUE);
+
     [m_renderRequest process];
     [m_debugRenderRequest process];
 

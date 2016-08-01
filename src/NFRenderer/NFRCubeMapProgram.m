@@ -43,8 +43,18 @@
     glBindVertexArray(bufferAttributes.hVAO);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer.bufferHandle);
 
+
+    //
+    // TODO: need to modify how vertex data is getting drawn
+    //
+
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+
+    //glEnableVertexAttribArray(self.vertexAttribute); // state should already be set in VAO
+
     glVertexAttribPointer(self.vertexAttribute, ARRAY_COUNT(NFVertex_t, pos), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
                           (const GLvoid *)0x00 + offsetof(NFVertex_t, pos));
+
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -60,8 +70,21 @@
         }
     }
 
+
+    //geometry.vertexBuffer.bufferDataPointer
+    //geometry.vertexBuffer.bufferDataSize
+
+
     glBindVertexArray(geometry.vertexBuffer.bufferAttributes.hVAO);
+
+    // GL_INVALID_OPERATION on glBufferData
+
+    //glBufferData(GL_ARRAY_BUFFER, geometry.vertexBuffer.bufferDataSize, geometry.vertexBuffer.bufferDataPointer, GL_STATIC_DRAW);
+    //CHECK_GL_ERROR();
+
+
     glDrawArrays(GL_TRIANGLES, 0, 36);
+
     glBindVertexArray(0);
 
     for (id key in geometry.textureDictionary) {
