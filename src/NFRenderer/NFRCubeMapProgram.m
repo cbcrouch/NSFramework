@@ -64,7 +64,7 @@
     //
 
     glBindVertexArray(geometry.vertexBuffer.bufferAttributes.hVAO);
-
+/*
     static BOOL doOnce = YES;
     if (doOnce) {
         glBindBuffer(GL_ARRAY_BUFFER, geometry.vertexBuffer.bufferHandle);
@@ -73,13 +73,16 @@
 
         doOnce = NO;
     }
-/*
+*/
+
     glBindBuffer(GL_ARRAY_BUFFER, geometry.vertexBuffer.bufferHandle);
     glBufferData(GL_ARRAY_BUFFER, geometry.vertexBuffer.bufferDataSize, geometry.vertexBuffer.bufferDataPointer, GL_STATIC_DRAW);
     CHECK_GL_ERROR();
-*/
+
 
     glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glBindVertexArray(0);
 
@@ -95,12 +98,13 @@
     GLsizeiptr matrixSize = (GLsizeiptr)(16 * sizeof(float));
     GLintptr offset = (GLintptr)matrixSize;
 
+
     //
     // TODO: remove translation component from view matrix (verify if this is all correct)
     //
-    GLKMatrix3 mat = GLKMatrix3Make(viewMatrix.m00, viewMatrix.m01, viewMatrix.m02,
-                                    viewMatrix.m10, viewMatrix.m11, viewMatrix.m12,
-                                    viewMatrix.m20, viewMatrix.m21, viewMatrix.m22);
+    viewMatrix.m03 = 0.0f;
+    viewMatrix.m13 = 0.0f;
+    viewMatrix.m23 = 0.0f;
 
 
     glBindBuffer(GL_UNIFORM_BUFFER, self.hUBO);
@@ -109,10 +113,7 @@
     glBufferData(GL_UNIFORM_BUFFER, 2 * matrixSize, NULL, GL_STATIC_READ);
 
     // transfer view and projection matrix data to uniform buffer
-
-    //glBufferSubData(GL_UNIFORM_BUFFER, (GLintptr)0, matrixSize, viewMatrix.m);
-    glBufferSubData(GL_UNIFORM_BUFFER, (GLintptr)0, matrixSize, mat.m);
-
+    glBufferSubData(GL_UNIFORM_BUFFER, (GLintptr)0, matrixSize, viewMatrix.m);
     glBufferSubData(GL_UNIFORM_BUFFER, offset, matrixSize, projection.m);
 
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
