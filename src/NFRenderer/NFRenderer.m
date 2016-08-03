@@ -282,9 +282,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
 
     //
-    // TODO: load sky box, will need an NFRCubeMapGL object implemented as well and possibly a custom shader
-    //       for rendering the sky box to prevent having to add it to the default shader (since the idea is
-    //       to not have to use it long term)
+    // TODO: fix textures for sky box, they seem to have RGB and RGBA formats switched somewhere
     //
 
     NSString* cubeMapPath = @"/Users/cayce/Developer/NSGL/Textures/Yokohama3";
@@ -456,7 +454,6 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
     // update view and projection matrix for drawing skybox
     [m_cubeMapShader updateViewMatrix:viewMatrix projectionMatrix:projection];
-
 
     //
     // TODO need a faster way of building view matrices

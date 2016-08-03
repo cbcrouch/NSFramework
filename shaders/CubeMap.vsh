@@ -19,5 +19,5 @@ out vec3 f_texcoord;
 void main()
 {
     f_texcoord = v_position.xyz;
-    gl_Position = UBO.projection * UBO.view * v_position;
+    gl_Position = UBO.projection * UBO.view * vec4(v_position.xyz, 1.0f);
 }
