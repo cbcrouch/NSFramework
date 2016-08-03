@@ -454,6 +454,8 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     [m_phongShader updateViewPosition:viewPosition];
     [m_phongShader updateViewMatrix:viewMatrix projectionMatrix:projection];
 
+    // update view and projection matrix for drawing skybox
+    [m_cubeMapShader updateViewMatrix:viewMatrix projectionMatrix:projection];
 
 
     //

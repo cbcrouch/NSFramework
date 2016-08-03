@@ -28,7 +28,6 @@
     // uniform buffer for view and projection matrix
     self.hUBO = [NFRUtils createUniformBufferNamed:@"UBOData" inProgrm:self.hProgram];
     NSAssert(self.hUBO != 0, @"failed to get uniform buffer handle");
-
 }
 
 - (void) configureVertexInput:(NFRBufferAttributes*)bufferAttributes {
@@ -43,18 +42,8 @@
     glBindVertexArray(bufferAttributes.hVAO);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer.bufferHandle);
 
-
-    //
-    // TODO: need to modify how vertex data is getting drawn
-    //
-
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
-
-    //glEnableVertexAttribArray(self.vertexAttribute); // state should already be set in VAO
-
     glVertexAttribPointer(self.vertexAttribute, ARRAY_COUNT(NFVertex_t, pos), GL_FLOAT, GL_FALSE, sizeof(NFVertex_t),
                           (const GLvoid *)0x00 + offsetof(NFVertex_t, pos));
-
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -70,18 +59,25 @@
         }
     }
 
-
-    //geometry.vertexBuffer.bufferDataPointer
-    //geometry.vertexBuffer.bufferDataSize
-
+    //
+    // TODO: get sky box drawing correctly
+    //
 
     glBindVertexArray(geometry.vertexBuffer.bufferAttributes.hVAO);
 
-    // GL_INVALID_OPERATION on glBufferData
+    static BOOL doOnce = YES;
+    if (doOnce) {
+        glBindBuffer(GL_ARRAY_BUFFER, geometry.vertexBuffer.bufferHandle);
+        glBufferData(GL_ARRAY_BUFFER, geometry.vertexBuffer.bufferDataSize, geometry.vertexBuffer.bufferDataPointer, GL_STATIC_DRAW);
+        CHECK_GL_ERROR();
 
-    //glBufferData(GL_ARRAY_BUFFER, geometry.vertexBuffer.bufferDataSize, geometry.vertexBuffer.bufferDataPointer, GL_STATIC_DRAW);
-    //CHECK_GL_ERROR();
-
+        doOnce = NO;
+    }
+/*
+    glBindBuffer(GL_ARRAY_BUFFER, geometry.vertexBuffer.bufferHandle);
+    glBufferData(GL_ARRAY_BUFFER, geometry.vertexBuffer.bufferDataSize, geometry.vertexBuffer.bufferDataPointer, GL_STATIC_DRAW);
+    CHECK_GL_ERROR();
+*/
 
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -92,6 +88,34 @@
         [cubeMapGL deactivateTexture];
     }
 
+    CHECK_GL_ERROR();
+}
+
+- (void) updateViewMatrix:(GLKMatrix4)viewMatrix projectionMatrix:(GLKMatrix4)projection {
+    GLsizeiptr matrixSize = (GLsizeiptr)(16 * sizeof(float));
+    GLintptr offset = (GLintptr)matrixSize;
+
+    //
+    // TODO: remove translation component from view matrix (verify if this is all correct)
+    //
+    GLKMatrix3 mat = GLKMatrix3Make(viewMatrix.m00, viewMatrix.m01, viewMatrix.m02,
+                                    viewMatrix.m10, viewMatrix.m11, viewMatrix.m12,
+                                    viewMatrix.m20, viewMatrix.m21, viewMatrix.m22);
+
+
+    glBindBuffer(GL_UNIFORM_BUFFER, self.hUBO);
+
+    // will allocate buffer's internal storage
+    glBufferData(GL_UNIFORM_BUFFER, 2 * matrixSize, NULL, GL_STATIC_READ);
+
+    // transfer view and projection matrix data to uniform buffer
+
+    //glBufferSubData(GL_UNIFORM_BUFFER, (GLintptr)0, matrixSize, viewMatrix.m);
+    glBufferSubData(GL_UNIFORM_BUFFER, (GLintptr)0, matrixSize, mat.m);
+
+    glBufferSubData(GL_UNIFORM_BUFFER, offset, matrixSize, projection.m);
+
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
     CHECK_GL_ERROR();
 }
 
