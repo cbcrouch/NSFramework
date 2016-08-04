@@ -15,5 +15,4 @@ out vec4 fragColor;
 
 void main() {
     fragColor = texture(cubeMap, f_texcoord);
-    fragColor = vec4(1.0f, 0.0f, 0.0f, 0.0f);
 }

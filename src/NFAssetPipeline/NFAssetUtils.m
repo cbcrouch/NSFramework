@@ -153,6 +153,9 @@
     CGRect mapSize = CGRectMake(0.0, 0.0, CGImageGetWidth(cgImage), CGImageGetHeight(cgImage));
     size_t rowByteSize = CGImageGetBytesPerRow(cgImage);
 
+    //
+    // TODO: remove all OpenGL dependencies from asset parsing/processing by defining common data types
+    //
     GLenum format = GL_INVALID_ENUM;
     GLenum type = GL_INVALID_ENUM;
 
@@ -164,14 +167,13 @@
     CGBitmapInfo bitmapInfo = (CGBitmapInfo)kCGImageAlphaNone;
     if (colorModel == kCGColorSpaceModelRGB) {
         if (imageClass.alpha) {
-            //
-            // TODO: remove all OpenGL dependencies from asset parsing/processing by defining common data types
-            //
-            format = GL_RGBA;
+            //format = GL_RGBA;
+
             bitmapInfo = kCGBitmapByteOrderDefault | kCGImageAlphaPremultipliedLast;
         }
         else {
-            format = GL_RGB;
+            //format = GL_RGB;
+
             // NOTE: as stated by the Apple developer docs for the CGBitmapContextCreate function
             // "The constants for specifying the alpha channel information are declared with the CGImageAlphaInfo type but can be passed to this parameter safely."
             bitmapInfo = (CGBitmapInfo)kCGImageAlphaNoneSkipLast;
@@ -209,6 +211,10 @@
     CGContextDrawImage(context, CGRectMake(0.0, 0.0, CGRectGetWidth(mapSize), CGRectGetHeight(mapSize)), cgImage);
     CGContextRelease(context);
 
+    //
+    // TODO: CGImage conversion code (appears) to be converting RGB to RGBA, need to make this configurable
+    //
+    format = GL_RGBA;
 
 #if 0
     int winStyleMask = NSTitledWindowMask | NSClosableWindowMask;

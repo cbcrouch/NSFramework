@@ -275,6 +275,10 @@ static const char *g_faceType = @encode(NFFace_t);
 
     memset(vertices, 0x00, numVertices * sizeof(NFVertex_t));
 
+    //
+    // TODO: double check the order and position of the vertices
+    //
+
     vertices[0].pos[0] = -1.0f;     vertices[0].pos[1] = 1.0f;      vertices[0].pos[2] = -1.0f;
     vertices[1].pos[0] = -1.0f;     vertices[1].pos[1] = -1.0f;     vertices[1].pos[2] = -1.0f;
     vertices[2].pos[0] = 1.0f;      vertices[2].pos[1] = -1.0f;     vertices[2].pos[2] = -1.0f;
@@ -282,12 +286,12 @@ static const char *g_faceType = @encode(NFFace_t);
     vertices[4].pos[0] = 1.0f;      vertices[4].pos[1] = 1.0f;      vertices[4].pos[2] = -1.0f;
     vertices[5].pos[0] = -1.0f;     vertices[5].pos[1] = 1.0f;      vertices[5].pos[2] = -1.0f;
 
-    vertices[6].pos[0] = -1.0f;     vertices[6].pos[1] = -1.0f;     vertices[6].pos[2] = -1.0f;
+    vertices[6].pos[0] = -1.0f;     vertices[6].pos[1] = -1.0f;     vertices[6].pos[2] = 1.0f;
     vertices[7].pos[0] = -1.0f;     vertices[7].pos[1] = -1.0f;     vertices[7].pos[2] = -1.0f;
     vertices[8].pos[0] = -1.0f;     vertices[8].pos[1] = 1.0f;      vertices[8].pos[2] = -1.0f;
     vertices[9].pos[0] = -1.0f;     vertices[9].pos[1] = 1.0f;      vertices[9].pos[2] = -1.0f;
-    vertices[10].pos[0] = -1.0f;    vertices[10].pos[1] = 1.0f;     vertices[10].pos[2] = -1.0f;
-    vertices[11].pos[0] = -1.0f;    vertices[11].pos[1] = -1.0f;    vertices[11].pos[2] = -1.0f;
+    vertices[10].pos[0] = -1.0f;    vertices[10].pos[1] = 1.0f;     vertices[10].pos[2] = 1.0f;
+    vertices[11].pos[0] = -1.0f;    vertices[11].pos[1] = -1.0f;    vertices[11].pos[2] = 1.0f;
 
     vertices[12].pos[0] = 1.0f;     vertices[12].pos[1] = -1.0f;    vertices[12].pos[2] = -1.0f;
     vertices[13].pos[0] = 1.0f;     vertices[13].pos[1] = -1.0f;    vertices[13].pos[2] = 1.0f;
@@ -311,21 +315,20 @@ static const char *g_faceType = @encode(NFFace_t);
     vertices[29].pos[0] = -1.0f;    vertices[29].pos[1] = 1.0f;     vertices[29].pos[2] = -1.0f;
 
     vertices[30].pos[0] = -1.0f;    vertices[30].pos[1] = -1.0f;    vertices[30].pos[2] = -1.0f;
-    vertices[31].pos[0] = -1.0f;    vertices[31].pos[1] = -1.0f;    vertices[31].pos[2] = -1.0f;
-    vertices[32].pos[0] = 1.0f;     vertices[32].pos[1] = -1.0f;    vertices[32].pos[2] = 1.0f;
-    vertices[33].pos[0] = 1.0f;     vertices[33].pos[1] = -1.0f;    vertices[33].pos[2] = 1.0f;
+    vertices[31].pos[0] = -1.0f;    vertices[31].pos[1] = -1.0f;    vertices[31].pos[2] = 1.0f;
+    vertices[32].pos[0] = 1.0f;     vertices[32].pos[1] = -1.0f;    vertices[32].pos[2] = -1.0f;
+    vertices[33].pos[0] = 1.0f;     vertices[33].pos[1] = -1.0f;    vertices[33].pos[2] = -1.0f;
     vertices[34].pos[0] = -1.0f;    vertices[34].pos[1] = -1.0f;    vertices[34].pos[2] = 1.0f;
-    vertices[35].pos[0] = 1.0f;     vertices[35].pos[1] = -1.0f;    vertices[35].pos[2] = -1.0f;
+    vertices[35].pos[0] = 1.0f;     vertices[35].pos[1] = -1.0f;    vertices[35].pos[2] = 1.0f;
 
 
     const NSInteger numIndices = 6;
     GLushort indices[numIndices];
 
+    //
+    // TODO: update drawing of cube map to use indices
+    //
     memset(indices, 0x00, numIndices * sizeof(GLushort));
-
-    //
-    // TODO: may not need any indices or texture coordinates and normals for the vertices
-    //
 
     NFAssetSubset *pSubset = [[NFAssetSubset alloc] init];
 

@@ -281,10 +281,6 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //[m_pAsset applyUnitScalarMatrix]; // use for teapot
 
 
-    //
-    // TODO: fix textures for sky box, they seem to have RGB and RGBA formats switched somewhere
-    //
-
     NSString* cubeMapPath = @"/Users/cayce/Developer/NSGL/Textures/Yokohama3";
     m_skyBox = [[NFRCubeMap alloc] init];
 
