@@ -133,7 +133,7 @@
     return vector;
 }
 
-+ (NFRDataMap *) parseTextureFile:(NSString *)file {
++ (NFRDataMap *) parseTextureFile:(NSString *)file flipVertical:(BOOL)flip {
     // NOTE: not using the GLK texture loader class since I want to store the texture in both
     //       my own OpenGL specific format and as an NSImage for displaying in a utility window
 
@@ -197,13 +197,12 @@
     GLubyte *pData = (GLubyte *)malloc(mapSize.size.height * rowByteSize);
     NSAssert(pData != NULL, @"ERROR: failed to allocate image data buffer");
 
-    BOOL flipVertical = YES;
     CGContextRef context = CGBitmapContextCreate(pData, CGRectGetWidth(mapSize), CGRectGetHeight(mapSize),
                                                  bitsPerComponent, rowByteSize, CGImageGetColorSpace(cgImage),
                                                  bitmapInfo);
 
     CGContextSetBlendMode(context, kCGBlendModeCopy);
-    if (flipVertical) {
+    if (flip) {
         CGContextTranslateCTM(context, 0.0, CGRectGetHeight(mapSize));
         CGContextScaleCTM(context, 1.0, -1.0);
     }

@@ -59,33 +59,18 @@
         }
     }
 
-
-    //
-    // TODO: get sky box drawing correctly
-    //
-
     glBindVertexArray(geometry.vertexBuffer.bufferAttributes.hVAO);
-/*
-    static BOOL doOnce = YES;
-    if (doOnce) {
-        glBindBuffer(GL_ARRAY_BUFFER, geometry.vertexBuffer.bufferHandle);
-        glBufferData(GL_ARRAY_BUFFER, geometry.vertexBuffer.bufferDataSize, geometry.vertexBuffer.bufferDataPointer, GL_STATIC_DRAW);
-        CHECK_GL_ERROR();
 
-        doOnce = NO;
-    }
-*/
-
-
+    //
+    // TODO: shouldn't be updating the geometry every draw
+    //
     glBindBuffer(GL_ARRAY_BUFFER, geometry.vertexBuffer.bufferHandle);
     glBufferData(GL_ARRAY_BUFFER, geometry.vertexBuffer.bufferDataSize, geometry.vertexBuffer.bufferDataPointer, GL_STATIC_DRAW);
     CHECK_GL_ERROR();
 
-
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
     glBindVertexArray(0);
 
     for (id key in geometry.textureDictionary) {
@@ -100,11 +85,7 @@
     GLsizeiptr matrixSize = (GLsizeiptr)(16 * sizeof(float));
     GLintptr offset = (GLintptr)matrixSize;
 
-
-    //
-    // TODO: remove translation component from view matrix (verify if this is all correct) and
-    //       should do this outside of this method so it can possibly be reused for environment mapping
-    //
+    // remove the translation component
     viewMatrix.m03 = 0.0f;
     viewMatrix.m13 = 0.0f;
     viewMatrix.m23 = 0.0f;
@@ -114,7 +95,6 @@
     viewMatrix.m30 = 0.0f;
     viewMatrix.m31 = 0.0f;
     viewMatrix.m32 = 0.0f;
-
 
     glBindBuffer(GL_UNIFORM_BUFFER, self.hUBO);
 

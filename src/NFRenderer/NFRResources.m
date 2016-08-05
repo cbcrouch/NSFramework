@@ -173,6 +173,7 @@
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, cubeMap.format, cubeMap.width, cubeMap.height, 0,
                      cubeMap.format, cubeMap.type, pData);
     }
+
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
     CHECK_GL_ERROR();

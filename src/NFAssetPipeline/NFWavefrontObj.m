@@ -796,7 +796,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
         else if ([line hasPrefix:g_mapKdPrefix]) {
             NSString *mapFile = [line substringFromIndex:g_mapKdPrefix.length];
             NSString *imgPath = [self.objPath stringByAppendingPathComponent:mapFile];
-            mat.map_Kd = [NFAssetUtils parseTextureFile:imgPath];
+            mat.map_Kd = [NFAssetUtils parseTextureFile:imgPath flipVertical:YES];
 
             // should record the file name + path and then perform the parse in the
             // category of NFAssetData in order to avoid introducing a renderer specific

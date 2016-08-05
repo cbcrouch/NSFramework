@@ -20,6 +20,6 @@
 + (GLKVector4) calculateAreaWeightedNormalOfIndex:(GLushort)index withFaces:(NSArray *)faceArray;
 + (GLKVector4) calculateAngleWeightedNormalOfVertex:(GLfloat[4])vertex withFaces:(NSArray *)faceArray;
 
-+ (NFRDataMap *) parseTextureFile:(NSString *)file;
++ (NFRDataMap *) parseTextureFile:(NSString *)file flipVertical:(BOOL)flip;
 
 @end

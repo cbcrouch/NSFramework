@@ -575,16 +575,14 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
 - (void) initRenderer {
     [self.glContext makeCurrentContext];
-
     self.glRenderer = [[NFRenderer alloc] init];
-
     self.viewVolume = [[NFViewVolume alloc] init];
 
     CGFloat width = self.frame.size.width;
     CGFloat height = self.frame.size.height;
 
     [self.viewVolume setShapeWithVerticalFOV:(float)M_PI_4 withAspectRatio:(width/height)
-                                withNearDist:1.0f withFarDist:100.0f];
+                                withNearDist:0.25f withFarDist:150.0f];
 
 
     //GLKVector3 eye = GLKVector3Make(4.0f, 2.0f, 4.0f);

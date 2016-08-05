@@ -275,10 +275,6 @@ static const char *g_faceType = @encode(NFFace_t);
 
     memset(vertices, 0x00, numVertices * sizeof(NFVertex_t));
 
-    //
-    // TODO: double check the order and position of the vertices
-    //
-
     vertices[0].pos[0] = -1.0f;     vertices[0].pos[1] = 1.0f;      vertices[0].pos[2] = -1.0f;
     vertices[1].pos[0] = -1.0f;     vertices[1].pos[1] = -1.0f;     vertices[1].pos[2] = -1.0f;
     vertices[2].pos[0] = 1.0f;      vertices[2].pos[1] = -1.0f;     vertices[2].pos[2] = -1.0f;

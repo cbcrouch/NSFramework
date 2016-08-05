@@ -285,22 +285,22 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     m_skyBox = [[NFRCubeMap alloc] init];
 
     // faces must be loaded in the same order as the GL cube map positions
-    NFRDataMap* dataMap = [NFAssetUtils parseTextureFile:[cubeMapPath stringByAppendingPathComponent:@"posx.jpg"]];
+    NFRDataMap* dataMap = [NFAssetUtils parseTextureFile:[cubeMapPath stringByAppendingPathComponent:@"posx.jpg"] flipVertical:NO];
     [m_skyBox loadFace:0 withData:dataMap.data ofSize:CGRectMake(0.0f, 0.0f, (float)dataMap.width, (float)dataMap.height) ofType:dataMap.type withFormat:dataMap.format];
 
-    dataMap = [NFAssetUtils parseTextureFile:[cubeMapPath stringByAppendingPathComponent:@"negx.jpg"]];
+    dataMap = [NFAssetUtils parseTextureFile:[cubeMapPath stringByAppendingPathComponent:@"negx.jpg"] flipVertical:NO];
     [m_skyBox loadFace:1 withData:dataMap.data ofSize:CGRectMake(0.0f, 0.0f, (float)dataMap.width, (float)dataMap.height) ofType:dataMap.type withFormat:dataMap.format];
 
-    dataMap = [NFAssetUtils parseTextureFile:[cubeMapPath stringByAppendingPathComponent:@"posy.jpg"]];
+    dataMap = [NFAssetUtils parseTextureFile:[cubeMapPath stringByAppendingPathComponent:@"posy.jpg"] flipVertical:NO];
     [m_skyBox loadFace:2 withData:dataMap.data ofSize:CGRectMake(0.0f, 0.0f, (float)dataMap.width, (float)dataMap.height) ofType:dataMap.type withFormat:dataMap.format];
 
-    dataMap = [NFAssetUtils parseTextureFile:[cubeMapPath stringByAppendingPathComponent:@"negy.jpg"]];
+    dataMap = [NFAssetUtils parseTextureFile:[cubeMapPath stringByAppendingPathComponent:@"negy.jpg"] flipVertical:NO];
     [m_skyBox loadFace:3 withData:dataMap.data ofSize:CGRectMake(0.0f, 0.0f, (float)dataMap.width, (float)dataMap.height) ofType:dataMap.type withFormat:dataMap.format];
 
-    dataMap = [NFAssetUtils parseTextureFile:[cubeMapPath stringByAppendingPathComponent:@"posz.jpg"]];
+    dataMap = [NFAssetUtils parseTextureFile:[cubeMapPath stringByAppendingPathComponent:@"posz.jpg"] flipVertical:NO];
     [m_skyBox loadFace:4 withData:dataMap.data ofSize:CGRectMake(0.0f, 0.0f, (float)dataMap.width, (float)dataMap.height) ofType:dataMap.type withFormat:dataMap.format];
 
-    dataMap = [NFAssetUtils parseTextureFile:[cubeMapPath stringByAppendingPathComponent:@"negz.jpg"]];
+    dataMap = [NFAssetUtils parseTextureFile:[cubeMapPath stringByAppendingPathComponent:@"negz.jpg"] flipVertical:NO];
     [m_skyBox loadFace:5 withData:dataMap.data ofSize:CGRectMake(0.0f, 0.0f, (float)dataMap.width, (float)dataMap.height) ofType:dataMap.type withFormat:dataMap.format];
 
     m_skyBoxData = [NFAssetLoader allocAssetDataOfType:kCubeMapGeometry withArgs:nil];
@@ -496,23 +496,13 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //
 
     [m_directionalDepthShader updateViewMatrix:lightViewMat projectionMatrix:orthoProj];
-    //[m_depthShader updateViewMatrix:lightViewMat projectionMatrix:projection];
+    //[m_directionalDepthShader updateViewMatrix:lightViewMat projectionMatrix:projection];
 
-
-    //
-    // TODO: need a good way to visualize the generated cude map since it appears it could be incorrect
-    //       (could place it around the scene like a skybox ??)
-    //
 
     float aspect = (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT;
-
-    //float near = 0.0125f;
-    float near = 1.0f;
-
+    float near = 0.05f;
     float far = 100.0f;
-
-    //GLKMatrix4 pointShadowProj = GLKMatrix4MakePerspective((float)M_PI_2, aspect, near, far);
-    GLKMatrix4 pointShadowProj = GLKMatrix4MakePerspective((float)M_PI_4, aspect, near, far);
+    GLKMatrix4 pointShadowProj = GLKMatrix4MakePerspective((float)M_PI_2, aspect, near, far);
 
     GLKVector3 yNegUp = GLKVector3Make(0.0, -1.0, 0.0);
     GLKVector3 zPosUp = GLKVector3Make(0.0, 0.0, 1.0);
@@ -522,6 +512,10 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
     GLKVector3 temp;
     GLKMatrix4 shadowTransforms[6];
+
+    //
+    // TODO: visualize the cube map depth buffer of the point shadow by displaying it as the skybox
+    //
 
     temp = GLKVector3Add(pointLightPos, GLKVector3Make(1.0, 0.0, 0.0));
     shadowTransforms[0] = GLKMatrix4MakeLookAt(pointLightPos.x, pointLightPos.y, pointLightPos.z, temp.x, temp.y, temp.z, yNegUp.x, yNegUp.y, yNegUp.z);
@@ -546,7 +540,6 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     temp = GLKVector3Add(pointLightPos, GLKVector3Make(0.0, 0.0, -1.0));
     shadowTransforms[5] = GLKMatrix4MakeLookAt(pointLightPos.x, pointLightPos.y, pointLightPos.z, temp.x, temp.y, temp.z, yNegUp.x, yNegUp.y, yNegUp.z);
     shadowTransforms[5] = GLKMatrix4Multiply(pointShadowProj, shadowTransforms[5]);
-
 
     if ([m_pointDepthShader respondsToSelector:@selector(updateFarPlane:)]) {
         [m_pointDepthShader performSelector:@selector(updateFarPlane:) withObject:@(far)];
@@ -605,7 +598,6 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     glCullFace(GL_FRONT);
     [m_depthRenderRequest process];
     [m_depthRenderTarget disable];
-
     glCullFace(GL_BACK);
 
 
@@ -615,7 +607,6 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     glCullFace(GL_FRONT);
     [m_pointLightDepthRenderRequest process];
     [m_pointLightDepthRenderTarget disable];
-
     glCullFace(GL_BACK);
 
 
