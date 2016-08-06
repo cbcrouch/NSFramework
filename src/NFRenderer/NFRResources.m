@@ -278,6 +278,14 @@
     (self.textureDictionary)[@"diffuseTexture"] = mapGL;
 }
 
+//
+// TODO: either remove this method since it could be used as a workaround or make it
+//       officially supported
+//
+- (void) assignCubeMapHandle:(NSValue*)valueObj {
+    (self.textureDictionary)[@"cubeMapHandle"] = valueObj;
+}
+
 - (void) assignCubeMap:(NFRCubeMap*)cubeMap {
     //
     // TODO: implement more robust support for pairing a cube map with geometry

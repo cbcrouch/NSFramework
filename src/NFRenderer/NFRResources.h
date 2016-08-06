@@ -110,6 +110,8 @@ typedef NS_ENUM(NSUInteger, NFR_BUFFER_DATA_TYPE) {
 @property (nonatomic, strong, readonly) NSMutableDictionary* textureDictionary;
 
 - (void) syncSurfaceModel;
+
+- (void) assignCubeMapHandle:(NSValue*)valueObj;
 - (void) assignCubeMap:(NFRCubeMap*)cubeMap;
 
 @end

@@ -57,6 +57,17 @@
             NFRCubeMapGL* cubeMapGL = (geometry.textureDictionary)[key];
             [cubeMapGL activateTexture:GL_TEXTURE0 withUniformLocation:self.textureUniform];
         }
+        else if ([key isEqualToString:@"cubeMapHandle"]) {
+            NSValue* valueObj = (geometry.textureDictionary)[key];
+
+            GLuint textureID = 0;
+            [valueObj getValue:&textureID];
+
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+            glUniform1i(self.textureUniform, GL_TEXTURE0 - GL_TEXTURE0);
+            CHECK_GL_ERROR();
+        }
     }
 
     glBindVertexArray(geometry.vertexBuffer.bufferAttributes.hVAO);
@@ -73,10 +84,15 @@
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
+    //
+    // TODO: restore deactivation
+    //
+/*
     for (id key in geometry.textureDictionary) {
         NFRDataMapGL* cubeMapGL = (geometry.textureDictionary)[key];
         [cubeMapGL deactivateTexture];
     }
+*/
 
     CHECK_GL_ERROR();
 }

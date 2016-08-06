@@ -229,6 +229,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //       OpenGL and the render target implementation can handle it
     //
     //[m_pointLightDepthRenderTarget addAttachment:kColorAttachment withBackingBuffer:kRenderBuffer];
+    //[m_pointLightDepthRenderTarget addAttachment:kColorAttachment withBackingBuffer:kTextureBuffer];
 
     [m_pointLightDepthRenderTarget addAttachment:kDepthAttachment withBackingBuffer:kCubeMapBuffer];
 
@@ -513,10 +514,6 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     GLKVector3 temp;
     GLKMatrix4 shadowTransforms[6];
 
-    //
-    // TODO: visualize the cube map depth buffer of the point shadow by displaying it as the skybox
-    //
-
     temp = GLKVector3Add(pointLightPos, GLKVector3Make(1.0, 0.0, 0.0));
     shadowTransforms[0] = GLKMatrix4MakeLookAt(pointLightPos.x, pointLightPos.y, pointLightPos.z, temp.x, temp.y, temp.z, yNegUp.x, yNegUp.y, yNegUp.z);
     shadowTransforms[0] = GLKMatrix4Multiply(pointShadowProj, shadowTransforms[0]);
@@ -625,6 +622,12 @@ static uint32_t const SHADOW_HEIGHT = 1024;
         static const char *handleType = @encode(GLint);
         GLint depthTexHandle = (GLint)m_pointLightDepthRenderTarget.depthAttachment.handle;
         NSValue* valueObj = [NSValue value:&depthTexHandle withObjCType:handleType];
+
+        //
+        // TODO: restore sky box after finished debugging the point light shadows
+        //
+        [m_skyBoxData.geometry assignCubeMapHandle:valueObj];
+
         [m_phongShader performSelector:@selector(setPointShadowMap:) withObject:valueObj];
     }
 
