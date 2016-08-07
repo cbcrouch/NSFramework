@@ -589,22 +589,38 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //
 
 
+
     // directional light shadow map
     [m_depthRenderTarget enable];
+
     glClear(GL_DEPTH_BUFFER_BIT);
     glCullFace(GL_FRONT);
     [m_depthRenderRequest process];
-    [m_depthRenderTarget disable];
     glCullFace(GL_BACK);
+
+    [m_depthRenderTarget disable];
 
 
     // point light shadow map
     [m_pointLightDepthRenderTarget enable];
+
+    glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+
     glClear(GL_DEPTH_BUFFER_BIT);
     glCullFace(GL_FRONT);
     [m_pointLightDepthRenderRequest process];
-    [m_pointLightDepthRenderTarget disable];
     glCullFace(GL_BACK);
+
+    [m_pointLightDepthRenderTarget disable];
+
+
+
+    //
+    // TODO: update viewport after the point light shadow map has been updated
+    //
+    NFViewport *viewport = (self.viewports)[0];
+    glViewport((GLint)0, (GLint)0, (GLsizei)CGRectGetWidth(viewport.viewRect), (GLsizei)CGRectGetHeight(viewport.viewRect));
+
 
 
     //
@@ -626,7 +642,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
         //
         // TODO: restore sky box after finished debugging the point light shadows
         //
-        [m_skyBoxData.geometry assignCubeMapHandle:valueObj];
+        //[m_skyBoxData.geometry assignCubeMapHandle:valueObj];
 
         [m_phongShader performSelector:@selector(setPointShadowMap:) withObject:valueObj];
     }

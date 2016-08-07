@@ -348,9 +348,9 @@ void main() {
     vec3 viewDir = normalize(viewPos - f_position);
     vec3 result = vec3(0);
 
-#define USE_DIRECTIONAL_LIGHT  0
+#define USE_DIRECTIONAL_LIGHT  1
 #define USE_POINT_LIGHT        1
-#define USE_SPOT_LIGHT         0
+#define USE_SPOT_LIGHT         1
 
 
 #if USE_DIRECTIONAL_LIGHT
