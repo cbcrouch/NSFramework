@@ -85,6 +85,11 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     NFRCubeMap* m_skyBox;
     NFAssetData* m_skyBoxData;
 
+    GLKMatrix4 m_dirViewMat;
+    GLKMatrix4 m_dirOrthoProj;
+    GLKMatrix4 m_spotViewMat;
+    GLKMatrix4 m_perspectiveProj;
+
     id<NFRProgram> m_phongShader;
     id<NFRProgram> m_debugShader;
     id<NFRProgram> m_directionalDepthShader;
@@ -106,6 +111,11 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     NFRRenderRequest* m_depthRenderRequest;
     NFRRenderTarget* m_depthRenderTarget;
 
+    // depth map for spot light shadow
+    NFRCommandBufferDefault* m_spotLightDepthCmdBuffer;
+    NFRRenderRequest* m_spotLightDepthRenderRequest;
+    NFRRenderTarget* m_spotLightDepthRenderTarget;
+
     // depth (cube) map for point light shadow
     NFRCommandBufferDefault* m_pointLightDepthCmdBuffer;
     NFRRenderRequest* m_pointLightDepthRenderRequest;
@@ -115,11 +125,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     // TODO: implement a way to batch shadow generation for N lights of the three given types
     //       (directional, point light, spotlight)
     //
-/*
-    NFRCommandBufferDefault* m_shadowMapCmdBuffers[3];
-    NFRRenderRequest* m_shadowMapRequests[3];
-    NFRRenderTarget* m_shadowMapTargets[3];
-*/
+
 
     NFRRenderTarget* m_renderTarget;
     NFRDisplayTarget* m_displayTarget;
@@ -171,7 +177,6 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     viewportArray[0].viewRect = CGRectMake(0.0f, 0.0f, (CGFloat)DEFAULT_VIEWPORT_WIDTH, (CGFloat)DEFAULT_VIEWPORT_HEIGHT);
     self.viewports = [NSArray arrayWithObjects:viewportArray count:MAX_NUM_VIEWPORTS];
 
-
     // shader objects
     m_phongShader = [NFRUtils createProgramObject:@"DefaultModel"];
     m_debugShader = [NFRUtils createProgramObject:@"Debug"];
@@ -183,6 +188,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     m_defaultCmdBuffer = [[NFRCommandBufferDefault alloc] init];
     m_debugCmdBuffer = [[NFRCommandBufferDebug alloc] init];
     m_depthCmdBuffer = [[NFRCommandBufferDefault alloc] init];
+    m_spotLightDepthCmdBuffer = [[NFRCommandBufferDefault alloc] init];
     m_pointLightDepthCmdBuffer = [[NFRCommandBufferDefault alloc] init];
     m_skyBoxCmdBuffer = [[NFRCommandBufferDefault alloc] init];
 
@@ -195,6 +201,9 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
     m_depthRenderRequest = [[NFRRenderRequest alloc] init];
     m_depthRenderRequest.program = m_directionalDepthShader;
+
+    m_spotLightDepthRenderRequest = [[NFRRenderRequest alloc] init];
+    m_spotLightDepthRenderRequest.program = m_directionalDepthShader;
 
     m_pointLightDepthRenderRequest = [[NFRRenderRequest alloc] init];
     m_pointLightDepthRenderRequest.program = m_pointDepthShader;
@@ -218,8 +227,12 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
 
     m_depthRenderTarget = [[NFRRenderTarget alloc] init];
-    [m_depthRenderTarget addAttachment:kColorAttachment withBackingBuffer:kRenderBuffer];
+    //[m_depthRenderTarget addAttachment:kColorAttachment withBackingBuffer:kRenderBuffer];
     [m_depthRenderTarget addAttachment:kDepthAttachment withBackingBuffer:kTextureBuffer];
+
+
+    m_spotLightDepthRenderTarget = [[NFRRenderTarget alloc] init];
+    [m_spotLightDepthRenderTarget addAttachment:kDepthAttachment withBackingBuffer:kTextureBuffer];
 
 
     m_pointLightDepthRenderTarget = [[NFRRenderTarget alloc] initWithWidth:SHADOW_WIDTH withHeight:SHADOW_HEIGHT];
@@ -415,12 +428,14 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
     // directional shadow map
     [m_depthCmdBuffer addGeometry:m_pAsset.geometry];
-    //[m_depthCmdBuffer addGeometry:m_planeData.geometry];
     [m_depthCmdBuffer addGeometry:m_pProceduralData.geometry];
+
+    // spot light shadow map
+    [m_spotLightDepthCmdBuffer addGeometry:m_pAsset.geometry];
+    [m_spotLightDepthCmdBuffer addGeometry:m_pProceduralData.geometry];
 
     // point light shadow map
     [m_pointLightDepthCmdBuffer addGeometry:m_pAsset.geometry];
-    //[m_pointLightDepthCmdBuffer addGeometry:m_planeData.geometry];
     [m_pointLightDepthCmdBuffer addGeometry:m_pProceduralData.geometry];
 
     // add command buffers to render requests
@@ -428,6 +443,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     [m_debugRenderRequest.commandBufferArray addObject:m_debugCmdBuffer];
 
     [m_depthRenderRequest.commandBufferArray addObject:m_depthCmdBuffer];
+    [m_spotLightDepthRenderRequest.commandBufferArray addObject:m_spotLightDepthCmdBuffer];
     [m_pointLightDepthRenderRequest.commandBufferArray addObject:m_pointLightDepthCmdBuffer];
 
     return self;
@@ -452,52 +468,30 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     // update view and projection matrix for drawing skybox
     [m_cubeMapShader updateViewMatrix:viewMatrix projectionMatrix:projection];
 
-    //
-    // TODO need a faster way of building view matrices
-    //
-    GLKVector3 eye = GLKVector3Make(-2.0f, 2.0f, 1.0f);
-    //GLKVector3 eye = GLKVector3Make(-4.0f, 4.0f, 2.0f);
-    //GLKVector3 eye = GLKVector3Make(-2.0f, 4.0f, -1.0f);
 
-    GLKVector3 dest = GLKVector3Make(0.0f, 0.0f, 0.0f);
 
-    GLKVector3 hyp = GLKVector3Subtract(eye, dest);
-    hyp = GLKVector3Normalize(hyp);
-
-    float yaw = -M_PI + atan2f(hyp.x, hyp.z);
-    float pitch = -atan2(hyp.y, hyp.y) / 2.0f;
-
-    GLKVector3 look;
-    float r = cosf(pitch);
-    look.x = r * sinf(yaw);
-    look.y = sinf(pitch);
-    look.z = r * cosf(yaw);
-
-    GLKVector3 right;
-    right.x = sinf(yaw - M_PI_2);
-    right.y = 0.0f;
-    right.z = cosf(yaw - M_PI_2);
-
-    GLKVector3 up = GLKVector3CrossProduct(right, look);
-
-    GLKMatrix4 lightViewMat = GLKMatrix4MakeLookAt(eye.x, eye.y, eye.z,
-                                       look.x, look.y, look.z,
-                                       up.x, up.y, up.z);
+    // view and projection matrices for directional light shadow map
+    //GLKMatrix4 lightViewMat = [NFRUtils viewMatrixFromPosition:m_dirLight.position toDestination:GLKVector3Make(0.0f, 0.0f, 0.0f)];
+    //GLKMatrix4 lightViewMat = [NFRUtils viewMatrixFromPosition:m_dirLight.position toDestination:m_dirLight.direction];
 
     //
     // TODO: settle on a good projection matrix
     //
     //GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-10.0, 10.0, -10.0, 10.0, -1.0, 20.0);
-    GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-2.5, 2.5, -2.5, 2.5, -1.0, 20.0);
+    //GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-2.5, 2.5, -2.5, 2.5, -1.0, 20.0);
 
     //GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-10.0, 10.0, -10.0, 10.0, -2.0, 5.0); // for testing light/shadow cutoff correction
 
-    //
-    // TODO: try using a perspective projection for the spotlight shadow map
-    //
 
-    [m_directionalDepthShader updateViewMatrix:lightViewMat projectionMatrix:orthoProj];
-    //[m_directionalDepthShader updateViewMatrix:lightViewMat projectionMatrix:projection];
+    m_dirViewMat = [NFRUtils viewMatrixFromPosition:m_dirLight.position toDestination:m_dirLight.direction];
+    m_dirOrthoProj = GLKMatrix4MakeOrtho(-2.5, 2.5, -2.5, 2.5, -1.0, 20.0);
+
+    //
+    // TODO: need to verify that the view and projection matrices are correct for the spot light shadow map
+    //
+    m_spotViewMat = [NFRUtils viewMatrixFromPosition:m_spotLight.position toDestination:m_spotLight.direction];
+    m_perspectiveProj = GLKMatrix4MakePerspective(m_spotLight.outerCutOff, 1280/(float)720, 0.05, 100.0f);
+
 
 
     float aspect = (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT;
@@ -566,15 +560,17 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //       in the NFRDefaultModel loadLight method
     //
     if ([m_phongShader respondsToSelector:@selector(updateLightSpaceMatrix:)]) {
-        //
-        // NOTE: should make sure that the light space matrix calculation only happens once
-        //
-        GLKMatrix4 lightSpaceMat = GLKMatrix4Multiply(orthoProj, lightViewMat);
-        //GLKMatrix4 lightSpaceMat = GLKMatrix4Multiply(projection, lightViewMat);
-
+        GLKMatrix4 lightSpaceMat = GLKMatrix4Multiply(m_dirOrthoProj, m_dirViewMat);
         static const char *matrixType = @encode(GLKMatrix4);
         NSValue* valueObj = [NSValue value:&lightSpaceMat withObjCType:matrixType];
         [m_phongShader performSelector:@selector(updateLightSpaceMatrix:) withObject:valueObj];
+    }
+
+    if ([m_phongShader respondsToSelector:@selector(updateSpotLightSpaceMatrix:)]) {
+        GLKMatrix4 lightSpaceMat = GLKMatrix4Multiply(m_perspectiveProj, m_spotViewMat);
+        static const char *matrixType = @encode(GLKMatrix4);
+        NSValue* valueObj = [NSValue value:&lightSpaceMat withObjCType:matrixType];
+        [m_phongShader performSelector:@selector(updateSpotLightSpaceMatrix:) withObject:valueObj];
     }
 
 
@@ -590,6 +586,8 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
 
 
+    [m_directionalDepthShader updateViewMatrix:m_dirViewMat projectionMatrix:m_dirOrthoProj];
+
     // directional light shadow map
     [m_depthRenderTarget enable];
 
@@ -599,6 +597,21 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     glCullFace(GL_BACK);
 
     [m_depthRenderTarget disable];
+
+
+
+    [m_directionalDepthShader updateViewMatrix:m_spotViewMat projectionMatrix:m_perspectiveProj];
+
+    // spot light shadow map
+    [m_spotLightDepthRenderTarget enable];
+
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glCullFace(GL_FRONT);
+    [m_spotLightDepthRenderRequest process];
+    glCullFace(GL_BACK);
+
+    [m_spotLightDepthRenderTarget disable];
+
 
 
     // point light shadow map
@@ -632,6 +645,13 @@ static uint32_t const SHADOW_HEIGHT = 1024;
         GLint depthTexHandle = (GLint)m_depthRenderTarget.depthAttachment.handle;
         NSValue* valueObj = [NSValue value:&depthTexHandle withObjCType:handleType];
         [m_phongShader performSelector:@selector(setShadowMap:) withObject:valueObj];
+    }
+
+    if ([m_phongShader respondsToSelector:@selector(setSpotShadowMap:)]) {
+        static const char *handleType = @encode(GLint);
+        GLint depthTexHandle = (GLint)m_spotLightDepthRenderTarget.depthAttachment.handle;
+        NSValue* valueObj = [NSValue value:&depthTexHandle withObjCType:handleType];
+        [m_phongShader performSelector:@selector(setSpotShadowMap:) withObject:valueObj];
     }
 
     if ([m_phongShader respondsToSelector:@selector(setPointShadowMap:)]) {

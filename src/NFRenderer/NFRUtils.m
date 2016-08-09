@@ -46,6 +46,37 @@ typedef NS_ENUM(NSUInteger, SHADER_STATUS) {
 
 @implementation NFRUtils
 
++ (GLKMatrix4) viewMatrixFromPosition:(GLKVector3)position toDestination:(GLKVector3)destination
+{
+    //
+    // TODO need a faster way of building view matrices
+    //
+    GLKVector3 hyp = GLKVector3Subtract(position, destination);
+    hyp = GLKVector3Normalize(hyp);
+
+    float yaw = -M_PI + atan2f(hyp.x, hyp.z);
+    float pitch = -atan2(hyp.y, hyp.y) / 2.0f;
+
+    GLKVector3 look;
+    float r = cosf(pitch);
+    look.x = r * sinf(yaw);
+    look.y = sinf(pitch);
+    look.z = r * cosf(yaw);
+
+    GLKVector3 right;
+    right.x = sinf(yaw - M_PI_2);
+    right.y = 0.0f;
+    right.z = cosf(yaw - M_PI_2);
+
+    GLKVector3 up = GLKVector3CrossProduct(right, look);
+
+    GLKMatrix4 viewMat = GLKMatrix4MakeLookAt(position.x, position.y, position.z,
+                                                   look.x, look.y, look.z,
+                                                   up.x, up.y, up.z);
+
+    return viewMat;
+}
+
 + (id<NFRProgram>) createProgramObject:(NSString *)programName {
     if ([programName isEqualToString:@"DefaultModel"]) {
         NFRDefaultProgram* programObj = [[NFRDefaultProgram alloc] init];

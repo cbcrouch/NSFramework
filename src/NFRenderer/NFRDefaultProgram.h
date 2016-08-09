@@ -79,6 +79,7 @@ typedef struct spotLightUniforms_t {
 @property (nonatomic, assign) GLint pointShadowMapUniform;
 
 - (void) setShadowMap:(NSValue*)valueObj;
+- (void) setSpotShadowMap:(NSValue*)valueObj;
 - (void) setPointShadowMap:(NSValue*)valueObj;
 
 
@@ -92,11 +93,9 @@ typedef struct spotLightUniforms_t {
 //
 @property (nonatomic, assign) GLint lightSpaceMatrixUniform;
 
-//
-// TODO: need to modify updateLightSpaceMatrix to take an object (wrapping a GLKMatrix4)
-//
-//- (void) updateLightSpaceMatrix:(GLKMatrix4)lightSpaceMatrix;
+
 - (void) updateLightSpaceMatrix:(NSValue*)matValue;
+- (void) updateSpotLightSpaceMatrix:(NSValue*)matValue;
 
 
 @property (nonatomic, assign) GLuint hUBO;

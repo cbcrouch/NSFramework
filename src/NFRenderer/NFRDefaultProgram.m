@@ -191,6 +191,28 @@
     CHECK_GL_ERROR();
 }
 
+
+- (void) updateSpotLightSpaceMatrix:(NSValue*)matValue {
+
+    //NSLog(@"NFRDefaultProgram updateSpotLightSpaceMatrix called");
+
+    //
+    // TODO: implement
+    //
+    
+}
+
+- (void) setSpotShadowMap:(NSValue*)valueObj {
+
+    //NSLog(@"NFRDefaultProgram setSpotShadowMap called");
+
+    //
+    // TODO: implement
+    //
+
+}
+
+
 - (void) setPointShadowMap:(NSValue*)valueObj {
     GLint textureId;
     [valueObj getValue:&textureId];

@@ -152,10 +152,6 @@
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
     else if(bufferType == kCubeMapBuffer) {
-
-        //
-        // TODO: verify implementation for kCubeMapBuffer works as intended
-        //
         glBindTexture(GL_TEXTURE_CUBE_MAP, tempHandle);
 
         for(GLuint i=0; i<6; ++i) {

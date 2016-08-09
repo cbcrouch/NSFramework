@@ -53,6 +53,10 @@ typedef NS_ENUM(NSUInteger, SHADER_TYPE) {
 //       of global state - may want to quote the common mistakes addressing this on the OpenGL wiki)
 
 
+// render math utils
++ (GLKMatrix4) viewMatrixFromPosition:(GLKVector3)position toDestination:(GLKVector3)destination;
+
+
 // shader utils
 + (id<NFRProgram>) createProgramObject:(NSString *)programName;
 
