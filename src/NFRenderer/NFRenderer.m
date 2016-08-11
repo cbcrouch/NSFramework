@@ -475,7 +475,8 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //GLKMatrix4 lightViewMat = [NFRUtils viewMatrixFromPosition:m_dirLight.position toDestination:m_dirLight.direction];
 
     //
-    // TODO: settle on a good projection matrix (or calculation for a projection matrix)
+    // TODO: settle on a good projection matrix (or calculation for a projection matrix) for both the directional
+    //       light and the spot light
     //
     //GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-10.0, 10.0, -10.0, 10.0, -1.0, 20.0);
     //GLKMatrix4 orthoProj = GLKMatrix4MakeOrtho(-2.5, 2.5, -2.5, 2.5, -1.0, 20.0);
@@ -486,10 +487,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     m_dirViewMat = [NFRUtils viewMatrixFromPosition:m_dirLight.position toDestination:m_dirLight.direction];
     m_dirOrthoProj = GLKMatrix4MakeOrtho(-2.5, 2.5, -2.5, 2.5, -1.0, 20.0);
 
-    //
-    // TODO: need to verify that the view and projection matrices are correct for the spot light shadow map
-    //       (will likely need to tweak the projection matrix)
-    //
+
     m_spotViewMat = [NFRUtils viewMatrixFromPosition:m_spotLight.position toDestination:m_spotLight.direction];
     m_perspectiveProj = GLKMatrix4MakePerspective(m_spotLight.outerCutOff, 1280.0f/720.0f, 0.05, 100.0f);
 

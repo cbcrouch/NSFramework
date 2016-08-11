@@ -106,7 +106,7 @@ out vec4 color;
 
 vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir, float shadow);
 vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir, float shadow);
-vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir);
+vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir, float shadow);
 
 
 //
@@ -203,7 +203,7 @@ vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 v
     //return (ambient + diffuse + specular);
 }
 
-vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir) {
+vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir, float shadow) {
     vec3 lightDir = normalize(light.position - fragPosition);
     vec3 norm = normalize(normal);
 
@@ -254,13 +254,17 @@ vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 vie
     diffuse *= attenuation;
     specular *= attenuation;
 
-    return(ambient + diffuse + specular);
+    //
+    //
+    //
+    return (ambient + ((1.0 - shadow) * (diffuse + specular)));
+    //return(ambient + diffuse + specular);
 }
 
 //
-// NOTE: this is for directional lights only
+// NOTE: this is for directional lights only (will also work for the spot light)
 //
-float shadow_calculation(vec4 frag_pos_light_space, vec3 normal, vec3 lightDir) {
+float shadow_calculation(vec4 frag_pos_light_space, vec3 normal, vec3 lightDir, sampler2D depthMap) {
     // perspective divide and transform to [0, 1] range
     vec3 projCoords = frag_pos_light_space.xyz / frag_pos_light_space.w;
     projCoords = projCoords * 0.5 + 0.5;
@@ -276,23 +280,25 @@ float shadow_calculation(vec4 frag_pos_light_space, vec3 normal, vec3 lightDir) 
     //       the shadow on the sphere to get clipped around the base when the bottom most vertex of
     //       the sphere was shared with the "ground" plane (should revisit these values)
     //
-    float bias = max(0.00125 * (1.0 - dot(f_normal, lightDir)), 0.0005);
+    //float bias = max(0.00125 * (1.0 - dot(f_normal, lightDir)), 0.0005);
+
+    float bias = 0.00005;
 
 #define USE_SIMPLE_PCF 0
 
 #if USE_SIMPLE_PCF
     float shadowVal = 0.0;
-    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    vec2 texelSize = 1.0 / textureSize(depthMap, 0);
     for (int x=-1; x<2; ++x) {
         for(int y=-1; y<2; ++y) {
-            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x,y)*texelSize).r;
+            float pcfDepth = texture(depthMap, projCoords.xy + vec2(x,y)*texelSize).r;
             shadowVal += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
         }
     }
     shadowVal /= 9.0;
 #else
     // get closet depth value from light's perspective using [0,1] range frag_pos_light_space as coords
-    float closestDepth = texture(shadowMap, projCoords.xy).r;
+    float closestDepth = texture(depthMap, projCoords.xy).r;
 
     // check wheter current frag pos is in shadow
     float shadowVal = currentDepth - bias > closestDepth ? 1.0 : 0.0;
@@ -323,7 +329,7 @@ float point_shadow_calculation(pointLight_t light, vec3 fragPosition) {
 void main() {
 
 #if 1
-    float shadowVal = shadow_calculation(f_posLightSpace, f_normal, normalize(-directionalLight.direction));
+    float shadowVal = shadow_calculation(f_posLightSpace, f_normal, normalize(-directionalLight.direction), shadowMap);
 #else
     float throwaway = texture(shadowMap, vec2(0.0, 0.0)).r;
     float shadowVal = 0.0;
@@ -338,21 +344,20 @@ void main() {
 #endif
 
 
+#if 1
+    float spotShadowVal = shadow_calculation(f_posSpotLightSpace, f_normal, normalize(-spotLight.direction), spotShadowMap);
+#else
+    float throwaway = texture(spotShadowMap, vec2(0.0, 0.0)).r;
+    float spotShadowVal = 0.0;
+#endif
+
+
     vec3 viewDir = normalize(viewPos - f_position);
     vec3 result = vec3(0);
 
-#define USE_DIRECTIONAL_LIGHT  1
-#define USE_POINT_LIGHT        0
+#define USE_DIRECTIONAL_LIGHT  0
+#define USE_POINT_LIGHT        1
 #define USE_SPOT_LIGHT         1
-
-
-    //
-    // TODO: remove this placeholder and implement the spot light shadow map
-    //       (reuse code for directional shadow map by passing in projection matrix and sampler)
-    //
-    float temp = texture(spotShadowMap, vec2(0.0, 0.0)).r;
-    vec4 temp4 = f_posSpotLightSpace;
-
 
 
 #if USE_DIRECTIONAL_LIGHT
@@ -371,9 +376,9 @@ void main() {
 #endif
 
 #if USE_SPOT_LIGHT
-    result += calc_spot_light(spotLight, f_normal, f_position, viewDir);
+    result += calc_spot_light(spotLight, f_normal, f_position, viewDir, spotShadowVal);
 #else
-    vec3 spotOutput = calc_spot_light(spotLight, f_normal, f_position, viewDir);
+    vec3 spotOutput = calc_spot_light(spotLight, f_normal, f_position, viewDir, spotShadowVal);
     spotOutput = result;
 #endif
 
