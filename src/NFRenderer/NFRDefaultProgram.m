@@ -139,8 +139,14 @@
     self.lightSpaceMatrixUniform = glGetUniformLocation(self.hProgram, "lightSpace");
     NSAssert(self.lightSpaceMatrixUniform != -1, @"failed to get light space matrix uniform location");
 
+    self.spotLightSpaceMatrixUniform = glGetUniformLocation(self.hProgram, "spotLightSpace");
+    NSAssert(self.spotLightSpaceMatrixUniform != -1, @"failed to get spot light space matrix uniform location");
+
     self.shadowMapUniform = glGetUniformLocation(self.hProgram, "shadowMap");
     NSAssert(self.shadowMapUniform != -1, @"failed to get shadow map uniform location");
+
+    self.spotShadowMapUniform = glGetUniformLocation(self.hProgram, "spotShadowMap");
+    NSAssert(self.spotShadowMapUniform != -1, @"failed to get spot shadow map uniform location");
 
     self.pointShadowMapUniform = glGetUniformLocation(self.hProgram, "pointShadowMap");
     NSAssert(self.shadowMapUniform != -1, @"failed to get point shadow map uniform location");
@@ -159,10 +165,6 @@
 
 
 //
-// TODO: need to modify updateLightSpaceMatrix to take an object (wrapping a GLKMatrix4)
-//
-
-//
 // TODO: make sure this method gets removed after the light space matrix gets moved into
 //       each light object (should then be able to update them on the loadLight call)
 //
@@ -173,6 +175,15 @@
     glProgramUniformMatrix4fv(self.hProgram, self.lightSpaceMatrixUniform, 1, GL_FALSE, lightSpaceMatrix.m);
     CHECK_GL_ERROR();
 }
+
+- (void) updateSpotLightSpaceMatrix:(NSValue*)matValue {
+    GLKMatrix4 lightSpaceMatrix;
+    [matValue getValue:&lightSpaceMatrix];
+
+    glProgramUniformMatrix4fv(self.hProgram, self.spotLightSpaceMatrixUniform, 1, GL_FALSE, lightSpaceMatrix.m);
+    CHECK_GL_ERROR();
+}
+
 
 - (void) setShadowMap:(NSValue*)valueObj {
     GLint textureId;
@@ -191,27 +202,19 @@
     CHECK_GL_ERROR();
 }
 
-
-- (void) updateSpotLightSpaceMatrix:(NSValue*)matValue {
-
-    //NSLog(@"NFRDefaultProgram updateSpotLightSpaceMatrix called");
-
-    //
-    // TODO: implement
-    //
-    
-}
-
 - (void) setSpotShadowMap:(NSValue*)valueObj {
+    GLint textureId;
+    [valueObj getValue:&textureId];
 
-    //NSLog(@"NFRDefaultProgram setSpotShadowMap called");
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, textureId);
 
-    //
-    // TODO: implement
-    //
+    glUseProgram(self.hProgram);
+    glUniform1i(self.spotShadowMapUniform, GL_TEXTURE3 - GL_TEXTURE0);
+    glUseProgram(0);
 
+    CHECK_GL_ERROR();
 }
-
 
 - (void) setPointShadowMap:(NSValue*)valueObj {
     GLint textureId;

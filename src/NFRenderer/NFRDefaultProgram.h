@@ -76,6 +76,7 @@ typedef struct spotLightUniforms_t {
 
 
 @property (nonatomic, assign) GLint shadowMapUniform;
+@property (nonatomic, assign) GLint spotShadowMapUniform;
 @property (nonatomic, assign) GLint pointShadowMapUniform;
 
 - (void) setShadowMap:(NSValue*)valueObj;
@@ -88,10 +89,10 @@ typedef struct spotLightUniforms_t {
 
 
 //
-// TODO: after getting basic directional light working move light space
-//       matrix uniforms into the light uniform structs
+// TODO: move light space matrix uniforms into the light uniform structs
 //
 @property (nonatomic, assign) GLint lightSpaceMatrixUniform;
+@property (nonatomic, assign) GLint spotLightSpaceMatrixUniform;
 
 
 - (void) updateLightSpaceMatrix:(NSValue*)matValue;

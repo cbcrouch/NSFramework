@@ -85,14 +85,14 @@
     glBindVertexArray(0);
 
     //
-    // TODO: restore deactivation
+    // TODO: texture deactivation will cause a crash if a texture handle has been set in the texture
+    //       dictionary instead of an object, need to decided whether or not to fully support setting
+    //       texture handles directory, just texture objects, or both
     //
-/*
     for (id key in geometry.textureDictionary) {
         NFRDataMapGL* cubeMapGL = (geometry.textureDictionary)[key];
         [cubeMapGL deactivateTexture];
     }
-*/
 
     CHECK_GL_ERROR();
 }

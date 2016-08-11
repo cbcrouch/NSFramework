@@ -87,6 +87,7 @@ uniform spotLight_t spotLight;
 
 
 uniform sampler2D shadowMap;
+uniform sampler2D spotShadowMap;
 uniform samplerCube pointShadowMap;
 
 
@@ -98,7 +99,7 @@ in vec2 f_texcoord;
 // TODO: light space vector needs to have multiple inputs, one per each light
 //
 in vec4 f_posLightSpace;
-
+in vec4 f_posSpotLightSpace;
 
 out vec4 color;
 
@@ -300,12 +301,7 @@ float shadow_calculation(vec4 frag_pos_light_space, vec3 normal, vec3 lightDir) 
     return shadowVal;
 }
 
-
-//
-// TODO: need to debug why the cube map is not getting drawn
-//
 float point_shadow_calculation(pointLight_t light, vec3 fragPosition) {
-
     vec3 fragToLight = fragPosition - light.position;
     float closestDepth = texture(pointShadowMap, fragToLight).r;
 
@@ -321,11 +317,8 @@ float point_shadow_calculation(pointLight_t light, vec3 fragPosition) {
     float bias = 0.00125;
     float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
 
-
     return shadow;
 }
-
-
 
 void main() {
 
@@ -351,6 +344,15 @@ void main() {
 #define USE_DIRECTIONAL_LIGHT  1
 #define USE_POINT_LIGHT        0
 #define USE_SPOT_LIGHT         1
+
+
+    //
+    // TODO: remove this placeholder and implement the spot light shadow map
+    //       (reuse code for directional shadow map by passing in projection matrix and sampler)
+    //
+    float temp = texture(spotShadowMap, vec2(0.0, 0.0)).r;
+    vec4 temp4 = f_posSpotLightSpace;
+
 
 
 #if USE_DIRECTIONAL_LIGHT
