@@ -41,11 +41,11 @@
             // TODO: profile and optimize the file parsing
             //
             [wavefrontObj parseFile];
-
+/*
             if (wavefrontObj.object.textureCoords.count == 0) {
                 [wavefrontObj.object calculateTextureCoordinates];
             }
-
+*/
             if (wavefrontObj.object.normals.count == 0) {
                 [wavefrontObj.object calculateNormals];
             }
@@ -119,7 +119,8 @@
         case kSolidPlane: {
 
             //[asset createPlaneOfSize:4];
-            [asset createPlaneOfSize:16];
+            [asset createPlaneOfSize:8];
+            //[asset createPlaneOfSize:16];
 
             // NOTE: default draw mode should work
 

@@ -70,11 +70,6 @@ struct spotLight_t {
 };
 
 
-//
-// TODO: add support for shadow maps
-//
-
-
 uniform vec3 viewPos;
 
 //uniform bool useBlinnSpecular;
@@ -89,6 +84,9 @@ uniform spotLight_t spotLight;
 uniform sampler2D shadowMap;
 uniform sampler2D spotShadowMap;
 uniform samplerCube pointShadowMap;
+
+uniform bool useDefaultCubeMap;
+uniform samplerCube defaultCubeMap;
 
 
 in vec3 f_position;
@@ -327,30 +325,14 @@ float point_shadow_calculation(pointLight_t light, vec3 fragPosition) {
 }
 
 void main() {
-
-#if 1
     float shadowVal = shadow_calculation(f_posLightSpace, f_normal, normalize(-directionalLight.direction), shadowMap);
-#else
-    float throwaway = texture(shadowMap, vec2(0.0, 0.0)).r;
-    float shadowVal = 0.0;
-#endif
+    //shadowVal = 0.0;
 
-
-#if 1
     float pointShadowVal = point_shadow_calculation(pointlight, f_position);
-#else
-    float pointThrowaway = texture(pointShadowMap, vec3(0.0, 0.0, 0.0)).r;
-    float pointShadowVal = 0.0;
-#endif
+    //pointShadowVal = 0.0;
 
-
-#if 1
     float spotShadowVal = shadow_calculation(f_posSpotLightSpace, f_normal, normalize(-spotLight.direction), spotShadowMap);
-#else
-    float throwaway = texture(spotShadowMap, vec2(0.0, 0.0)).r;
-    float spotShadowVal = 0.0;
-#endif
-
+    //spotShadowVal = 0.0;
 
     vec3 viewDir = normalize(viewPos - f_position);
     vec3 result = vec3(0);
@@ -358,7 +340,6 @@ void main() {
 #define USE_DIRECTIONAL_LIGHT  0
 #define USE_POINT_LIGHT        1
 #define USE_SPOT_LIGHT         1
-
 
 #if USE_DIRECTIONAL_LIGHT
     result += calc_directional_light(directionalLight, f_normal, f_position, viewDir, shadowVal);
@@ -390,4 +371,26 @@ void main() {
     result = pow(result, vec3(1.0f/gamma));
 
     color = vec4(result, 1.0f);
+
+
+    //
+    // TODO: implement environment mapping
+    //
+
+    // vertex shader has all needed data
+    // fragment shader just needs samplerCube and camera position (viewPos uniform)
+
+    // fragment shader color lookup
+    //vec3 I = normalize(Position - cameraPos);
+    //vec3 R = reflect(I, normalize(Normal));
+    //color = texture(skybox, R);
+
+    //
+    // TODO: get rid of throwaway after using uniforms (otherwise compiler will remove them)
+    //
+    float throwaway = 0.0;
+    if (useDefaultCubeMap) {
+        throwaway = texture(defaultCubeMap, vec3(0.0, 0.0, 0.0)).r;
+        color = vec4(1.0, 0.0, 0.0, 1.0);
+    }
 }

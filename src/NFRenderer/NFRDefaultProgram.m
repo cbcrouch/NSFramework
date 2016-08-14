@@ -152,6 +152,17 @@
     NSAssert(self.shadowMapUniform != -1, @"failed to get point shadow map uniform location");
 
 
+    //
+    // TODO: will want to remove the default cube map for release builds since they
+    //       shouldn't have any untextured assets
+    //
+    self.useDefaultCubeMapUniform = glGetUniformLocation(self.hProgram, "useDefaultCubeMap");
+    NSAssert(self.useDefaultCubeMapUniform != -1, @"failed to get use default cube map uniform");
+
+    self.defaultCubeMapUniform = glGetUniformLocation(self.hProgram, "defaultCubeMap");
+    NSAssert(self.defaultCubeMapUniform != -1, @"failed to get default cube map uniform");
+
+
     // view position uniform location
     self.viewPositionLocation = glGetUniformLocation(self.hProgram, "viewPos");
     NSAssert(self.viewPositionLocation != -1, @"failed to get uniform location");
@@ -328,6 +339,16 @@
             NFRDataMapGL* textureGL = (geometry.textureDictionary)[key];
             [textureGL activateTexture:GL_TEXTURE0 withUniformLocation:self.materialUniforms.diffuseMapLoc];
         }
+    }
+
+    //
+    // NOTE: if texture dictionary is empty then setup default cube map for environment mapping
+    //
+    if(geometry.textureDictionary.count != 0) {
+        glUniform1i(self.useDefaultCubeMapUniform, FALSE);
+    }
+    else {
+        glUniform1i(self.useDefaultCubeMapUniform, TRUE);
     }
 
     glBindVertexArray(geometry.vertexBuffer.bufferAttributes.hVAO);

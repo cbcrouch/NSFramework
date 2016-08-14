@@ -85,6 +85,9 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     NFRCubeMap* m_skyBox;
     NFAssetData* m_skyBoxData;
 
+    NFRCubeMap* m_defaultCubeMap;
+    NFRCubeMapGL* m_defaultCubeMapGL;
+
     GLKMatrix4 m_dirViewMat;
     GLKMatrix4 m_dirOrthoProj;
     GLKMatrix4 m_spotViewMat;
@@ -260,7 +263,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
-    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
+    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
 
     //
     // TODO: teapot contains vertices and texture coordinates (no normals), does not use objects or groups,
@@ -279,7 +282,10 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //       different primitive mode
     //
 
-    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/suzanne.obj";
+    //
+    // TODO: apply enviroment mapping of default texture loaded into a cube map for assets without a texture
+    //
+    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/suzanne.obj";
 
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/buddha.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/dragon.obj";
@@ -288,11 +294,54 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     m_pAsset = [NFAssetLoader allocAssetDataOfType:kWavefrontObj withArgs:fileNamePath, nil];
     [m_pAsset generateRenderables];
 
-    //m_pAsset.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 1.0f, 0.0f);
-    //[m_pAsset stepTransforms:0.0f];
+    // use for suzanne
+    m_pAsset.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 1.0f, 0.0f);
+    [m_pAsset stepTransforms:0.0f];
 
+    // use for teapot
     //[m_pAsset applyOriginCenterMatrix];
-    //[m_pAsset applyUnitScalarMatrix]; // use for teapot
+    //[m_pAsset applyUnitScalarMatrix];
+
+
+    //
+    // TODO: remove default surface model and texture coords from geometry without a texture
+    //       and enable environment mapping when drawing asset geometry
+    //
+
+    NFSurfaceModel* defaultSurface = [NFSurfaceModel defaultSurfaceModel];
+    NFRDataMap* defaultMap = defaultSurface.map_Kd;
+
+    m_defaultCubeMap = [[NFRCubeMap alloc] init];
+    for (int i=0; i<6; ++i) {
+        [m_defaultCubeMap loadFace:i withData:defaultMap.data ofSize:CGRectMake(0.0f, 0.0f, (float)defaultMap.width, (float)defaultMap.height) ofType:defaultMap.type withFormat:defaultMap.format];
+    }
+
+    m_defaultCubeMapGL = [[NFRCubeMapGL alloc] init];
+    [m_defaultCubeMapGL syncCubeMap:m_defaultCubeMap];
+
+    glUseProgram(m_phongShader.hProgram);
+
+    if([m_phongShader respondsToSelector:@selector(useDefaultCubeMapUniform)]) {
+        GLint useUniform = (GLint)[m_phongShader performSelector:@selector(useDefaultCubeMapUniform) withObject:nil];
+        glUniform1i(useUniform, FALSE);
+    }
+
+    if([m_phongShader respondsToSelector:@selector(defaultCubeMapUniform)]) {
+        GLint cubeMapUniform = (GLint)[m_phongShader performSelector:@selector(defaultCubeMapUniform) withObject:nil];
+
+        // should stay bound for all frames
+        glActiveTexture(GL_TEXTURE15);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, m_defaultCubeMapGL.textureID);
+        glUniform1i(cubeMapUniform, GL_TEXTURE15 - GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+    }
+
+    glUseProgram(0);
+    CHECK_GL_ERROR();
+
+    //
+    //
+    //
 
 
     NSString* cubeMapPath = @"/Users/cayce/Developer/NSGL/Textures/Yokohama3";

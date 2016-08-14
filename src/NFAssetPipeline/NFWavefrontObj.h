@@ -59,7 +59,7 @@ static NSInteger (^normalizeObjIndex)(NSInteger, NSUInteger) = ^ NSInteger (NSIn
 @property (nonatomic, strong) NSMutableArray *textureCoords;
 @property (nonatomic, strong) NSMutableArray *normals;
 
-- (void) calculateTextureCoordinates;
+//- (void) calculateTextureCoordinates;
 - (void) calculateNormals;
 
 @end

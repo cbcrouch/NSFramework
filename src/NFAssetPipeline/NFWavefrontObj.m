@@ -95,6 +95,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     return _groups;
 }
 
+/*
 //
 // TODO: pass in Wavefront obj center point
 //
@@ -226,6 +227,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
         }
     }
 }
+*/
 
 //
 // TODO: should take a param that will determine whether to use area weighted normals or angle weighted normals
@@ -561,15 +563,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
                     self.activeGroup.groupName = @"default_group";
                 }
 
-
-                //
-                // TODO: only do this once but will need to hold onto the defaultSurface pointer
-                //       so the material name can be set
-                //
-                NFSurfaceModel *defaultSurface = [NFSurfaceModel defaultSurfaceModel];
-                [self.materialsArray addObject:defaultSurface];
-
-                self.activeGroup.materialName = defaultSurface.name;
+                self.activeGroup.materialName = @"null";
             }
         }
         else if ([line hasPrefix:g_vertPrefix]) {

@@ -79,6 +79,9 @@ typedef struct spotLightUniforms_t {
 @property (nonatomic, assign) GLint spotShadowMapUniform;
 @property (nonatomic, assign) GLint pointShadowMapUniform;
 
+@property (nonatomic, assign) GLint useDefaultCubeMapUniform;
+@property (nonatomic, assign) GLint defaultCubeMapUniform;
+
 - (void) setShadowMap:(NSValue*)valueObj;
 - (void) setSpotShadowMap:(NSValue*)valueObj;
 - (void) setPointShadowMap:(NSValue*)valueObj;
