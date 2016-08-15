@@ -262,7 +262,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     NSString *fileNamePath;
 
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
-    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
+    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
 
     //
@@ -282,10 +282,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //       different primitive mode
     //
 
-    //
-    // TODO: apply enviroment mapping of default texture loaded into a cube map for assets without a texture
-    //
-    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/suzanne.obj";
+    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/suzanne.obj";
 
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/buddha.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/dragon.obj";
@@ -329,15 +326,30 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     if([m_phongShader respondsToSelector:@selector(defaultCubeMapUniform)]) {
         GLint cubeMapUniform = (GLint)[m_phongShader performSelector:@selector(defaultCubeMapUniform) withObject:nil];
 
-        // should stay bound for all frames
         glActiveTexture(GL_TEXTURE15);
         glBindTexture(GL_TEXTURE_CUBE_MAP, m_defaultCubeMapGL.textureID);
         glUniform1i(cubeMapUniform, GL_TEXTURE15 - GL_TEXTURE0);
+
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
         glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
     }
 
     glUseProgram(0);
     CHECK_GL_ERROR();
+
+    //
+    // TODO: get a sphere loaded without a texture and verify that environment mapping with the
+    //       default texture applied to a cube map is working correctly
+    //
+
+    GLint defaultCubeMapHandle = m_defaultCubeMapGL.textureID;
+    [m_pAsset.geometry assignCubeMapHandle:[NSValue value:&defaultCubeMapHandle withObjCType:@encode(GLint)]];
 
     //
     //
@@ -368,6 +380,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
     m_skyBoxData = [NFAssetLoader allocAssetDataOfType:kCubeMapGeometry withArgs:nil];
     [m_skyBoxData generateRenderables];
+
 
     [m_skyBoxData.geometry assignCubeMap:m_skyBox];
 

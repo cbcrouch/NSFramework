@@ -69,7 +69,9 @@ struct spotLight_t {
     float quadratic;
 };
 
-
+//
+// TODO: rename to camera position
+//
 uniform vec3 viewPos;
 
 //uniform bool useBlinnSpecular;
@@ -88,6 +90,9 @@ uniform samplerCube pointShadowMap;
 uniform bool useDefaultCubeMap;
 uniform samplerCube defaultCubeMap;
 
+//
+// TODO: add layout qualifiers
+//
 
 in vec3 f_position;
 in vec3 f_normal;
@@ -101,15 +106,33 @@ in vec4 f_posSpotLightSpace;
 
 out vec4 color;
 
+//
+// TODO: pass in params for light calculations through a common struct
+//
+/*
+struct lighting_t {
+    vec3 normal;
+    vec3 fragPosition;
+    vec3 viewDir;
+    float shadow;
 
+    vec4 texelColor;
+};
+*/
 vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir, float shadow);
 vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir, float shadow);
 vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir, float shadow);
 
 
 //
-// TODO: add layout qualifiers
+// TODO: get environment map displaying without lighting (use debugging tools to verify that cube map
+//       data is valid when the attempt to render the frame)
 //
+vec4 cubemap_reflect() {
+    vec3 I = normalize(f_position - viewPos);
+    vec3 R = reflect(I, normalize(f_normal));
+    return texture(defaultCubeMap, R);
+}
 
 
 //
@@ -124,13 +147,28 @@ vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosi
     vec3 lightDir = normalize(-light.direction);
     vec3 norm = normalize(normal);
 
+/*
+    vec3 texel = texture(material.diffuseMap, f_texcoord).xyz;
+    if (useDefaultCubeMap) {
+        texel = cubemap_reflect().xyz;
+    }
+*/
+
+
     // ambient
     vec3 ambient = light.ambient * material.ambient * vec3(texture(material.diffuseMap, f_texcoord));
+    //vec3 ambient = light.ambient * material.ambient * texel;
 
     // diffuse
     float diff = max(dot(norm, lightDir), 0.0f);
+
+
+
     //vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuseMap, f_texcoord));
     vec3 diffuse = light.diffuse * (diff * material.diffuse * texture(material.diffuseMap, f_texcoord).xyz);
+    //vec3 diffuse = light.diffuse * (diff * material.diffuse * texel);
+
+
 
     // specular
     //
@@ -150,24 +188,33 @@ vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosi
     }
 
     vec3 specular = light.specular * spec * material.specular;
-
-    //
-    //
-    //
     return (ambient + ((1.0 - shadow) * (diffuse + specular)));
-    //return (ambient + diffuse + specular);
 }
 
 vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir, float shadow) {
     vec3 lightDir = normalize(light.position - fragPosition);
     vec3 norm = normalize(normal);
 
+/*
+    vec3 texel = texture(material.diffuseMap, f_texcoord).xyz;
+    if (useDefaultCubeMap) {
+        //texel = cubemap_reflect().xyz;
+        texel = vec3(0.0, 0.5, 0.0);
+    }
+*/
+
     // ambient
     vec3 ambient = light.ambient * material.ambient * texture(material.diffuseMap, f_texcoord).xyz;
+    //vec3 ambient = light.ambient * material.ambient * texel;
 
     // diffuse
     float diff = max(dot(norm, lightDir), 0.0f);
+
+
     vec3 diffuse = light.diffuse * (diff * material.diffuse * texture(material.diffuseMap, f_texcoord).xyz);
+    //vec3 diffuse = light.diffuse * (diff * material.diffuse * texel);
+
+
 
     // specular
     //
@@ -194,23 +241,32 @@ vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 v
     diffuse  *= attenuation;
     specular *= attenuation;
 
-    //
-    //
-    //
     return (ambient + ((1.0 - shadow) * (diffuse + specular)));
-    //return (ambient + diffuse + specular);
 }
 
 vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 viewDir, float shadow) {
     vec3 lightDir = normalize(light.position - fragPosition);
     vec3 norm = normalize(normal);
 
+/*
+    vec3 texel = texture(material.diffuseMap, f_texcoord).xyz;
+    if (useDefaultCubeMap) {
+        texel = cubemap_reflect().xyz;
+    }
+*/
+
     // ambient
     vec3 ambient = light.ambient * material.ambient * texture(material.diffuseMap, f_texcoord).xyz;
+    //vec3 ambient = light.ambient * material.ambient * texel;
+
 
     // diffuse
     float diff = max(dot(norm, lightDir), 0.0f);
+
     vec3 diffuse = light.diffuse * (diff * material.diffuse * texture(material.diffuseMap, f_texcoord).xyz);
+    //vec3 diffuse = light.diffuse * (diff * material.diffuse * texel);
+
+
 
     // specular
     //
@@ -252,11 +308,7 @@ vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 vie
     diffuse *= attenuation;
     specular *= attenuation;
 
-    //
-    //
-    //
     return (ambient + ((1.0 - shadow) * (diffuse + specular)));
-    //return(ambient + diffuse + specular);
 }
 
 //
@@ -339,7 +391,7 @@ void main() {
 
 #define USE_DIRECTIONAL_LIGHT  0
 #define USE_POINT_LIGHT        1
-#define USE_SPOT_LIGHT         1
+#define USE_SPOT_LIGHT         0
 
 #if USE_DIRECTIONAL_LIGHT
     result += calc_directional_light(directionalLight, f_normal, f_position, viewDir, shadowVal);
@@ -347,7 +399,6 @@ void main() {
     vec3 directionalOutput = calc_directional_light(directionalLight, f_normal, f_position, viewDir, shadowVal);
     directionalOutput = result;
 #endif
-
 
 #if USE_POINT_LIGHT
     result += calc_point_light(pointlight, f_normal, f_position, viewDir, pointShadowVal);
@@ -374,23 +425,11 @@ void main() {
 
 
     //
-    // TODO: implement environment mapping
+    // TODO: get environment map displaying without lighting
     //
-
-    // vertex shader has all needed data
-    // fragment shader just needs samplerCube and camera position (viewPos uniform)
-
-    // fragment shader color lookup
-    //vec3 I = normalize(Position - cameraPos);
-    //vec3 R = reflect(I, normalize(Normal));
-    //color = texture(skybox, R);
-
-    //
-    // TODO: get rid of throwaway after using uniforms (otherwise compiler will remove them)
-    //
-    float throwaway = 0.0;
     if (useDefaultCubeMap) {
-        throwaway = texture(defaultCubeMap, vec3(0.0, 0.0, 0.0)).r;
-        color = vec4(1.0, 0.0, 0.0, 1.0);
+        color = cubemap_reflect();
     }
+
+
 }

@@ -281,7 +281,7 @@
 
 //
 // TODO: either remove this method since it could be used as a workaround or make it
-//       officially supported
+//       officially supported (could also be used for environment mapping)
 //
 - (void) assignCubeMapHandle:(NSValue*)valueObj {
     (self.textureDictionary)[@"cubeMapHandle"] = valueObj;

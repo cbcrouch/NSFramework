@@ -41,6 +41,11 @@
             // TODO: profile and optimize the file parsing
             //
             [wavefrontObj parseFile];
+
+            //
+            // TODO: modify calculateTextureCoordinates to work for procedural texture generation
+            //       (most likely will only be able to work with procedurally generated geometry)
+            //
 /*
             if (wavefrontObj.object.textureCoords.count == 0) {
                 [wavefrontObj.object calculateTextureCoordinates];
