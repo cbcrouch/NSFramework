@@ -334,16 +334,13 @@
     glUniform3f(self.materialUniforms.specularLoc,  geometry.surfaceModel.Ks.r, geometry.surfaceModel.Ks.g, geometry.surfaceModel.Ks.b);
     glUniform1f(self.materialUniforms.shineLoc, geometry.surfaceModel.Ns);
 
-
+    BOOL useEnvironmentMapping = NO;
     for (NSString* key in geometry.textureDictionary) {
         if ([key isEqualToString:@"diffuseTexture"]) {
             NFRDataMapGL* textureGL = (geometry.textureDictionary)[key];
             [textureGL activateTexture:GL_TEXTURE0 withUniformLocation:self.materialUniforms.diffuseMapLoc];
-
-            glUniform1i(self.useDefaultCubeMapUniform, FALSE);
         }
         else if ([key isEqualToString:@"cubeMapHandle"]) {
-
             NSValue* valueObj = (geometry.textureDictionary)[key];
             GLint textureID = 0;
             [valueObj getValue:&textureID];
@@ -353,10 +350,16 @@
             glUniform1i(self.useDefaultCubeMapUniform, GL_TEXTURE15 - GL_TEXTURE0);
             CHECK_GL_ERROR();
 
-            glUniform1i(self.useDefaultCubeMapUniform, TRUE);
+            useEnvironmentMapping = YES;
         }
     }
 
+    if (!useEnvironmentMapping) {
+        glUniform1i(self.useDefaultCubeMapUniform, FALSE);
+    }
+    else {
+        glUniform1i(self.useDefaultCubeMapUniform, TRUE);
+    }
 
     glBindVertexArray(geometry.vertexBuffer.bufferAttributes.hVAO);
 

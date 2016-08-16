@@ -262,7 +262,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     NSString *fileNamePath;
 
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
-    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
+    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
 
     //
@@ -282,7 +282,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //       different primitive mode
     //
 
-    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/suzanne.obj";
+    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/suzanne.obj";
 
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/buddha.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/dragon.obj";
@@ -326,12 +326,18 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     if([m_phongShader respondsToSelector:@selector(defaultCubeMapUniform)]) {
         GLint cubeMapUniform = (GLint)[m_phongShader performSelector:@selector(defaultCubeMapUniform) withObject:nil];
 
+        //
+        // TODO: textures should have a consistent way of getting a texture unit assigned to them
+        //
         glActiveTexture(GL_TEXTURE15);
         glBindTexture(GL_TEXTURE_CUBE_MAP, m_defaultCubeMapGL.textureID);
         glUniform1i(cubeMapUniform, GL_TEXTURE15 - GL_TEXTURE0);
 
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);

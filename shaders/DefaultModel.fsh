@@ -74,6 +74,9 @@ struct spotLight_t {
 //
 uniform vec3 viewPos;
 
+//
+// TODO: add option to use Blinn specular
+//
 //uniform bool useBlinnSpecular;
 
 uniform material_t material;
@@ -195,31 +198,32 @@ vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 v
     vec3 lightDir = normalize(light.position - fragPosition);
     vec3 norm = normalize(normal);
 
-/*
+
+    //
+    // TODO: have on function that is responsible for getting the fragment color that can then be
+    //       passed into the lighting functions
+    //
     vec3 texel = texture(material.diffuseMap, f_texcoord).xyz;
     if (useDefaultCubeMap) {
-        //texel = cubemap_reflect().xyz;
-        texel = vec3(0.0, 0.5, 0.0);
+        texel = cubemap_reflect().xyz;
+        //texel = vec3(0.0, 0.5, 0.0);
     }
-*/
+
 
     // ambient
-    vec3 ambient = light.ambient * material.ambient * texture(material.diffuseMap, f_texcoord).xyz;
-    //vec3 ambient = light.ambient * material.ambient * texel;
+    //vec3 ambient = light.ambient * material.ambient * texture(material.diffuseMap, f_texcoord).xyz;
+    vec3 ambient = light.ambient * material.ambient * texel;
 
     // diffuse
     float diff = max(dot(norm, lightDir), 0.0f);
 
 
-    vec3 diffuse = light.diffuse * (diff * material.diffuse * texture(material.diffuseMap, f_texcoord).xyz);
-    //vec3 diffuse = light.diffuse * (diff * material.diffuse * texel);
+    //vec3 diffuse = light.diffuse * (diff * material.diffuse * texture(material.diffuseMap, f_texcoord).xyz);
+    vec3 diffuse = light.diffuse * (diff * material.diffuse * texel);
 
 
 
     // specular
-    //
-    // TODO: add option to use Blinn specular
-    //
     bool useBlinn = false;
 
     float spec = 0.0f;
@@ -267,11 +271,7 @@ vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 vie
     //vec3 diffuse = light.diffuse * (diff * material.diffuse * texel);
 
 
-
     // specular
-    //
-    // TODO: add option to use Blinn specular
-    //
     bool useBlinn = false;
 
     float spec = 0.0f;
@@ -378,13 +378,8 @@ float point_shadow_calculation(pointLight_t light, vec3 fragPosition) {
 
 void main() {
     float shadowVal = shadow_calculation(f_posLightSpace, f_normal, normalize(-directionalLight.direction), shadowMap);
-    //shadowVal = 0.0;
-
     float pointShadowVal = point_shadow_calculation(pointlight, f_position);
-    //pointShadowVal = 0.0;
-
     float spotShadowVal = shadow_calculation(f_posSpotLightSpace, f_normal, normalize(-spotLight.direction), spotShadowMap);
-    //spotShadowVal = 0.0;
 
     vec3 viewDir = normalize(viewPos - f_position);
     vec3 result = vec3(0);
@@ -427,9 +422,11 @@ void main() {
     //
     // TODO: get environment map displaying without lighting
     //
-    if (useDefaultCubeMap) {
-        color = cubemap_reflect();
-    }
 
+    float throwaway = 0.0;
+    if (useDefaultCubeMap) {
+        //color = cubemap_reflect();
+        throwaway = cubemap_reflect().r;
+    }
 
 }
