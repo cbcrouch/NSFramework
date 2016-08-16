@@ -261,6 +261,10 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
     NSString *fileNamePath;
 
+    //
+    // TODO: get a sphere loaded without a texture and verify that environment mapping is working correctly
+    //
+
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
@@ -300,67 +304,6 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //[m_pAsset applyUnitScalarMatrix];
 
 
-    //
-    // TODO: remove default surface model and texture coords from geometry without a texture
-    //       and enable environment mapping when drawing asset geometry
-    //
-
-    NFSurfaceModel* defaultSurface = [NFSurfaceModel defaultSurfaceModel];
-    NFRDataMap* defaultMap = defaultSurface.map_Kd;
-
-    m_defaultCubeMap = [[NFRCubeMap alloc] init];
-    for (int i=0; i<6; ++i) {
-        [m_defaultCubeMap loadFace:i withData:defaultMap.data ofSize:CGRectMake(0.0f, 0.0f, (float)defaultMap.width, (float)defaultMap.height) ofType:defaultMap.type withFormat:defaultMap.format];
-    }
-
-    m_defaultCubeMapGL = [[NFRCubeMapGL alloc] init];
-    [m_defaultCubeMapGL syncCubeMap:m_defaultCubeMap];
-
-    glUseProgram(m_phongShader.hProgram);
-
-    if([m_phongShader respondsToSelector:@selector(useDefaultCubeMapUniform)]) {
-        GLint useUniform = (GLint)[m_phongShader performSelector:@selector(useDefaultCubeMapUniform) withObject:nil];
-        glUniform1i(useUniform, FALSE);
-    }
-
-    if([m_phongShader respondsToSelector:@selector(defaultCubeMapUniform)]) {
-        GLint cubeMapUniform = (GLint)[m_phongShader performSelector:@selector(defaultCubeMapUniform) withObject:nil];
-
-        //
-        // TODO: textures should have a consistent way of getting a texture unit assigned to them
-        //
-        glActiveTexture(GL_TEXTURE15);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, m_defaultCubeMapGL.textureID);
-        glUniform1i(cubeMapUniform, GL_TEXTURE15 - GL_TEXTURE0);
-
-        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-    }
-
-    glUseProgram(0);
-    CHECK_GL_ERROR();
-
-    //
-    // TODO: get a sphere loaded without a texture and verify that environment mapping with the
-    //       default texture applied to a cube map is working correctly
-    //
-
-    GLint defaultCubeMapHandle = m_defaultCubeMapGL.textureID;
-    [m_pAsset.geometry assignCubeMapHandle:[NSValue value:&defaultCubeMapHandle withObjCType:@encode(GLint)]];
-
-    //
-    //
-    //
-
 
     NSString* cubeMapPath = @"/Users/cayce/Developer/NSGL/Textures/Yokohama3";
     m_skyBox = [[NFRCubeMap alloc] init];
@@ -391,6 +334,20 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     [m_skyBoxData.geometry assignCubeMap:m_skyBox];
 
 
+
+    //
+    // TODO: tex parameters should be handled somewhere else, plus geometry needs to have the ability
+    //       to have an environment map assigned to them (which will be handled differently than a cube
+    //       map, and that needs to be made clear from the API)
+    //
+    m_defaultCubeMapGL = [[NFRCubeMapGL alloc] init];
+    [m_defaultCubeMapGL syncCubeMap:m_skyBox];
+
+    GLint defaultCubeMapHandle = m_defaultCubeMapGL.textureID;
+    [m_pAsset.geometry assignCubeMapHandle:[NSValue value:&defaultCubeMapHandle withObjCType:@encode(GLint)]];
+
+
+
     m_axisData = [NFAssetLoader allocAssetDataOfType:kAxisWireframe withArgs:nil];
     [m_axisData generateRenderables];
 
@@ -406,6 +363,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //
     //ASSET_TYPE assetType = kSolidCylinder;
     ASSET_TYPE assetType = kSolidCone;
+
     m_pProceduralData = [NFAssetLoader allocAssetDataOfType:assetType withArgs:@(kVertexFormatDefault), nil];
 
     GLKVector3 position = GLKVector3Make(1.0f, 1.0f, -1.0f);

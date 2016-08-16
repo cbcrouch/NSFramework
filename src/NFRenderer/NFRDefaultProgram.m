@@ -347,7 +347,7 @@
 
             glActiveTexture(GL_TEXTURE15);
             glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
-            glUniform1i(self.useDefaultCubeMapUniform, GL_TEXTURE15 - GL_TEXTURE0);
+            glUniform1i(self.defaultCubeMapUniform, GL_TEXTURE15 - GL_TEXTURE0);
             CHECK_GL_ERROR();
 
             useEnvironmentMapping = YES;
