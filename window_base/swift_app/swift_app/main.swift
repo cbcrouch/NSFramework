@@ -22,12 +22,12 @@ class NFView: NSView {
         //commonInit()
     }
 
-    override func insertText(insertString: AnyObject) {
+    override func insertText(_ insertString: Any) {
         let string: String = insertString as! String
         Swift.print("insertText called in NFView: \(string)", terminator: "\n")
     }
 
-    override func keyDown(theEvent: NSEvent) {
+    override func keyDown(with theEvent: NSEvent) {
         self.interpretKeyEvents([theEvent])
     }
 
@@ -38,9 +38,9 @@ class NFView: NSView {
 
 
 class WindowDelegate: NSObject, NSWindowDelegate {
-    func windowWillClose(notification: NSNotification) {
+    func windowWillClose(_ notification: Notification) {
         print("WindowDelegate windowWillClose called", terminator: "\n")
-        NSApplication.sharedApplication().terminate(0)
+        NSApplication.shared().terminate(0)
     }
 }
 
@@ -86,16 +86,16 @@ class ApplicationDelegate: NSObject, NSApplicationDelegate {
         // - set view outlets here then call awakeFromNib on each view
     }
 
-    func applicationDidFinishLaunching(notification: NSNotification) {
+    func applicationDidFinishLaunching(_ notification: Notification) {
 
-        let mask = (NSEventMask.KeyDownMask)
-        let _ : AnyObject! = NSEvent.addLocalMonitorForEventsMatchingMask(mask, handler: { (event: (NSEvent!)) -> NSEvent in
+        let mask = (NSEventMask.keyDown)
+        let _ : AnyObject! = NSEvent.addLocalMonitorForEvents(matching: mask, handler: { (event: (NSEvent!)) -> NSEvent in
             //
             // TODO: send event data to desired method based on type
             //
             print("local KeyDown: \(event.characters) (\(String(event.keyCode)))", terminator: "\n")
             return event
-        })
+        }) as AnyObject!
 
         print("application did finish launching", terminator: "\n")
 
@@ -103,7 +103,7 @@ class ApplicationDelegate: NSObject, NSApplicationDelegate {
         //
         // TODO: insert code here to initialize your application here
         //
-        NSApp.activateIgnoringOtherApps(true)
+        NSApp.activate(ignoringOtherApps: true)
     }
 }
 
@@ -128,7 +128,7 @@ class Application: NSApplication {
         //
     }
 
-    override func terminate(sender: AnyObject?) {
+    override func terminate(_ sender: Any?) {
         //
     }
 }
@@ -136,7 +136,7 @@ class Application: NSApplication {
 
 
 func main() -> Int32 {
-    for argument in Process.arguments {
+    for argument in CommandLine.arguments {
         switch argument {
         default:
             print("", terminator: "")
@@ -144,10 +144,10 @@ func main() -> Int32 {
     }
 
 
-    let nsApp = NSApplication.sharedApplication()
+    let nsApp = NSApplication.shared()
     //let _ = NSApplication.sharedApplication()
 
-    nsApp.setActivationPolicy(NSApplicationActivationPolicy.Regular)
+    nsApp.setActivationPolicy(NSApplicationActivationPolicy.regular)
 
 
     let menuBar = NSMenu()
@@ -157,7 +157,7 @@ func main() -> Int32 {
     nsApp.mainMenu = menuBar
 
     let appMenu = NSMenu()
-    let appName = NSProcessInfo.processInfo().processName
+    let appName = ProcessInfo.processInfo.processName
 
     let quitTitle = "Quit " + appName
     let quitMenuItem = NSMenuItem(title: quitTitle, action: #selector(nsApp.terminate(_:)), keyEquivalent: "q")
@@ -171,9 +171,9 @@ func main() -> Int32 {
     //let windowMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask
 
     let win = NSWindow(contentRect: NSMakeRect(100, 100, 600, 200), styleMask: NSTitledWindowMask,
-        backing: NSBackingStoreType.Buffered, defer: true)
+        backing: NSBackingStoreType.buffered, defer: true)
 
-    win.cascadeTopLeftFromPoint(NSMakePoint(20, 20))
+    win.cascadeTopLeft(from: NSMakePoint(20, 20))
     win.title = appName
     win.makeKeyAndOrderFront(nil)
 
