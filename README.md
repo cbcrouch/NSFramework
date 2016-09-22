@@ -22,7 +22,7 @@ between. Expect minor activity during breaks from school at best.
 Dependencies
 ------------
 
-OS X 10.11
+macOS 10.12
 OpenGL 4.1 compatible GPU
 
 Building
@@ -30,7 +30,7 @@ Building
 
 ### Prerequisites
 
-Xcode 7.x
+Xcode 8.x
 (Xcode Command Line Tools optional but recommended)
 
 ### Getting source

@@ -170,7 +170,7 @@ func main() -> Int32 {
 
     //let windowMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask
 
-    let win = NSWindow(contentRect: NSMakeRect(100, 100, 600, 200), styleMask: NSTitledWindowMask,
+    let win = NSWindow(contentRect: NSMakeRect(100, 100, 600, 200), styleMask: NSWindowStyleMask.titled,
         backing: NSBackingStoreType.buffered, defer: true)
 
     win.cascadeTopLeft(from: NSMakePoint(20, 20))

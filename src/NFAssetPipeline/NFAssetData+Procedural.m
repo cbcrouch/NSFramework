@@ -380,6 +380,10 @@ static const char *g_faceType = @encode(NFFace_t);
                 //       distribute the texture coordinates
                 //
 
+                //
+                // TODO: calculate a more accurate texture coordinate for spherical texture mapping
+                //
+
                 vertices[index].texCoord[0] = phi / M_PI;
                 vertices[index].texCoord[1] = theta / (2.0f*M_PI);
                 vertices[index].texCoord[2] = 0.0f;
