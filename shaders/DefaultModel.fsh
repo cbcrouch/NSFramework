@@ -150,28 +150,18 @@ vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosi
     vec3 lightDir = normalize(-light.direction);
     vec3 norm = normalize(normal);
 
-/*
     vec3 texel = texture(material.diffuseMap, f_texcoord).xyz;
     if (useDefaultCubeMap) {
-        texel = cubemap_reflect().xyz;
+        //texel = cubemap_reflect().xyz;
+        texel = vec3(0.0, 0.75, 0.0);
     }
-*/
-
 
     // ambient
-    vec3 ambient = light.ambient * material.ambient * vec3(texture(material.diffuseMap, f_texcoord));
-    //vec3 ambient = light.ambient * material.ambient * texel;
+    vec3 ambient = light.ambient * material.ambient * texel;
 
     // diffuse
     float diff = max(dot(norm, lightDir), 0.0f);
-
-
-
-    //vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuseMap, f_texcoord));
-    vec3 diffuse = light.diffuse * (diff * material.diffuse * texture(material.diffuseMap, f_texcoord).xyz);
-    //vec3 diffuse = light.diffuse * (diff * material.diffuse * texel);
-
-
+    vec3 diffuse = light.diffuse * (diff * material.diffuse * texel);
 
     // specular
     //
@@ -198,6 +188,12 @@ vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 v
     vec3 lightDir = normalize(light.position - fragPosition);
     vec3 norm = normalize(normal);
 
+    //
+    // TODO: cleaner cutoff lighting if surface is facing away from the light direction
+    //
+    if(dot(lightDir, norm) < 0.0f) {
+        return vec3(0.0f);
+    }
 
     //
     // TODO: have on function that is responsible for getting the fragment color that can then be
@@ -205,23 +201,17 @@ vec3 calc_point_light(pointLight_t light, vec3 normal, vec3 fragPosition, vec3 v
     //
     vec3 texel = texture(material.diffuseMap, f_texcoord).xyz;
     if (useDefaultCubeMap) {
-        texel = cubemap_reflect().xyz;
-        //texel = vec3(0.0, 0.5, 0.0);
+        //texel = cubemap_reflect().xyz;
+        texel = vec3(0.0, 0.75, 0.0);
     }
 
 
     // ambient
-    //vec3 ambient = light.ambient * material.ambient * texture(material.diffuseMap, f_texcoord).xyz;
     vec3 ambient = light.ambient * material.ambient * texel;
 
     // diffuse
     float diff = max(dot(norm, lightDir), 0.0f);
-
-
-    //vec3 diffuse = light.diffuse * (diff * material.diffuse * texture(material.diffuseMap, f_texcoord).xyz);
     vec3 diffuse = light.diffuse * (diff * material.diffuse * texel);
-
-
 
     // specular
     bool useBlinn = false;
@@ -252,24 +242,25 @@ vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 vie
     vec3 lightDir = normalize(light.position - fragPosition);
     vec3 norm = normalize(normal);
 
-/*
+    //
+    // TODO: cleaner cutoff lighting if surface is facing away from the light direction
+    //
+    if(dot(lightDir, norm) < 0.0f) {
+        return vec3(0.0f);
+    }
+
     vec3 texel = texture(material.diffuseMap, f_texcoord).xyz;
     if (useDefaultCubeMap) {
-        texel = cubemap_reflect().xyz;
+        //texel = cubemap_reflect().xyz;
+        texel = vec3(1.0, 0.0, 1.0);
     }
-*/
 
     // ambient
-    vec3 ambient = light.ambient * material.ambient * texture(material.diffuseMap, f_texcoord).xyz;
-    //vec3 ambient = light.ambient * material.ambient * texel;
-
+    vec3 ambient = light.ambient * material.ambient * texel;
 
     // diffuse
     float diff = max(dot(norm, lightDir), 0.0f);
-
-    vec3 diffuse = light.diffuse * (diff * material.diffuse * texture(material.diffuseMap, f_texcoord).xyz);
-    //vec3 diffuse = light.diffuse * (diff * material.diffuse * texel);
-
+    vec3 diffuse = light.diffuse * (diff * material.diffuse * texel);
 
     // specular
     bool useBlinn = false;
@@ -308,6 +299,7 @@ vec3 calc_spot_light(spotLight_t light, vec3 normal, vec3 fragPosition, vec3 vie
     diffuse *= attenuation;
     specular *= attenuation;
 
+
     return (ambient + ((1.0 - shadow) * (diffuse + specular)));
 }
 
@@ -322,6 +314,7 @@ float shadow_calculation(vec4 frag_pos_light_space, vec3 normal, vec3 lightDir, 
     if(projCoords.z > 1.0f) {
         return 0.0f;
     }
+
 
     float currentDepth = projCoords.z;
 
@@ -371,6 +364,7 @@ float point_shadow_calculation(pointLight_t light, vec3 fragPosition) {
 
     //float bias = 0.05;
     float bias = 0.00125;
+
     float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
 
     return shadow;
@@ -384,9 +378,9 @@ void main() {
     vec3 viewDir = normalize(viewPos - f_position);
     vec3 result = vec3(0);
 
-#define USE_DIRECTIONAL_LIGHT  0
+#define USE_DIRECTIONAL_LIGHT  1
 #define USE_POINT_LIGHT        1
-#define USE_SPOT_LIGHT         0
+#define USE_SPOT_LIGHT         1
 
 #if USE_DIRECTIONAL_LIGHT
     result += calc_directional_light(directionalLight, f_normal, f_position, viewDir, shadowVal);
