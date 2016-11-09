@@ -87,7 +87,6 @@ class ApplicationDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-
         let mask = (NSEventMask.keyDown)
         let _ : AnyObject! = NSEvent.addLocalMonitorForEvents(matching: mask, handler: { (event: (NSEvent!)) -> NSEvent in
             //
