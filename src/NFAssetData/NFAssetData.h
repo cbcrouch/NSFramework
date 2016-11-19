@@ -16,8 +16,8 @@
 
 
 //
-// TODO: this definition out into NFUtils, will eventually need to turn it into
-//       an actual (though primitives at first) animation system
+// TODO: move this definition out into NFUtils, will eventually need to turn it into
+//       an actual (though primitive at first) animation system
 //
 typedef GLKMatrix4 (^transformBlock_f)(GLKMatrix4, float);
 
@@ -38,7 +38,7 @@ typedef GLKMatrix4 (^transformBlock_f)(GLKMatrix4, float);
 
 
 //
-// TODO: remove these terrible debug/test calls
+// TODO: cleanup these debug/test calls and keep them around for handy editing/visualizing
 //
 - (void) applyUnitScalarMatrix;
 - (void) applyOriginCenterMatrix;

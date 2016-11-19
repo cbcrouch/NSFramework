@@ -16,9 +16,10 @@
 
 
 //
-// TODO: move NFAssetLoader and NFLightSource module test code into NFSimulation module once it has been stubbed out
+// TODO: move NFAssetLoader, NFAssetWriter, and NFLightSource module test code into NFSimulation module once it has been stubbed out
 //
 #import "NFAssetLoader.h"
+#import "NFAssetWriter.h"
 #import "NFLightSource.h"
 
 //
@@ -265,7 +266,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     // TODO: get a sphere loaded without a texture and verify that environment mapping is working correctly
     //
 
-    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
+    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
 
@@ -286,7 +287,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //       different primitive mode
     //
 
-    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/suzanne.obj";
+    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/suzanne.obj";
 
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/buddha.obj";
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/dragon.obj";
@@ -302,6 +303,13 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     // use for teapot
     //[m_pAsset applyOriginCenterMatrix];
     //[m_pAsset applyUnitScalarMatrix];
+
+
+
+    //
+    // TODO: test out Wavefront obj file writing
+    //
+    [NFAssetWriter writeAsset:m_pAsset toFile:@"/Users/cayce/Developer/NSGL/Models/TEST.obj" withFormat:kWavefrontObjFormat];
 
 
 
