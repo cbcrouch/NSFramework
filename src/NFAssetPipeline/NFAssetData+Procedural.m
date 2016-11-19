@@ -337,7 +337,6 @@ static const char *g_faceType = @encode(NFFace_t);
     self.subsetArray = @[(id)pSubset];
 }
 
-
 - (void) createUVSphereWithRadius:(float)radius withStacks:(int)stacks withSlices:(int)slices withVertexFormat:(NF_VERTEX_FORMAT)vertexFormat {
     const NSInteger numVertices = (stacks+1) * (slices+1) + 1;
     const NSInteger numIndices = stacks * slices * 3 * 2;

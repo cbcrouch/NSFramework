@@ -395,6 +395,11 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
 - (void) parseMaterialFile:(NSString *)file;
 
+//
+// TODO: to forward declare or not forward declare ??
+//
+//- (void) parseFile;
+
 @end
 
 @implementation NFWavefrontObj
@@ -449,6 +454,8 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     // NOTE: it would appear that the NSString that is being pointed to is an autorelease object
     self.fileSource = [NSString stringWithContentsOfFile:filePath usedEncoding:&encoding error:&nsErr];
     NSAssert(self.fileSource != nil, @"Failed to find path, error: %@", nsErr);
+
+    [self parseFile];
 }
 
 //
@@ -496,8 +503,13 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 */
     // at this point fileSource should have a copy of the NSData from the file read and the file can be closed
     [fileHandle closeFile];
+
+    [self parseFile];
 }
 
+//
+// TODO: profile and optimize the file parsing
+//
 - (void) parseFile { // should support better error handling e.g. error:(NSError *)err ??
     NSArray *lines = [self.fileSource componentsSeparatedByString:@"\n"];
 

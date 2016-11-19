@@ -59,6 +59,10 @@ static NSInteger (^normalizeObjIndex)(NSInteger, NSUInteger) = ^ NSInteger (NSIn
 @property (nonatomic, strong) NSMutableArray *textureCoords;
 @property (nonatomic, strong) NSMutableArray *normals;
 
+//
+// TODO: these should operate on an NFAssetData object so they can be used regardless
+//       of what file format is being used
+//
 - (void) calculateTextureCoordinates;
 - (void) calculateNormals;
 
@@ -90,12 +94,5 @@ static NSInteger (^normalizeObjIndex)(NSInteger, NSUInteger) = ^ NSInteger (NSIn
 //
 - (void) loadFileWithPath:(NSString *)filePath;
 - (void) loadFile:(NSString *)fileName; // inBundle:(NSBundle)bundle
-
-//
-// TODO: add ability to write Wavefront object files
-//
-//- (void) writeAsset:(NFAssetData *)assetData toFile:(NSString *)filePath;
-
-- (void) parseFile;
 
 @end

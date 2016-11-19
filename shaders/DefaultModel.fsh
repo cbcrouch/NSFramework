@@ -163,6 +163,12 @@ vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosi
     float diff = max(dot(norm, lightDir), 0.0f);
     vec3 diffuse = light.diffuse * (diff * material.diffuse * texel);
 
+
+
+    //
+    // TODO: no specular highlight applied to back-facing geometry for the directional light
+    //
+
     // specular
     //
     // TODO: make the useBlinn boolean a uniform and allow it to be set with a key press so
@@ -181,6 +187,10 @@ vec3 calc_directional_light(directionalLight_t light, vec3 normal, vec3 fragPosi
     }
 
     vec3 specular = light.specular * spec * material.specular;
+
+
+
+
     return (ambient + ((1.0 - shadow) * (diffuse + specular)));
 }
 

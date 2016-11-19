@@ -687,7 +687,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
         //
         // TODO: restore sky box after finished debugging the point light shadows
         //
-        //[m_skyBoxData.geometry assignCubeMapHandle:valueObj];
+        //[m_skyBoxData.geometry assignCubeMapHandle:valueObj]; // this was for visualizing the point shadow map
 
         [m_phongShader performSelector:@selector(setPointShadowMap:) withObject:valueObj];
     }

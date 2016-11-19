@@ -56,6 +56,7 @@
 		23E9874018DCAC7000F76B1A /* NFAssetData+Wavefront.m in Sources */ = {isa = PBXBuildFile; fileRef = 23E9873F18DCAC7000F76B1A /* NFAssetData+Wavefront.m */; };
 		23EB03261ACCDA6200084CEF /* DefaultModel.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 23EB03241ACCDA6200084CEF /* DefaultModel.fsh */; };
 		23EB03271ACCDA6200084CEF /* DefaultModel.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 23EB03251ACCDA6200084CEF /* DefaultModel.vsh */; };
+		23F08F0B1DE0C18800D60D7D /* NFAssetWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 23F08F0A1DE0C18800D60D7D /* NFAssetWriter.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -140,6 +141,8 @@
 		23E9873F18DCAC7000F76B1A /* NFAssetData+Wavefront.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NFAssetData+Wavefront.m"; path = "NFAssetPipeline/NFAssetData+Wavefront.m"; sourceTree = "<group>"; };
 		23EB03241ACCDA6200084CEF /* DefaultModel.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = DefaultModel.fsh; path = ../shaders/DefaultModel.fsh; sourceTree = "<group>"; };
 		23EB03251ACCDA6200084CEF /* DefaultModel.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = DefaultModel.vsh; path = ../shaders/DefaultModel.vsh; sourceTree = "<group>"; };
+		23F08F091DE0C18800D60D7D /* NFAssetWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NFAssetWriter.h; path = NFAssetPipeline/NFAssetWriter.h; sourceTree = "<group>"; };
+		23F08F0A1DE0C18800D60D7D /* NFAssetWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NFAssetWriter.m; path = NFAssetPipeline/NFAssetWriter.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -178,6 +181,8 @@
 				233214D71901F9FD0006EFA3 /* NFAssetLoader.m */,
 				233FAEB21A9F7FA000AD025B /* NFAssetUtils.h */,
 				233FAEB31A9F7FA000AD025B /* NFAssetUtils.m */,
+				23F08F091DE0C18800D60D7D /* NFAssetWriter.h */,
+				23F08F0A1DE0C18800D60D7D /* NFAssetWriter.m */,
 			);
 			name = NFAssetPipeline;
 			sourceTree = "<group>";
@@ -443,6 +448,7 @@
 				237513171D4E6B1D00E48EB2 /* NFRCubeMapProgram.m in Sources */,
 				234E2CD5188382CC00AF8F23 /* AppDelegate.m in Sources */,
 				234E2CCE188382CC00AF8F23 /* main.m in Sources */,
+				23F08F0B1DE0C18800D60D7D /* NFAssetWriter.m in Sources */,
 				23875B2C1C050CD6008065B8 /* NFRRenderTarget.m in Sources */,
 				233797EE1885E1CA00399EBA /* NFWavefrontObj.m in Sources */,
 				23DF9DA61CECDD09004F1153 /* NFRPointDepthProgram.m in Sources */,
