@@ -262,12 +262,14 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
     NSString *fileNamePath;
 
-    //
-    // TODO: get a sphere loaded without a texture and verify that environment mapping is working correctly
-    //
-
     fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
+
+    //
+    // TODO: cube-mod will be a good test of normals generation (which is working right now), once
+    //       the Wavefront obj asset write is complete start debugging normals calculation
+    //
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
+
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
 
     //
