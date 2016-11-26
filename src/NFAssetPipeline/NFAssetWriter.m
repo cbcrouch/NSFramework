@@ -19,7 +19,7 @@
     NSError *error;
     NSURL* url = [NSURL fileURLWithPath:filePath isDirectory:NO];
     if(![@"" writeToURL:url atomically:YES encoding:NSUTF8StringEncoding error:&error]) {
-        NSLog(@"ERROR: write returned error: %@", [error localizedDescription]);
+        NSLog(@"ERROR: write returned error: %@", error.localizedDescription);
     }
 
     // reopen file to start appending data
@@ -30,24 +30,42 @@
     [fileHandle seekToFileOffset:0];
 
 
+    //
+    // TODO: determine the max line length
+    //
+    char bytes[32] = {};
 
-    char bytes[32] = "#\n# NSData TEST.obj\n#\n\0";
-
-    // will this make a duplicate copy of the C string ??
-    //NSString* string = [[NSString alloc] initWithCString:bytes encoding:NSUTF8StringEncoding]];
-
-    //NSMutableData* data = [NSMutableData data];
-    //[data appendData:[@"NSString" dataUsingEncoding:NSUTF8StringEncoding]];
+    sprintf(bytes, "%s%s%s", "#\n# ", filePath.lastPathComponent.UTF8String, "\n#\n\n\0");
 
 
-    // will this make a duplicate of the C string ??
-    NSData* fileData = [NSData dataWithBytes:bytes length:strlen(bytes)];
+    // https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/BinaryData/Tasks/WorkingMutableData.html
 
 
-    [fileHandle writeData:fileData];
+    //
+    // TODO: use mutable bytes with a fixed length (same size as bytes) and reuse per line to avoid making
+    //       an excessive number of allocations
+    //
+
+    NSRange range;
+    NSMutableData* data = [NSMutableData data];
+
+    range.location = 0;
+    range.length = strlen(bytes);
+
+    //
+    // TODO: which replaceBytes method is safer / more stable ??
+    //
+    [data replaceBytesInRange:range withBytes:bytes];
+    //[data replaceBytesInRange:range withBytes:bytes length:strlen(bytes)];
+
+
+    //NSData* fileData = [NSData dataWithBytesNoCopy:bytes length:strlen(bytes) freeWhenDone:NO];
+    //[fileHandle writeData:fileData];
+
 
     // subsequent writes will be appended to the file
-    //[fileHandle writeData:fileData];
+    [fileHandle writeData:data];
+
 
     [fileHandle closeFile];
 
