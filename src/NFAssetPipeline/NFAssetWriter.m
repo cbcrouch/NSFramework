@@ -7,6 +7,8 @@
 
 #import "NFAssetWriter.h"
 
+#define MAX_LINE_LENGTH 128
+
 @implementation NFAssetWriter
 
 
@@ -22,37 +24,15 @@
         NSLog(@"ERROR: write returned error: %@", error.localizedDescription);
     }
 
-    // reopen file to start appending data
+    // reopen file to start appending data and seek to start
     NSFileHandle* fileHandle = [NSFileHandle fileHandleForWritingToURL:url error:&error];
     NSAssert(fileHandle != nil, @"Failed to open %@", filePath);
-
-    // seek to start of the file
     [fileHandle seekToFileOffset:0];
 
-
-    //
-    // TODO: should probably decide on a hard limit for the number of float digits to support
-    //
-    //int max_digits = 3 + FLT_MANT_DIG - FLT_MIN_EXP; // 3 => "-0."
-
-
-    //
-    // TODO: determine the max line length to use
-    //
-    char bytes[128] = {};
-
-
-    NSMutableData* data = [NSMutableData data];
-
-    void (^writeLine)(NSMutableData*, void*) = ^ void (NSMutableData* data, void* bytes) {
-        NSRange range;
-        range.location = 0;
-        range.length = strlen(bytes);
-        [data replaceBytesInRange:range withBytes:bytes];
-        //
-        // TODO: add some exception handling for file based operations
-        //
-        [fileHandle writeData:data];
+    char bytes[MAX_LINE_LENGTH] = {};
+    void (^writeLine)(void*) = ^ void (void* bytes) {
+        NSData* testData = [NSData dataWithBytesNoCopy:bytes length:strlen(bytes) freeWhenDone:NO];
+        [fileHandle writeData:testData];
     };
 
     //
@@ -60,12 +40,20 @@
     //
     const char* fileName = filePath.lastPathComponent.UTF8String;
     // NOTE: sprintf function will add a \0 at the end of the string
-    int rv = snprintf(bytes, sizeof(bytes), "%s%s%s", "#\n# ", fileName, "\n#\n\n");
+    int rv = snprintf(bytes, sizeof(bytes), "#\n# %s\n#\n\n", fileName);
     NSAssert(rv > 0, @"ERROR: sprintf failed");
-    writeLine(data, bytes);
-
+    writeLine(bytes);
 
     // subsequent writes will be appended to the file
+    const char* objectName = filePath.lastPathComponent.stringByDeletingPathExtension.UTF8String;
+    rv = snprintf(bytes, sizeof(bytes), "o %s\n\n", objectName);
+    NSAssert(rv > 0, @"ERROR: sprintf failed");
+    writeLine(bytes);
+
+
+    // most all files seem to use 6 digits of precision
+    //float test = -123456.123456;
+    //fprintf(stdout, "%6.6f\n", test);
 
 
     [fileHandle closeFile];
@@ -78,7 +66,10 @@
     // o -> object name
     // mtllib FILE_NAME.ext
 
-    // v
+    //
+    // TODO: some obj files interleave v, vt, vn (should consider supporting it as an option)
+    //
+    // v 0.0 0.0 0.0
     // vt
     // vn
 
@@ -91,7 +82,10 @@
     // g
     // f
 
-    // ...
+    // TODO: enforce max supported vertices of 9,999,999
+
+    // f 1469978/1469985/1469978 1469984/1469985/1469984 1469985/1469985/1469985   // 74 characters (w/o \n\0)
+
 
 
 
