@@ -31,40 +31,41 @@
 
 
     //
-    // TODO: determine the max line length
+    // TODO: should probably decide on a hard limit for the number of float digits to support
     //
-    char bytes[32] = {};
-
-    sprintf(bytes, "%s%s%s", "#\n# ", filePath.lastPathComponent.UTF8String, "\n#\n\n\0");
-
-
-    // https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/BinaryData/Tasks/WorkingMutableData.html
+    //int max_digits = 3 + FLT_MANT_DIG - FLT_MIN_EXP; // 3 => "-0."
 
 
     //
-    // TODO: use mutable bytes with a fixed length (same size as bytes) and reuse per line to avoid making
-    //       an excessive number of allocations
+    // TODO: determine the max line length to use
     //
+    char bytes[128] = {};
 
-    NSRange range;
+
     NSMutableData* data = [NSMutableData data];
 
-    range.location = 0;
-    range.length = strlen(bytes);
+    void (^writeLine)(NSMutableData*, void*) = ^ void (NSMutableData* data, void* bytes) {
+        NSRange range;
+        range.location = 0;
+        range.length = strlen(bytes);
+        [data replaceBytesInRange:range withBytes:bytes];
+        //
+        // TODO: add some exception handling for file based operations
+        //
+        [fileHandle writeData:data];
+    };
 
     //
-    // TODO: which replaceBytes method is safer / more stable ??
+    // TODO: check length of file name to ensure that it will fit
     //
-    [data replaceBytesInRange:range withBytes:bytes];
-    //[data replaceBytesInRange:range withBytes:bytes length:strlen(bytes)];
-
-
-    //NSData* fileData = [NSData dataWithBytesNoCopy:bytes length:strlen(bytes) freeWhenDone:NO];
-    //[fileHandle writeData:fileData];
+    const char* fileName = filePath.lastPathComponent.UTF8String;
+    // NOTE: sprintf function will add a \0 at the end of the string
+    int rv = snprintf(bytes, sizeof(bytes), "%s%s%s", "#\n# ", fileName, "\n#\n\n");
+    NSAssert(rv > 0, @"ERROR: sprintf failed");
+    writeLine(data, bytes);
 
 
     // subsequent writes will be appended to the file
-    [fileHandle writeData:data];
 
 
     [fileHandle closeFile];
@@ -81,7 +82,7 @@
     // vt
     // vn
 
-    // NOTE: f indices may be one based.. 
+    // NOTE: f indices look to be one based..
 
     // g -> group
     // usemtl FILE_NAME   // can also be usemtl (null) for no material
