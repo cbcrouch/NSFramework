@@ -9,12 +9,11 @@
 
 #define MAX_LINE_LENGTH 128
 
-@implementation NFAssetWriter
-
-
 //
 // TODO: after this is complete generate a shadow test scene and save out to file
 //
+
+@implementation NFAssetWriter
 
 + (void) writeAsset:(NFAssetData *)assetData toFile:(NSString *)filePath withFormat:(ASSET_FORMAT)format {
     // create an empty UTF-8 file
@@ -32,6 +31,7 @@
     char bytes[MAX_LINE_LENGTH] = {};
     void (^writeLine)(void*) = ^ void (void* bytes) {
         NSData* testData = [NSData dataWithBytesNoCopy:bytes length:strlen(bytes) freeWhenDone:NO];
+        // subsequent writes will be appended to the file
         [fileHandle writeData:testData];
     };
 
@@ -44,17 +44,39 @@
     NSAssert(rv > 0, @"ERROR: sprintf failed");
     writeLine(bytes);
 
-    // subsequent writes will be appended to the file
+    //
+    // TODO: implement writing out material file
+    //
+    rv = snprintf(bytes, sizeof(bytes), "%s\n\n", "mtllib default.mtl");
+    NSAssert(rv > 0, @"ERROR: sprintf failed");
+    writeLine(bytes);
+
     const char* objectName = filePath.lastPathComponent.stringByDeletingPathExtension.UTF8String;
     rv = snprintf(bytes, sizeof(bytes), "o %s\n\n", objectName);
     NSAssert(rv > 0, @"ERROR: sprintf failed");
     writeLine(bytes);
 
 
-    // most all files seem to use 6 digits of precision
-    //float test = -123456.123456;
-    //fprintf(stdout, "%6.6f\n", test);
+    //
+    // TODO: start writing out vertex data
+    //
+/*
+    NFRGeometry* geometry = assetData.geometry;
+    NFRBuffer* vertexBuffer = geometry.vertexBuffer;
 
+    //
+    // TODO: get vertex pointer, and use type and size to determine where the values are stored
+    //       and how many of them there are
+    //
+    //vertexBuffer.bufferDataPointer
+    //vertexBuffer.bufferDataType
+    //vertexBuffer.bufferDataSize
+
+    // most all files seem to use 6 digits of precision
+    rv = snprintf(bytes, sizeof(bytes), "v %6.6f %6.6f %6.6f\n", 0.0f, 0.0f, 0.0f);
+    NSAssert(rv > 0, @"ERROR: sprintf failed");
+    writeLine(bytes);
+*/
 
     [fileHandle closeFile];
 
@@ -63,9 +85,6 @@
     // TODO: follow basic format
     //
 
-    // o -> object name
-    // mtllib FILE_NAME.ext
-
     //
     // TODO: some obj files interleave v, vt, vn (should consider supporting it as an option)
     //
@@ -73,7 +92,6 @@
     // vt
     // vn
 
-    // NOTE: f indices look to be one based..
 
     // g -> group
     // usemtl FILE_NAME   // can also be usemtl (null) for no material
@@ -84,6 +102,7 @@
 
     // TODO: enforce max supported vertices of 9,999,999
 
+    // NOTE: f indices look to be one based..
     // f 1469978/1469985/1469978 1469984/1469985/1469984 1469985/1469985/1469985   // 74 characters (w/o \n\0)
 
 
