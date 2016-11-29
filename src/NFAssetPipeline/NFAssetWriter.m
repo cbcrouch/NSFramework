@@ -56,27 +56,63 @@
     NSAssert(rv > 0, @"ERROR: sprintf failed");
     writeLine(bytes);
 
-
     //
-    // TODO: start writing out vertex data
+    // vertex data
     //
-/*
     NFRGeometry* geometry = assetData.geometry;
     NFRBuffer* vertexBuffer = geometry.vertexBuffer;
+    switch (vertexBuffer.bufferDataType) {
+        case kBufferDataTypeNFVertex_t: {
+            NFVertex_t* pVertices = (NFVertex_t*)vertexBuffer.bufferDataPointer;
+            size_t numVertices = vertexBuffer.bufferDataSize / sizeof(NFVertex_t);
 
-    //
-    // TODO: get vertex pointer, and use type and size to determine where the values are stored
-    //       and how many of them there are
-    //
-    //vertexBuffer.bufferDataPointer
-    //vertexBuffer.bufferDataType
-    //vertexBuffer.bufferDataSize
+            //
+            // TODO: should modify processing and rendering to not duplicate vertices, this will most
+            //       likely require some modifications or corrections to the indexing
+            //
 
-    // most all files seem to use 6 digits of precision
-    rv = snprintf(bytes, sizeof(bytes), "v %6.6f %6.6f %6.6f\n", 0.0f, 0.0f, 0.0f);
-    NSAssert(rv > 0, @"ERROR: sprintf failed");
-    writeLine(bytes);
-*/
+            // collect unique vertices vertices
+            NSMutableArray* uniqueVertices = [[NSMutableArray alloc] init];
+            for (size_t i=0; i<numVertices; ++i) {
+                // store vertices in an array and on each iteration check if it is a duplicate
+                BOOL addVertex = YES;
+                for(NSValue* value in uniqueVertices) {
+                    NFVertex_t vertex;
+                    [value getValue:&vertex];
+                    if (vertex.pos[0] == pVertices->pos[0] && vertex.pos[1] == pVertices->pos[1] && vertex.pos[2] == pVertices->pos[2]) {
+                        addVertex = NO;
+                        break;
+                    }
+                }
+
+                if (addVertex) {
+                    [uniqueVertices addObject:[NSValue valueWithBytes:pVertices objCType:@encode(NFVertex_t)]];
+                }
+
+                ++pVertices;
+            }
+
+            for (NSValue* value in uniqueVertices) {
+                NFVertex_t vertex;
+                [value getValue:&vertex];
+
+                // most all files seem to use 6 digits of precision
+                rv = snprintf(bytes, sizeof(bytes), "v %6.6f %6.6f %6.6f\n", vertex.pos[0], vertex.pos[1], vertex.pos[2]);
+                NSAssert(rv > 0, @"ERROR: sprintf failed");
+                writeLine(bytes);
+            }
+        } break;
+
+        case kBufferDataTypeNFDebugVertex_t:
+            NSLog(@"WARNING: writeAsset doesn't yet support debug vertex format");
+            break;
+
+        default:
+            NSLog(@"WARNING: writeAsset attempted to write out vertex data of an unsupported type");
+            break;
+    }
+
+
 
     [fileHandle closeFile];
 
@@ -104,7 +140,6 @@
 
     // NOTE: f indices look to be one based..
     // f 1469978/1469985/1469978 1469984/1469985/1469984 1469985/1469985/1469985   // 74 characters (w/o \n\0)
-
 
 
 
