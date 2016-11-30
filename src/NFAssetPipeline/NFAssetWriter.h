@@ -10,12 +10,16 @@
 #import "NFCommonTypes.h"
 #import "NFAssetData.h"
 
+//
+// NOTE: Wavefront obj vertices are stored in a right-handed coordinate system
+//       (currently using right-handed coordinate system already)
+//
+
 @interface NFAssetWriter : NSObject
 
 //
 // TODO: add ability to write NFAssetData out to different file formats (Wavefront object files to start)
 //
-
 typedef NS_ENUM(NSUInteger, ASSET_FORMAT) {
     kWavefrontObjFormat
 };

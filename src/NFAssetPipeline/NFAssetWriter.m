@@ -9,9 +9,6 @@
 
 #define MAX_LINE_LENGTH 128
 
-//
-// TODO: after this is complete generate a shadow test scene and save out to file
-//
 
 @implementation NFAssetWriter
 
@@ -107,7 +104,7 @@
             // write out vertex texture coordinates
             //
 
-            // reset vertex pointer and add another line to seperate from vertices
+            // reset vertex pointer and add another line to seperate from vertex positions
             pVertices = (NFVertex_t*)vertexBuffer.bufferDataPointer;
             rv = snprintf(bytes, sizeof(bytes), "\n");
             NSAssert(rv > 0, @"ERROR: sprintf failed");
@@ -142,9 +139,43 @@
             }
 
             //
-            // TODO: write out vertex normals
+            // write out vertex normals
             //
 
+            // reset vertex pointer and add another line to seperate from texture coordinates
+            pVertices = (NFVertex_t*)vertexBuffer.bufferDataPointer;
+            rv = snprintf(bytes, sizeof(bytes), "\n");
+            NSAssert(rv > 0, @"ERROR: sprintf failed");
+            writeLine(bytes);
+
+            NSMutableArray* uniqueNormals = [[NSMutableArray alloc] init];
+            for (size_t i=0; i<numVertices; ++i) {
+                BOOL addVertex = YES;
+                for (NSValue* value in uniqueNormals) {
+                    NFVertex_t vertex;
+                    [value getValue:&vertex];
+                    if (vertex.norm[0] == pVertices->norm[0] && vertex.norm[1] == pVertices->norm[1] && vertex.norm[2] == pVertices->norm[2]) {
+                        addVertex = NO;
+                        break;
+                    }
+                }
+
+                if (addVertex) {
+                    [uniqueNormals addObject:[NSValue valueWithBytes:pVertices objCType:@encode(NFVertex_t)]];
+                }
+
+                ++pVertices;
+            }
+
+            for (NSValue* value in uniqueNormals) {
+                NFVertex_t vertex;
+                [value getValue:&vertex];
+
+                // most all files seem to use 6 digits of precision
+                rv = snprintf(bytes, sizeof(bytes), "vn %6.6f %6.6f %6.6f\n", vertex.norm[0], vertex.norm[1], vertex.norm[2]);
+                NSAssert(rv > 0, @"ERROR: sprintf failed");
+                writeLine(bytes);
+            }
         } break;
 
         case kBufferDataTypeNFDebugVertex_t:
@@ -157,6 +188,10 @@
     }
 
 
+    //
+    // TODO: write out indices
+    //
+
 
     [fileHandle closeFile];
 
@@ -168,7 +203,7 @@
     //
     // TODO: some obj files interleave v, vt, vn (should consider supporting it as an option)
     //
-    // v 0.0 0.0 0.0
+    // v
     // vt
     // vn
 
@@ -178,7 +213,8 @@
     // f
 
     // g
-    // f
+    // ...
+
 
     // TODO: enforce max supported vertices of 9,999,999
 
@@ -187,8 +223,6 @@
 
 
 
-    // NOTE: Wavefront obj vertices are stored in a right-handed coordinate system
-    //       (currently using right-handed coordinate system already)
 
 
     //
