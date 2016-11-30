@@ -67,8 +67,9 @@
             size_t numVertices = vertexBuffer.bufferDataSize / sizeof(NFVertex_t);
 
             //
-            // TODO: should modify processing and rendering to not duplicate vertices, this will most
-            //       likely require some modifications or corrections to the indexing
+            // NOTE: vertices are duplicated because they are interleaved with texture coordinates and
+            //       the vertex normal, since Wavefront obj files store these three vertex attributes
+            //       separately they must be broken out and de-duplicated
             //
 
             // collect unique vertices vertices
@@ -101,6 +102,49 @@
                 NSAssert(rv > 0, @"ERROR: sprintf failed");
                 writeLine(bytes);
             }
+
+            //
+            // write out vertex texture coordinates
+            //
+
+            // reset vertex pointer and add another line to seperate from vertices
+            pVertices = (NFVertex_t*)vertexBuffer.bufferDataPointer;
+            rv = snprintf(bytes, sizeof(bytes), "\n");
+            NSAssert(rv > 0, @"ERROR: sprintf failed");
+            writeLine(bytes);
+
+            NSMutableArray* uniqueTexCoords = [[NSMutableArray alloc] init];
+            for (size_t i=0; i<numVertices; ++i) {
+                BOOL addVertex = YES;
+                for (NSValue* value in uniqueTexCoords) {
+                    NFVertex_t vertex;
+                    [value getValue:&vertex];
+                    if (vertex.texCoord[0] == pVertices->texCoord[0] && vertex.texCoord[1] == pVertices->texCoord[1]) {
+                        addVertex = NO;
+                        break;
+                    }
+                }
+
+                if (addVertex) {
+                    [uniqueTexCoords addObject:[NSValue valueWithBytes:pVertices objCType:@encode(NFVertex_t)]];
+                }
+
+                ++pVertices;
+            }
+
+            for (NSValue* value in uniqueTexCoords) {
+                NFVertex_t vertex;
+                [value getValue:&vertex];
+
+                rv = snprintf(bytes, sizeof(bytes), "vt %6.6f %6.6f\n", vertex.texCoord[0], vertex.texCoord[1]);
+                NSAssert(rv > 0, @"ERROR: sprintf failed");
+                writeLine(bytes);
+            }
+
+            //
+            // TODO: write out vertex normals
+            //
+
         } break;
 
         case kBufferDataTypeNFDebugVertex_t:
