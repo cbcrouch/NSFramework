@@ -53,6 +53,10 @@
     NSAssert(rv > 0, @"ERROR: sprintf failed");
     writeLine(bytes);
 
+    NSMutableArray* uniqueVertices = [[NSMutableArray alloc] init];
+    NSMutableArray* uniqueTexCoords = [[NSMutableArray alloc] init];
+    NSMutableArray* uniqueNormals = [[NSMutableArray alloc] init];
+
     //
     // vertex data
     //
@@ -70,7 +74,6 @@
             //
 
             // collect unique vertices vertices
-            NSMutableArray* uniqueVertices = [[NSMutableArray alloc] init];
             for (size_t i=0; i<numVertices; ++i) {
                 // store vertices in an array and on each iteration check if it is a duplicate
                 BOOL addVertex = YES;
@@ -110,7 +113,7 @@
             NSAssert(rv > 0, @"ERROR: sprintf failed");
             writeLine(bytes);
 
-            NSMutableArray* uniqueTexCoords = [[NSMutableArray alloc] init];
+            // collect unique tex coords
             for (size_t i=0; i<numVertices; ++i) {
                 BOOL addVertex = YES;
                 for (NSValue* value in uniqueTexCoords) {
@@ -148,7 +151,7 @@
             NSAssert(rv > 0, @"ERROR: sprintf failed");
             writeLine(bytes);
 
-            NSMutableArray* uniqueNormals = [[NSMutableArray alloc] init];
+            // collect unique normals
             for (size_t i=0; i<numVertices; ++i) {
                 BOOL addVertex = YES;
                 for (NSValue* value in uniqueNormals) {
@@ -189,64 +192,67 @@
 
 
     //
-    // TODO: write out indices
+    // TODO: write out correct material file for group and give the group a name
     //
+    rv = snprintf(bytes, sizeof(bytes), "\ng group_1\nusemtl default.mtl\n\n");
+    NSAssert(rv > 0, @"ERROR: sprintf failed");
+    writeLine(bytes);
+
+
+    //
+    // TODO: write out indices, will need access to the unique arrays
+    //
+
+    NFRBuffer* indexBuffer = geometry.indexBuffer;
+    NSAssert(indexBuffer.bufferDataType == kBufferDataTypeUShort, @"ERROR: index buffer is not of type ushort");
+
+    NSAssert(sizeof(GLushort) == sizeof(unsigned short), @"ERROR: GLushort is not the same size as unsigned short");
+
+    NFVertex_t* pVertices = (NFVertex_t*)vertexBuffer.bufferDataPointer;
+    unsigned short* pIndices = indexBuffer.bufferDataPointer;
+    size_t numIndices = indexBuffer.bufferDataSize / sizeof(unsigned short);
+
+    for (size_t i=0; i<numIndices; ++i) {
+
+        //
+        // TODO: enforce max supported vertices of 9,999,999 and modify indices to be one based
+        //
+
+        //
+        // TODO: lookup NFVertex_t in vertexBuffer.bufferDataPointer then find cooresponding values in
+        //       the unique arrays and then write the unique arrays index out for the face index values
+        //       (and +1 the values since Wavefront obj indices are 1 based)
+        //
+
+        int index = 0;
+        NFVertex_t vertex = pVertices[*pIndices];
+        for (NSValue* value in uniqueVertices) {
+            NFVertex_t v;
+            [value getValue:&v];
+            if (vertex.pos[0] == v.pos[0] && vertex.pos[1] == v.pos[1] && vertex.pos[2] == v.pos[2]) {
+
+                //
+                // TODO: found matching index in unique vertices
+                //
+
+                break;
+            }
+            ++index;
+        }
+
+
+        // f v0/vt0/vn0 v0/vt0/vn0 v0/vt0/vn0
+
+
+        rv = snprintf(bytes, sizeof(bytes), "f %d\n", *pIndices);
+        NSAssert(rv > 0, @"ERROR: sprintf failed");
+        writeLine(bytes);
+
+        ++pIndices;
+    }
 
 
     [fileHandle closeFile];
-
-
-    //
-    // TODO: follow basic format
-    //
-
-    //
-    // TODO: some obj files interleave v, vt, vn (should consider supporting it as an option)
-    //
-    // v
-    // vt
-    // vn
-
-
-    // g -> group
-    // usemtl FILE_NAME   // can also be usemtl (null) for no material
-    // f
-
-    // g
-    // ...
-
-
-    // TODO: enforce max supported vertices of 9,999,999
-
-    // NOTE: f indices look to be one based..
-    // f 1469978/1469985/1469978 1469984/1469985/1469984 1469985/1469985/1469985   // 74 characters (w/o \n\0)
-
-
-
-
-
-    //
-    // TODO: is the geometry objects getting duplicated ??
-    //
-
-    //NSArray* array = assetData.subsetArray;
-
-    //NFAssetData* subset;
-
-    //subset.geometry
-    //subset.surfaceModelArray
-
-
-
-    //NFRGeometry* geometry = assetData.geometry;
-
-    //geometry.indexBuffer
-    //geometry.vertexBuffer
-
-    //geometry.surfaceModel
-    //geometry.textureDictionary
-
-
 }
 
 @end

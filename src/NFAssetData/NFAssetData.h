@@ -26,6 +26,18 @@ typedef GLKMatrix4 (^transformBlock_f)(GLKMatrix4, float);
 
 @property (nonatomic, assign) GLKMatrix4 modelMatrix;
 
+
+//
+// TODO: is the geometry objects getting duplicated ??
+//
+
+//NSArray* array = assetData.subsetArray;
+//NFAssetData* subset;
+//subset.geometry
+
+//NFRGeometry* geometry = assetData.geometry;
+
+
 @property (nonatomic, strong) NSArray* subsetArray;
 @property (nonatomic, strong) NSArray* surfaceModelArray;
 @property (nonatomic, strong) NFRGeometry* geometry;
