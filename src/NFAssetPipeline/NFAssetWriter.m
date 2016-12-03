@@ -198,9 +198,8 @@
     NSAssert(rv > 0, @"ERROR: sprintf failed");
     writeLine(bytes);
 
-
     //
-    // TODO: write out indices, will need access to the unique arrays
+    // write out indices, will need access to the unique arrays
     //
 
     NFRBuffer* indexBuffer = geometry.indexBuffer;
@@ -212,45 +211,64 @@
     unsigned short* pIndices = indexBuffer.bufferDataPointer;
     size_t numIndices = indexBuffer.bufferDataSize / sizeof(unsigned short);
 
-    for (size_t i=0; i<numIndices; ++i) {
-
+    for (size_t i=0; i<numIndices/3; ++i) {
         //
         // TODO: enforce max supported vertices of 9,999,999 and modify indices to be one based
         //
+        int vertIndices[3] = {};
+        int texCoordIndices[3] = {};
+        int normalIndices[3] = {};
 
-        //
-        // TODO: lookup NFVertex_t in vertexBuffer.bufferDataPointer then find cooresponding values in
-        //       the unique arrays and then write the unique arrays index out for the face index values
-        //       (and +1 the values since Wavefront obj indices are 1 based)
-        //
+        for (int i=0; i<3; ++i) {
+            NFVertex_t vertex = pVertices[*pIndices];
 
-        int index = 0;
-        NFVertex_t vertex = pVertices[*pIndices];
-        for (NSValue* value in uniqueVertices) {
-            NFVertex_t v;
-            [value getValue:&v];
-            if (vertex.pos[0] == v.pos[0] && vertex.pos[1] == v.pos[1] && vertex.pos[2] == v.pos[2]) {
-
-                //
-                // TODO: found matching index in unique vertices
-                //
-
-                break;
+            for (NSValue* value in uniqueVertices) {
+                NFVertex_t v;
+                [value getValue:&v];
+                if (vertex.pos[0] == v.pos[0] && vertex.pos[1] == v.pos[1] && vertex.pos[2] == v.pos[2]) {
+                    break;
+                }
+                ++vertIndices[i];
             }
-            ++index;
+
+            for (NSValue* value in uniqueTexCoords) {
+                NFVertex_t v;
+                [value getValue:&v];
+                if (vertex.texCoord[0] == v.texCoord[0] && vertex.texCoord[1] == v.texCoord[1]) {
+                    break;
+                }
+                ++texCoordIndices[i];
+            }
+
+            for (NSValue* value in uniqueNormals) {
+                NFVertex_t v;
+                [value getValue:&v];
+                if (vertex.norm[0] == v.norm[0] && vertex.norm[1] == v.norm[1] && vertex.norm[2] == v.norm[2]) {
+                    break;
+                }
+                ++normalIndices[i];
+            }
+
+            ++pIndices;
         }
 
+        // Wavefront obj face indices are one based
+        for (int i=0; i<3; ++i) {
+            ++vertIndices[i];
+            ++texCoordIndices[i];
+            ++normalIndices[i];
+        }
 
         // f v0/vt0/vn0 v0/vt0/vn0 v0/vt0/vn0
+        rv = snprintf(bytes, sizeof(bytes), "f %d/%d/%d %d/%d/%d %d/%d/%d\n",
+            vertIndices[0], texCoordIndices[0], normalIndices[0],
+            vertIndices[1], texCoordIndices[1], normalIndices[1],
+            vertIndices[2], texCoordIndices[2], normalIndices[2]);
 
 
-        rv = snprintf(bytes, sizeof(bytes), "f %d\n", *pIndices);
         NSAssert(rv > 0, @"ERROR: sprintf failed");
         writeLine(bytes);
-
-        ++pIndices;
     }
-
 
     [fileHandle closeFile];
 }
