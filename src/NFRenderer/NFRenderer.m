@@ -265,6 +265,11 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
 
     //
+    // TODO: geometry seems right but either tex coords or normals are off since the geoemtry is black
+    //
+    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/TEST.obj";
+
+    //
     // TODO: cube-mod will be a good test of normals generation (which is working right now), once
     //       the Wavefront obj asset write is complete start debugging normals calculation
     //

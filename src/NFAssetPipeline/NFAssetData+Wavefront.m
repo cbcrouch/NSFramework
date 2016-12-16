@@ -30,22 +30,164 @@
 - (void) addSubsetWithIndices:(NSMutableArray *)indices ofObject:(WFObject *)wfObj atIndex:(NSUInteger)idx {
     NFAssetSubset *subset = (self.subsetArray)[idx];
 
+    //
+    // NOTE: removing duplicates will still be useful for determining the number of
+    //       NFVertex_t vertices to allocate
+    //
     NSMutableArray *uniqueArray = [[NSMutableArray alloc] init];
-    [uniqueArray addObjectsFromArray:[NSSet setWithArray:indices].allObjects];
-
-    NSArray *sortedArray = [uniqueArray sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-        return [(NSString *)b compare:(NSString *)a];
-    }];
+    [uniqueArray addObjectsFromArray:[NSSet setWithArray:indices].allObjects]; // remove duplicates
 
     NFVertex_t *pData = (NFVertex_t *)malloc(uniqueArray.count * sizeof(NFVertex_t));
     GLushort *pIndices = (GLushort *)malloc(indices.count * sizeof(GLushort));
     memset(pData, 0x00, [uniqueArray count] * sizeof(NFVertex_t));
     memset(pIndices, 0x00, [indices count] * sizeof(GLushort));
 
+    int dataIndex = 0;
+
+
+
+    // just directly parse the triplet, add the NFVertex_t to the array, and then add the index to
+    // the index array (a face index that can create a duplicate NFVertex_t, as an optimization check
+    // for this condition and then set the index to the already created vertex)
+
+#if 1
+
+    int eltIdx = 0;
+
+    for (NSUInteger i=0; i<indices.count; ++i) {
+        NSString* str = indices[i];
+
+
+
+        //
+        // TODO: this is finding the right string duplicates but is giving the wrong duplicate index
+        //
+        BOOL isDuplicate = NO;
+        NSUInteger duplicateIndex = 0;
+
+        for (NSUInteger j=0; j<i; ++j) {
+            if ([str isEqualToString:indices[j]]) {
+                isDuplicate = YES;
+                duplicateIndex = j;
+
+                //NSLog(@"found duplice at %ld: %@", duplicateIndex, indices[j]);
+
+                break; // stop duplicate search
+            }
+        }
+
+
+
+        if (!isDuplicate) {
+            NSInteger vertIndex = -1;
+            NSInteger texIndex = -1;
+            NSInteger normIndex = -1;
+            NSArray *groupParts = [str componentsSeparatedByString:@"/"];
+
+            NSUInteger count = groupParts.count;
+            NSInteger intValue;
+            for (NSUInteger i=0; i<count; ++i) {
+                // NOTE: will have an empty string i.e. "" at the texture coordinate or normal position when
+                //       there is no texture coordinate given and this will return an intValue of 0
+                intValue = [groupParts[i] intValue];
+                switch (i) {
+                    case kGroupIndexVertex: vertIndex = normalizeObjIndex(intValue, wfObj.vertices.count); break;
+                    case kGroupIndexTex: texIndex = normalizeObjIndex(intValue, wfObj.textureCoords.count); break;
+                    case kGroupIndexNorm: normIndex = normalizeObjIndex(intValue, wfObj.normals.count); break;
+                    default: NSAssert(nil, @"Error, unknown face index type"); break;
+                }
+            }
+
+            //NSLog(@"%@ %ld/%ld/%ld", str, vertIndex, texIndex, normIndex);
+
+            NSValue *valueObj;
+            if (vertIndex != -1) {
+                GLKVector3 vertex;
+                valueObj = wfObj.vertices[vertIndex];
+                [valueObj getValue:&vertex];
+                pData[dataIndex].pos[0] = vertex.x;
+                pData[dataIndex].pos[1] = vertex.y;
+                pData[dataIndex].pos[2] = vertex.z;
+                pData[dataIndex].pos[3] = 1.0f;
+            }
+
+            if (texIndex != -1) {
+                GLKVector3 texCoord;
+                valueObj = wfObj.textureCoords[texIndex];
+                [valueObj getValue:&texCoord];
+                pData[dataIndex].texCoord[0] = texCoord.s;
+                pData[dataIndex].texCoord[1] = texCoord.t;
+                pData[dataIndex].texCoord[2] = texCoord.p;
+            }
+
+            if (normIndex != -1) {
+                GLKVector3 normal;
+                valueObj = wfObj.normals[normIndex];
+                [valueObj getValue:&normal];
+                pData[dataIndex].norm[0] = normal.x;
+                pData[dataIndex].norm[1] = normal.y;
+                pData[dataIndex].norm[2] = normal.z;
+                pData[dataIndex].norm[3] = 0.0f;
+            }
+
+            // set the element index
+            pIndices[eltIdx] = (GLushort)dataIndex;
+
+
+
+            NSLog(@"%d: %@", dataIndex, str);
+
+
+
+            ++dataIndex;
+        }
+        else {
+            // record the duplicate index to the indexArray
+            pIndices[eltIdx] = (GLushort)duplicateIndex;
+
+
+
+            NSLog(@"%ld(d): %@", duplicateIndex, str);
+
+
+        }
+
+        // increment the element index
+        ++eltIdx;
+        NSAssert(eltIdx <= indices.count, @"ERROR: created too many indices");
+    }
+
+
+    //
+    // TODO: need to correct indices, vertices seem good but need to double check
+    //
+
+    for (int i=0; i<dataIndex; ++i) {
+        NSLog(@"(%f, %f, %f) (%f, %f) (%f, %f, %f)", pData[i].pos[0], pData[i].pos[1], pData[i].pos[2],
+              pData[i].texCoord[0], pData[i].texCoord[1], pData[i].norm[0], pData[i].norm[1], pData[i].norm[2]);
+    }
+
+    for (int i=0; i<eltIdx; i+=3) {
+        NSLog(@"%d %d %d", pIndices[i], pIndices[i+1], pIndices[i+2]);
+    }
+
+
+#else
+
     NSMutableArray *indexArray = [[NSMutableArray alloc] init];
 
-    // iterate through the uniqueArray and create interleaved vertices
-    int dataIndex = 0;
+    //
+    // TODO: why is this being sorted again ??
+    //
+    NSArray *sortedArray = [uniqueArray sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+        return [(NSString *)b compare:(NSString *)a];
+    }];
+
+
+    //
+    // TODO: based on how the sorted array processing is being handled the indices array must be
+    //       the raw strings values of each face index triple vp/vt/vn
+    //
 
     for (NSString *faceStr in sortedArray) {
         NSInteger vertIndex = -1;
@@ -126,6 +268,10 @@
         ++dataIndex;
     }
 
+    //
+    // TODO: everything below here is very, very suspect... proceed accordingly
+    //
+
     // build a dictionary of which face string corresponds with which vertex using the uniqueArray
     // (should also investigate using an NSMapTable or CFDictionary)
     NSDictionary *indexDict = [NSDictionary dictionaryWithObjects:indexArray forKeys:sortedArray];
@@ -137,6 +283,15 @@
         pIndices[dataIndex] = (GLushort)indexNum.intValue;
         ++dataIndex;
     }
+
+
+    for (int i=0; i<dataIndex; i+=3) {
+        NSLog(@"%d %d %d", pIndices[i], pIndices[i+1], pIndices[i+2]);
+    }
+
+
+#endif
+
 
     // allocate and load vertex/index data into the subset
     [subset allocateIndicesWithNumElts:indices.count];
