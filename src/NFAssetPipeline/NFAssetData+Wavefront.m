@@ -42,7 +42,7 @@
     memset(pData, 0x00, [uniqueArray count] * sizeof(NFVertex_t));
     memset(pIndices, 0x00, [indices count] * sizeof(GLushort));
 
-    int dataIndex = 0;
+    NSUInteger dataIndex = 0;
 
 
 
@@ -50,31 +50,32 @@
     // the index array (a face index that can create a duplicate NFVertex_t, as an optimization check
     // for this condition and then set the index to the already created vertex)
 
-#if 1
+#if 0
+
+    NSMutableDictionary* indexDict = [[NSMutableDictionary alloc] initWithCapacity:uniqueArray.count];
 
     int eltIdx = 0;
 
     for (NSUInteger i=0; i<indices.count; ++i) {
         NSString* str = indices[i];
 
-
-
-        //
-        // TODO: this is finding the right string duplicates but is giving the wrong duplicate index
-        //
+        // build a dictionary of the face and corresponding index value and search that for duplicates
         BOOL isDuplicate = NO;
         NSUInteger duplicateIndex = 0;
-
-        for (NSUInteger j=0; j<i; ++j) {
-            if ([str isEqualToString:indices[j]]) {
+        for (NSString* key in indexDict) {
+            if ([str isEqualToString:key]) {
                 isDuplicate = YES;
-                duplicateIndex = j;
-
-                //NSLog(@"found duplice at %ld: %@", duplicateIndex, indices[j]);
-
-                break; // stop duplicate search
+                NSNumber* num = [indexDict valueForKey:key];
+                duplicateIndex = [num unsignedIntegerValue];
+                break;
             }
         }
+
+        /*
+        [myDict enumerateKeysAndObjectsUsingBlock: ^(id key, id obj, BOOL *stop) {
+            // do something with key and obj
+        }];
+        */
 
 
 
@@ -132,24 +133,12 @@
 
             // set the element index
             pIndices[eltIdx] = (GLushort)dataIndex;
-
-
-
-            NSLog(@"%d: %@", dataIndex, str);
-
-
-
+            [indexDict setValue:@(dataIndex) forKey:str];
             ++dataIndex;
         }
         else {
             // record the duplicate index to the indexArray
             pIndices[eltIdx] = (GLushort)duplicateIndex;
-
-
-
-            NSLog(@"%ld(d): %@", duplicateIndex, str);
-
-
         }
 
         // increment the element index
@@ -157,39 +146,35 @@
         NSAssert(eltIdx <= indices.count, @"ERROR: created too many indices");
     }
 
-
-    //
-    // TODO: need to correct indices, vertices seem good but need to double check
-    //
-
-    for (int i=0; i<dataIndex; ++i) {
-        NSLog(@"(%f, %f, %f) (%f, %f) (%f, %f, %f)", pData[i].pos[0], pData[i].pos[1], pData[i].pos[2],
-              pData[i].texCoord[0], pData[i].texCoord[1], pData[i].norm[0], pData[i].norm[1], pData[i].norm[2]);
-    }
-
-    for (int i=0; i<eltIdx; i+=3) {
-        NSLog(@"%d %d %d", pIndices[i], pIndices[i+1], pIndices[i+2]);
-    }
-
-
 #else
 
-    NSMutableArray *indexArray = [[NSMutableArray alloc] init];
+    //
+    // TODO: benchmark this against the new implementation above, and check that the recorded TEST.obj
+    //       is consistently recorded between implementations
+    //
 
     //
-    // TODO: why is this being sorted again ??
+    // TODO: also getting a black cube when loading TEST.obj using the above method
     //
+
+    NSMutableArray *indexArray = [[NSMutableArray alloc] initWithCapacity:uniqueArray.count];
+
+    //
+    // TODO: why is this being sorted again ?? may not need to do this
+    //
+/*
     NSArray *sortedArray = [uniqueArray sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
         return [(NSString *)b compare:(NSString *)a];
     }];
-
+*/
 
     //
     // TODO: based on how the sorted array processing is being handled the indices array must be
     //       the raw strings values of each face index triple vp/vt/vn
     //
 
-    for (NSString *faceStr in sortedArray) {
+    //for (NSString *faceStr in sortedArray) {
+    for (NSString *faceStr in uniqueArray) {
         NSInteger vertIndex = -1;
         NSInteger texIndex = -1;
         NSInteger normIndex = -1;
@@ -263,18 +248,15 @@
         }
 
         // record data index to be associated with specific Wavefront obj face value
-        NSNumber *num = @(dataIndex);
-        [indexArray addObject:num];
+        [indexArray addObject:@(dataIndex)];
         ++dataIndex;
     }
 
-    //
-    // TODO: everything below here is very, very suspect... proceed accordingly
-    //
-
     // build a dictionary of which face string corresponds with which vertex using the uniqueArray
     // (should also investigate using an NSMapTable or CFDictionary)
-    NSDictionary *indexDict = [NSDictionary dictionaryWithObjects:indexArray forKeys:sortedArray];
+
+    //NSDictionary *indexDict = [NSDictionary dictionaryWithObjects:indexArray forKeys:sortedArray];
+    NSDictionary *indexDict = [NSDictionary dictionaryWithObjects:indexArray forKeys:uniqueArray];
 
     // iterate through faceStrArray and set index value based on dictionary lookup
     dataIndex = 0;
@@ -283,12 +265,6 @@
         pIndices[dataIndex] = (GLushort)indexNum.intValue;
         ++dataIndex;
     }
-
-
-    for (int i=0; i<dataIndex; i+=3) {
-        NSLog(@"%d %d %d", pIndices[i], pIndices[i+1], pIndices[i+2]);
-    }
-
 
 #endif
 
