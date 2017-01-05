@@ -337,6 +337,9 @@ float shadow_calculation(vec4 frag_pos_light_space, vec3 normal, vec3 lightDir, 
 
     float bias = 0.00005;
 
+    //
+    // TODO: keep in mind when using PCF it may eliminate self shadowing
+    //
 #define USE_SIMPLE_PCF 0
 
 #if USE_SIMPLE_PCF

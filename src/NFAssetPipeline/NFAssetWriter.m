@@ -41,9 +41,12 @@
     NSAssert(rv > 0, @"ERROR: sprintf failed");
     writeLine(bytes);
 
+
     //
     // TODO: implement writing out material file
     //
+
+
     rv = snprintf(bytes, sizeof(bytes), "%s\n\n", "mtllib default.mtl");
     NSAssert(rv > 0, @"ERROR: sprintf failed");
     writeLine(bytes);

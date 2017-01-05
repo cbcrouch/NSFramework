@@ -30,12 +30,73 @@
 - (void) addSubsetWithIndices:(NSMutableArray *)indices ofObject:(WFObject *)wfObj atIndex:(NSUInteger)idx {
     NFAssetSubset *subset = (self.subsetArray)[idx];
 
+
     //
-    // NOTE: removing duplicates will still be useful for determining the number of
-    //       NFVertex_t vertices to allocate
+    // TODO: get rid of the unique array and "duplication removal"
     //
     NSMutableArray *uniqueArray = [[NSMutableArray alloc] init];
-    [uniqueArray addObjectsFromArray:[NSSet setWithArray:indices].allObjects]; // remove duplicates
+
+    //[uniqueArray addObjectsFromArray:[NSSet setWithArray:indices].allObjects]; // remove duplicates
+    [uniqueArray addObjectsFromArray:indices];
+
+
+    //
+    // TODO: only the cube has duplicate indices, may be able to just ditch the duplicate removal
+    //
+
+    //NSLog(@"indices.count %ld", indices.count);
+    //NSLog(@"uniqueArray.count %ld", uniqueArray.count);
+
+
+
+    //
+    // TODO: check the face indices against the obj files
+    //
+/*
+    for(int i=0; i<indices.count; i+=3) {
+        NSString* str = [indices objectAtIndex:i];
+        fprintf(stdout, "%s ", str.UTF8String);
+
+        str = [indices objectAtIndex:i+1];
+        fprintf(stdout, "%s ", str.UTF8String);
+
+        str = [indices objectAtIndex:i+2];
+        fprintf(stdout, "%s\n", str.UTF8String);
+    }
+*/
+    //
+    //
+    //
+
+
+    //
+    // TODO: print and verify all the vertex positions, tex coords, and normals
+    //
+
+#if 0
+    fprintf(stdout, "positions\n");
+    for (NSValue* value in wfObj.vertices) {
+        GLKVector3 vertex;
+        [value getValue:&vertex];
+        fprintf(stdout, "\t%f, %f, %f\n", vertex.x, vertex.y, vertex.z);
+    }
+
+    fprintf(stdout, "tex coords\n");
+    for (NSValue* value in wfObj.textureCoords) {
+        GLKVector3 texCoord;
+        [value getValue:&texCoord];
+        fprintf(stdout, "\t%f, %f\n", texCoord.s, texCoord.t);
+    }
+
+    fprintf(stdout, "normals\n");
+    for (NSValue* value in wfObj.normals) {
+        GLKVector3 normal;
+        [value getValue:&normal];
+        fprintf(stdout, "\t%f, %f, %f\n", normal.x, normal.y, normal.z);
+    }
+#endif
+
+
 
     NFVertex_t *pData = (NFVertex_t *)malloc(uniqueArray.count * sizeof(NFVertex_t));
     GLushort *pIndices = (GLushort *)malloc(indices.count * sizeof(GLushort));
@@ -76,7 +137,6 @@
             // do something with key and obj
         }];
         */
-
 
 
         if (!isDuplicate) {
@@ -149,31 +209,11 @@
 #else
 
     //
-    // TODO: benchmark this against the new implementation above, and check that the recorded TEST.obj
-    //       is consistently recorded between implementations
-    //
-
-    //
     // TODO: also getting a black cube when loading TEST.obj using the above method
     //
 
     NSMutableArray *indexArray = [[NSMutableArray alloc] initWithCapacity:uniqueArray.count];
 
-    //
-    // TODO: why is this being sorted again ?? may not need to do this
-    //
-/*
-    NSArray *sortedArray = [uniqueArray sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-        return [(NSString *)b compare:(NSString *)a];
-    }];
-*/
-
-    //
-    // TODO: based on how the sorted array processing is being handled the indices array must be
-    //       the raw strings values of each face index triple vp/vt/vn
-    //
-
-    //for (NSString *faceStr in sortedArray) {
     for (NSString *faceStr in uniqueArray) {
         NSInteger vertIndex = -1;
         NSInteger texIndex = -1;
@@ -247,6 +287,26 @@
             pData[dataIndex].norm[3] = 0.0f;
         }
 
+
+        //
+        // TODO: it appears that way too many vertices are being created for everything other than cube.obj
+        //
+/*
+        fprintf(stdout, "index: %ld\n", dataIndex);
+        fprintf(stdout, "\tnorm: (%f, %f, %f)\n",
+            pData[dataIndex].norm[0],
+            pData[dataIndex].norm[1],
+            pData[dataIndex].norm[2]);
+        fprintf(stdout, "\ttexc: (%f, %f)\n",
+            pData[dataIndex].texCoord[0],
+            pData[dataIndex].texCoord[1]);
+        fprintf(stdout, "\tvert: (%f, %f, %f)\n",
+            pData[dataIndex].pos[0],
+            pData[dataIndex].pos[1],
+            pData[dataIndex].pos[2]);
+*/
+
+
         // record data index to be associated with specific Wavefront obj face value
         [indexArray addObject:@(dataIndex)];
         ++dataIndex;
@@ -254,8 +314,6 @@
 
     // build a dictionary of which face string corresponds with which vertex using the uniqueArray
     // (should also investigate using an NSMapTable or CFDictionary)
-
-    //NSDictionary *indexDict = [NSDictionary dictionaryWithObjects:indexArray forKeys:sortedArray];
     NSDictionary *indexDict = [NSDictionary dictionaryWithObjects:indexArray forKeys:uniqueArray];
 
     // iterate through faceStrArray and set index value based on dictionary lookup

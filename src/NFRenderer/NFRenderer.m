@@ -264,10 +264,14 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
     fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
 
+    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/rifle/rifle.obj";
+
+
     //
     // TODO: geometry seems right but either tex coords or normals are off since the geoemtry is black
     //
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/TEST.obj";
+
 
     //
     // TODO: cube-mod will be a good test of normals generation (which is working right now), once
@@ -277,6 +281,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
     //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
 
+    
     //
     // TODO: teapot contains vertices and texture coordinates (no normals), does not use objects or groups,
     //       and has two different geometries defined separated by listing i.e. first object has v,vt,f and
@@ -305,18 +310,19 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
     // use for suzanne
     m_pAsset.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 1.0f, 0.0f);
-    [m_pAsset stepTransforms:0.0f];
 
     // use for teapot
     //[m_pAsset applyOriginCenterMatrix];
-    //[m_pAsset applyUnitScalarMatrix];
+    [m_pAsset applyUnitScalarMatrix];
+
+    [m_pAsset stepTransforms:0.0f];
 
 
 
     //
     // TODO: test out Wavefront obj file writing
     //
-    [NFAssetWriter writeAsset:m_pAsset toFile:@"/Users/cayce/Developer/NSGL/Models/TEST.obj" withFormat:kWavefrontObjFormat];
+    //[NFAssetWriter writeAsset:m_pAsset toFile:@"/Users/cayce/Developer/NSGL/Models/TEST.obj" withFormat:kWavefrontObjFormat];
 
 
 

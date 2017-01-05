@@ -59,6 +59,11 @@
 
             NSUInteger index = 0;
             for (WFGroup *group in wavefrontObj.object.groups) {
+                //
+                // NOTE: in theory this is just the parsed face array for the group with the parsed/raw vertex
+                //       position, texture coordiante, and normals (quad faces should have been converted to
+                //       triangles in the initial parsing)
+                //
                 [asset addSubsetWithIndices:group.faceStrArray ofObject:wavefrontObj.object atIndex:index];
                 ++index;
             }

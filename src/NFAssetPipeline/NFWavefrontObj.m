@@ -511,6 +511,11 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 // TODO: profile and optimize the file parsing
 //
 - (void) parseFile { // should support better error handling e.g. error:(NSError *)err ??
+
+    //
+    // TODO: trim \r if using Windows CRLF format
+    //
+
     NSArray *lines = [self.fileSource componentsSeparatedByString:@"\n"];
 
     // index set is for converting quads into triangles
