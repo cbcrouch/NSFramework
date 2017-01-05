@@ -32,27 +32,10 @@
 
 
     //
-    // TODO: get rid of the unique array and "duplication removal"
-    //
-    NSMutableArray *uniqueArray = [[NSMutableArray alloc] init];
-
-    //[uniqueArray addObjectsFromArray:[NSSet setWithArray:indices].allObjects]; // remove duplicates
-    [uniqueArray addObjectsFromArray:indices];
-
-
-    //
-    // TODO: only the cube has duplicate indices, may be able to just ditch the duplicate removal
-    //
-
-    //NSLog(@"indices.count %ld", indices.count);
-    //NSLog(@"uniqueArray.count %ld", uniqueArray.count);
-
-
-
-    //
     // TODO: check the face indices against the obj files
     //
-/*
+
+#if 0
     for(int i=0; i<indices.count; i+=3) {
         NSString* str = [indices objectAtIndex:i];
         fprintf(stdout, "%s ", str.UTF8String);
@@ -63,15 +46,8 @@
         str = [indices objectAtIndex:i+2];
         fprintf(stdout, "%s\n", str.UTF8String);
     }
-*/
-    //
-    //
-    //
+#endif
 
-
-    //
-    // TODO: print and verify all the vertex positions, tex coords, and normals
-    //
 
 #if 0
     fprintf(stdout, "positions\n");
@@ -97,121 +73,20 @@
 #endif
 
 
+    // get number of unique vertices to determine the correct number to allocate
+    NSMutableArray *uniqueArray = [[NSMutableArray alloc] init];
+    [uniqueArray addObjectsFromArray:[NSSet setWithArray:indices].allObjects]; // remove duplicates
 
+    //
+    // TODO: try using a mutable array instead of pre-allocating to very numbers
+    //
     NFVertex_t *pData = (NFVertex_t *)malloc(uniqueArray.count * sizeof(NFVertex_t));
     GLushort *pIndices = (GLushort *)malloc(indices.count * sizeof(GLushort));
     memset(pData, 0x00, [uniqueArray count] * sizeof(NFVertex_t));
     memset(pIndices, 0x00, [indices count] * sizeof(GLushort));
 
+
     NSUInteger dataIndex = 0;
-
-
-
-    // just directly parse the triplet, add the NFVertex_t to the array, and then add the index to
-    // the index array (a face index that can create a duplicate NFVertex_t, as an optimization check
-    // for this condition and then set the index to the already created vertex)
-
-#if 0
-
-    NSMutableDictionary* indexDict = [[NSMutableDictionary alloc] initWithCapacity:uniqueArray.count];
-
-    int eltIdx = 0;
-
-    for (NSUInteger i=0; i<indices.count; ++i) {
-        NSString* str = indices[i];
-
-        // build a dictionary of the face and corresponding index value and search that for duplicates
-        BOOL isDuplicate = NO;
-        NSUInteger duplicateIndex = 0;
-        for (NSString* key in indexDict) {
-            if ([str isEqualToString:key]) {
-                isDuplicate = YES;
-                NSNumber* num = [indexDict valueForKey:key];
-                duplicateIndex = [num unsignedIntegerValue];
-                break;
-            }
-        }
-
-        /*
-        [myDict enumerateKeysAndObjectsUsingBlock: ^(id key, id obj, BOOL *stop) {
-            // do something with key and obj
-        }];
-        */
-
-
-        if (!isDuplicate) {
-            NSInteger vertIndex = -1;
-            NSInteger texIndex = -1;
-            NSInteger normIndex = -1;
-            NSArray *groupParts = [str componentsSeparatedByString:@"/"];
-
-            NSUInteger count = groupParts.count;
-            NSInteger intValue;
-            for (NSUInteger i=0; i<count; ++i) {
-                // NOTE: will have an empty string i.e. "" at the texture coordinate or normal position when
-                //       there is no texture coordinate given and this will return an intValue of 0
-                intValue = [groupParts[i] intValue];
-                switch (i) {
-                    case kGroupIndexVertex: vertIndex = normalizeObjIndex(intValue, wfObj.vertices.count); break;
-                    case kGroupIndexTex: texIndex = normalizeObjIndex(intValue, wfObj.textureCoords.count); break;
-                    case kGroupIndexNorm: normIndex = normalizeObjIndex(intValue, wfObj.normals.count); break;
-                    default: NSAssert(nil, @"Error, unknown face index type"); break;
-                }
-            }
-
-            //NSLog(@"%@ %ld/%ld/%ld", str, vertIndex, texIndex, normIndex);
-
-            NSValue *valueObj;
-            if (vertIndex != -1) {
-                GLKVector3 vertex;
-                valueObj = wfObj.vertices[vertIndex];
-                [valueObj getValue:&vertex];
-                pData[dataIndex].pos[0] = vertex.x;
-                pData[dataIndex].pos[1] = vertex.y;
-                pData[dataIndex].pos[2] = vertex.z;
-                pData[dataIndex].pos[3] = 1.0f;
-            }
-
-            if (texIndex != -1) {
-                GLKVector3 texCoord;
-                valueObj = wfObj.textureCoords[texIndex];
-                [valueObj getValue:&texCoord];
-                pData[dataIndex].texCoord[0] = texCoord.s;
-                pData[dataIndex].texCoord[1] = texCoord.t;
-                pData[dataIndex].texCoord[2] = texCoord.p;
-            }
-
-            if (normIndex != -1) {
-                GLKVector3 normal;
-                valueObj = wfObj.normals[normIndex];
-                [valueObj getValue:&normal];
-                pData[dataIndex].norm[0] = normal.x;
-                pData[dataIndex].norm[1] = normal.y;
-                pData[dataIndex].norm[2] = normal.z;
-                pData[dataIndex].norm[3] = 0.0f;
-            }
-
-            // set the element index
-            pIndices[eltIdx] = (GLushort)dataIndex;
-            [indexDict setValue:@(dataIndex) forKey:str];
-            ++dataIndex;
-        }
-        else {
-            // record the duplicate index to the indexArray
-            pIndices[eltIdx] = (GLushort)duplicateIndex;
-        }
-
-        // increment the element index
-        ++eltIdx;
-        NSAssert(eltIdx <= indices.count, @"ERROR: created too many indices");
-    }
-
-#else
-
-    //
-    // TODO: also getting a black cube when loading TEST.obj using the above method
-    //
-
     NSMutableArray *indexArray = [[NSMutableArray alloc] initWithCapacity:uniqueArray.count];
 
     for (NSString *faceStr in uniqueArray) {
@@ -291,7 +166,7 @@
         //
         // TODO: it appears that way too many vertices are being created for everything other than cube.obj
         //
-/*
+#if 0
         fprintf(stdout, "index: %ld\n", dataIndex);
         fprintf(stdout, "\tnorm: (%f, %f, %f)\n",
             pData[dataIndex].norm[0],
@@ -304,7 +179,7 @@
             pData[dataIndex].pos[0],
             pData[dataIndex].pos[1],
             pData[dataIndex].pos[2]);
-*/
+#endif
 
 
         // record data index to be associated with specific Wavefront obj face value
@@ -312,19 +187,36 @@
         ++dataIndex;
     }
 
+
+
+    //
+    // TODO: this indexing may be what is screwed up
+    //
+
+    //NSLog(@"indexArray.count %ld", indexArray.count);
+    //NSLog(@"uniqueArray.count %ld", uniqueArray.count);
+
+
     // build a dictionary of which face string corresponds with which vertex using the uniqueArray
     // (should also investigate using an NSMapTable or CFDictionary)
+
     NSDictionary *indexDict = [NSDictionary dictionaryWithObjects:indexArray forKeys:uniqueArray];
+
+
 
     // iterate through faceStrArray and set index value based on dictionary lookup
     dataIndex = 0;
     for (NSString *faceStr in indices) {
         NSNumber *indexNum = indexDict[faceStr];
         pIndices[dataIndex] = (GLushort)indexNum.intValue;
+
+        //
+        // TODO: the indices need to be modified, the way they are currently being built isn't great
+        //
+        //fprintf(stdout, "%d\n", pIndices[dataIndex]);
+
         ++dataIndex;
     }
-
-#endif
 
 
     // allocate and load vertex/index data into the subset
