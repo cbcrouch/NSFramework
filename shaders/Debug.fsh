@@ -2,7 +2,7 @@
 //  Debug.fsh
 //  NSFramework
 //
-//  Copyright (c) 2017 Casey Crouch. All rights reserved.
+//  Copyright (c) 2016 Casey Crouch. All rights reserved.
 //
 
 // NOTE: GLSL version 410 corresponds to OpenGL 4.1
