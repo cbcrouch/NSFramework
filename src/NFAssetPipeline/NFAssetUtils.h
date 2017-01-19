@@ -2,7 +2,7 @@
 //  NFAssetUtils.h
 //  NSFramework
 //
-//  Created by cbcrouch on 2/26/15.
+//  Created by ccrouch on 2/26/15.
 //  Copyright (c) 2017 Casey Crouch. All rights reserved.
 //
 

@@ -164,7 +164,7 @@
 
 
         //
-        // TODO: it appears that way too many vertices are being created for everything other than cube.obj
+        // TODO: it appears that way too many vertices are being created for anything other than cube.obj
         //
 #if 0
         fprintf(stdout, "index: %ld\n", dataIndex);
