@@ -3,7 +3,7 @@
 //  NSFramework
 //
 //  Created by cbcrouch on 6/12/15.
-//  Copyright (c) 2016 Casey Crouch. All rights reserved.
+//  Copyright (c) 2017 Casey Crouch. All rights reserved.
 //
 
 #import "NFAssetSubset.h"

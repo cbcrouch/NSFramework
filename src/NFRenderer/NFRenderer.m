@@ -2,7 +2,7 @@
 //  NFRenderer.m
 //  NSFramework
 //
-//  Copyright (c) 2016 Casey Crouch. All rights reserved.
+//  Copyright (c) 2017 Casey Crouch. All rights reserved.
 //
 
 #import "NFUtils.h"
@@ -262,24 +262,34 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
     NSString *fileNamePath;
 
-    fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube.obj";
+    fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/cube/cube.obj";
 
-    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/rifle/rifle.obj";
+    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/rifle/rifle.obj";
+
+    // NOTE: this diamond.obj file is a broken model in other obj viewers as well
+    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/diamond.obj";
+
+    //
+    // TODO: these are failing on calculating normals, need to get that fixed before fixing indexing
+    //
+    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/dodecahedron.obj";
+    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/icosahedron.obj";
+    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/lamp.obj";
+    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/octahedron.obj";
+    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/pyramid.obj";
+
+    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/shuttle.obj";
+    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/skyscrapper.obj";
 
 
     //
     // TODO: geometry seems right but either tex coords or normals are off since the geoemtry is black
     //
-    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/TEST.obj";
+    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/TEST.obj";
 
 
-    //
-    // TODO: cube-mod will be a good test of normals generation (which is working right now), once
-    //       the Wavefront obj asset write is complete start debugging normals calculation
-    //
-    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/cube/cube-mod.obj";
-
-    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/leftsphere/leftsphere.obj";
+    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/cube/cube-mod.obj";
+    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/leftsphere/leftsphere.obj";
 
     
     //
@@ -289,7 +299,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //
     //       also need to figure out why the default texture is not getting applied
     //
-    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/teapot/teapot.obj";
+    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/teapot/teapot.obj";
 
     //
     // TODO: the following models have no textures applied to them (the suzanne model also has no normals) and
@@ -299,10 +309,10 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //       different primitive mode
     //
 
-    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/suzanne.obj";
+    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/suzanne.obj";
 
-    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/buddha.obj";
-    //fileNamePath = @"/Users/cayce/Developer/NSGL/Models/dragon.obj";
+    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/buddha.obj";
+    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/dragon.obj";
 
 
     m_pAsset = [NFAssetLoader allocAssetDataOfType:kWavefrontObj withArgs:fileNamePath, nil];
@@ -322,11 +332,11 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //
     // TODO: test out Wavefront obj file writing
     //
-    //[NFAssetWriter writeAsset:m_pAsset toFile:@"/Users/cayce/Developer/NSGL/Models/TEST.obj" withFormat:kWavefrontObjFormat];
+    //[NFAssetWriter writeAsset:m_pAsset toFile:@"/Users/ccrouch/Developer/NSGL/Models/TEST.obj" withFormat:kWavefrontObjFormat];
 
 
 
-    NSString* cubeMapPath = @"/Users/cayce/Developer/NSGL/Textures/Yokohama3";
+    NSString* cubeMapPath = @"/Users/ccrouch/Developer/NSGL/Textures/Yokohama3";
     m_skyBox = [[NFRCubeMap alloc] init];
 
     // faces must be loaded in the same order as the GL cube map positions

@@ -2,7 +2,7 @@
 //  NFAssetData+Wavefront.m
 //  NSFramework
 //
-//  Copyright (c) 2016 Casey Crouch. All rights reserved.
+//  Copyright (c) 2017 Casey Crouch. All rights reserved.
 //
 
 #import "NFAssetData+Wavefront.h"
@@ -31,6 +31,7 @@
     NFAssetSubset *subset = (self.subsetArray)[idx];
 
 
+    
     //
     // TODO: check the face indices against the obj files
     //
@@ -72,6 +73,7 @@
     }
 #endif
 
+    
 
     // get number of unique vertices to determine the correct number to allocate
     NSMutableArray *uniqueArray = [[NSMutableArray alloc] init];
@@ -164,7 +166,7 @@
 
 
         //
-        // TODO: it appears that way too many vertices are being created for everything other than cube.obj
+        // TODO: it appears that way too many vertices are being created for anything other than cube.obj
         //
 #if 0
         fprintf(stdout, "index: %ld\n", dataIndex);
