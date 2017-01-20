@@ -263,6 +263,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
     for (WFGroup* group in self.groups) {
         NSAssert([[group faceStrArray] count] % 3 == 0, @"ERROR: face string array can only process triangles");
+
         NSMutableArray* faceStrings = group.faceStrArray;
         NSUInteger faceCount = faceStrings.count;
 
@@ -417,7 +418,14 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     range = [truncLine rangeOfString:@"\\s*$" options:NSRegularExpressionSearch];
     truncLine = [truncLine stringByReplacingCharactersInRange:range withString:@""];
 
-    return [truncLine componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    NSArray* components = [truncLine componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+
+    // NOTE: components separated by white space will include a "" string if there was more than one whitespace
+    //       separating the text elements, these need to be filtered out, both of these should work
+    NSArray* filtered = [components filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF != ''"]];
+    //NSArray* filtered = [components filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"length > 0"]];
+
+    return filtered;
 }
 
 - (NSMutableArray *)materialsArray {
@@ -626,7 +634,6 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
                 [self.object.groups addObject:self.activeGroup];
                 self.activeGroup.groupName = @"default_group";
             }
-
 
             // check if face is a triangle or a quad (quads need to be converted into triangles)
             if (faceIndexArray.count == 3) {
