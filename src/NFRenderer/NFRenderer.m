@@ -268,30 +268,33 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
 
     //
-    // TODO: geometry seems right but either tex coords or normals are off since the geoemtry is black
+    // TODO: test and fix errors with recorded obj file
     //
     //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/TEST.obj";
 
+    //
+    // TODO: fix black textures
+    //
 
     // NOTE: this obj file is broken in other obj viewers as well
     //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/diamond.obj";
 
-    //
-    // TODO: these are failing on calculating normals, need to get that fixed before fixing indexing
-    //
     //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/dodecahedron.obj";
     //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/icosahedron.obj";
-    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/lamp.obj";
     //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/octahedron.obj";
+
+    //
+    // TODO: something is wrong with parsing the pyramid obj, check line endings
+    //
     //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/pyramid.obj";
 
+    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/lamp.obj";
     //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/shuttle.obj";
     //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/skyscrapper.obj";
 
 
     //
-    // TODO: cube-mod will be a good test of normals generation (which is working right now), once
-    //       the Wavefront obj asset write is complete start debugging normals calculation
+    // TODO: cube-mod will be used to test of normals generation (which is working at the moment)
     //
     //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/cube/cube-mod.obj";
 
@@ -299,20 +302,15 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
     
     //
-    // TODO: teapot contains vertices and texture coordinates (no normals), does not use objects or groups,
-    //       and has two different geometries defined separated by listing i.e. first object has v,vt,f and
-    //       then the second object lists its v,vt,f components
-    //
-    //       also need to figure out why the default texture is not getting applied
+    // TODO: teapot contains vertices and texture coordinates (no normals) and two groups Base and Top, plus
+    //       it lists the vertices and texture coordinates separately with the Base listed first (before Base faces)
+    //       and top vertices and texture coordinates after the Base faces
     //
     //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/teapot/teapot.obj";
 
     //
-    // TODO: the following models have no textures applied to them (the suzanne model also has no normals) and
-    //       should have a lighting model applied to them in order to verify they are being correctly imported
-    //
-    //       also the buddha and dragon models do not get drawn correctly, it looks like they might have a
-    //       different primitive mode
+    // TODO: the following models have no textures applied to them (the suzanne model also has no normals),
+    //       also the buddha and dragon models do not get drawn correctly since they have multiple meshes
     //
 
     //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/suzanne.obj";
