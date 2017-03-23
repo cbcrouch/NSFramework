@@ -55,16 +55,13 @@ static NSInteger (^normalizeObjIndex)(NSInteger, NSUInteger) = ^ NSInteger (NSIn
 @property (nonatomic, strong) NSString *objectName;
 @property (nonatomic, strong) NSMutableArray *groups;
 
-@property (nonatomic, strong) NSMutableArray *vertices;
-@property (nonatomic, strong) NSMutableArray *textureCoords;
-@property (nonatomic, strong) NSMutableArray *normals;
-
 //
 // TODO: these should operate on an NFAssetData object so they can be used regardless
 //       of what file format is being used
 //
-- (void) calculateTextureCoordinates;
-- (void) calculateNormals;
+//- (void) calculateTextureCoordinates;
+//- (void) calculateNormals;
+
 
 @end
 
@@ -73,6 +70,11 @@ static NSInteger (^normalizeObjIndex)(NSInteger, NSUInteger) = ^ NSInteger (NSIn
 @interface WFGroup : NSObject
 @property (nonatomic, strong) NSString *groupName;
 @property (nonatomic, strong) NSString *materialName;
+
+@property (nonatomic, strong) NSMutableArray *vertices;
+@property (nonatomic, strong) NSMutableArray *textureCoords;
+@property (nonatomic, strong) NSMutableArray *normals;
+
 @property (nonatomic, strong) NSMutableArray *faceStrArray;
 @end
 

@@ -67,27 +67,6 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
 @implementation WFObject
 
-- (NSMutableArray *)vertices {
-    if (_vertices == nil) {
-        _vertices = [[NSMutableArray alloc] init];
-    }
-    return _vertices;
-}
-
-- (NSMutableArray *)textureCoords {
-    if (_textureCoords == nil) {
-        _textureCoords = [[NSMutableArray alloc] init];
-    }
-    return _textureCoords;
-}
-
-- (NSMutableArray *)normals {
-    if (_normals == nil) {
-        _normals = [[NSMutableArray alloc] init];
-    }
-    return _normals;
-}
-
 - (NSMutableArray *)groups {
     if (_groups == nil) {
         _groups = [[NSMutableArray alloc] init];
@@ -95,6 +74,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     return _groups;
 }
 
+/*
 //
 // TODO: pass in Wavefront obj center point
 //
@@ -361,9 +341,31 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
         }
     }
 }
+*/
 @end
 
 @implementation WFGroup
+
+- (NSMutableArray *)vertices {
+    if (_vertices == nil) {
+        _vertices = [[NSMutableArray alloc] init];
+    }
+    return _vertices;
+}
+
+- (NSMutableArray *)textureCoords {
+    if (_textureCoords == nil) {
+        _textureCoords = [[NSMutableArray alloc] init];
+    }
+    return _textureCoords;
+}
+
+- (NSMutableArray *)normals {
+    if (_normals == nil) {
+        _normals = [[NSMutableArray alloc] init];
+    }
+    return _normals;
+}
 
 - (NSMutableArray *)faceStrArray {
     if (_faceStrArray == nil) {
@@ -382,17 +384,16 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
 + (NSArray *) componentsFromWavefrontObjLine:(NSString *)line withPrefix:(NSString *)prefix;
 
++ (void) parseVertexArray:(NSArray *)vertexArray processedArray:(NSMutableArray *)vertices;
++ (void) parseTextureCoordArray:(NSArray *)texCoordArray processedArray:(NSMutableArray *)textureCoords;
++ (void) parseNormalVectorArray:(NSArray *)normVectorArray processedArray:(NSMutableArray *)normals;
+
 @property (nonatomic, strong) NSString *objPath;
 @property (nonatomic, strong) NSString *fileSource;
 @property (nonatomic, strong) NSString *mtlSource;
 
 @property (nonatomic, strong) WFObject *activeObject;
 @property (nonatomic, strong) WFGroup *activeGroup;
-
-- (void) parseVertexArray:(NSArray *)vertexArray;
-- (void) parseTextureCoordArray:(NSArray *)texCoordArray;
-- (void) parseNormalVectorArray:(NSArray *)normVectorArray;
-// parseParamArray
 
 - (void) parseMaterialFile:(NSString *)file;
 
@@ -426,6 +427,49 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     //NSArray* filtered = [components filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"length > 0"]];
 
     return filtered;
+}
+
++ (void) parseVertexArray:(NSArray *)vertexArray processedArray:(NSMutableArray *)vertices {
+    // parse vertex
+    GLKVector3 vertex;
+    vertex.x = [vertexArray[0] floatValue];
+    vertex.y = [vertexArray[1] floatValue];
+    vertex.z = [vertexArray[2] floatValue];
+
+    // add vertex to parent class NSAssetData
+    NSValue *value = [NSValue value:&vertex withObjCType:g_vertexType];
+    [vertices addObject:value];
+}
+
++ (void) parseTextureCoordArray:(NSArray *)texCoordArray processedArray:(NSMutableArray *)textureCoords {
+    // parse texture coord
+    GLKVector3 texCoord;
+    texCoord.s = [texCoordArray[0] floatValue];
+    texCoord.t = [texCoordArray[1] floatValue];
+
+    // if texture coordiante supports depth use it
+    if (texCoordArray.count > 2) {
+        texCoord.p = [texCoordArray[2] floatValue];
+    }
+    else {
+        texCoord.p = 0.0f;
+    }
+
+    // add texture coord to parent NSAssetData
+    NSValue *value = [NSValue value:&texCoord withObjCType:g_texType];
+    [textureCoords addObject:value];
+}
+
++ (void) parseNormalVectorArray:(NSArray *)normVectorArray processedArray:(NSMutableArray *)normals {
+    // parse normal vector
+    GLKVector3 normal;
+    normal.x = [normVectorArray[0] floatValue];
+    normal.y = [normVectorArray[1] floatValue];
+    normal.z = [normVectorArray[2] floatValue];
+
+    // add normal to parent NSAssetData
+    NSValue *value = [NSValue value:&normal withObjCType:g_normType];
+    [normals addObject:value];
 }
 
 - (NSMutableArray *)materialsArray {
@@ -529,6 +573,13 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     // index set is for converting quads into triangles
     NSMutableIndexSet *indexSet = [[NSMutableIndexSet alloc] initWithIndexesInRange:NSMakeRange(0, 3)];
 
+
+    NSMutableArray *activeVertices = [[NSMutableArray alloc] init];
+    NSMutableArray *activeTexCoords = [[NSMutableArray alloc] init];
+    NSMutableArray *activeNormals = [[NSMutableArray alloc] init];
+
+
+
     for (NSString *line in lines) {
 
         //
@@ -546,9 +597,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
             // TODO: only storing one object name for now, will need to eventually handle N
             //
 
-            NSString *objName = [line substringFromIndex:g_objPrefix.length];
-
-            (self.object).objectName = objName;
+            (self.object).objectName = [line substringFromIndex:g_objPrefix.length];
         }
         else if ([line hasPrefix:g_groupPrefix]) {
             NSString *groupName = [line substringFromIndex:g_groupPrefix.length];
@@ -560,6 +609,13 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
             // start populating the active group
             self.activeGroup.groupName = groupName;
 
+            [self.activeGroup.vertices addObjectsFromArray:activeVertices];
+            [self.activeGroup.textureCoords addObjectsFromArray:activeTexCoords];
+            [self.activeGroup.normals addObjectsFromArray:activeNormals];
+
+            [activeVertices removeAllObjects];
+            [activeTexCoords removeAllObjects];
+            [activeNormals removeAllObjects];
         }
         else if ([line hasPrefix:g_useMatPrefix]) {
             NSString *matName = [line substringFromIndex:g_useMatPrefix.length];
@@ -571,6 +627,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
                 //
                 // TODO: need a better mechanism for creating default objects and groups
                 //
+/*
                 if (self.activeObject == nil) {
                     //
                     // TODO: allocate a new object (which will be the current active object) and add to the object array
@@ -578,13 +635,22 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 
                     //[self.object setObjectName:@"default_object"];
                 }
+*/
 
+/*
                 if (self.activeGroup == nil) {
                     // allocate a new group (which will be the current active group) and add to object's group array
                     self.activeGroup = [[WFGroup alloc] init];
                     [self.object.groups addObject:self.activeGroup];
+
+                    //
+                    // TODO: parse group name, if none exists then create a default one
+                    //
                     self.activeGroup.groupName = @"default_group";
+
+                    NSLog(@"group created when parsing material");
                 }
+*/
 
                 //
                 // TODO: textures need to be processed independently and managed through a texture cache
@@ -604,15 +670,15 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
             //
 
             NSArray *vertArray = [NFWavefrontObj componentsFromWavefrontObjLine:line withPrefix:g_vertPrefix];
-            [self parseVertexArray:vertArray];
+            [NFWavefrontObj parseVertexArray:vertArray processedArray:activeVertices];
         }
         else if ([line hasPrefix:g_texPrefix]) {
             NSArray *texArray = [NFWavefrontObj componentsFromWavefrontObjLine:line withPrefix:g_texPrefix];
-            [self parseTextureCoordArray:texArray];
+            [NFWavefrontObj parseTextureCoordArray:texArray processedArray:activeTexCoords];
         }
         else if ([line hasPrefix:g_normPrefix]) {
             NSArray *normArray = [NFWavefrontObj componentsFromWavefrontObjLine:line withPrefix:g_normPrefix];
-            [self parseNormalVectorArray:normArray];
+            [NFWavefrontObj parseNormalVectorArray:normArray processedArray:activeNormals];
         }
         else if ([line hasPrefix:@"vp "]) {
             // TODO: add support for parameter space vertices
@@ -633,6 +699,14 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
                 self.activeGroup = [[WFGroup alloc] init];
                 [self.object.groups addObject:self.activeGroup];
                 self.activeGroup.groupName = @"default_group";
+
+                [self.activeGroup.vertices addObjectsFromArray:activeVertices];
+                [self.activeGroup.textureCoords addObjectsFromArray:activeTexCoords];
+                [self.activeGroup.normals addObjectsFromArray:activeNormals];
+
+                [activeVertices removeAllObjects];
+                [activeTexCoords removeAllObjects];
+                [activeNormals removeAllObjects];
             }
 
             // check if face is a triangle or a quad (quads need to be converted into triangles)
@@ -658,49 +732,6 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
             }
         }
     }
-}
-
-- (void) parseVertexArray:(NSArray *)vertexArray {
-    // parse vertex
-    GLKVector3 vertex;
-    vertex.x = [vertexArray[0] floatValue];
-    vertex.y = [vertexArray[1] floatValue];
-    vertex.z = [vertexArray[2] floatValue];
-
-    // add vertex to parent class NSAssetData
-    NSValue *value = [NSValue value:&vertex withObjCType:g_vertexType];
-    [self.object.vertices addObject:value];
-}
-
-- (void) parseTextureCoordArray:(NSArray *)texCoordArray {
-    // parse texture coord
-    GLKVector3 texCoord;
-    texCoord.s = [texCoordArray[0] floatValue];
-    texCoord.t = [texCoordArray[1] floatValue];
-
-    // if texture coordiante supports depth use it
-    if (texCoordArray.count > 2) {
-        texCoord.p = [texCoordArray[2] floatValue];
-    }
-    else {
-        texCoord.p = 0.0f;
-    }
-
-    // add texture coord to parent NSAssetData
-    NSValue *value = [NSValue value:&texCoord withObjCType:g_texType];
-    [self.object.textureCoords addObject:value];
-}
-
-- (void) parseNormalVectorArray:(NSArray *)normVectorArray {
-    // parse normal vector
-    GLKVector3 normal;
-    normal.x = [normVectorArray[0] floatValue];
-    normal.y = [normVectorArray[1] floatValue];
-    normal.z = [normVectorArray[2] floatValue];
-
-    // add normal to parent NSAssetData
-    NSValue *value = [NSValue value:&normal withObjCType:g_normType];
-    [self.object.normals addObject:value];
 }
 
 - (void) parseMaterialFile:(NSString *)file {

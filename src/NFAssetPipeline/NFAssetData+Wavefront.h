@@ -11,6 +11,6 @@
 @interface NFAssetData (Wavefront)
 
 - (void) setNumberOfSubsets:(NSInteger)numSubsets;
-- (void) addSubsetWithIndices:(NSMutableArray *)indices ofObject:(WFObject *)wfObj atIndex:(NSUInteger)idx;
+- (void) addSubsetWithIndices:(NSMutableArray *)indices ofObject:(WFGroup *)wfGroup atIndex:(NSUInteger)idx;
 
 @end

@@ -27,7 +27,10 @@
     //       qualifier for the subsetArray property
 }
 
-- (void) addSubsetWithIndices:(NSMutableArray *)indices ofObject:(WFObject *)wfObj atIndex:(NSUInteger)idx {
+//
+// TODO: just pass in NFAssetSubset rather than index so that the lookup is performed outside this function
+//
+- (void) addSubsetWithIndices:(NSMutableArray *)indices ofObject:(WFGroup *)wfGroup atIndex:(NSUInteger)idx; {
     NFAssetSubset *subset = (self.subsetArray)[idx];
 
 
@@ -46,21 +49,21 @@
 
 #if 0
     fprintf(stdout, "positions\n");
-    for (NSValue* value in wfObj.vertices) {
+    for (NSValue* value in wfGroup.vertices) {
         GLKVector3 vertex;
         [value getValue:&vertex];
         fprintf(stdout, "\t%f, %f, %f\n", vertex.x, vertex.y, vertex.z);
     }
 
     fprintf(stdout, "tex coords\n");
-    for (NSValue* value in wfObj.textureCoords) {
+    for (NSValue* value in wfGroup.textureCoords) {
         GLKVector3 texCoord;
         [value getValue:&texCoord];
         fprintf(stdout, "\t%f, %f\n", texCoord.s, texCoord.t);
     }
 
     fprintf(stdout, "normals\n");
-    for (NSValue* value in wfObj.normals) {
+    for (NSValue* value in wfGroup.normals) {
         GLKVector3 normal;
         [value getValue:&normal];
         fprintf(stdout, "\t%f, %f, %f\n", normal.x, normal.y, normal.z);
@@ -127,9 +130,9 @@
                 //       there is no texture coordinate given and this will return an intValue of 0
                 intValue = [groupParts[i] intValue];
                 switch (i) {
-                    case kGroupIndexVertex: vertIndex = normalizeObjIndex(intValue, wfObj.vertices.count); break;
-                    case kGroupIndexTex: texIndex = normalizeObjIndex(intValue, wfObj.textureCoords.count); break;
-                    case kGroupIndexNorm: normIndex = normalizeObjIndex(intValue, wfObj.normals.count); break;
+                    case kGroupIndexVertex: vertIndex = normalizeObjIndex(intValue, wfGroup.vertices.count); break;
+                    case kGroupIndexTex: texIndex = normalizeObjIndex(intValue, wfGroup.textureCoords.count); break;
+                    case kGroupIndexNorm: normIndex = normalizeObjIndex(intValue, wfGroup.normals.count); break;
                     default: NSAssert(nil, @"Error, unknown face index type"); break;
                 }
             }
@@ -140,7 +143,7 @@
 
             if (vertIndex != -1) {
                 GLKVector3 vertex;
-                valueObj = wfObj.vertices[vertIndex];
+                valueObj = wfGroup.vertices[vertIndex];
                 [valueObj getValue:&vertex];
                 pData[dataIndex].pos[0] = vertex.x;
                 pData[dataIndex].pos[1] = vertex.y;
@@ -150,7 +153,7 @@
 
             if (texIndex != -1) {
                 GLKVector3 texCoord;
-                valueObj = wfObj.textureCoords[texIndex];
+                valueObj = wfGroup.textureCoords[texIndex];
                 [valueObj getValue:&texCoord];
                 pData[dataIndex].texCoord[0] = texCoord.s;
                 pData[dataIndex].texCoord[1] = texCoord.t;
@@ -159,7 +162,7 @@
 
             if (normIndex != -1) {
                 GLKVector3 normal;
-                valueObj = wfObj.normals[normIndex];
+                valueObj = wfGroup.normals[normIndex];
                 [valueObj getValue:&normal];
                 pData[dataIndex].norm[0] = normal.x;
                 pData[dataIndex].norm[1] = normal.y;
@@ -214,10 +217,10 @@
     // allocate and load vertex/index data into the subset
     [subset allocateIndicesWithNumElts:indices.count];
     [subset loadIndexData:pIndices ofSize:indices.count * sizeof(GLushort)];
-
+    
     [subset allocateVerticesOfType:kVertexFormatDefault withNumVertices:uniqueArray.count];
     [subset loadVertexData:pData ofType:kVertexFormatDefault withNumVertices:uniqueArray.count];
-
+    
     free(pData);
     free(pIndices);
 }
