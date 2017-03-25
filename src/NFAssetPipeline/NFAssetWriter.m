@@ -63,7 +63,15 @@
     //
     // vertex data
     //
-    NFRGeometry* geometry = assetData.geometry;
+
+    //
+    // TODO: add support for writing out multiple geometry objects
+    //
+
+    NFRGeometry* geometry = assetData.geometryArray[0];
+
+    NSAssert([assetData.geometryArray count] == 1, @"ERROR: NFAssetWriter only supports assets with a single geometry object");
+
     NFRBuffer* vertexBuffer = geometry.vertexBuffer;
     switch (vertexBuffer.bufferDataType) {
         case kBufferDataTypeNFVertex_t: {

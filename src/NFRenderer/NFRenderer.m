@@ -262,8 +262,14 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
     NSString *fileNamePath;
 
-    fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/cube/cube.obj";
-    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/cube/cube-mod.obj"; // multiple groups test
+    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/cube/cube.obj";
+
+    //
+    // TODO: cube-mod contains two identical cubes grouped in the same manner as the teapot, getting
+    //       this working will most likely require modifying the NFRGeometry object
+    //
+    fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/cube/cube-mod.obj"; // multiple groups test
+
 
     //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/rifle/rifle.obj";
 
@@ -308,6 +314,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //       and top vertices and texture coordinates after the Base faces
     //
     //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/teapot/teapot.obj";
+
 
     //
     // TODO: the following models have no textures applied to them (the suzanne model also has no normals),
@@ -374,8 +381,10 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     [m_skyBoxData generateRenderables];
 
 
-    [m_skyBoxData.geometry assignCubeMap:m_skyBox];
-
+    //
+    // TODO: would there be a use case for having multiple geometry objects in a sky box ??
+    //
+    [m_skyBoxData.geometryArray[0] assignCubeMap:m_skyBox];
 
 
     //
@@ -387,8 +396,10 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     [m_defaultCubeMapGL syncCubeMap:m_skyBox];
 
     GLint defaultCubeMapHandle = m_defaultCubeMapGL.textureID;
-    [m_pAsset.geometry assignCubeMapHandle:[NSValue value:&defaultCubeMapHandle withObjCType:@encode(GLint)]];
 
+    for (NFRGeometry* geo in m_pAsset.geometryArray) {
+        [geo assignCubeMapHandle:[NSValue value:&defaultCubeMapHandle withObjCType:@encode(GLint)]];
+    }
 
 
     m_axisData = [NFAssetLoader allocAssetDataOfType:kAxisWireframe withArgs:nil];
@@ -470,48 +481,52 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     CHECK_GL_ERROR();
 
 
-    //
-    // TODO: command buffer should have a generic add resource method
-    //
-
     // add renderables to command buffers
-    [m_defaultCmdBuffer addGeometry:m_pAsset.geometry];
-    [m_defaultCmdBuffer addGeometry:m_planeData.geometry];
-    [m_defaultCmdBuffer addGeometry:m_pProceduralData.geometry];
 
+    void (^addGeometryArray)(id, NSArray*) = ^ void (id cmdBuffer, NSArray* geometryArray) {
+        if ([cmdBuffer respondsToSelector:@selector(addGeometry:)]) {
+            for (NFRGeometry* geo in geometryArray) {
+                [cmdBuffer performSelector:@selector(addGeometry:) withObject:geo];
+            }
+        }
+    };
 
-    [m_defaultCmdBuffer addLight:m_pointLight];
-    [m_defaultCmdBuffer addLight:m_dirLight];
-    [m_defaultCmdBuffer addLight:m_spotLight];
+    addGeometryArray(m_defaultCmdBuffer, m_pAsset.geometryArray);
+    addGeometryArray(m_defaultCmdBuffer, m_planeData.geometryArray);
+    addGeometryArray(m_defaultCmdBuffer, m_pProceduralData.geometryArray);
 
-    [m_debugCmdBuffer addGeometry:m_axisData.geometry];
-    //[m_debugCmdBuffer addGeometry:m_gridData.geometry];
+    addGeometryArray(m_debugCmdBuffer, m_axisData.geometryArray);
+    //addGeometryArray(m_debugCmdBuffer, m_gridData.geometryArray);
+
+    addGeometryArray(m_depthCmdBuffer, m_pAsset.geometryArray);
+    addGeometryArray(m_depthCmdBuffer, m_pProceduralData.geometryArray);
+
+    addGeometryArray(m_skyBoxCmdBuffer, m_skyBoxData.geometryArray);
+
+    addGeometryArray(m_spotLightDepthCmdBuffer, m_pAsset.geometryArray);
+    addGeometryArray(m_spotLightDepthCmdBuffer, m_pProceduralData.geometryArray);
+
+    addGeometryArray(m_pointLightDepthCmdBuffer, m_pAsset.geometryArray);
+    addGeometryArray(m_pointLightDepthCmdBuffer, m_pProceduralData.geometryArray);
+
 
     [m_debugCmdBuffer addGeometry:m_pointLight.geometry];
     [m_debugCmdBuffer addGeometry:m_dirLight.geometry];
     [m_debugCmdBuffer addGeometry:m_spotLight.geometry];
 
-    // sky box
-    [m_skyBoxCmdBuffer addGeometry:m_skyBoxData.geometry];
-    [m_skyBoxRenderRequest.commandBufferArray addObject:m_skyBoxCmdBuffer];
+    [m_defaultCmdBuffer addLight:m_pointLight];
+    [m_defaultCmdBuffer addLight:m_dirLight];
+    [m_defaultCmdBuffer addLight:m_spotLight];
 
-    // directional shadow map
-    [m_depthCmdBuffer addGeometry:m_pAsset.geometry];
-    [m_depthCmdBuffer addGeometry:m_pProceduralData.geometry];
-
-    // spot light shadow map
-    [m_spotLightDepthCmdBuffer addGeometry:m_pAsset.geometry];
-    [m_spotLightDepthCmdBuffer addGeometry:m_pProceduralData.geometry];
-
-    // point light shadow map
-    [m_pointLightDepthCmdBuffer addGeometry:m_pAsset.geometry];
-    [m_pointLightDepthCmdBuffer addGeometry:m_pProceduralData.geometry];
 
     // add command buffers to render requests
     [m_renderRequest.commandBufferArray addObject:m_defaultCmdBuffer];
-    [m_debugRenderRequest.commandBufferArray addObject:m_debugCmdBuffer];
 
+    [m_debugRenderRequest.commandBufferArray addObject:m_debugCmdBuffer];
     [m_depthRenderRequest.commandBufferArray addObject:m_depthCmdBuffer];
+
+    [m_skyBoxRenderRequest.commandBufferArray addObject:m_skyBoxCmdBuffer];
+
     [m_spotLightDepthRenderRequest.commandBufferArray addObject:m_spotLightDepthCmdBuffer];
     [m_pointLightDepthRenderRequest.commandBufferArray addObject:m_pointLightDepthCmdBuffer];
 

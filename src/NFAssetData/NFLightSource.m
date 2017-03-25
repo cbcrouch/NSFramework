@@ -34,12 +34,12 @@
     //
     for (NFAssetSubset *subset in self.assetData.subsetArray) {
         GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.assetData.modelMatrix, subset.subsetModelMat);
-        (self.assetData.geometry).modelMatrix = renderModelMat;
+        ((NFRGeometry*)(self.assetData.geometryArray[0])).modelMatrix = renderModelMat;
     }
 }
 
 - (NFRGeometry*) geometry {
-    return _assetData.geometry;
+    return _assetData.geometryArray[0];
 }
 
 - (GLKMatrix4) getViewMatrix {
@@ -131,12 +131,12 @@
 
     for (NFAssetSubset *subset in self.assetData.subsetArray) {
         GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.assetData.modelMatrix, subset.subsetModelMat);
-        (self.assetData.geometry).modelMatrix = renderModelMat;
+        ((NFRGeometry*)(self.assetData.geometryArray[0])).modelMatrix = renderModelMat;
     }
 }
 
 - (NFRGeometry*) geometry {
-    return _assetData.geometry;
+    return _assetData.geometryArray[0];
 }
 
 - (GLKMatrix4) getViewMatrix {
@@ -233,12 +233,12 @@
 
     for (NFAssetSubset *subset in self.assetData.subsetArray) {
         GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.assetData.modelMatrix, subset.subsetModelMat);
-        (self.assetData.geometry).modelMatrix = renderModelMat;
+        ((NFRGeometry*)(self.assetData.geometryArray[0])).modelMatrix = renderModelMat;
     }
 }
 
 - (NFRGeometry*) geometry {
-    return _assetData.geometry;
+    return _assetData.geometryArray[0];
 }
 
 - (GLKMatrix4) getViewMatrix {

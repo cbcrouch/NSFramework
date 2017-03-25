@@ -11,13 +11,6 @@
 
 @implementation NFAssetData
 
-- (NFRGeometry*) geometry {
-    if (_geometry == nil) {
-        _geometry = [[NFRGeometry alloc] init];
-    }
-    return _geometry;
-}
-
 - (instancetype) init {
     self = [super init];
     if (self == nil) {
@@ -29,6 +22,11 @@
     return self;
 }
 
+
+//
+// TODO: need to update how all the transforms are applied to support the geometry array
+//       (everything is working except the loaded Wavefront obj geometry)
+//
 
 - (void) stepTransforms:(float)secsElapsed {
 
@@ -45,60 +43,62 @@
         return GLKMatrix4RotateY(modelMatrix, angle);
     };
 
+
+    //
+    // TODO: iterate over all the subsets
+    //
     GLKMatrix4 model = [(self.subsetArray)[0] subsetModelMat];
     [(self.subsetArray)[0] setSubsetModelMat:transformBlock(model, secsElapsed)];
+
 
     // update geometry object model matrix
     for (NFAssetSubset *subset in self.subsetArray) {
         GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.modelMatrix, subset.subsetModelMat);
-        (self.geometry).modelMatrix = renderModelMat;
+
+        for (NFRGeometry* geo in self.geometryArray) {
+            geo.modelMatrix = renderModelMat;
+        }
     }
 }
 
 - (void) applyUnitScalarMatrix {
+
     GLKMatrix4 model = [(self.subsetArray)[0] unitScalarMatrix];
     //[[self.subsetArray objectAtIndex:0] setUnitScalarMatrix:[[self.subsetArray objectAtIndex:0] modelMatrix]];
     [(self.subsetArray)[0] setSubsetModelMat:model];
+
 }
 
 - (void) applyOriginCenterMatrix {
+
     GLKMatrix4 model = [(self.subsetArray)[0] originCenterMatrix];
     //[[self.subsetArray objectAtIndex:0] setOriginCenterMatrix:[[self.subsetArray objectAtIndex:0] modelMatrix]];
     [(self.subsetArray)[0] setSubsetModelMat:model];
+
 }
 
 - (void) generateRenderables {
-    //
-    // TODO: will either want a geometry subset or geometry hierarchy structure object to apply transform hierarchies to
-    //
-    NSAssert([self.subsetArray count] == 1, @"ERROR: NFRGeometry object currently only supports one asset subset");
-
-    //
-    // TODO: need a much cleaner way of handling the NFRBufferAttributes vertex format
-    //
-    NF_VERTEX_FORMAT vertexFormat;
-    NFAssetSubset* testSubset = (self.subsetArray)[0];
-    vertexFormat = testSubset.vertexFormat;
-
-    NFRBufferAttributes* bufferAttribs = [[NFRBufferAttributes alloc] initWithFormat:vertexFormat];
-
-    NFRBuffer* vertexBuffer = [[NFRBuffer alloc] initWithType:kBufferTypeVertex usingAttributes:bufferAttribs];
-    NFRBuffer* indexBuffer = [[NFRBuffer alloc] initWithType:kBufferTypeIndex usingAttributes:bufferAttribs];
-
-    (self.geometry).vertexBuffer = vertexBuffer;
-    (self.geometry).indexBuffer = indexBuffer;
+    NSMutableArray* geoArray = [[NSMutableArray alloc] initWithCapacity:[self.subsetArray count]];
 
     for (NFAssetSubset *subset in self.subsetArray) {
+        NFRGeometry* geometry = [[NFRGeometry alloc] init];
+
+        NF_VERTEX_FORMAT vertexFormat = subset.vertexFormat;
+        NFRBufferAttributes* bufferAttribs = [[NFRBufferAttributes alloc] initWithFormat:vertexFormat];
+
+        geometry.vertexBuffer = [[NFRBuffer alloc] initWithType:kBufferTypeVertex usingAttributes:bufferAttribs];
+        geometry.indexBuffer = [[NFRBuffer alloc] initWithType:kBufferTypeIndex usingAttributes:bufferAttribs];
+
         NFSurfaceModel *surface = subset.surfaceModel;
         if (surface) {
-            (self.geometry).surfaceModel = surface;
-            [self.geometry syncSurfaceModel];
+            geometry.surfaceModel = surface;
+            [geometry syncSurfaceModel];
         }
 
-        (self.geometry).mode = subset.mode;
+        geometry.mode = subset.mode;
 
         GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.modelMatrix, subset.subsetModelMat);
-        (self.geometry).modelMatrix = renderModelMat;
+        geometry.modelMatrix = renderModelMat;
 
         NFR_BUFFER_DATA_TYPE vertexBufferType = kBufferDataTypeUnknown;
         switch (subset.vertexFormat) {
@@ -109,16 +109,20 @@
             case kVertexFormatDebug:
                 vertexBufferType = kBufferDataTypeNFDebugVertex_t;
                 break;
-                
+
             default:
                 NSLog(@"WARNING: generateRenderables called with unknown vertex buffer type");
                 break;
         }
 
         NSAssert(vertexBufferType != kBufferDataTypeUnknown, @"ERROR: NFAssetData can not recongize subset vertex type");
-        [vertexBuffer loadData:subset.vertices ofType:vertexBufferType numberOfElements:subset.numVertices];
-        [indexBuffer loadData:subset.indices ofType:kBufferDataTypeUShort numberOfElements:subset.numIndices];
+        [geometry.vertexBuffer loadData:subset.vertices ofType:vertexBufferType numberOfElements:subset.numVertices];
+        [geometry.indexBuffer loadData:subset.indices ofType:kBufferDataTypeUShort numberOfElements:subset.numIndices];
+
+        [geoArray addObject:geometry];
     }
+
+    self.geometryArray = geoArray;
 }
 
 @end
