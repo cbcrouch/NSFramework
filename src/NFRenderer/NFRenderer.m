@@ -270,9 +270,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //
     fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/cube/cube-mod.obj"; // multiple groups test
 
-
     //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/rifle/rifle.obj";
-
 
     //
     // TODO: test and fix errors with recorded obj file
@@ -304,7 +302,6 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     // TODO: cube-mod will be used to test of normals generation (which is working at the moment)
     //
     //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/cube/cube-mod.obj";
-
     //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/leftsphere/leftsphere.obj";
 
     
@@ -313,7 +310,7 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //       it lists the vertices and texture coordinates separately with the Base listed first (before Base faces)
     //       and top vertices and texture coordinates after the Base faces
     //
-    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/teapot/teapot.obj";
+    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/teapot/teapot.obj"; // need to fix index generation
 
 
     //

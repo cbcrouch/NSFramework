@@ -91,13 +91,11 @@
     return self;
 }
 
-
 - (void) stepTransforms:(float)secsElapsed {
     typedef GLKMatrix4 (^transformBlock_f)(GLKMatrix4, float);
     transformBlock_f transformBlock = ^(GLKMatrix4 modelMatrix, float secsElapsed) {
         float angle = secsElapsed * M_PI_4 * -1.25;
         return GLKMatrix4MakeRotation(angle, 0.0f, 1.0f, 0.0f);
-
     };
 
     GLKMatrix4 tempMat = transformBlock(GLKMatrix4Identity, secsElapsed);
@@ -207,7 +205,6 @@
     }
     return self;
 }
-
 
 @end
 
@@ -324,6 +321,5 @@
     }
     return self;
 }
-
 
 @end

@@ -26,14 +26,23 @@ typedef GLKMatrix4 (^transformBlock_f)(GLKMatrix4, float);
 
 
 //
-// TODO: drop this matrix from NFAssetData, will require refactoring of light classes
+// TODO: drop this matrix from NFAssetData, will require refactoring of light classes as well
 //
 @property (nonatomic, assign) GLKMatrix4 modelMatrix;
+//
+//
+//
 
-
-@property (nonatomic, strong) NSArray* subsetArray;
 @property (nonatomic, strong) NSArray* surfaceModelArray;
 @property (nonatomic, strong) NSArray* geometryArray;
+
+
+//
+// TODO: refactor so can empty/free the subsetArray after the Wavefront obj geometry has
+//       been converted to the interal geometry representation, NFRGeometry (also check
+//       if there isn't texture data that can be cleared from the surface model)
+//
+@property (nonatomic, strong) NSArray* subsetArray;
 
 
 @property (nonatomic, weak) transformBlock_f transformBlock;

@@ -22,12 +22,6 @@
     return self;
 }
 
-
-//
-// TODO: need to update how all the transforms are applied to support the geometry array
-//       (everything is working except the loaded Wavefront obj geometry)
-//
-
 - (void) stepTransforms:(float)secsElapsed {
 
     //
@@ -44,17 +38,25 @@
     };
 
 
-    //
-    // TODO: iterate over all the subsets
-    //
-    GLKMatrix4 model = [(self.subsetArray)[0] subsetModelMat];
-    [(self.subsetArray)[0] setSubsetModelMat:transformBlock(model, secsElapsed)];
+    //GLKMatrix4 model = [(self.subsetArray)[0] subsetModelMat];
+    //[(self.subsetArray)[0] setSubsetModelMat:transformBlock(model, secsElapsed)];
 
 
     // update geometry object model matrix
     for (NFAssetSubset *subset in self.subsetArray) {
+
+        //
+        // TODO: this is double updating the geometry, should iterate over as a for loop and only
+        //       update the geometry corresponding to the subset being processed
+        //
+
+        [subset setSubsetModelMat:transformBlock(subset.subsetModelMat, secsElapsed)];
         GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.modelMatrix, subset.subsetModelMat);
 
+        //
+        // TODO: NFRGeometry object has the correctly rotated model matrix, it does not appear to
+        //       be being used, it is most likely being rendered with the asset or subset matrix
+        //
         for (NFRGeometry* geo in self.geometryArray) {
             geo.modelMatrix = renderModelMat;
         }
