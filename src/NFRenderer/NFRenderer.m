@@ -262,13 +262,13 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 
     NSString *fileNamePath;
 
-    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/cube/cube.obj";
+    fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/cube/cube.obj";
 
     //
     // TODO: cube-mod contains two identical cubes grouped in the same manner as the teapot, getting
     //       this working will most likely require modifying the NFRGeometry object
     //
-    fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/cube/cube-mod.obj"; // multiple groups test
+    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/cube/cube-mod.obj"; // multiple groups test
 
     //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/rifle/rifle.obj";
 
@@ -333,14 +333,14 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     [m_pAsset generateRenderables];
 
 
-/*
+
     // use for suzanne
     m_pAsset.modelMatrix = GLKMatrix4Translate(GLKMatrix4Identity, 0.0f, 1.0f, 0.0f);
 
     // use for teapot
     //[m_pAsset applyOriginCenterMatrix];
     [m_pAsset applyUnitScalarMatrix];
-*/
+
     [m_pAsset stepTransforms:0.0f];
 
 

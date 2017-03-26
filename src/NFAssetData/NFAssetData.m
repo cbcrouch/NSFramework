@@ -37,46 +37,29 @@
         return GLKMatrix4RotateY(modelMatrix, angle);
     };
 
-
-    //GLKMatrix4 model = [(self.subsetArray)[0] subsetModelMat];
-    //[(self.subsetArray)[0] setSubsetModelMat:transformBlock(model, secsElapsed)];
-
-
     // update geometry object model matrix
-    for (NFAssetSubset *subset in self.subsetArray) {
-
-        //
-        // TODO: this is double updating the geometry, should iterate over as a for loop and only
-        //       update the geometry corresponding to the subset being processed
-        //
-
+    for (int i=0; i<[self.subsetArray count]; ++i) {
+        NFAssetSubset* subset = (self.subsetArray)[0];
         [subset setSubsetModelMat:transformBlock(subset.subsetModelMat, secsElapsed)];
         GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.modelMatrix, subset.subsetModelMat);
 
-        //
-        // TODO: NFRGeometry object has the correctly rotated model matrix, it does not appear to
-        //       be being used, it is most likely being rendered with the asset or subset matrix
-        //
-        for (NFRGeometry* geo in self.geometryArray) {
-            geo.modelMatrix = renderModelMat;
-        }
+        NFRGeometry* geo = (self.geometryArray)[i];
+        geo.modelMatrix = renderModelMat;
     }
 }
 
 - (void) applyUnitScalarMatrix {
-
-    GLKMatrix4 model = [(self.subsetArray)[0] unitScalarMatrix];
-    //[[self.subsetArray objectAtIndex:0] setUnitScalarMatrix:[[self.subsetArray objectAtIndex:0] modelMatrix]];
-    [(self.subsetArray)[0] setSubsetModelMat:model];
-
+    for (NFAssetSubset* subset in self.subsetArray) {
+        GLKMatrix4 model = [subset unitScalarMatrix];
+        [subset setSubsetModelMat:model];
+    }
 }
 
 - (void) applyOriginCenterMatrix {
-
-    GLKMatrix4 model = [(self.subsetArray)[0] originCenterMatrix];
-    //[[self.subsetArray objectAtIndex:0] setOriginCenterMatrix:[[self.subsetArray objectAtIndex:0] modelMatrix]];
-    [(self.subsetArray)[0] setSubsetModelMat:model];
-
+    for (NFAssetSubset* subset in self.subsetArray) {
+        GLKMatrix4 model = [subset originCenterMatrix];
+        [subset setSubsetModelMat:model];
+    }
 }
 
 - (void) generateRenderables {

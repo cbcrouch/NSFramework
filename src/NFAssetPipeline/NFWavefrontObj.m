@@ -573,12 +573,9 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     // index set is for converting quads into triangles
     NSMutableIndexSet *indexSet = [[NSMutableIndexSet alloc] initWithIndexesInRange:NSMakeRange(0, 3)];
 
-
     NSMutableArray *activeVertices = [[NSMutableArray alloc] init];
     NSMutableArray *activeTexCoords = [[NSMutableArray alloc] init];
     NSMutableArray *activeNormals = [[NSMutableArray alloc] init];
-
-
 
     for (NSString *line in lines) {
 
@@ -616,6 +613,8 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
             [activeVertices removeAllObjects];
             [activeTexCoords removeAllObjects];
             [activeNormals removeAllObjects];
+
+            NSLog(@"group name: %@", groupName);
         }
         else if ([line hasPrefix:g_useMatPrefix]) {
             NSString *matName = [line substringFromIndex:g_useMatPrefix.length];
