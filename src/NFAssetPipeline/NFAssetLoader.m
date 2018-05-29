@@ -47,6 +47,7 @@
             }
 */
 
+
             //
             // TODO: will need to find a new home for calculate normals and update this call
             //       (also check for texture coordinates and normals in the groups processing loop below)
@@ -56,6 +57,7 @@
                 [wavefrontObj.object calculateNormals];
             }
 */
+            
 
             //
             // TODO: only one Wavefront object is currently supported, will need to update

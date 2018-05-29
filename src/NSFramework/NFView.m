@@ -301,7 +301,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //
     // TODO: should make dictionary a class member or static so it's not created/destroyed every key press
     //
-    typedef void (^CaseBlock)();
+    typedef void (^CaseBlock)(void);
     NSDictionary* caseDict = @{
         @"w": ^{
             [self.camera setTranslationState:kCameraStateActFwd];
@@ -358,7 +358,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     //
     // TODO: should make dictionary a class member or static so it's not created/destroyed every key press
     //
-    typedef void (^CaseBlock)();
+    typedef void (^CaseBlock)(void);
     NSDictionary* caseDict = @{
         @"w": ^{
             [self.camera setTranslationState:kCameraStateNilFwd];

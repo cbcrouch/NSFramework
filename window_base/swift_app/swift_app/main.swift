@@ -2,7 +2,7 @@
 //  main.swift
 //  swift_app
 //
-//  Copyright (c) 2016 Casey Crouch. All rights reserved.
+//  Copyright (c) 2018 Casey Crouch. All rights reserved.
 //
 
 // swiftc main.swift -o swift_app
@@ -40,7 +40,7 @@ class NFView: NSView {
 class WindowDelegate: NSObject, NSWindowDelegate {
     func windowWillClose(_ notification: Notification) {
         print("WindowDelegate windowWillClose called", terminator: "\n")
-        NSApplication.shared().terminate(0)
+        NSApplication.shared.terminate(0)
     }
 }
 
@@ -66,7 +66,6 @@ class WindowController: NSWindowController {
     }
 }
 
-
 class ApplicationDelegate: NSObject, NSApplicationDelegate {
     var _nfView: NFView
     var _window: NSWindow
@@ -87,21 +86,24 @@ class ApplicationDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        let mask = (NSEventMask.keyDown)
-        let _ : AnyObject! = NSEvent.addLocalMonitorForEvents(matching: mask, handler: { (event: (NSEvent!)) -> NSEvent in
+        let mask = (NSEvent.EventTypeMask.keyDown)
+        let _ : AnyObject! = NSEvent.addLocalMonitorForEvents(matching: mask, handler: { (event: (NSEvent?)) -> NSEvent in
             //
             // TODO: send event data to desired method based on type
             //
-            print("local KeyDown: \(event.characters) (\(String(event.keyCode)))", terminator: "\n")
-            return event
-        }) as AnyObject!
+
+            //print("local KeyDown: \(event?.characters ?? "NIL") (\(event?.keyCode ?? 0))", terminator: "\n")
+            print("local KeyDown: \(event?.characters ?? "NIL") (\(String(describing: event?.keyCode)))", terminator: "\n")
+
+            return event!
+        }) as AnyObject?
 
         print("application did finish launching", terminator: "\n")
-
 
         //
         // TODO: insert code here to initialize your application here
         //
+
         NSApp.activate(ignoringOtherApps: true)
     }
 }
@@ -133,7 +135,6 @@ class Application: NSApplication {
 }
 
 
-
 func main() -> Int32 {
     for argument in CommandLine.arguments {
         switch argument {
@@ -143,10 +144,10 @@ func main() -> Int32 {
     }
 
 
-    let nsApp = NSApplication.shared()
+    let nsApp = NSApplication.shared
     //let _ = NSApplication.sharedApplication()
 
-    nsApp.setActivationPolicy(NSApplicationActivationPolicy.regular)
+    nsApp.setActivationPolicy(NSApplication.ActivationPolicy.regular)
 
 
     let menuBar = NSMenu()
@@ -169,8 +170,8 @@ func main() -> Int32 {
 
     //let windowMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask
 
-    let win = NSWindow(contentRect: NSMakeRect(100, 100, 600, 200), styleMask: NSWindowStyleMask.titled,
-        backing: NSBackingStoreType.buffered, defer: true)
+    let win = NSWindow(contentRect: NSMakeRect(100, 100, 600, 200), styleMask: NSWindow.StyleMask.titled,
+        backing: NSWindow.BackingStoreType.buffered, defer: true)
 
     win.cascadeTopLeft(from: NSMakePoint(20, 20))
     win.title = appName

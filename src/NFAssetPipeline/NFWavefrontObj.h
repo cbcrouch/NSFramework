@@ -55,9 +55,15 @@ static NSInteger (^normalizeObjIndex)(NSInteger, NSUInteger) = ^ NSInteger (NSIn
 @property (nonatomic, strong) NSString *objectName;
 @property (nonatomic, strong) NSMutableArray *groups;
 
+
+//
+// TODO: integrate calculateTextureCoorindates and calculateNormals back into the codebase
+//
+
 //
 // TODO: these should operate on an NFAssetData object so they can be used regardless
-//       of what file format is being used
+//       of what file format is being used, they'll need to work with multiple geometry objects
+//       per Wavefront obj file
 //
 //- (void) calculateTextureCoordinates;
 //- (void) calculateNormals;

@@ -260,57 +260,63 @@ static uint32_t const SHADOW_HEIGHT = 1024;
 #endif
 
 
+    NSString* basePath = @"/Users/ccrouch/Library/Mobile Documents/com~apple~CloudDocs/Developer/NSGL";
+
     NSString *fileNamePath;
 
-    fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/cube/cube.obj";
+
+
+    //fileNamePath = [NSString stringWithFormat:@"%@/%@", basePath, @"Models/cube/cube.obj"];
 
     //
     // TODO: cube-mod contains two identical cubes grouped in the same manner as the teapot, getting
     //       this working will most likely require modifying the NFRGeometry object
     //
-    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/cube/cube-mod.obj"; // multiple groups test
+    fileNamePath = [NSString stringWithFormat:@"%@/%@", basePath, @"Models/cube/cube-mod.obj"]; // multiple groups test
 
-    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/rifle/rifle.obj";
+    //fileNamePath = [NSString stringWithFormat:@"%@/%@", basePath, @"Models/rifle/rifle.obj"];
 
     //
     // TODO: test and fix errors with recorded obj file
     //
-    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/TEST.obj";
+    //fileNamePath = [NSString stringWithFormat:@"%@/%@", basePath, @"Models/TEST.obj"];
 
     //
     // TODO: fix black textures
     //
 
     // NOTE: this obj file is broken in other obj viewers as well
-    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/diamond.obj";
+    //fileNamePath = [NSString stringWithFormat:@"%@/%@", basePath, @"Models/simple/diamond.obj"];
 
-    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/dodecahedron.obj";
-    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/icosahedron.obj";
-    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/octahedron.obj";
+    //fileNamePath = [NSString stringWithFormat:@"%@/%@", basePath, @"Models/simple/dodecahedron.obj"];
+    //fileNamePath = [NSString stringWithFormat:@"%@/%@", basePath, @"Models/simple/icosahedron.obj"];
+    //fileNamePath = [NSString stringWithFormat:@"%@/%@", basePath, @"Models/simple/octahedron.obj"];
 
     //
     // TODO: something is wrong with parsing the pyramid obj, check line endings
     //
-    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/pyramid.obj";
+    //fileNamePath = [NSString stringWithFormat:@"%@/%@", basePath, @"Models/simple/pyramid.obj"];
 
-    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/lamp.obj";
-    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/shuttle.obj";
-    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/simple/skyscrapper.obj";
+    //fileNamePath = [NSString stringWithFormat:@"%@/%@", basePath, @"Models/simple/lamp.obj"];
+    //fileNamePath = [NSString stringWithFormat:@"%@/%@", basePath, @"Models/simple/shuttle.obj"];
+    //fileNamePath = [NSString stringWithFormat:@"%@/%@", basePath, @"Models/simple/skyscrapper.obj"];
 
 
     //
     // TODO: cube-mod will be used to test of normals generation (which is working at the moment)
     //
-    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/cube/cube-mod.obj";
-    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/leftsphere/leftsphere.obj";
+    //fileNamePath = [NSString stringWithFormat:@"%@/%@", basePath, @"Models/cube/cube-mod.obj"];
+    //fileNamePath = [NSString stringWithFormat:@"%@/%@", basePath, @"Models/leftsphere/leftsphere.obj"];
 
-    
+
+
     //
     // TODO: teapot contains vertices and texture coordinates (no normals) and two groups Base and Top, plus
     //       it lists the vertices and texture coordinates separately with the Base listed first (before Base faces)
     //       and top vertices and texture coordinates after the Base faces
     //
-    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/teapot/teapot.obj"; // need to fix index generation
+    //fileNamePath = [NSString stringWithFormat:@"%@/%@", basePath, @"Models/teapot/teapot.obj"]; // need to fix index generation
+
 
 
     //
@@ -318,10 +324,10 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //       also the buddha and dragon models do not get drawn correctly since they have multiple meshes
     //
 
-    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/suzanne.obj";
+    //fileNamePath = [NSString stringWithFormat:@"%@/%@", basePath, @"Models/suzanne.obj"];
 
-    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/buddha.obj";
-    //fileNamePath = @"/Users/ccrouch/Developer/NSGL/Models/dragon.obj";
+    //fileNamePath = [NSString stringWithFormat:@"%@/%@", basePath, @"Models/buddha.obj"];
+    //fileNamePath = [NSString stringWithFormat:@"%@/%@", basePath, @"Models/dragon.obj"];
 
 
 
@@ -348,11 +354,11 @@ static uint32_t const SHADOW_HEIGHT = 1024;
     //
     // TODO: test out Wavefront obj file writing
     //
-    //[NFAssetWriter writeAsset:m_pAsset toFile:@"/Users/ccrouch/Developer/NSGL/Models/TEST.obj" withFormat:kWavefrontObjFormat];
+    //[NFAssetWriter writeAsset:m_pAsset toFile:[NSString stringWithFormat:@"%@/%@", basePath, @"Models/TEST.obj"] withFormat:kWavefrontObjFormat];
 
 
+    NSString* cubeMapPath = [NSString stringWithFormat:@"%@/%@", basePath, @"Textures/Yokohama3"];
 
-    NSString* cubeMapPath = @"/Users/ccrouch/Developer/NSGL/Textures/Yokohama3";
     m_skyBox = [[NFRCubeMap alloc] init];
 
     // faces must be loaded in the same order as the GL cube map positions

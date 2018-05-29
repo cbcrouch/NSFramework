@@ -38,9 +38,9 @@
     };
 
     // update geometry object model matrix
-    for (int i=0; i<[self.subsetArray count]; ++i) {
+    for (int i=0; i<(self.subsetArray).count; ++i) {
         NFAssetSubset* subset = (self.subsetArray)[0];
-        [subset setSubsetModelMat:transformBlock(subset.subsetModelMat, secsElapsed)];
+        subset.subsetModelMat = transformBlock(subset.subsetModelMat, secsElapsed);
         GLKMatrix4 renderModelMat = GLKMatrix4Multiply(self.modelMatrix, subset.subsetModelMat);
 
         NFRGeometry* geo = (self.geometryArray)[i];
@@ -50,20 +50,20 @@
 
 - (void) applyUnitScalarMatrix {
     for (NFAssetSubset* subset in self.subsetArray) {
-        GLKMatrix4 model = [subset unitScalarMatrix];
-        [subset setSubsetModelMat:model];
+        GLKMatrix4 model = subset.unitScalarMatrix;
+        subset.subsetModelMat = model;
     }
 }
 
 - (void) applyOriginCenterMatrix {
     for (NFAssetSubset* subset in self.subsetArray) {
-        GLKMatrix4 model = [subset originCenterMatrix];
-        [subset setSubsetModelMat:model];
+        GLKMatrix4 model = subset.originCenterMatrix;
+        subset.subsetModelMat = model;
     }
 }
 
 - (void) generateRenderables {
-    NSMutableArray* geoArray = [[NSMutableArray alloc] initWithCapacity:[self.subsetArray count]];
+    NSMutableArray* geoArray = [[NSMutableArray alloc] initWithCapacity:(self.subsetArray).count];
 
     for (NFAssetSubset *subset in self.subsetArray) {
         NFRGeometry* geometry = [[NFRGeometry alloc] init];

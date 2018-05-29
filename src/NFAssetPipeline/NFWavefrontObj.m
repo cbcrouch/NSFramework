@@ -207,6 +207,7 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
     }
 }
 
+
 //
 // TODO: should take a param that will determine whether to use area weighted normals or angle weighted normals
 //
@@ -216,6 +217,11 @@ GLKVector3 (^wfParseVector3)(NSString *, NSString *) = ^ GLKVector3 (NSString *l
 // - surfaceAreaWeightedVertexNormals
 // - faceAngleWeightedVertexNormals
 // - areaAndAngleWeightedVertexNormals
+
+
+//
+// TODO: integrate calculateTextureCoorindates and calculateNormals back into the codebase
+//
 
 - (void) calculateNormals {
     //
